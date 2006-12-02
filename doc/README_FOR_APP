@@ -1,0 +1,4 @@
+
+
+Upon first checkout, run
+./script/create_log_dirs.sh

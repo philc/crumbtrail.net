@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<title>Wireframe</title>
+<%= stylesheet_link_tag "project" %>
+<%= javascript_include_tag "prototype" %>
+<%= javascript_include_tag "effects"
+ %>
+<%= javascript_include_tag "project" %> 
+
+<script type="text/javascript">
+  referersTotal=[<%= @referers_total -%>];
+  referersUnique=[<%= @referers_unique -%>];
+  referersRecent=[<%= @referers_recent -%>];
+  active = "<%= @preferences.panel%>";
+</script>
+
+<!--[if lt IE 7.]>
+<%= stylesheet_link_tag "main-ie" %>
+<![endif]-->
+
+<!-- styles for vertical centering-->
+<!--[if IE]>
+  <style type="text/css">
+  .outer2{position:absolute;height:100%;}
+  .outer {height: 100%; position:relative;}
+  .middle {position: absolute; top: 50%;}
+  .inner { position: relative;top: -50%;}
+  </style>
+<![endif] -->
+<!--[if gt IE 6]>
+<style type="text/css">
+  .middle{width:100%;}
+</style>
+<![endif]-->
+<![if !IE]>
+<style>
+.outer{ display: table; height: 98%;}
+.middle {display: table-cell;vertical-align: middle;
+}
+</style>
+<![endif]>
+
+
+
+</script>
+
+
+</head>
+
+
+<body >
+<!--
+  onload="populate();
+-->
+
+<div id="page">
+<div id="header">
+  <img src="/images/logo.png"/>
+</div>
+
+<div id="content">
+
+  <div id="menu">
+    <ul>
+    <%= render :partial=>"menu_entry", :locals=>{:id=>"glance",:d=>"At a glance"} %>    
+    <%= render :partial=>"menu_entry", :locals=>{:id=>"hits",:d=>"Hits"} %>    
+    <%= render :partial=>"menu_entry", :locals=>{:id=>"referers",:d=>"Referers"} %>    
+    <%= render :partial=>"menu_entry", :locals=>{:id=>"pages",:d=>"Pages"} %>    
+    <%= render :partial=>"menu_entry", :locals=>{:id=>"searches",:d=>"Searches"} %>    
+    <%= render :partial=>"menu_entry", :locals=>{:id=>"details",:d=>"Details"} %>    
+    </ul>
+  </div>
+
+  
+  <div id="glance_panel" class="panel" <%=panel_style("glance")-%> >
+        <img src="/images/h/glance.png" class="panel_title"/>        
+        
+         
+        <div class="chart">          
+          <div id="chart"></div>
+           <!-- 
+           
+           -->
+           <div class="chart_frame"></div>    
+        </div>
+               
+        
+        <br clear="both"/>
+  </div>
+  
+   <div id="hits_panel" class="panel" <%=panel_style("hits")-%> >
+    <img src="/images/h/details.png" class="panel_title"/>  
+    <div class="navlinks">
+      Show: 
+      <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"today",:d=>"Today"} %> | 
+      <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"week",:d=>"Week"} %> | 
+      <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"month",:d=>"Month"} %> | 
+      <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"total",:d=>"Total"} %> 
+
+      
+    </div>
+          
+    <div class="side left">     
+     <div id ="test" style="display:none"></div>
+      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"today",:c=>"date"} %>
+      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"week"} %>
+      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"month"} %>
+      
+    </div>
+    <div id="graph" class="graph">
+          </div>
+          <br clear="both"/>
+  </div>
+ 
+   <div id="referers_panel" class="panel" <%=panel_style("referers")-%> >
+    <img src="/images/h/details.png" class="panel_title"/>  
+           <div class="navlinks">
+            <span class="navlink_show">Show:</span>
+            <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"recent",:d=>"Most recent"} %> | 
+            <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"unique",:d=>"Latest unique"} %> | 
+            <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"total",:d=>"Totals"} %>
+          </div>
+          
+          <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"recent",:c=>"links"} %>
+          <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"unique",:c=>"links"} %>
+          <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"total",:c=>"links"} %>
+          
+    <br clear="both"/>
+    <script type="text/javascript">
+    populate();
+    </script>
+  </div>
+  
+  <img src="/project/lag/"/>
+  
+   <div id="pages_panel" class="panel" <%=panel_style("pages")-%> >
+    <img src="/images/h/details.png" class="panel_title"/>  
+    <br clear="both"/>
+  </div>
+  
+   <div id="searches_panel" class="panel" <%=panel_style("searches")-%> >
+    <img src="/images/h/details.png" class="panel_title"/>  
+    <br clear="both"/>
+  </div>
+  
+   <div id="details_panel" class="panel" <%=panel_style("details")-%> >
+    <img src="/images/h/details.png" class="panel_title"/>  
+    <br clear="both"/>
+  </div>
+ 
+  
+
+  <div id="footer">
+      &copy; ourname 2006
+  </div>  
+
+</div>
+
+</div>
+
+
+
+</body>
+</html>

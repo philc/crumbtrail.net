@@ -1,0 +1,41 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+one:
+  id:         1
+  username:   mikequinn
+  password:   pass1
+  firstname:  Michael
+  lastname:   Quinn
+  country_id: 1
+  timezone:   0
+two:
+  id:         2
+  username:   philisoft
+  password:   mypass
+  firstname:  Phil
+  lastname:   Crosby
+  country_id: 1
+  timezone:   0
+three:
+  id:         3
+  username:   eaquinn
+  password:   password
+  firstname:  Emily
+  lastname:   Quinn
+  country_id: 1
+  timezone:   0
+four:
+  id:         4
+  username:   tquinn
+  password:   england
+  firstname:  Tom
+  lastname:   Quinn
+  country_id: 2
+  timezone:   7
+five:
+  id:         5
+  username:   joeshmoe
+  password:   qwerty
+  firstname:  Joe
+  lastname:   Shmoe
+  country_id: 3
+  timezone:   8
