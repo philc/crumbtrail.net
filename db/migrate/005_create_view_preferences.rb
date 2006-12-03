@@ -13,6 +13,13 @@ class CreateViewPreferences < ActiveRecord::Migration
     end
     
     add_index :view_preferences, :project_id
+    
+    # default testing data. remove.
+    v=ViewPreference.new
+    v.defaults()
+    v.project_id=1050
+    v.save!
+    
   end
 
   def self.down
