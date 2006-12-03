@@ -15,6 +15,9 @@
   referersUniqueData=[<%= @referers_unique -%>];
   referersRecentData=[<%= @referers_recent -%>];
   
+  hitsWeekData=[<%= @hits_week %>];
+  hitsMonthData=[<%= @hits_month %>];
+  
   
 </script>
 
@@ -107,9 +110,9 @@
     <div class="side right">     
      <div id ="test" style="display:none"></div>
       <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"today",:c=>"date"} %>
-      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"week"} %>
-      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"month"} %>
-      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"total"} %>
+      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"week",:c=>"date"} %>
+      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"month",:c=>"date"} %>
+      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"total",:c=>"date"} %>
       
     </div>
     <div id="graph" class="graph">

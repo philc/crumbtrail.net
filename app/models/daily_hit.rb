@@ -1,7 +1,13 @@
 require 'lib/time_helpers'
 
-# Represents the number of hits for a project for any given day
+# Is there a better place to put this?
+class Array
+  def sum
+    inject( 0 ) { |sum,x| sum+x }
+  end
+end
 
+# Represents the number of hits for a project for any given day
 class DailyHit < ActiveRecord::Base
   belongs_to :project
 

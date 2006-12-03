@@ -148,8 +148,11 @@ for (i=0;i<24;i++)
 
 
 function populate(){
-  var tb=new TableDisplay("Hits today", ["Total","Hits","Unique"],data,2,hitsToday);
+  var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
   $("hits_today").innerHTML=tb.buildTable();
+  tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,1,hitsWeek);
+  $("hits_week").innerHTML=tb.buildTable();
+  
   tb=new TableDisplay("Total referrals", ["Referer","Total hits"],referersTotalData,2,referersTotal);
   $("referers_total").innerHTML=tb.buildTable();
   tb=new TableDisplay("Unqiue referrals", ["Referer","First visited"],referersUniqueData,2,referersWithDate);
@@ -157,6 +160,7 @@ function populate(){
   tb=new TableDisplay("Most recent referers",["Recent referer", "Visited"],referersRecentData,2,referersWithDate);
   $("referers_recent").innerHTML=tb.buildTable();
 
+  
   //$("referers_recent").innerHTML=table("Most recent referers",["Recent referer"],recentReferers,1,refererRecentInner);
 //   $("referers_unique").innerHTML=
 //     table("Newest unique referers",["Referer","First&nbsp;visited"],
@@ -233,19 +237,27 @@ DisplayHelper.Methods={
   showHour: function(i){
     var t=i%24;
     return (t%12)+1 + ":00" + (t<12 ? "am" : "pm");
+  },
+  days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+  showDay: function(i){
+    i=i%7;
+    return this.days[i<0 ? 7+i : i];    
   }
 }
 Object.extend(DisplayHelper,DisplayHelper.Methods);
 
+function hitsWeek(i,data){
+  //var c=classString(i, function(i){(i+now+1 > 24 ? " old" : "")});
+  return '<tr>' + DisplayHelper.showDay((new Date()).getDay()-i) +
+   "</td><td>" + data[i] + "</td><td>" + "who knows.." + "</td></tr>";  
+}
 function hitsToday(i,data){
   var c=classString(i, function(i){(i+now+1 > 24 ? " old" : "")});
-//   tr=((i+now+1) > 24) ? '<tr class="old">' : '<tr>';
   return '<tr' + c + '>' + DisplayHelper.showHour(i+now) +
    "</td><td>" + i*120 + "</td><td>" + i*60 + "</td></tr>";  
 }
 function referersRecent(i,data){
   var url=unescape(data[i*2]);
-//   var url=data[i*2];  
   return '<tr' + classString(i) +'><td class="f">' + linkFor(url,url)+ "</td></tr>"
 }
 function referersWithDate(i,data){
@@ -270,13 +282,6 @@ function classString(i, func){
    if (func!=null)
      c+=func(i);
   return(c=="" ? "" : ' class="' + c +'"');
-}
-
-function week_inner(i){
-  return "<tr><td class='f'>" + (i+1) + "</td><td>" + i*400 + "</td><td>" + i*190 + "</td></tr>";
-}
-function month_inner(i){
-  return "<tr><td class='f'>" + (i+1) + "th</td><td>" + i*1120 + "</td><td>" + i*260 + "</td></tr>";
 }
 
 
