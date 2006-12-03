@@ -22,12 +22,14 @@ class ViewPreference < ActiveRecord::Base
     end
     
     # this should be panel=, but I'm not sure how to do that with active record though.
-    def set_panel(v)
+    def set_section(v)
       self.panel=v unless (@@sections[v].nil?)
     end
-    def set_section(section,value)
-      return if  @@sections[section].nil?
-      self.send(section+"=",value)
+    def set_panel(panel,value)
+      puts "settign panel" + panel;
+      return if  @@sections[panel].nil?
+      puts "settign panel" + panel;
+      self.send(panel+"=",value)
     end
     
 #     def panel=(v)

@@ -1,24 +1,144 @@
-//size=200;
-//active="referers";
-colors=["#a4d898","#fdde88","#d75b5c","#7285b7"];
 now=10;
 data=[]
-timers=Array()
-sections=["glance","hits","referers","pages","searches","details"];
-sections.each(function(e){timers[e]=new MenuTimer();});
 
 chartData=[12,22,10,26];
 chartData=[.5,2,5,5];
 
+// Dean Edwards/Matthias Miller/John Resig
 
-// chartData=[1,4,4,7];
-//chartData=[2,4,4,6];
+function init() {
 
-function MenuTimer(){
+};
+/* for Mozilla/Opera9 */
+if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", init, false);
+/* for Internet Explorer */
+/*@cc_on @*/
+/*@if (@_win32)
+    document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
+    var script = document.getElementById("__ie_onload");
+    script.onreadystatechange = function() {
+        if (this.readyState == "complete") {
+            init(); // call the onload handler
+        }
+    };
+/*@end @*/
+/* for Safari/konq */
+if (/WebKit|KHTML/i.test(navigator.userAgent)) { // sniff
+    var _timer = setInterval(function() {
+        if (/loaded|complete/.test(document.readyState)) {
+            init(); // call the onload handler
+        }
+    }, 10);
+}
+/* for other browsers */
+window.onload = init;
+
+
+
+/*
+ * Controlling the UI
+ */
+
+function UITimer(){
   this.timer=null;
   this.timeout=2000;
 }
-prefMenuTimer=new MenuTimer()
+
+var Preferences = Class.create();
+Preferences.prototype = {
+  initialize:function(){
+    // "section" is for the main menu preference
+    this.sections=["glance","hits","referers","pages","searches","details","section"];
+    this.timers=new Array();    
+    this.sections.each(function(e){
+      this.timers[e]=new UITimer();
+    }.bind(this));    
+  },
+  update: function(n,v){
+    var timer=this.timers[n];
+    clearTimeout(timer.timer);
+    timer.timer=setTimeout(this.sendPreference(n,v),timer.timeout);
+  },
+  // Sends a view preference and a value asynchronously.
+  // name/values can be are panel/panel that's active,
+  // and section/section that's active
+  sendPreference: function(n,v){
+    var pars="p="+n+"&v="+v;
+    return function(){new Ajax.Request('/project/setpref/',
+      {asynchronous:true, parameters:pars
+      });
+    }
+  }
+}
+
+
+var Page = Class.create();
+Page.prototype = {
+  initialize:function(){
+    this.colors=["#a4d898","#fdde88","#d75b5c","#7285b7"];
+    this.preferences=new Preferences();
+    this.activeSection="glance";
+    
+  },
+  // Switch section
+  menuNav: function(e){
+    var section=e.title;
+    
+    this.removeClassFromElements("active","menu");
+    e.className+=" active";
+    
+    console.log(this.activeSection);
+    Element.hide(this.activeSection);
+    this.activeSection=section;        
+    Element.show(section);
+    
+    this.preferences.update("section",section);
+  },
+  //panelNav: function(section,v,linkElement){
+  panelNav: function(linkElement){
+    var panel=linkElement.title;
+    document.getElementsByClassName("panel",this.activeSection).each(
+      function(e){Element.hide(e)});
+    
+    // Remove highlighting on the other link, highlight the new link    
+    this.removeClassFromElements('panel_link_active',this.activeSection);
+    linkElement.className += " panel_link_active";
+    
+    // Show e.g. "referers_current" panel
+    Element.show(this.activeSection+"_"+panel);
+    this.preferences.update(this.activeSection,panel);
+  },
+  removeClassFromElements: function(c,start){
+    document.getElementsByClassName(c,start).each(
+      function(e){e.className=e.className.replace(c,"");}) 
+  }
+  
+}
+
+page = new Page();
+
+// Gets called when the page is done loading. Enables the structure with behavior
+function init(){
+  // quit if this function has already been called
+  if (arguments.callee.done) return;
+  // flag this function so we don't do the same thing twice
+  arguments.callee.done = true;
+  // kill the timer
+  if (_timer) clearInterval(_timer);
+  populate();
+  // set menu links
+  $A($('menu-links').getElementsByTagName("LI")).each(function(e){
+    l=e.getElementsByTagName("A")[0];
+    l.onclick=function(){ page.menuNav(this); return false;};
+  });
+  // set panel links
+  $A(document.getElementsByClassName("panel_link","content")).each(function (e){
+    e.onclick=function(){ page.panelNav(this); return false;};
+  });  
+}
+
+
 
 for (i=0;i<24;i++)
 {
@@ -28,57 +148,114 @@ for (i=0;i<24;i++)
 
 
 function populate(){
-  $("hits_today").innerHTML=table("Hits today", ["Total","Hits","Unique"],data,2,todayInner);
-  $("referers_total").innerHTML=table("Total referrals", 
-    ["Referer","Total&nbsp;hits"],referersTotal,2,refererTotalInner);
+  var tb=new TableDisplay("Hits today", ["Total","Hits","Unique"],data,2,hitsToday);
+  $("hits_today").innerHTML=tb.buildTable();
+  tb=new TableDisplay("Total referrals", ["Referer","Total hits"],referersTotalData,2,referersTotal);
+  $("referers_total").innerHTML=tb.buildTable();
+  tb=new TableDisplay("Unqiue referrals", ["Referer","First visited"],referersUniqueData,2,referersWithDate);
+  $("referers_unique").innerHTML=tb.buildTable();
+  tb=new TableDisplay("Most recent referers",["Recent referer", "Visited"],referersRecentData,2,referersWithDate);
+  $("referers_recent").innerHTML=tb.buildTable();
+
   //$("referers_recent").innerHTML=table("Most recent referers",["Recent referer"],recentReferers,1,refererRecentInner);
-  $("referers_unique").innerHTML=table("Newest unique referers",["Referer","First&nbsp;visited"],referersUnique,2,refererUniqueInner);  
-  drawChart("chart",chartData);
+//   $("referers_unique").innerHTML=
+//     table("Newest unique referers",["Referer","First&nbsp;visited"],
+//     referersUnique,2,refererUniqueInner);  
+//   drawChart("chart",chartData);
 }
-function showHour(i){
-  var t=i%24;
-  return (t%12)+1 + ":00" + (t<12 ? "am" : "pm");
+
+
+/*
+ * Table display
+ */
+
+TableDisplay=Class.create();
+
+TableDisplay.prototype={
+  initialize: function(title, headerNames, data, step, cellFunc){
+    this.title=title;    
+    this.headerNames=headerNames;
+    this.data=data;
+    this.step=step;
+    this.cellFunc=cellFunc;
+  },
+  buildTable: function(){
+    var html="<table>"+this.tableHeader();
+    for (i=0;i<this.data.length/this.step;i++)
+    {
+      html+=this.cellFunc(i,this.data);
+    }
+    html+="</table>" + '<div class="table-footer-cap"></div>';
+    return this.dialog(this.title,html)
+  },
+  dialog: function(t,content){
+    return '<div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">'+
+      '<div class="c"><h1 class="title">' + t + '</h1>'+content + '</div></div><div class="ft">' + 
+      '<div class="c"></div></div></div>';
+  },
+  tableHeader: function(){
+    if (this.headerNames==null)
+      return "" 
+    var html='<tr class="header">'
+    for (i=0;i<this.headerNames.length;i++)
+      html += (i==0 ? "<th class='f'>" : "<th>") + this.headerNames[i] + "</th>";
+    html+"</tr>"
+    return html;
+  },
+
+
 }
-function refererRecentInner(i,data){
+DisplayHelper = Class.create();
+DisplayHelper.Methods={
+  timeAgo: function(date){
+    var diff=(new Date())-date;
+    var mins=Math.floor(diff/1000/60);
+    var hrs=Math.floor(mins/60);
+    var days=Math.floor(hrs/24);
+    var weeks=Math.floor(days/7);
+    var mos=Math.floor(days/30);
+    if (mins<1)
+      return "few&nbsp;secs&nbsp;ago";
+    else if (hrs <1)
+      return this.formatTimeAgo(mins,"min");
+    else if (days < 1)
+      return this.formatTimeAgo(hrs,"hr");
+    else if (weeks < 1)
+      return this.formatTimeAgo(days,"day");
+    else if (mos<1)
+      return this.formatTimeAgo(weeks,"week");
+    else 
+      return this.formatTimeAgo(mos,"month");
+  },
+  formatTimeAgo: function(n,word){
+    return n + "&nbsp;" + (n>1 ? word+"s" : word) + "&nbsp;ago";
+  },
+  showHour: function(i){
+    var t=i%24;
+    return (t%12)+1 + ":00" + (t<12 ? "am" : "pm");
+  }
+}
+Object.extend(DisplayHelper,DisplayHelper.Methods);
+
+function hitsToday(i,data){
+  var c=classString(i, function(i){(i+now+1 > 24 ? " old" : "")});
+//   tr=((i+now+1) > 24) ? '<tr class="old">' : '<tr>';
+  return '<tr' + c + '>' + DisplayHelper.showHour(i+now) +
+   "</td><td>" + i*120 + "</td><td>" + i*60 + "</td></tr>";  
+}
+function referersRecent(i,data){
   var url=unescape(data[i*2]);
 //   var url=data[i*2];  
   return '<tr' + classString(i) +'><td class="f">' + linkFor(url,url)+ "</td></tr>"
 }
-function refererUniqueInner(i,data){
+function referersWithDate(i,data){
   var url=unescape(data[i*2]);
 //   var url=data[i*2];  
-  return '<tr' + classString(i) +'><td class="f">' + linkFor(url,url)+ "</td><td>" + timeAgo(data[i*2+1]) + "</td></tr>"
+  return '<tr' + classString(i) +'><td class="f">' + 
+    linkFor(url,url)+ "</td><td>" + DisplayHelper.timeAgo(data[i*2+1]) + "</td></tr>"
 }
-function timeAgo(date){
-  var diff=(new Date())-date;
-  var mins=Math.floor(diff/1000/60);
-  var hrs=Math.floor(mins/60);
-  var days=Math.floor(hrs/24);
-  var weeks=Math.floor(days/7);
-  var mos=Math.floor(days/30);
-  if (mins<1)
-    return "few&nbsp;secs&nbsp;ago";
-  else if (hrs <1)
-    return formatTimeAgo(mins,"min");
-  else if (days < 1)
-    return formatTimeAgo(hrs,"hr");
-  else if (weeks < 1)
-    return formatTimeAgo(days,"day");
-  else if (mos<1)
-    return formatTimeAgo(weeks,"week");
-  else 
-    return formatTimeAgo(mos,"month");
-}
-function formatTimeAgo(n,word){
-  return n + "&nbsp;" + (n>1 ? word+"s" : word) + "&nbsp;ago";
-}
-function todayInner(i,data){
-  var c=classString(i, function(i){(i+now+1 > 24 ? " old" : "")});
-  
-//   tr=((i+now+1) > 24) ? '<tr class="old">' : '<tr>';
-  return '<tr' + c + '>' + showHour(i+now) + "</td><td>" + i*120 + "</td><td>" + i*60 + "</td></tr>";  
-}
-function refererTotalInner(i,data){
+
+function referersTotal(i,data){
   var url=unescape(data[i*2]);
 //   var url=data[i*2];
   var c=classString(i,  function(i){return (i+now+1 > 24 ? " old" : "")});
@@ -94,67 +271,16 @@ function classString(i, func){
      c+=func(i);
   return(c=="" ? "" : ' class="' + c +'"');
 }
+
 function week_inner(i){
   return "<tr><td class='f'>" + (i+1) + "</td><td>" + i*400 + "</td><td>" + i*190 + "</td></tr>";
 }
 function month_inner(i){
   return "<tr><td class='f'>" + (i+1) + "th</td><td>" + i*1120 + "</td><td>" + i*260 + "</td></tr>";
 }
-function table(t,header, data, step, proc){
-  var html="<table>"+tableHeader(header);
-  for (i=0;i<data.length/step;i++)
-  {
-    html+=proc(i,data);
-  }
-  html+="</table>"
-  return dialog(t,html)
-}
-function dialog(t,content){
-  return '<div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">'+
-      '<div class="c"><h1 class="title">' + t + '</h1>'+content + '</div></div><div class="ft">' + 
-      '<div class="c"></div></div></div>';
-}
-function tableHeader(headers){
-  if (headers==null)
-    return "" 
-  var html='<tr class="header">'
-  //headers.each(function(e){html+="<th>"+e+"</th>";});
-  for (i=0;i<headers.length;i++)
-    html += (i==0 ? "<th class='f'>" : "<th>") + headers[i] + "</th>";
-  html+"</tr>"
-  return html    
-}
-function populate_table(id, f, n){
-  var html="<table><tr><td>hour</td><td>total</td><td>unique</td></tr>";
-  for (i=0; i<n; i++)
-  {
-    html+=f(i);
-  }
-  html+="</table>";
-  $(id).innerHTML=html
-}
 
 
 
-
-function show_stat(period){
-  if (period=="today"){
-    Element.show("hits_today");
-    Element.hide("hits_week");
-    Element.hide("hits_month");  
-  }
-  else if (period=="week"){
-    Element.hide("hits_today");
-    Element.show("hits_week");
-    Element.hide("hits_month");  
-  }
-  else if (period=="month"){
-    Element.hide("hits_today");
-    Element.hide("hits_week");
-    Element.show("hits_month");  
-  }
-  return false;
-}
 
 
 
@@ -402,59 +528,8 @@ function imageForQuadrant(i,q){
   return base +  i +"" +q+".png"
 }
 
-// Switch section
-function nav(e){
-  hidePanel(active);
-  //document.getElementsByClassName('active','menu').each(function(e){e.className="";})
-  removeClassFromElements("active","menu");
-  e.className="active";
-  active=e.id;
-  
-  updatePreference("panel",e.id,prefMenuTimer);
-  showPanel(e.id);
-  return false;
-}
-function updatePreference(n,v,timer){
-  if (timer!=null)
-    clearTimeout(timer.timer);
-  timer.timer=setTimeout(setPref(n,v),timer.timeout);
-}
-// Sends a view preference and a value asynchronously.
-// name/values can be are panel/panel that's active,
-// and section/section that's active
-function setPref(n,v){
-  var pars="p="+n+"&v="+v;
-  return function(){new Ajax.Request('/project/setpref/',
-    {asynchronous:true, parameters:pars
-    });
-  }
-}
-function showPanel(panel){
-  $(panelID(panel)).style.display="block";
-}
-function hidePanel(panel){
-  $(panelID(panel)).style.display="none";
-}
-function panelID(panel){
-  return panel + "_panel";
-}
-function sectionNav(section,v,linkElement){
-    //if (active!="")
-  //hidePanel(active);
-  document.getElementsByClassName(section,panelID(section)).each(function(e){Element.hide(e)});
-  removeClassFromElements('navlink_active',panelID(section));
-  linkElement.className+=" navlink_active";
-  //e.className="active";
-  //active=e.id;  
-  //console.log(section);
-  updatePreference(section,v,timers[section]);
-  //showPanel(e.id);
-  Element.show((section+"_"+v));
-  
-  return false;
-}
-function removeClassFromElements(c,start){
- document.getElementsByClassName(c,start).each(function(e){e.className=e.className.replace(c,"");}) 
-}
+
+
+
 
 chartData=[1,8,1];

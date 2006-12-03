@@ -19,6 +19,7 @@ class ProjectController < ApplicationController
      #format_referers_date(Project(@project_id))
     
     #@referers_recent=format_referers_recent(RecentHit.get_recent_hits(@project_id))
+    @referers_recent=format_referers_recent(p.recent_hits())
     
     
     @preferences = p = ViewPreference.find_by_project_id(@project_id)
@@ -28,19 +29,23 @@ class ProjectController < ApplicationController
   end
   def setpref()
     # TODO : check here to ensure that the logged in user
-    # owns this project.
+    # owns this project. ACtually, change this so that view prefs are per user, not per project.
     puts "seting preference"
     render :nothing => true
     pref=params[:p]
     value=params[:v]
+    puts pref,value
+    puts value.class
     return if pref.nil? || value.nil?
     
     p = ViewPreference.find_by_project_id(@@project_id)
     
-    if (pref=="panel")
-      p.set_panel(value)
+    puts pref,value
+    
+    if (pref=="section")
+      p.set_section(value)
     else
-      p.set_section(pref,value)
+      p.set_panel(pref,value)
     end
     p.save!
   end
@@ -48,6 +53,8 @@ class ProjectController < ApplicationController
      rs.map{|r| "\"#{r.referer.url}\",#{r.count}" }.flatten.join(",\n")
   end
   def format_referers_recent(rs)
+    #rs.map{|r| "\"#{r.referer.url}\",#{r.count}" }.flatten.join(",\n")
+    rs.map{|r| "\"#{r.referer.url}\",#{to_js_date(r.visit_time)}" }.flatten.join(",\n")
      #rs.map{|r| "\"#{r.referer.url}\", #{to_js_date(r.first_visit)}" }.flatten.join(",\n")
      #rs.map{|r| "\"#{r.referer.url}\", #{to_js_date(r.recent_visit)}" }.flatten.join(",\n")
   end
