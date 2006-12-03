@@ -1,14 +1,5 @@
-now=10;
-data=[]
-
-chartData=[12,22,10,26];
-chartData=[.5,2,5,5];
-chartData=[1,8,1];
 // Dean Edwards/Matthias Miller/John Resig
 
-function init() {
-
-};
 /* for Mozilla/Opera9 */
 if (document.addEventListener)
     document.addEventListener("DOMContentLoaded", init, false);
@@ -119,14 +110,32 @@ Page.prototype = {
 page = new Page();
 
 // Gets called when the page is done loading. Enables the structure with behavior
-function init(){
-  // quit if this function has already been called
+function init(){  // quit if this function has already been called
   if (arguments.callee.done) return;
   // flag this function so we don't do the same thing twice
   arguments.callee.done = true;
   // kill the timer
   if (_timer) clearInterval(_timer);
+  
+  
+  var ArrayMethods={ sum:function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; }};
+  Object.extend(Array.prototype,ArrayMethods);
+  
+  // delete this junk
+
+  now=10;
+  data=[];
+  for (i=0;i<24;i++){
+    data[i*2]=i*3;
+    data[i*2+1]=i*6;
+  }  
+  chartData=[12,22,10,26];
+  chartData=[.5,2,5,5];
+  chartData=[1,8,1];
+  
   populate();
+  
+ 
   // set menu links
   $A($('menu-links').getElementsByTagName("LI")).each(function(e){
     l=e.getElementsByTagName("A")[0];
@@ -136,15 +145,12 @@ function init(){
   $A(document.getElementsByClassName("panel_link","content")).each(function (e){
     e.onclick=function(){ page.panelNav(this); return false;};
   });  
+  
 }
 
 
 
-for (i=0;i<24;i++)
-{
-  data[i*2]=i*3;
-  data[i*2+1]=i*6;
-}
+
 
 
 function populate(){
@@ -238,7 +244,8 @@ DisplayHelper.Methods={
   days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
   showDay: function(i){
     i=i%7;
-    return this.days[i<0 ? 7+i : i];    
+    i=i<0 ? 7+i : i;
+    return i==0? "Today" : this.days[i];
   }
 }
 Object.extend(DisplayHelper,DisplayHelper.Methods);
@@ -298,7 +305,8 @@ LineGraph.prototype={
     this.element=$(id);
     this.data=GraphDisplay.relativize(data);
   },
-  drawGraph: function(){  
+  
+  drawLineGraph: function(){  
     // Graph container
     var g=document.createElement("div");
     g.className="graph";
@@ -346,11 +354,10 @@ LineGraph.prototype={
       
       g.appendChild(img);
       g.appendChild(div);
-    } 
-    
+    }    
     this.element.appendChild(g);
   }
-}
+};
   
   
 /*
@@ -365,7 +372,10 @@ PieGraphDisplay.prototype={
     this.qsize=this.size/2;
     this.data=[];
     // relativize data
-    for (var i=0;i<data.length;i++){ this.data[i]=Math.floor((data[i]/data.length)*360);}
+    //var total = this.sumPrevious(data.length-1,data);
+    var total=data.sum();
+    for (var i=0;i<data.length;i++){ this.data[i]=Math.floor((data[i]/total)*360);}
+    w(this.data);
     //this.data=data;
   },
 
@@ -396,8 +406,10 @@ PieGraphDisplay.prototype={
   },
 
   graphQuadrant: function(i,data, placeholder){
+    //var v=data[i]+this.sumPrevious(i,data);
+    console.log(i + data);
     var v=data[i]+this.sumPrevious(i,data);
-    //console.log("data:" + v);
+    console.log("sum "+ this.sumPrevious(i,data));
     console.log("graphing " + i + " a" + v);
     // quadrant
     //console.log(v);
@@ -412,7 +424,9 @@ PieGraphDisplay.prototype={
     var deg = (m-v)/90;    
     
     var w,h;
-    qs=this.size;s=this.size;
+    var s=this.size;
+    var qs=this.qsize;
+    
     if (q==0){
       w=(v <=(45+q*90) ? qs : s*(deg));
       h=(v >=(45+q*90) ? qs : s*(1-deg));
@@ -460,8 +474,8 @@ PieGraphDisplay.prototype={
     }
     // Make sure we should add the last element..
     
-    if ( ((q==0 || q==2) && h<qsize) ||
-      ((q==1 || q==3) && w<qsize) )
+    if ( ((q==0 || q==2) && h<this.qsize) ||
+      ((q==1 || q==3) && w<this.qsize) )
       return;
     
   //   console.log("appendling child." + q);
@@ -532,11 +546,14 @@ PieGraphDisplay.prototype={
   },
   // Returns the sum of all entries up to i in an array
   sumPrevious: function(i,array){
-    return array.inject(0, function (a,v){return a+v;}) - array[i];
+    //return array.inject(0, function (a,v){return a+v;}) - array[i];
+    var s=0;
+    for (var j=0; j<i-1;j++)
+      s+=array[i];
+    return s;
   }
 }
 
-function px(v) {  return v + "px";}
 
 
 LineGraph.Methods={
@@ -553,7 +570,7 @@ Object.extend(LineGraph,LineGraph.Methods);
   
 
 
-
-
-
-
+function px(v) {  return v + "px";}
+  function w(str){
+    console.log(str);
+  }
