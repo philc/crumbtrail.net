@@ -1,8 +1,10 @@
 // Dean Edwards/Matthias Miller/John Resig
 
 /* for Mozilla/Opera9 */
-if (document.addEventListener)
+if (document.addEventListener){
+    
     document.addEventListener("DOMContentLoaded", init, false);
+    }
 /* for Internet Explorer */
 /*@cc_on @*/
 /*@if (@_win32)
@@ -111,6 +113,7 @@ page = new Page();
 
 // Gets called when the page is done loading. Enables the structure with behavior
 function init(){  // quit if this function has already been called
+  
   if (arguments.callee.done) return;
   // flag this function so we don't do the same thing twice
   arguments.callee.done = true;
@@ -133,9 +136,10 @@ function init(){  // quit if this function has already been called
   chartData=[.5,2,5,5];
   chartData=[1,8,1];
   
+  
+  
   populate();
   
- 
   // set menu links
   $A($('menu-links').getElementsByTagName("LI")).each(function(e){
     l=e.getElementsByTagName("A")[0];
@@ -166,9 +170,12 @@ function populate(){
   tb=new TableDisplay("Most recent referers",["Recent referer", "Visited"],referersRecentData,2,referersWithDate);
   $("referers_recent").innerHTML=tb.buildTable();
 
+  lg= new LineGraph("line_graph",hitsWeekData);
+  lg.drawGraph();
+
   pg = new PieGraphDisplay("chart",chartData);
   pg.drawChart();
-  //drawChart("chart",chartData);
+  
 }
 
 
@@ -239,6 +246,7 @@ DisplayHelper.Methods={
   },
   showHour: function(i){
     var t=i%24;
+    t=t<0 ? 24+i : i;
     return (t%12)+1 + ":00" + (t<12 ? "am" : "pm");
   },
   days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
@@ -258,8 +266,10 @@ function hitsWeek(i,data){
    "</td><td>" + data[i] + "</td><td>" + "who knows.." + "</td></tr>";  
 }
 function hitsToday(i,data){
-  var c=classString(i, function(i){(i+now+1 > 24 ? " old" : "")});
-  return '<tr' + c + '>' + DisplayHelper.showHour(i+now) +
+  //var c=classString(i, function(i){return (i+now+1 > 24 ? " old" : "")});
+  var c=classString(i, function(i){return (now-i < 0 ? " old" : "")});
+  //var c = classString(i);
+  return '<tr' + c + '>' + DisplayHelper.showHour(now-i) +
    "</td><td>" + i*120 + "</td><td>" + i*60 + "</td></tr>";  
 }
 function referersRecent(i,data){
@@ -285,6 +295,7 @@ function linkFor(url,caption){
 }
 function classString(i, func){
   var c=(i%2==0 ? "a" : "");
+  //console.log("c" + c);
    if (func!=null)
      c+=func(i);
   return(c=="" ? "" : ' class="' + c +'"');
@@ -302,50 +313,50 @@ function classString(i, func){
 LineGraph=Class.create();
 LineGraph.prototype={
   initialize: function(id,data){
-    this.element=$(id);
-    this.data=GraphDisplay.relativize(data);
+    this.element=$(id);    
+    this.size=120;
+    this.data=LineGraph.relativize(data,this.size);
+    console.log(data);
   },
   
-  drawLineGraph: function(){  
+  drawGraph: function(){  
     // Graph container
     var g=document.createElement("div");
-    g.className="graph";
-    //size=120;
-    size=200;
-    //size=150;
+    g.className="line_graph";
+    
     var imgs=[]
-    var hwidth=size/(data.length-1);   
+    var hwidth=this.size/(this.data.length-1);   
   
-    for (i=1;i<data.length; i++){
+    for (i=1;i<this.data.length; i++){
       var div=document.createElement("div");
-      div.className="color";
+      //div.className="color";
       div.id=i+"";
       var img=document.createElement("img");    
       
       // Height of the point before this one
-      var prevHeight=data[i-1] ? data[i-1] : 0;
+      var prevHeight=this.data[i-1] ? this.data[i-1] : 0;
       
       // Whether the line is pointing up. Up=1, down=-1
       var u=prevHeight<data[i] ? 1 : -1;
-      img.src= (u==1 ? "/images/line.gif" : "/images/lined.gif");    
+      img.src=(u==1 ? "/images/c/line01.png" : "/images/c/line02.png");    
       img.className="line";
       
       img.style.width=hwidth+"px";
       div.style.width=hwidth+"px";
       
       // difference in our heights
-      var h=data[i]-prevHeight;
+      var h=this.data[i]-prevHeight;
       //console.log(h);
       
       // amount of space there is above the previous element
-      t=size-prevHeight;
+      var t=this.size-prevHeight;
       //console.log(t);
       
       img.style.height=h*u + "px";
       
       var ourTop = t-(u>0  ? h : 0)
       //div.style.height=1+"px";
-      div.style.height=size-(h*u)-ourTop+"px";
+      div.style.height=this.size-(h*u)-ourTop+"px";
       
       div.style.top=ourTop+(h*u)+"px";
       img.style.top=ourTop+"px";
@@ -358,7 +369,19 @@ LineGraph.prototype={
     this.element.appendChild(g);
   }
 };
-  
+LineGraph.Methods={
+// relativize
+  relativize:function(data, size){  
+    var max=0;
+    console.log(data);
+    data.each(function(e){ if (e>max) max=e; });
+    for (i=0;i<data.length;i++){ 
+      data[i]=Math.floor((data[i]/max)*size); 
+    }
+    return data;
+  }
+}
+Object.extend(LineGraph,LineGraph.Methods);
   
 /*
  * Pie chart graphing
@@ -407,10 +430,12 @@ PieGraphDisplay.prototype={
 
   graphQuadrant: function(i,data, placeholder){
     //var v=data[i]+this.sumPrevious(i,data);
-    console.log(i + data);
+      
+//      console.log(i + data);
+     
     var v=data[i]+this.sumPrevious(i,data);
-    console.log("sum "+ this.sumPrevious(i,data));
-    console.log("graphing " + i + " a" + v);
+//     console.log("sum "+ this.sumPrevious(i,data));
+//     console.log("graphing " + i + " a" + v);
     // quadrant
     //console.log(v);
     //var q=cap(Math.floor(v/90),3);
@@ -556,17 +581,7 @@ PieGraphDisplay.prototype={
 
 
 
-LineGraph.Methods={
-// relativize
-  relativize:function(data){
-    var max=0;
-    data.each(function(e){ if (e>max) max=e; });
-    for (i=0;i<data.length;i++){ 
-      data[i]=Math.floor((data[i]/max)*size); 
-    }
-  }
-}
-Object.extend(LineGraph,LineGraph.Methods);
+
   
 
 
