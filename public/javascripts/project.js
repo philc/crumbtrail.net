@@ -1,3 +1,4 @@
+
 // Dean Edwards/Matthias Miller/John Resig
 
 /* for Mozilla/Opera9 */
@@ -5,6 +6,7 @@ if (document.addEventListener){
     
     document.addEventListener("DOMContentLoaded", init, false);
     }
+
 /* for Internet Explorer */
 /*@cc_on @*/
 /*@if (@_win32)
@@ -16,6 +18,7 @@ if (document.addEventListener){
         }
     };
 /*@end @*/
+
 /* for Safari/konq */
 if (/WebKit|KHTML/i.test(navigator.userAgent)) { // sniff
     var _timer = setInterval(function() {
@@ -24,6 +27,7 @@ if (/WebKit|KHTML/i.test(navigator.userAgent)) { // sniff
         }
     }, 10);
 }
+
 /* for other browsers */
 window.onload = init;
 
@@ -63,8 +67,7 @@ Preferences.prototype = {
       });
     }
   }
-}
-
+};
 
 var Page = Class.create();
 Page.prototype = {
@@ -72,6 +75,7 @@ Page.prototype = {
     this.colors=["#a4d898","#fdde88","#d75b5c","#7285b7"];
     this.preferences=new Preferences();
     this.activeSection="glance";
+    this.activeSection="hits";
     
   },
   // Switch section
@@ -81,7 +85,7 @@ Page.prototype = {
     this.removeClassFromElements("active","menu");
     e.className+=" active";
     
-    console.log(this.activeSection);
+    //console.log(this.activeSection);
     Element.hide(this.activeSection);
     this.activeSection=section;        
     Element.show(section);
@@ -105,9 +109,15 @@ Page.prototype = {
   removeClassFromElements: function(c,start){
     document.getElementsByClassName(c,start).each(
       function(e){e.className=e.className.replace(c,"");}) 
+  },
+  // Returns the image file used for a quadrant. i is the color (0-5ish)
+  imageForQuadrant: function (i,q){
+    return "/images/c/line" + i + "" + q + ".png"
   }
-  
-}
+};
+
+
+
 
 page = new Page();
 
@@ -121,7 +131,10 @@ function init(){  // quit if this function has already been called
   if (_timer) clearInterval(_timer);
   
   
-  var ArrayMethods={ sum:function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; }};
+  var ArrayMethods={ 
+    sum:function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; },
+    max:function(){var m=0; for (var i=0; i<this.length; i++) if (this[i] > m) m=this[i]; return m}
+    };
   Object.extend(Array.prototype,ArrayMethods);
   
   // delete this junk
@@ -129,8 +142,8 @@ function init(){  // quit if this function has already been called
   now=10;
   data=[];
   for (i=0;i<24;i++){
-    data[i*2]=i*3;
-    data[i*2+1]=i*6;
+    data[i*2]=i*6*10;
+    data[i*2+1]=i*3*10;
   }  
   chartData=[12,22,10,26];
   chartData=[.5,2,5,5];
@@ -158,7 +171,8 @@ function init(){  // quit if this function has already been called
 
 
 function populate(){
-  var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
+  //var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
+  var tb=new TableDisplay("Hits today", ["Hour","Hits","Unique"],data,2,hitsToday);
   $("hits_today").innerHTML=tb.buildTable();
   tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,1,hitsWeek);
   $("hits_week").innerHTML=tb.buildTable();
@@ -170,13 +184,16 @@ function populate(){
   tb=new TableDisplay("Most recent referers",["Recent referer", "Visited"],referersRecentData,2,referersWithDate);
   $("referers_recent").innerHTML=tb.buildTable();
 
-  lg= new LineGraph("line_graph",hitsWeekData);
-  lg.drawGraph();
+  var data2=[];
+  
+  data.each(function(d,i){if (i%2==0) data2[i/2]=d;});
+  
+//   lg=new LineGraph("line_graph",hitsWeekData);
+//   lg.drawGraph();
 
   pg = new PieGraphDisplay("chart",chartData);
-  pg.drawChart();
-  
-}
+  pg.drawChart();  
+};
 
 
 /*
@@ -214,8 +231,8 @@ TableDisplay.prototype={
       html += (i==0 ? "<th class='f'>" : "<th>") + this.headerNames[i] + "</th>";
     html+"</tr>"
     return html;
-  },
-}
+  }
+};
 
 
 
@@ -262,15 +279,45 @@ Object.extend(DisplayHelper,DisplayHelper.Methods);
 
 function hitsWeek(i,data){
   //var c=classString(i, function(i){(i+now+1 > 24 ? " old" : "")});
-  return '<tr>' + DisplayHelper.showDay((new Date()).getDay()-i) +
+  var c = classString(i);
+  return '<tr '+ c + '><td class="f">' + DisplayHelper.showDay((new Date()).getDay()-i) +
    "</td><td>" + data[i] + "</td><td>" + "who knows.." + "</td></tr>";  
 }
 function hitsToday(i,data){
   //var c=classString(i, function(i){return (i+now+1 > 24 ? " old" : "")});
   var c=classString(i, function(i){return (now-i < 0 ? " old" : "")});
+  //console.log("data", data[i]);
+  var m=data.max();
+  
+  // 80 means only allow graphs to grow to 80% of the td width
+  var per=Math.round(data[i*2]/m*100); 
+  //per=Math.round((m-data[i*2])/m*100);
+  
+  // subtract out 10%, because that 10% is dedicated to the fade
+  per-=20;
+  var left=per;
+  var w=20;
+  if (per<0){
+    //w=(20-per) > 0 ? 20-per : 0;
+    w=20+per; // per is negative..
+    //left=w;
+    left=0;
+    //per=0;
+  }
+    console.log("left", left);
+   console.log("percent", per);
+  //style="style=\"background-position: " + per + "% 0;\"";
+  var style="style=\"width:" + per + "%\"";
+  var style2="style=\"left:" + left + "%; width: " + w +"%\"";
+  console.log(style2);
   //var c = classString(i);
-  return '<tr' + c + '>' + DisplayHelper.showHour(now-i) +
-   "</td><td>" + i*120 + "</td><td>" + i*60 + "</td></tr>";  
+  var str= '<tr' + c + '><td class="f">' + DisplayHelper.showHour(now-i) +
+   "</td>";
+   //inner = + "<td>" + data[i*2] + "</td>";
+   var inner = "<td><div class='rel'><div class='abs' " + style + "></div>"+
+   "<div class='abs2' " + style2 + "></div></div><span>" + data[i*2] + "</span></td>";
+   //var inner = "<td>"+data[i*2]+"</td>";
+   return str + inner + "<td>" + data[i*2+1] + "</td></tr>";  
 }
 function referersRecent(i,data){
   var url=unescape(data[i*2]);
@@ -295,7 +342,7 @@ function linkFor(url,caption){
 }
 function classString(i, func){
   var c=(i%2==0 ? "a" : "");
-  //console.log("c" + c);
+  
    if (func!=null)
      c+=func(i);
   return(c=="" ? "" : ' class="' + c +'"');
@@ -316,7 +363,10 @@ LineGraph.prototype={
     this.element=$(id);    
     this.size=120;
     this.data=LineGraph.relativize(data,this.size);
-    console.log(data);
+    
+    // Pick a line color. Colors are defined in page.colors
+    this.lineColor=2;
+    
   },
   
   drawGraph: function(){  
@@ -329,7 +379,8 @@ LineGraph.prototype={
   
     for (i=1;i<this.data.length; i++){
       var div=document.createElement("div");
-      //div.className="color";
+      div.className="color";
+      div.style.backgroundColor=page.colors[this.lineColor];
       div.id=i+"";
       var img=document.createElement("img");    
       
@@ -338,7 +389,8 @@ LineGraph.prototype={
       
       // Whether the line is pointing up. Up=1, down=-1
       var u=prevHeight<data[i] ? 1 : -1;
-      img.src=(u==1 ? "/images/c/line01.png" : "/images/c/line02.png");    
+      //img.src=(u==1 ? "/images/c/line13.png" : "/images/c/line10.png");    
+      img.src=(u==1 ? page.imageForQuadrant(this.lineColor,3) : page.imageForQuadrant(this.lineColor,0));
       img.className="line";
       
       img.style.width=hwidth+"px";
@@ -346,11 +398,11 @@ LineGraph.prototype={
       
       // difference in our heights
       var h=this.data[i]-prevHeight;
-      //console.log(h);
+      
       
       // amount of space there is above the previous element
       var t=this.size-prevHeight;
-      //console.log(t);
+      
       
       img.style.height=h*u + "px";
       
@@ -373,7 +425,7 @@ LineGraph.Methods={
 // relativize
   relativize:function(data, size){  
     var max=0;
-    console.log(data);
+    
     data.each(function(e){ if (e>max) max=e; });
     for (i=0;i<data.length;i++){ 
       data[i]=Math.floor((data[i]/max)*size); 
@@ -413,7 +465,7 @@ PieGraphDisplay.prototype={
     var total=0;
     data.each(function(e){ total+=e; if (e>max) max=e; });  */ 
     
-    //console.log(data);
+    
     
     for (var i=0;i<this.data.length-1;i++){
       this.graphQuadrant(i,this.data,placeholder);
@@ -431,13 +483,12 @@ PieGraphDisplay.prototype={
   graphQuadrant: function(i,data, placeholder){
     //var v=data[i]+this.sumPrevious(i,data);
       
-//      console.log(i + data);
+
      
     var v=data[i]+this.sumPrevious(i,data);
-//     console.log("sum "+ this.sumPrevious(i,data));
-//     console.log("graphing " + i + " a" + v);
+
     // quadrant
-    //console.log(v);
+    
     //var q=cap(Math.floor(v/90),3);
     var q=Math.floor(v/90);
     
@@ -482,10 +533,10 @@ PieGraphDisplay.prototype={
     
     img.style.top=this.qsize-o2*h + "px";
   
-    img.src=this.imageForQuadrant(i,q);
+    img.src=page.imageForQuadrant(i,q);
     
     img.style.zIndex=data.length*2-i*2+"";
-    //console.log(data.length*2-i*2+"");
+    
     
     this.drawFillerBoxes(placeholder,page.colors[i],q,this.data.length*2-i*2-1,w,h);
     
@@ -503,8 +554,7 @@ PieGraphDisplay.prototype={
       ((q==1 || q==3) && w<this.qsize) )
       return;
     
-  //   console.log("appendling child." + q);
-  //   console.log(h + qsize + "");
+  
     d= this.drawFillerBox(color,q,level,w,h);
     if (d)
       element.appendChild(d);
@@ -529,16 +579,17 @@ PieGraphDisplay.prototype={
     div.style.zIndex=level+"";
     
     // div dimentions
-    var dw,dh,dt,dl;
+    //var dw,dh,dt,dl=0
+    var dw=dh=dt=dl=0;
     qs=this.qsize;
     
     dw = ((q==1 || q==3) ? w : qs-w );
     
     
-    //console.log(px( ((q==1 || q==3) ? w : qsize-w )));
+    
     if (q==0){
   //      div.style.width=px(qsize-w);
-      dl=px(0); 
+      dl=0; 
     }
     if (q==1){
   //     div.style.width=px(w);
@@ -557,17 +608,15 @@ PieGraphDisplay.prototype={
       dt=qs+h;
       //div.style.left=px(0);
     }
-    
+    //console.log(dl,px(dl));
     div.style.left=px(dl);
+    
     div.style.top=px(dt);
     if (dw==0) dw=qs;
     div.style.width=px(dw);
     div.style.height=px(dh);
   
     return div;
-  },
-  imageForQuadrant: function (i,q){
-    return "/images/c/line" + i + "" + q + ".png"
   },
   // Returns the sum of all entries up to i in an array
   sumPrevious: function(i,array){
@@ -587,5 +636,5 @@ PieGraphDisplay.prototype={
 
 function px(v) {  return v + "px";}
   function w(str){
-    console.log(str);
+    //console.log(str);
   }

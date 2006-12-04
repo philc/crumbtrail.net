@@ -146,10 +146,10 @@ background:transparent url(/images/d/br.gif) no-repeat right 0px;}
   float:left;
   width:160px;
   
-  border: 1px solid red;
+  /*border: 1px solid red;*/
 }
 .right{
-  border:1px solid blue;
+  /*border:1px solid blue;*/
   margin-left:160px;
   /*width:120px;*/
   /*width:500px;*/
@@ -181,6 +181,7 @@ table{
   /*margin-top:2px;*/
   padding-bottom:5px;
   /*border-collapse: collapse;*/
+  width:100%;
 }
 /* dates that are yesterday */
 table .old{
@@ -210,6 +211,16 @@ table .a a:hover{
   /*background-color:#fbeac8;*/
   
 }
+/*table{
+ 
+}
+table td{
+  padding-left:25px;
+}
+table .f{
+  width:100%;
+  padding-left:0px;
+}*/
 /* the title of tables */
 h1.title{
   margin:0px;
@@ -227,21 +238,25 @@ th{
   padding-right:5px !important;
   text-align:center;
   white-space:nowrap;
+  
 }
 td{
   /*padding-left:50px;*/
   /*border:1px solid black;  */
-  padding-left:10px !important;
+ /* padding-left:10px !important;*/
   padding-right:10px !important;
+  text-align:right;
+  
 }
 /* td cells that contain links should have 
   the link run up to the edge. the link has its own padding */
 .links td{
   padding-left:0px !important;
 }
-td.f,th.f{
-  text-align:left;
+td.f, th.f{
+  text-align:left;  
   padding-right:0px !important;
+  
 }
 
 /* alternate rows */
@@ -253,12 +268,44 @@ td a {
   padding-bottom:3px;*/
   display:block;
 }
+/*td{
+  width:49%;
+}*/
+.rel{
+  position:relative;
+  text-align:left;
+  /*border:1px solid blue;*/
+}
+.abs{
+  position:absolute;
+  /*width:90%;*/
+  /*background-color:green;*/
+  background-image:url(/images/c/table-graph.png);
+  height:1.2em; /* This part might need some debugging*/
+  z-index:1;
+  /*border:1px solid blue;*/
+}
+.abs2{
+  position:absolute;
+  right:50%;
+  height:1.2em;
+  /*width:25px;*/
+  /*background-color:blue;*/
+  background-image:url(/images/c/table-graph-fade.png);
+  background-repeat:repeat-y;
+}
+span{
+  position:relative;
+  z-index:50;
+  /*border:1px solid black;*/
+}
 
 .data_table{
 
 }
 .date table td.f, .date table th.f {
   text-align:right;
+  padding-right:10px !important;
   width:1%;
 }
 .table-footer-cap{
@@ -284,6 +331,23 @@ td a {
   
 }
 
+.line_graph .line{
+  position:absolute;
+  /* The color div and line image have a minimum height that's
+    the same as the font size, for some reason..*/     
+  font-size:1px;
+  /*border:1px solid red;*/
+}
+.line_graph .color{
+  position:absolute;
+  /*background-color:#28ebfd;*/
+  /*border:1px solid red;*/
+  height:1px;
+  font-size:1px;
+}
+img{
+  display:inline;
+}
 
 .chart{
   width:150px;
@@ -324,38 +388,10 @@ td a {
   background-color:blue;
 }
 
-.line_graph .line{
-  position:absolute;
-  /* The color div and line image have a minimum height that's
-    the same as the font size, for some reason..*/     
-  font-size:1px;
-  /*border:1px solid red;*/
-}
-.line_graph .color{
-  position:absolute;
-  background-color:#28ebfd;
-  /*border:1px solid red;*/
-  height:1px;
-  font-size:1px;
-}
-img{
-  display:inline;
-}
 /*.graph img{
 display:block;
 }*/
 
-table{
-  width:100%;
-}
-
-table td{
-  padding-left:25px;
-}
-table .f{
-  width:100%;
-  padding-left:0px;
-}
 
 .placeholder{
   position:absolute;
