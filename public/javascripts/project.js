@@ -173,6 +173,7 @@ function init(){  // quit if this function has already been called
 function populate(){
   //var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
   var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
+  var tb=new TableDisplay("Hits today", ["Unique"],data,2,hitsToday);
   $("hits_today").innerHTML=tb.buildTable();
   tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,1,hitsWeek);
   $("hits_week").innerHTML=tb.buildTable();
@@ -290,34 +291,49 @@ function hitsToday(i,data){
   var m=data.max();
   
   // 80 means only allow graphs to grow to 80% of the td width
-  var per=Math.round(data[i*2]/m*100); 
+  var per=Math.round(data[i*2]/m*80); 
   //per=Math.round((m-data[i*2])/m*100);
   
   // subtract out 10%, because that 10% is dedicated to the fade
-  per-=20;
+//   per-=20;
+  //per=20;
+  // IE has this weird display bug where something with a width of 80% does not match up with
+  // an element with left:80%; it's off by about one percent. Adjust..
+  var left=per-5;
   var left=per;
   var w=20;
-  if (per<0){
+  if (per-5<0){
     //w=(20-per) > 0 ? 20-per : 0;
+    //w=20+per-5; // per is negative..
     w=20+per; // per is negative..
     //left=w;
     left=0;
     //per=0;
   }
-    console.log("left", left);
-   console.log("percent", per);
+  //per=90;
+  //left=88.5;
+  
+  
+  
+  
+//     console.log("left", left);
+//    console.log("percent", per);
   //style="style=\"background-position: " + per + "% 0;\"";
   var style="style=\"width:" + per + "%\"";
-  var style2="style=\"left:" + left + "%; width: " + w +"%\"";
-  console.log(style2);
+  //var style2="style=\"left:" + left + "%; width: " + w +"%\"";
+  style2="";
+  //console.log(style2);
   //var c = classString(i);
-  var str= '<tr' + c + '><td class="f">' + DisplayHelper.showHour(now-i) +
-   "</td>";
+  var str= '<tr' + c + '>';
+    day = '<td class="f">' + DisplayHelper.showHour(now-i) + "</td>";
+   
    //inner = + "<td>" + data[i*2] + "</td>";
    var inner = "<td><div class='rel'><div class='abs' " + style + "></div>"+
    "<div class='abs2' " + style2 + "></div></div><span>" + data[i*2] + "</span></td>";
    //var inner = "<td>"+data[i*2]+"</td>";
-   return str + inner + "<td>" + data[i*2+1] + "</td></tr>";  
+   var inner2 = "<td>" + data[i*2+1] + "</td>";
+   //var inner2 = "";
+   return str + day + inner + inner2 + "</tr>";  
 }
 function referersRecent(i,data){
   var url=unescape(data[i*2]);
@@ -608,7 +624,7 @@ PieGraphDisplay.prototype={
       dt=qs+h;
       //div.style.left=px(0);
     }
-    //console.log(dl,px(dl));
+    
     div.style.left=px(dl);
     
     div.style.top=px(dt);

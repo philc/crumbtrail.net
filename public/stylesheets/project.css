@@ -1,3 +1,7 @@
+*{
+  margin:0;
+  padding:0;
+}
 html,body{
   height:90%;
 }
@@ -61,7 +65,6 @@ a:hover{
 background:transparent url(/images/d/br.gif) no-repeat right 0px;}
 .dialog .bd .c{
   background-color:#fbeac8;
-  
   /*padding-top:5px;*/
   /*padding-left:10px;
   padding-right:10px;*/
@@ -135,7 +138,7 @@ background:transparent url(/images/d/br.gif) no-repeat right 0px;}
 }
 
 .section_title{
-  
+ 
   margin-bottom:5px;
 }
 .side{
@@ -155,7 +158,6 @@ background:transparent url(/images/d/br.gif) no-repeat right 0px;}
   /*width:500px;*/
   /*float:right;*/
 }
-
 .panel_links{
   text-align:center;
   margin-bottom:12px;
@@ -171,7 +173,6 @@ background:transparent url(/images/d/br.gif) no-repeat right 0px;}
 /* 
  * Tables
  */
-
 table{
   /*border:1px solid black;*/
   text-align:right;
@@ -237,8 +238,7 @@ th{
   padding-left:5px !important;
   padding-right:5px !important;
   text-align:center;
-  white-space:nowrap;
-  
+  white-space:nowrap;  
 }
 td{
   /*padding-left:50px;*/
@@ -268,31 +268,37 @@ td a {
   padding-bottom:3px;*/
   display:block;
 }
-/*td{
+td{
   width:49%;
-}*/
+}
 .rel{
   position:relative;
   text-align:left;
+  /*background-color:red;*/
   /*border:1px solid blue;*/
 }
 .abs{
   position:absolute;
   /*width:90%;*/
-  /*background-color:green;*/
+  /*background-color:blue;*/
+  /*background-image:url(/images/c/table-graph.png);*/
   background-image:url(/images/c/table-graph.png);
+  background-position:right 0;
+  background-repeat:repeat-y;
   height:1.2em; /* This part might need some debugging*/
   z-index:1;
   /*border:1px solid blue;*/
 }
 .abs2{
   position:absolute;
-  right:50%;
+  /*right:50%;*/
   height:1.2em;
   /*width:25px;*/
-  /*background-color:blue;*/
-  background-image:url(/images/c/table-graph-fade.png);
+  /*background-color:red;
+  background-image:url(/images/c/table-graph-fade.png);*/
   background-repeat:repeat-y;
+  /*background-color:red;*/
+  z-index:2;
 }
 span{
   position:relative;
@@ -391,7 +397,6 @@ img{
 /*.graph img{
 display:block;
 }*/
-
 
 .placeholder{
   position:absolute;
