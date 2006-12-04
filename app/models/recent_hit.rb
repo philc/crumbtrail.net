@@ -37,14 +37,6 @@ class RecentHit < ActiveRecord::Base
   end
 
   def self.get_recent_hits(project)
-    recent_hits = find(:all, :conditions => ["project_id = ?", project.id], :order => "row ASC")
-    return recent_hits if recent_hits.length < @@max_rows
-
-    row_tracker = HitRowTracker.find_by_project_id(project.id)
-    return recent_hits if row_tracker.row == @@max_rows-1
-
-    hit_array = recent_hits[@@max_rows - (row_tracker.row+1), recent_hits.length]
-    hit_array.concat(recent_hits[0, @@max_rows-(row_tracker.row+1)])
-    return hit_array
+    return find(:all, :conditions => ["project_id = ?", project.id], :order => "visit_time DESC")
   end
 end
