@@ -271,13 +271,13 @@ td a {
 td{
   width:49%;
 }
-.rel{
+.table-graph div{
   position:relative;
   text-align:left;
   /*background-color:red;*/
   /*border:1px solid blue;*/
 }
-.abs{
+.table-graph div div{
   position:absolute;
   /*width:90%;*/
   /*background-color:blue;*/
@@ -287,20 +287,10 @@ td{
   background-repeat:repeat-y;
   height:1.2em; /* This part might need some debugging*/
   z-index:1;
+  /*border: 1px solid blue;*/
   /*border:1px solid blue;*/
 }
-.abs2{
-  position:absolute;
-  /*right:50%;*/
-  height:1.2em;
-  /*width:25px;*/
-  /*background-color:red;
-  background-image:url(/images/c/table-graph-fade.png);*/
-  background-repeat:repeat-y;
-  /*background-color:red;*/
-  z-index:2;
-}
-span{
+.table-graph span{
   position:relative;
   z-index:50;
   /*border:1px solid black;*/

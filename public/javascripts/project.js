@@ -285,11 +285,9 @@ function hitsWeek(i,data){
    "</td><td>" + data[i] + "</td><td>" + "who knows.." + "</td></tr>";  
 }
 function hitsToday(i,data){
-  //var c=classString(i, function(i){return (i+now+1 > 24 ? " old" : "")});
   var c=classString(i, function(i){return (now-i < 0 ? " old" : "")});
-  //console.log("data", data[i]);
-  var m=data.max();
   
+  var m=data.max();
   // 80 means only allow graphs to grow to 80% of the td width
   var per=Math.round(data[i*2]/m*80); 
   //per=Math.round((m-data[i*2])/m*100);
@@ -328,8 +326,8 @@ function hitsToday(i,data){
     day = '<td class="f">' + DisplayHelper.showHour(now-i) + "</td>";
    
    //inner = + "<td>" + data[i*2] + "</td>";
-   var inner = "<td><div class='rel'><div class='abs' " + style + "></div>"+
-   "<div class='abs2' " + style2 + "></div></div><span>" + data[i*2] + "</span></td>";
+   var inner = "<td class='table-graph'><div ><div " + style + "></div>"+
+  "</div><span>" + data[i*2] + "</span></td>";
    //var inner = "<td>"+data[i*2]+"</td>";
    var inner2 = "<td>" + data[i*2+1] + "</td>";
    //var inner2 = "";
