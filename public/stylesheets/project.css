@@ -271,13 +271,13 @@ td a {
 td{
   width:49%;
 }
-.table-graph div{
+.graph-cell div{
   position:relative;
   text-align:left;
   /*background-color:red;*/
   /*border:1px solid blue;*/
 }
-.table-graph div div{
+.graph-cell div div{
   position:absolute;
   /*width:90%;*/
   /*background-color:blue;*/
@@ -290,7 +290,7 @@ td{
   /*border: 1px solid blue;*/
   /*border:1px solid blue;*/
 }
-.table-graph span{
+.graph-cell span{
   position:relative;
   z-index:50;
   /*border:1px solid black;*/

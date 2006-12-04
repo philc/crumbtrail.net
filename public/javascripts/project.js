@@ -173,7 +173,7 @@ function init(){  // quit if this function has already been called
 function populate(){
   //var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
   var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
-  var tb=new TableDisplay("Hits today", ["Unique"],data,2,hitsToday);
+  //var tb=new TableDisplay("Hits today", ["Unique"],data,2,hitsToday);
   $("hits_today").innerHTML=tb.buildTable();
   tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,1,hitsWeek);
   $("hits_week").innerHTML=tb.buildTable();
@@ -212,9 +212,10 @@ TableDisplay.prototype={
   },
   buildTable: function(){
     var html="<table>"+this.tableHeader();
+    var dataMax=this.data.max();
     for (i=0;i<this.data.length/this.step;i++)
     {
-      html+=this.cellFunc(i,this.data);
+      html+=this.cellFunc(i,this.data,dataMax);
     }
     html+="</table>" + '<div class="table-footer-cap"></div>';
     return this.dialog(this.title,html)
@@ -232,7 +233,36 @@ TableDisplay.prototype={
       html += (i==0 ? "<th class='f'>" : "<th>") + this.headerNames[i] + "</th>";
     html+"</tr>"
     return html;
+  },
+  // Create a cell that has a graph in it
+  graphCell: function(text, percent){
+    var style="style=\"width:" + percent + "%\"";
+    var cellData="<div ><div " + style + "></div>"+
+    "</div><span>" + text + "</span>";
+    return this.td(cellData,"graph-cell");
+  },
+  td: function(data, class, style){
+    return "<td " + 
+      (class ? 'class="' + class+'" ' : "") +
+      (style ? 'style="' + style +'" ' : "") + 
+      ">" + data + "</td>";
+  },
+  tr: function(data,class){
+    return "<tr " + 
+    (class ? 'class="' + class+'" ' : "") + ">" + data + "</tr>";
+  },
+  columnPercent: function(data, max){
+    // 80 means only allow graphs in the background to grow to 80% of the td width
+    return Math.round(data/max*80);   
+  },
+  classString: function(i, func){
+  var c=(i%2==0 ? "a" : "");  
+   if (func!=null)
+     c+=func(i);
+  //return(c=="" ? "" : ' class="' + c +'"');
+  return c;
   }
+
 };
 
 
@@ -278,61 +308,40 @@ Object.extend(DisplayHelper,DisplayHelper.Methods);
 
 
 
-function hitsWeek(i,data){
+function hitsWeek(i,data, dataMax){
   //var c=classString(i, function(i){(i+now+1 > 24 ? " old" : "")});
-  var c = classString(i);
-  return '<tr '+ c + '><td class="f">' + DisplayHelper.showDay((new Date()).getDay()-i) +
-   "</td><td>" + data[i] + "</td><td>" + "who knows.." + "</td></tr>";  
-}
-function hitsToday(i,data){
-  var c=classString(i, function(i){return (now-i < 0 ? " old" : "")});
-  
-  var m=data.max();
-  // 80 means only allow graphs to grow to 80% of the td width
-  var per=Math.round(data[i*2]/m*80); 
-  //per=Math.round((m-data[i*2])/m*100);
-  
-  // subtract out 10%, because that 10% is dedicated to the fade
-//   per-=20;
-  //per=20;
-  // IE has this weird display bug where something with a width of 80% does not match up with
-  // an element with left:80%; it's off by about one percent. Adjust..
-  var left=per-5;
-  var left=per;
-  var w=20;
-  if (per-5<0){
-    //w=(20-per) > 0 ? 20-per : 0;
-    //w=20+per-5; // per is negative..
-    w=20+per; // per is negative..
-    //left=w;
-    left=0;
-    //per=0;
-  }
-  //per=90;
-  //left=88.5;
-  
-  
-  
-  
-//     console.log("left", left);
-//    console.log("percent", per);
-  //style="style=\"background-position: " + per + "% 0;\"";
-  var style="style=\"width:" + per + "%\"";
-  //var style2="style=\"left:" + left + "%; width: " + w +"%\"";
-  style2="";
-  //console.log(style2);
-  //var c = classString(i);
-  var str= '<tr' + c + '>';
-    day = '<td class="f">' + DisplayHelper.showHour(now-i) + "</td>";
+//   var c = classString(i);
+//   return '<tr '+ c + '><td class="f">' + DisplayHelper.showDay((new Date()).getDay()-i) +
+//    "</td><td>" + data[i] + "</td><td>" + "who knows.." + "</td></tr>";  
    
-   //inner = + "<td>" + data[i*2] + "</td>";
-   var inner = "<td class='table-graph'><div ><div " + style + "></div>"+
-  "</div><span>" + data[i*2] + "</span></td>";
-   //var inner = "<td>"+data[i*2]+"</td>";
-   var inner2 = "<td>" + data[i*2+1] + "</td>";
-   //var inner2 = "";
-   return str + day + inner + inner2 + "</tr>";  
+   //var c=this.classString(i);
+   var c = "";
+  console.log(data,dataMax);
+  var percent=this.columnPercent(data[i],dataMax);
+  
+  var day=this.td(DisplayHelper.showDay((new Date()).getDay()-i),"f ");
+
+  //var cell1 = this.graphCell(data[i*2],percent);
+  var cell1 = this.graphCell(data[i],percent);
+  //var cell2 = this.td(data[i*2+1]);
+  var cell2 = this.td("who knows");
+  //return "<tr" + c + ">" + day + cell1 + cell2 + "</tr>";
+  return this.tr(day +cell1 + cell2, this.classString(i));
+  
 }
+function hitsToday(i,data, dataMax){
+  var c=this.classString(i, function(i){return (now-i < 0 ? " old" : "")});
+
+  var percent=this.columnPercent(data[i*2],dataMax);
+  
+  var day=this.td(DisplayHelper.showHour(now-i),"f");
+
+  var cell1 = this.graphCell(data[i*2],percent);
+  var cell2 = this.td(data[i*2+1]);
+  //return "<tr" + c + ">" + day + cell1 + cell2 + "</tr>";
+  return this.tr(day +cell1 + cell2, c);
+}
+
 function referersRecent(i,data){
   var url=unescape(data[i*2]);
   return '<tr' + classString(i) +'><td class="f">' + linkFor(url,url)+ "</td></tr>"
@@ -340,26 +349,23 @@ function referersRecent(i,data){
 function referersWithDate(i,data){
   var url=unescape(data[i*2]);
 //   var url=data[i*2];  
-  return '<tr' + classString(i) +'><td class="f">' + 
-    linkFor(url,url)+ "</td><td>" + DisplayHelper.timeAgo(data[i*2+1]) + "</td></tr>"
+  var cell1 = this.td(linkFor(url,url), "f");
+  var cell2 = this.td(DisplayHelper.timeAgo(data[i*2+1]));
+  return this.tr(cell1 + cell2, this.classString(i));
+//   return '<tr' + classString(i) +'><td class="f">' + 
+//     linkFor(url,url)+ "</td><td>" + DisplayHelper.timeAgo(data[i*2+1]) + "</td></tr>"
 }
 
 function referersTotal(i,data){
   var url=unescape(data[i*2]);
 //   var url=data[i*2];
-  var c=classString(i,  function(i){return (i+now+1 > 24 ? " old" : "")});
+  //var c=classString(i,  function(i){return (i+now+1 > 24 ? " old" : "")});
+  var c = "";
   
   return '<tr' + c+ '><td class="f">' + linkFor(url,url)+ "</td><td>" + data[i*2+1] + "</td></tr>"
 }
 function linkFor(url,caption){
   return '<a href="' + url + '">' + caption + '</a>';
-}
-function classString(i, func){
-  var c=(i%2==0 ? "a" : "");
-  
-   if (func!=null)
-     c+=func(i);
-  return(c=="" ? "" : ' class="' + c +'"');
 }
 
 
