@@ -106,17 +106,16 @@
 
       
     </div>
-    <div class="side left"> <div id="line_graph" class="line_graph"></div>    </div>
+    <!-- <div class="side left"> <div id="line_graph" class="line_graph"></div>    </div>
     <div class="side right">     
-     <div id ="test" style="display:none"></div>
+    -->
       <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"today",:c=>"date"} %>
       <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"week",:c=>"date"} %>
       <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"month",:c=>"date"} %>
       <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"total",:c=>"date"} %>
       
-    </div>
-    <div id="graph" class="graph">
-          </div>
+    
+    
           <br clear="both"/>
   </div>
  

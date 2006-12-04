@@ -172,7 +172,7 @@ function init(){  // quit if this function has already been called
 
 function populate(){
   //var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
-  var tb=new TableDisplay("Hits today", ["Hour","Hits","Unique"],data,2,hitsToday);
+  var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
   $("hits_today").innerHTML=tb.buildTable();
   tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,1,hitsWeek);
   $("hits_week").innerHTML=tb.buildTable();
