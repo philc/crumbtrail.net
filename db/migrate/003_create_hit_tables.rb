@@ -16,17 +16,26 @@ class CreateHitTables < ActiveRecord::Migration
 
     add_index :hit_row_trackers, :project_id
 
+    create_table :hourly_hits do |t|
+      t.column :project_id, :integer, :null => false
+      t.column :hour, :integer, :null => false
+      t.column :count, :integer, :default => 0
+      t.column :last_update, :datetime, :null => false
+    end
+    
+    add_index :hourly_hits, :project_id
+
     create_table :daily_hits do |t|
       t.column :project_id, :integer, :null => false
       t.column :date, :date
-      t.column :count, :integer, :null => false, :default => 0
+      t.column :count, :integer, :default => 0
     end
 
     add_index :daily_hits, :project_id
 
     create_table :total_hits do |t|
       t.column :project_id, :integer, :null => false
-      t.column :count, :integer, :null => false, :default => 0
+      t.column :count, :integer, :default => 0
     end
 
     add_index :total_hits, :project_id
@@ -35,6 +44,7 @@ class CreateHitTables < ActiveRecord::Migration
   def self.down
     drop_table :recent_hits
     drop_table :hit_row_trackers
+    drop_table :hourly_hits
     drop_table :daily_hits
     drop_table :total_hits
   end

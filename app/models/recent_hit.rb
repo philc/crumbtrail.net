@@ -10,7 +10,7 @@ class RecentHit < ActiveRecord::Base
     project = request.project
     referer = request.referer
 
-    row_tracker = HitRowTracker.find_by_project_id(project.id)
+    row_tracker = project.hit_row_tracker
     if row_tracker.nil?
       row_tracker = HitRowTracker.new(:project_id => project.id, :row => 0)
     else

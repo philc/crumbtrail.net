@@ -32,28 +32,22 @@ class DailyHit < ActiveRecord::Base
     c_time = TimeHelpers::convert_to_client_time(project, Time.now)
     c_date = Date.parse(c_time.to_s)
 
-    if period == :day
-       # Return an integer representing today's hit count
-      daily_hit = find_by_project_id_and_date(project.id, c_date)
-      daily_hit = new(:project => project, :date => c_date) if daily_hit.nil?
-      return daily_hit.count
-
-    elsif period == :week
+    if period == :week
       # Return an array of 7 integers representing each day's hit count
-      return build_hit_array(project, c_date-6, c_date)
-    
+      return build_hit_array(project, c_date-6, c_date), c_time
+
     elsif period == :month
       hit_array = []
       hit_array << (build_hit_array(project, c_date-27, c_date-21).sum)
       hit_array << (build_hit_array(project, c_date-20, c_date-14).sum)
       hit_array << (build_hit_array(project, c_date-13, c_date-7).sum)
       hit_array << (build_hit_array(project, c_date-6, c_date).sum)
-      return hit_array
+      return hit_array, c_time
     end
   end
-  
+
   private
-  
+
   def self.build_hit_array(project, first, last)
     hits = find(:all, :conditions => ['project_id = ? AND date >= ? AND date <= ?', 
                                       project.id, first, last], :order => "date ASC")

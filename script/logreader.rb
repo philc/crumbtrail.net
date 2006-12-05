@@ -14,12 +14,13 @@ class ApacheRequest
   attr_reader   :project
   attr_reader   :time
   attr_reader   :referer
+  attr_reader   :internal_url
   
-  def initialize(project, ip, time, page, referer_url, browser, os)
+  def initialize(project, ip, time, landing_url, referer_url, browser, os)
     @project = project
     @ip = ip
     @time = time
-    @page = page
+    @landing_url = landing_url
     @referer_url = referer_url
     @browser = browser
     @os = os
@@ -32,7 +33,7 @@ class ApacheRequest
     puts "Time: #{@time.to_s}"
     puts "Referer: #{@referer_url}"
     puts "Project Id: #{@project_id}"
-    puts "Monitored Page: #{@page}"
+    puts "Monitored Page: #{@landing_url}"
     puts "Browser: #{@browser}"
     puts "OS: #{@os}"
     puts "\n"
@@ -43,6 +44,9 @@ class ApacheRequest
   def save
     @referer = Referer.find_by_url(@referer_url)
     @referer = Referer.create(:url => @referer_url) if @referer.nil?
+
+    @internal_url = InternalUrl.find_by_url(@landing_url)
+    @internal_url = InternalUrl.create(:url => @landing_url) if @internal_url.nil?
 
     @project.increment_referer(self)
     @project.increment_hit_count(self)
@@ -76,14 +80,14 @@ class ApacheLogReader
       project = Project.find(id)
 
       if !project.nil?
-        ip      = $1
-        time    = parse_time($2, project)
-        referer = parse_referer($3)
-        page    = $4
-        browser = parse_browser($5)
-        os      = parse_os($5)
+        ip          = $1
+        time        = parse_time($2, project)
+        referer     = parse_referer($3)
+        landing_url = $4
+        browser     = parse_browser($5)
+        os          = parse_os($5)
 
-        request = ApacheRequest.new(project, ip, time, page, referer, browser, os)
+        request = ApacheRequest.new(project, ip, time, landing_url, referer, browser, os)
         request.save
       end
     end

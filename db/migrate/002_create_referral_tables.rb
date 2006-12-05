@@ -30,6 +30,7 @@ class CreateReferralTables < ActiveRecord::Migration
       t.column :count, :integer, :default => 0
       t.column :first_visit, :datetime
       t.column :recent_visit, :datetime
+      t.column :internal_url_id, :integer
     end
 
     add_index :total_referrals, :project_id
@@ -40,6 +41,13 @@ class CreateReferralTables < ActiveRecord::Migration
     end
 
     add_index :referers, :url
+
+    # Create Internal Url Table
+    create_table :internal_urls do |t|
+      t.column :url, :string, :null => false
+    end
+
+    add_index :internal_urls, :url
   end
 
   def self.down
@@ -47,5 +55,6 @@ class CreateReferralTables < ActiveRecord::Migration
     drop_table :daily_referrals
     drop_table :total_referrals
     drop_table :referers
+    drop_table :internal_urls
   end
 end

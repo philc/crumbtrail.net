@@ -4,8 +4,9 @@ class Project < ActiveRecord::Base
   has_many :hourly_referrals
   has_many :daily_referrals
   has_many :total_referrals
-  has_many :hit_row_trackers
+  has_one  :hit_row_tracker
   has_many :recent_hits
+  has_many :hourly_hits
   has_many :daily_hits
   has_many :total_hits
 
@@ -17,6 +18,7 @@ class Project < ActiveRecord::Base
 
   def increment_hit_count(request)
     RecentHit::add_new_hit(request)
+    HourlyHit::increment_hit(request)
     DailyHit::increment_hit(request)
     TotalHit::increment_hit(self)
   end
@@ -24,7 +26,11 @@ class Project < ActiveRecord::Base
   # Returns the hit count for a specified period
   # Period can be :day, :week, or :month
   def hits(period)
-    return DailyHit.get_hits(self, period)
+    if period == :day
+      return HourlyHit.get_hits(self)
+    else
+      return DailyHit.get_hits(self, period)
+    end
   end
   
   # Returns the total hits for the project
