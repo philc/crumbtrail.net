@@ -1,0 +1,15 @@
+rake db:migrate
+script/create_data.rb
+
+run 'script/console'
+--require 'script/logreader.rb'
+--ctrl-C then ctrl-D when script is finished
+
+run 'script/console' again
+--v = ViewPreference.new()
+--v.defaults()
+--v.project_id = 1050
+--v.save
+
+script/server
+browse to: localhost:3000/projects
