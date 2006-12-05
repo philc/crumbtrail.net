@@ -31,9 +31,9 @@ a:hover{
 #header{
   height:80px;
   border-bottom:1px solid #c6c6c6;
+  position:relative;
   }
 #content{
-  
   
   width:100%;
   /*position:relative;*/
@@ -60,14 +60,65 @@ a:hover{
 .dialog .ft {  background:#fbeac8 url(/images/d/bl.gif) no-repeat 0px 0px;
 }
 .dialog .ft .c { background:transparent url(/images/d/br.gif) no-repeat right 0px;}
-.dialog .bd .c{
+.dialog .bd .c{  background-color:#fbeac8;}
+
+#header-menu{
+  position:absolute;
+  right:20px; /* Should be equal to whatever the table's right margin is*/
+  top:22px;
+  background-color:#fff9ed;
   background-color:#fbeac8;
-  /*padding-top:5px;*/
-  /*padding-left:10px;
-  padding-right:10px;*/
+  /*background-color:#fdf1d8;*/
 }
+#header-menu ul{
+  /*display:block;*/
+  /*height:1.2em;*/
+  
+  position:static;
+}
+#header-menu li{
+  /*padding:2px;*/
+  display:inline;
+  /*margin-right:4px;*/
+  /*font-weight:bold;*/
+  /*border:1px solid blue;*/
+  float:left;
+  /*margin-right:5px;*/
+
+  /*border:1px solid red;*/
+}
+#header-menu a{
+  /*border:1px solid blue;*/
+  padding: 1px 10px 1px 10px;
+  /*border:1px solid #fbeac8;*/
+  display:block;
+  /*width:100px;*/
+}
+#header-menu a:hover{
+  background-color:#f2d9ab;
+  background-color:#e7cea2;
+  background-color:#efd39e;
+  /*background-color:#d7bb86;
+  background-color:#dfc89d;*/
+  /*border-top:1px solid #c19f5f;
+  border-bottom:1px solid #c19f5f;*/
+}
+#header-menu .last{
+  margin-right:0px;
+}
+/*#header-menu .dialog {border:1px solid blue;}*/
+#header-menu .dialog .hd {  background:#fbeac8 url(/images/d/menutl.gif) no-repeat 0px 0px; }
+#header-menu .dialog .hd .c {  background:transparent url(/images/d/menutr.gif) no-repeat right 0px; }
+#header-menu .dialog .bd { background:#fbeac8 none repeat-y 0px 0px;}
+#header-menu .dialog .bd .c { background:#fbeac8 none repeat-y right 0px; }
+#header-menu .dialog .ft .c, .dialog .hd .c { height:5px;  }
+#header-menu .dialog .ft {   background:#fbeac8 url(/images/d/menubl.gif) no-repeat 0px 0px;
+}
+#header-menu .dialog .ft .c { background:transparent url(/images/d/menubr.gif) no-repeat right 0px;}
+#header-menu .dialog .bd .c{  background-color:transparent; padding-left:6px; padding-right:6px;}
+
 /*
- * Menu
+ * section menu
  */
 #menu{
   margin-top:20px;
@@ -115,10 +166,14 @@ a:hover{
   /*position:absolute;*/
   /*right:50%;*/
   /*display:inline;*/
+  
   text-align:center;
   border-bottom:1px dashed #c6c6c6;
   color:#666666;
   background-color:#F8F8F8;
+  padding:4px;
+  padding: 1px 0 1px 0;
+  
 }
 #project-menu #project-id{
   /*font-weight:bold;*/
@@ -137,7 +192,8 @@ a:hover{
 }
 
 .section_title{
-  margin-bottom:5px;
+  /* image has a lot of whitespace on it, to account for lowercase letters*/
+  margin-bottom:-2px; 
 }
 .side{
   /*width:48%;*/  
