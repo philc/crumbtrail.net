@@ -1,0 +1,3 @@
+Apache logs must be logged in this format:
+
+LogFormat "%h [%{%Y %m %d %H %M %S}t] %q %{Referer}i \"%{User-Agent}i\" \"%{Cookie}i\"" combined
