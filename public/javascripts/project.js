@@ -362,6 +362,7 @@ function linkFor(url,caption){
 
 
 
+
 /*
  * Line graph drawing
  */
@@ -415,8 +416,8 @@ LineGraph.prototype={
       img.src=this.lineGraphImage(this.style,u);
       img.className="line";
       
-      img.style.width=hwidth+"px";
-      div.style.width=hwidth+"px";
+      img.style.width=px(hwidth);
+      div.style.width=px(hwidth);
       
       // difference in our heights
       var h=this.data[i]-prevHeight;
@@ -426,7 +427,7 @@ LineGraph.prototype={
       var t=this.height-prevHeight;
       
       
-      img.style.height=h*u + "px";
+      img.style.height=px(h*u);
       
       var ourTop = t-(u>0  ? h : 0)
 //       console.log("height",this.height,"calc",this.height-(h*u)-ourTop);
@@ -438,12 +439,38 @@ LineGraph.prototype={
       div.style.left=(i-1)*hwidth+ "px";
       img.style.left=(i-1)*hwidth+ "px";
       
+      g.appendChild(this.dataPointDot(
+        this.data[i],i*hwidth,this.height-this.data[i],u==1));
+      
+//       g.appendChild(dot);
       g.appendChild(img);
       g.appendChild(div);
     }    
     this.showLabels(g);
     this.element.appendChild(g);
   },  
+  // if the line is pointing up, we need to move the dot upward somewhat
+  dataPointDot: function(data,x,y, pointingUp){
+    var dot=document.createElement("div");
+    console.log(pointingUp);
+    dot.className="linegraph-dot" + (pointingUp ? "" : " linegraph-dot-up");
+    //dot.style.left=px(i*hwidth);
+    dot.style.left=px(x);
+    dot.onmouseover=function(){Element.show(this.firstChild);};
+    dot.onmouseout=function(){Element.hide(this.firstChild);};
+    //dot.style.top=u==1 ? img.style.top : px(ourTop+(h*u)-7);
+    
+    //dot.style.bottom=px(this.data[i]);
+    dot.style.top=px(y);
+    
+    text = document.createElement("div");
+    text.className="linegraph-dot-caption";
+    text.style.display="none";
+    text.innerHTML=data+"";    
+    
+    dot.appendChild(text);
+    return dot
+  },
   lineGraphImage: function(i,u){
     var d = (u==1 ? 0 : 1);
     return "/images/c/linegraph" + i + "" + d + ".png"

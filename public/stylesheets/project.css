@@ -399,9 +399,29 @@ td a {
   bottom:0;
 }
 .linegraph-dot{
-  width:11px;
-  height:11px;
+  /*margin-top:-1px;*/
+  margin-top:-6px;
+  margin-left:-10px;  
+  width:20px;
+  height:20px;
+  z-index:200;
+  position:absolute;
   background-image:url(/images/c/dot.gif);
+}
+
+.linegraph-dot-up{
+  margin-top:-11px;
+  /*border:1px solid blue;*/
+}
+/* the text boxes that appear when you mouse over a dot on the graph */
+.linegraph-dot-caption{
+  position:absolute;
+  padding:2px;
+  /*top:-1.6em;*/
+  bottom:17px;
+  left:-.3em;
+  background-color:white;
+  border:1px solid #dfdfdf;
 }
 
 img{
