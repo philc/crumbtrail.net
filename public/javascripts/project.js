@@ -74,18 +74,18 @@ Page.prototype = {
   initialize:function(){
     this.colors=["#a4d898","#fdde88","#d75b5c","#7285b7"];
     this.preferences=new Preferences();
-    this.activeSection="glance";
-    this.activeSection="hits";
+    
     
   },
   // Switch section
   menuNav: function(e){
+    console.log("menu nav");
     var section=e.title;
     
     this.removeClassFromElements("active","menu");
     e.className+=" active";
     
-    //console.log(this.activeSection);
+    console.log(this.activeSection);
     Element.hide(this.activeSection);
     this.activeSection=section;        
     Element.show(section);
@@ -97,11 +97,9 @@ Page.prototype = {
     var panel=linkElement.title;
     document.getElementsByClassName("panel",this.activeSection).each(
       function(e){Element.hide(e)});
-    
     // Remove highlighting on the other link, highlight the new link    
     this.removeClassFromElements('panel_link_active',this.activeSection);
     linkElement.className += " panel_link_active";
-    
     // Show e.g. "referers_current" panel
     Element.show(this.activeSection+"_"+panel);
     this.preferences.update(this.activeSection,panel);

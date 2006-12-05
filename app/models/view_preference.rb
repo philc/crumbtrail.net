@@ -13,7 +13,7 @@ class ViewPreference < ActiveRecord::Base
       self.referers="total"
       self.pages="today"
       self.searches="today"
-      self.panel="referers"
+      self.panel="glance"
     end
     def visible(section,id)
       return if  @@sections[section].nil?

@@ -42,7 +42,7 @@ class DailyHit < ActiveRecord::Base
       hit_array << (build_hit_array(project, c_date-20, c_date-14).sum)
       hit_array << (build_hit_array(project, c_date-13, c_date-7).sum)
       hit_array << (build_hit_array(project, c_date-6, c_date).sum)
-      return hit_array, c_time
+      return hit_array
     end
   end
 

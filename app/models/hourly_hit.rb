@@ -34,6 +34,6 @@ class HourlyHit < ActiveRecord::Base
       end
     end
 
-    return hits[c_time.hour+1, hits.length].concat(hits[0, c_time.hour+1]).reverse, c_time
+    return hits[c_time.hour+1, hits.length].concat(hits[0, c_time.hour+1]).reverse
   end
 end

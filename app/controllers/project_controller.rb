@@ -10,7 +10,7 @@ class ProjectController < ApplicationController
 
     @referers_total=format_referers_with_count(@referers_total)
 
-     p = Project.find(@project_id)
+    p = Project.find(@project_id)
     @referers_unique= format_referers_date(p.recent_unique())
 
     @referers_recent=format_referers_recent(p.recent_hits())
@@ -18,7 +18,7 @@ class ProjectController < ApplicationController
     # for hits today, I need to know what timezone they're in
     
     
-    @hits_week=p.hits(:week).join(",")
+    @hits_week=p.hits(:week)[0].join(",")
     @hits_month=p.hits(:month).join(",")
     
     @preferences = ViewPreference.find_by_project_id(@project_id)
