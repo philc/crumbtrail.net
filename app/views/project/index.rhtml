@@ -67,7 +67,10 @@
 </div>
 
 <div id="content">
-
+  <div id="project-menu">Viewing stats for <span id="project-id">InstallPad</span>. 
+    <a href="">Setup</a> | <a href="">View another</a>
+  </div>
+  
   <div id="menu">
     <ul id="menu-links">
     <%= render :partial=>"menu_entry", :locals=>{:title=>"glance",:d=>"At a glance"} %>    
@@ -79,83 +82,86 @@
     </ul>
   </div>
 
-  
-  <div id="glance" class="section" <%=panel_style("glance")-%> >
-        <img src="/images/h/glance.png" class="panel_title"/>        
-        
-         
-        <div class="chart">          
-          <div id="chart"></div>
-           <!-- 
-           
-           -->
-           <div class="chart_frame"></div>    
-        </div>
-               
-        
-        <br clear="both"/>
-  </div>
-  
-   <div id="hits" class="section" <%=panel_style("hits")-%> >
-    <img src="/images/h/details.png" class="section_title"/>  
-    <div class="panel_links">
-      Show: 
-      <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"today",:d=>"Today"} %> | 
-      <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"week",:d=>"Week"} %> | 
-      <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"month",:d=>"Month"} %> | 
-      <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"total",:d=>"Total"} %> 
-
-      
-    </div>
-    <!-- <div class="side left"> <div id="line_graph" class="line_graph"></div>    </div>
-    <div class="side right">     
-    -->
-      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"today",:c=>"date"} %>
-      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"week",:c=>"date"} %>
-      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"month",:c=>"date"} %>
-      <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"total",:c=>"date"} %>
-      
+  <div id="content-right">
     
     
-          <br clear="both"/>
-  </div>
- 
-   <div id="referers" class="section" <%=panel_style("referers")-%> >
-    <img src="/images/h/details.png" class="section_title"/>  
-           <div class="panel_links">
-            <span class="navlink_show">Show:</span>
-            <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"recent",:d=>"Most recent"} %> | 
-            <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"unique",:d=>"Latest unique"} %> | 
-            <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"total",:d=>"Totals"} %>
+    <div id="glance" class="section" <%=panel_style("glance")-%> >
+          <img src="/images/h/glance.png" class="panel_title"/>        
+          
+          
+          <div class="chart">          
+            <div id="chart"></div>
+            <!-- 
+            
+            -->
+            <div class="chart_frame"></div>    
           </div>
+                
           
-          <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"recent",:c=>"links"} %>
-          <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"unique",:c=>"links"} %>
-          <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"total",:c=>"links"} %>
-          
-    <br clear="both"/>
-
-  </div>
+          <br clear="both"/>
+    </div>
+    
+    <div id="hits" class="section" <%=panel_style("hits")-%> >
+      <img src="/images/h/details.png" class="section_title"/>  
+      <div class="panel_links">
+        Show: 
+        <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"today",:d=>"Today"} %> | 
+        <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"week",:d=>"Week"} %> | 
+        <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"month",:d=>"Month"} %> | 
+        <%= render :partial=>"navlink", :locals=>{:s=>"hits",:v=>"total",:d=>"Total"} %> 
   
-  <!-- <img src="/project/lag/"/> -->
+        
+      </div>
+      <!-- <div class="side left"> <div id="line_graph" class="line_graph"></div>    </div>
+      <div class="side right">     
+      -->
+        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"today",:c=>"date"} %>
+        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"week",:c=>"date"} %>
+        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"month",:c=>"date"} %>
+        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"total",:c=>"date"} %>
+        
+      
+      
+            <br clear="both"/>
+    </div>
   
-   <div id="pages" class="section" <%=panel_style("pages")-%> >
-    <img src="/images/h/details.png" class="panel_title"/>  
-    <br clear="both"/>
-  </div>
+    <div id="referers" class="section" <%=panel_style("referers")-%> >
+      <img src="/images/h/details.png" class="section_title"/>  
+            <div class="panel_links">
+              <span class="navlink_show">Show:</span>
+              <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"recent",:d=>"Most recent"} %> | 
+              <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"unique",:d=>"Latest unique"} %> | 
+              <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"total",:d=>"Totals"} %>
+            </div>
+            
+            <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"recent",:c=>"links"} %>
+            <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"unique",:c=>"links"} %>
+            <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"total",:c=>"links"} %>
+            
+      <br clear="both"/>
   
-   <div id="searches" class="section" <%=panel_style("searches")-%> >
-    <img src="/images/h/details.png" class="panel_title"/>  
-    <br clear="both"/>
-  </div>
-  
-   <div id="details" class="section" <%=panel_style("details")-%> >
-    <img src="/images/h/details.png" class="panel_title"/>  
-    <br clear="both"/>
-  </div>
+    </div>
+    
+    <!-- <img src="/project/lag/"/> -->
+    
+    <div id="pages" class="section" <%=panel_style("pages")-%> >
+      <img src="/images/h/details.png" class="panel_title"/>  
+      <br clear="both"/>
+    </div>
+    
+    <div id="searches" class="section" <%=panel_style("searches")-%> >
+      <img src="/images/h/details.png" class="panel_title"/>  
+      <br clear="both"/>
+    </div>
+    
+    <div id="details" class="section" <%=panel_style("details")-%> >
+      <img src="/images/h/details.png" class="panel_title"/>  
+      <br clear="both"/>
+    </div>
  
   
 
+  </div>
   <div id="footer">
       &copy; ourname 2006
   </div>  

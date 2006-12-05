@@ -309,25 +309,14 @@ Object.extend(DisplayHelper,DisplayHelper.Methods);
 
 
 function hitsWeek(i,data, dataMax){
-  //var c=classString(i, function(i){(i+now+1 > 24 ? " old" : "")});
-//   var c = classString(i);
-//   return '<tr '+ c + '><td class="f">' + DisplayHelper.showDay((new Date()).getDay()-i) +
-//    "</td><td>" + data[i] + "</td><td>" + "who knows.." + "</td></tr>";  
-   
-   //var c=this.classString(i);
-   var c = "";
-  console.log(data,dataMax);
   var percent=this.columnPercent(data[i],dataMax);
   
   var day=this.td(DisplayHelper.showDay((new Date()).getDay()-i),"f ");
-
-  //var cell1 = this.graphCell(data[i*2],percent);
-  var cell1 = this.graphCell(data[i],percent);
-  //var cell2 = this.td(data[i*2+1]);
-  var cell2 = this.td("who knows");
-  //return "<tr" + c + ">" + day + cell1 + cell2 + "</tr>";
-  return this.tr(day +cell1 + cell2, this.classString(i));
   
+  var cell1 = this.graphCell(data[i],percent);  
+  var cell2 = this.td("who knows");
+
+  return this.tr(day +cell1 + cell2, this.classString(i));  
 }
 function hitsToday(i,data, dataMax){
   var c=this.classString(i, function(i){return (now-i < 0 ? " old" : "")});
@@ -338,7 +327,7 @@ function hitsToday(i,data, dataMax){
 
   var cell1 = this.graphCell(data[i*2],percent);
   var cell2 = this.td(data[i*2+1]);
-  //return "<tr" + c + ">" + day + cell1 + cell2 + "</tr>";
+  
   return this.tr(day +cell1 + cell2, c);
 }
 
