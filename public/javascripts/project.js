@@ -133,17 +133,18 @@ function init(){  // quit if this function has already been called
   
   var ArrayMethods={ 
     sum:function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; },
-    max:function(){var m=0; for (var i=0; i<this.length; i++) if (this[i] > m) m=this[i]; return m}
+    max:function(){var m=0; for (var i=0; i<this.length; i++) if (this[i] > m) m=this[i]; return m},
+    min:function(){var m=Number.MAX_VALUE; for (var i=0; i<this.length; i++) if (this[i] < m) m=this[i]; return m}
     };
   Object.extend(Array.prototype,ArrayMethods);
   
   // delete this junk
 
   now=10;
-  data=[];
+  testdata=[];
   for (i=0;i<24;i++){
-    data[i*2]=i*6*10;
-    data[i*2+1]=i*3*10;
+    testdata[i*2]=i*6*10;
+    testdata[i*2+1]=i*3*10;
   }  
   chartData=[12,22,10,26];
   chartData=[.5,2,5,5];
@@ -172,7 +173,7 @@ function init(){  // quit if this function has already been called
 
 function populate(){
   //var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
-  var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
+  var tb=new TableDisplay("Hits today", ["","Hits","Unique"],testdata,2,hitsToday);
   //var tb=new TableDisplay("Hits today", ["Unique"],data,2,hitsToday);
   $("hits_today").innerHTML=tb.buildTable();
   tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,1,hitsWeek);
@@ -187,9 +188,12 @@ function populate(){
 
   var data2=[];
   
-  data.each(function(d,i){if (i%2==0) data2[i/2]=d;});
+  testdata.each(function(d,i){if (i%2==0) data2[i/2]=d;});
   
-//   lg=new LineGraph("line_graph",hitsWeekData);
+  lg=new LineGraph("linegraph",hitsWeekData, 300,150, "week",1);
+  lg.drawGraph();
+  
+//   lg=new LineGraph("linegraph2",hitsWeekData, 300,150, "week",2);
 //   lg.drawGraph();
 
   pg = new PieGraphDisplay("chart",chartData);
@@ -241,15 +245,15 @@ TableDisplay.prototype={
     "</div><span>" + text + "</span>";
     return this.td(cellData,"graph-cell");
   },
-  td: function(data, class, style){
+  td: function(data, c, style){
     return "<td " + 
-      (class ? 'class="' + class+'" ' : "") +
+      (c ? 'class="' + c+'" ' : "") +
       (style ? 'style="' + style +'" ' : "") + 
       ">" + data + "</td>";
   },
-  tr: function(data,class){
+  tr: function(data,c){
     return "<tr " + 
-    (class ? 'class="' + class+'" ' : "") + ">" + data + "</tr>";
+    (c ? 'class="' + c+'" ' : "") + ">" + data + "</tr>";
   },
   columnPercent: function(data, max){
     // 80 means only allow graphs in the background to grow to 80% of the td width
@@ -286,7 +290,7 @@ DisplayHelper.Methods={
       return this.formatTimeAgo(days,"day");
     else if (mos<1)
       return this.formatTimeAgo(weeks,"week");
-    else 
+    else
       return this.formatTimeAgo(mos,"month");
   },
   formatTimeAgo: function(n,word){
@@ -298,10 +302,11 @@ DisplayHelper.Methods={
     return (t%12)+1 + ":00" + (t<12 ? "am" : "pm");
   },
   days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-  showDay: function(i){
+  showDay: function(i, showToday){
     i=i%7;
     i=i<0 ? 7+i : i;
-    return i==0? "Today" : this.days[i];
+    
+    return i==0? (showToday ? "Today" : this.days[i]) : this.days[i];
   }
 }
 Object.extend(DisplayHelper,DisplayHelper.Methods);
@@ -337,22 +342,16 @@ function referersRecent(i,data){
 }
 function referersWithDate(i,data){
   var url=unescape(data[i*2]);
-//   var url=data[i*2];  
   var cell1 = this.td(linkFor(url,url), "f");
   var cell2 = this.td(DisplayHelper.timeAgo(data[i*2+1]));
   return this.tr(cell1 + cell2, this.classString(i));
-//   return '<tr' + classString(i) +'><td class="f">' + 
-//     linkFor(url,url)+ "</td><td>" + DisplayHelper.timeAgo(data[i*2+1]) + "</td></tr>"
 }
 
 function referersTotal(i,data){
   var url=unescape(data[i*2]);
-//   var url=data[i*2];
-  //var c=classString(i,  function(i){return (i+now+1 > 24 ? " old" : "")});
   var cell1 = this.td(linkFor(url,url), "f");
   var cell2 = this.td(data[i*2+1]);
   return this.tr(cell1 + cell2, this.classString(i));
-//   return '<tr' + c+ '><td class="f">' + linkFor(url,url)+ "</td><td>" + data[i*2+1] + "</td></tr>"
 }
 function linkFor(url,caption){
   return '<a href="' + url + '">' + caption + '</a>';
@@ -369,38 +368,51 @@ function linkFor(url,caption){
 
 LineGraph=Class.create();
 LineGraph.prototype={
-  initialize: function(id,data){
+  initialize: function(id,data, width, height, labels, style){
     this.element=$(id);    
-    this.size=120;
-    this.data=LineGraph.relativize(data,this.size);
+    //this.size=120;
+    this.width=width;
+    this.height=height;
+    this.max = data.max();
+    this.min = data.min();
+    this.labels=labels;
+    this.style=style;
     
+    // If min is 10% of the max, don't bother making a caret in the graph
+    if (this.min / this.max < .1)
+      this.min=0;    
+    
+    this.data=LineGraph.relativize(data,this.height,this.max,this.min);
+    //this.min=data.min();
     // Pick a line color. Colors are defined in page.colors
-    this.lineColor=2;
+    this.lineColor=(style==0 ? 1 : 0);
     
   },
   
   drawGraph: function(){  
     // Graph container
     var g=document.createElement("div");
-    g.className="line_graph";
-    
+    g.className="linegraph";
+//     console.log(this.data);
     var imgs=[]
-    var hwidth=this.size/(this.data.length-1);   
+    var hwidth=this.width/(this.data.length-1);
   
     for (i=1;i<this.data.length; i++){
       var div=document.createElement("div");
       div.className="color";
-      div.style.backgroundColor=page.colors[this.lineColor];
+      if (this.style<2)
+        div.style.backgroundColor=page.colors[this.lineColor];
       div.id=i+"";
       var img=document.createElement("img");    
       
       // Height of the point before this one
       var prevHeight=this.data[i-1] ? this.data[i-1] : 0;
-      
+//       w("prevheight",prevHeight, "data",this.data);
       // Whether the line is pointing up. Up=1, down=-1
-      var u=prevHeight<data[i] ? 1 : -1;
+      var u=prevHeight<this.data[i] ? 1 : -1;
       //img.src=(u==1 ? "/images/c/line13.png" : "/images/c/line10.png");    
-      img.src=(u==1 ? page.imageForQuadrant(this.lineColor,3) : page.imageForQuadrant(this.lineColor,0));
+      //img.src=(u==1 ? page.imageForQuadrant(this.lineColor,3) : page.imageForQuadrant(this.lineColor,0));
+      img.src=this.lineGraphImage(this.style,u);
       img.className="line";
       
       img.style.width=hwidth+"px";
@@ -411,14 +423,15 @@ LineGraph.prototype={
       
       
       // amount of space there is above the previous element
-      var t=this.size-prevHeight;
+      var t=this.height-prevHeight;
       
       
       img.style.height=h*u + "px";
       
       var ourTop = t-(u>0  ? h : 0)
-      //div.style.height=1+"px";
-      div.style.height=this.size-(h*u)-ourTop+"px";
+//       console.log("height",this.height,"calc",this.height-(h*u)-ourTop);
+//       console.log(h,u,ourTop);
+      div.style.height=this.height-(h*u)-ourTop+"px";
       
       div.style.top=ourTop+(h*u)+"px";
       img.style.top=ourTop+"px";
@@ -428,17 +441,72 @@ LineGraph.prototype={
       g.appendChild(img);
       g.appendChild(div);
     }    
+    this.showLabels(g);
     this.element.appendChild(g);
+  },  
+  lineGraphImage: function(i,u){
+    var d = (u==1 ? 0 : 1);
+    return "/images/c/linegraph" + i + "" + d + ".png"
+  },
+  showLabels: function(graphContainer){
+    if (this.min>0){
+//       var div=document.createElement("div");
+//       div.className="line-x-axis";
+//       div.innerHTML=this.min;
+//       div.style.right="100%";
+//       div.style.bottom=px(14);
+      
+//       graphContainer.appendChild(div);
+      var minLabel = this.yLabel(this.min);
+      minLabel.style.bottom=px(14);
+      graphContainer.appendChild(minLabel);
+    }
+    var maxLabel = this.yLabel(this.max);
+    maxLabel.style.top=0;
+    graphContainer.appendChild(maxLabel);
+    
+    if (this.labels){
+      var hwidth=this.width/(this.data.length-1);
+      for (var i = this.data.length-1;i>=0;i--){
+        var t="";
+        if (this.labels=="week")
+          t=DisplayHelper.showDay(i-now-1,false);
+        var l=this.xLabel(t.slice(0,2));
+        l.style.left=px(hwidth*i);
+        graphContainer.appendChild(l);
+      }
+    }
+    
+    //graphContainer.appendChild(this.graphLabel("number",0,0));
+  },
+  xLabel: function(text){
+    var div=document.createElement("div");
+    div.className="line-x-label";
+    div.innerHTML=text;
+//     div.style.top="100%";
+//     div.style.bottom=y;   
+    return div;
+  },
+  yLabel: function(text){
+    var div=document.createElement("div");
+    div.className="line-y-label";
+    div.innerHTML=text;
+//     div.style.right="100%";
+//     div.style.bottom=y;   
+    return div;
   }
 };
 LineGraph.Methods={
 // relativize
-  relativize:function(data, size){  
-    var max=0;
+  relativize:function(data, height, max, optionalMin){  
+   
+    // Don't use the entire min value. We don't want the lowest poitn to be "0"
+    var min = optionalMin? Math.round(optionalMin*.8) : 0;
     
-    data.each(function(e){ if (e>max) max=e; });
+    max-=min;
+    //data.each(function(e){ if (e>max) max=e; });
     for (i=0;i<data.length;i++){ 
-      data[i]=Math.floor((data[i]/max)*size); 
+      data[i]=Math.floor(((data[i]-min)/max)*height); 
     }
     return data;
   }
@@ -646,5 +714,6 @@ PieGraphDisplay.prototype={
 
 function px(v) {  return v + "px";}
   function w(str){
-    //console.log(str);
+//     if (console.log && console.log)
+//       console.log(str);
   }

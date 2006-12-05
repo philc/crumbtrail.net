@@ -9,13 +9,15 @@
 <%= javascript_include_tag "project" %> 
 
 <script type="text/javascript">
-  page.activeSection = "<%= @preferences.panel%>";
+//   page.activeSection = "<%= @preferences.panel%>";
   
   referersTotalData=[<%= @referers_total -%>];
   referersUniqueData=[<%= @referers_unique -%>];
   referersRecentData=[<%= @referers_recent -%>];
   
   hitsWeekData=[<%= @hits_week %>];
+  hitsWeekData=[300,500,200,300,500,600,450];
+//   hitsWeekData=[1,2];
   hitsMonthData=[<%= @hits_month %>];
   
   
@@ -115,7 +117,12 @@
             -->
             <div class="chart_frame"></div>    
           </div>
-                
+          
+          <div id="linegraph" class="linegraph_container">
+          </div>
+          <br/><br/><br/>
+          <div id="linegraph2" class="linegraph_container">
+          </div>      
           
           <br clear="both"/>
     </div>
