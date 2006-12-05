@@ -408,6 +408,9 @@ td a {
   position:absolute;
   background-image:url(/images/c/dot.gif);
 }
+.linegraph-dot:hover{
+  background-image:url(/images/c/dotm.gif);
+}
 
 .linegraph-dot-up{
   margin-top:-11px;

@@ -383,6 +383,8 @@ LineGraph.prototype={
     if (this.min / this.max < .1)
       this.min=0;    
     
+    // non-relative data
+    this.originalData=data;
     this.data=LineGraph.relativize(data,this.height,this.max,this.min);
     //this.min=data.min();
     // Pick a line color. Colors are defined in page.colors
@@ -440,7 +442,7 @@ LineGraph.prototype={
       img.style.left=(i-1)*hwidth+ "px";
       
       g.appendChild(this.dataPointDot(
-        this.data[i],i*hwidth,this.height-this.data[i],u==1));
+        this.originalData[i],i*hwidth,this.height-this.data[i],u==1));
       
 //       g.appendChild(dot);
       g.appendChild(img);
@@ -452,7 +454,7 @@ LineGraph.prototype={
   // if the line is pointing up, we need to move the dot upward somewhat
   dataPointDot: function(data,x,y, pointingUp){
     var dot=document.createElement("div");
-    console.log(pointingUp);
+    console.log(data);
     dot.className="linegraph-dot" + (pointingUp ? "" : " linegraph-dot-up");
     //dot.style.left=px(i*hwidth);
     dot.style.left=px(x);
@@ -526,16 +528,16 @@ LineGraph.prototype={
 LineGraph.Methods={
 // relativize
   relativize:function(data, height, max, optionalMin){  
-   
+    relativeData=Array(data.length);
     // Don't use the entire min value. We don't want the lowest poitn to be "0"
     var min = optionalMin? Math.round(optionalMin*.8) : 0;
     
     max-=min;
     //data.each(function(e){ if (e>max) max=e; });
     for (i=0;i<data.length;i++){ 
-      data[i]=Math.floor(((data[i]-min)/max)*height); 
+      relativeData[i]=Math.floor(((data[i]-min)/max)*height); 
     }
-    return data;
+    return relativeData;
   }
 }
 Object.extend(LineGraph,LineGraph.Methods);
