@@ -349,9 +349,10 @@ function referersTotal(i,data){
   var url=unescape(data[i*2]);
 //   var url=data[i*2];
   //var c=classString(i,  function(i){return (i+now+1 > 24 ? " old" : "")});
-  var c = "";
-  
-  return '<tr' + c+ '><td class="f">' + linkFor(url,url)+ "</td><td>" + data[i*2+1] + "</td></tr>"
+  var cell1 = this.td(linkFor(url,url), "f");
+  var cell2 = this.td(data[i*2+1]);
+  return this.tr(cell1 + cell2, this.classString(i));
+//   return '<tr' + c+ '><td class="f">' + linkFor(url,url)+ "</td><td>" + data[i*2+1] + "</td></tr>"
 }
 function linkFor(url,caption){
   return '<a href="' + url + '">' + caption + '</a>';
