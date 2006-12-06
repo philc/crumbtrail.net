@@ -2,22 +2,35 @@
 <div class="copy">
 
 <div id="signin-box">
-<h1>Sign in</h1>
+    <div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">
+      <div class="c">
+       <h1>Sign in</h1>
+      <form action="/signin">
+       <div class="text-form">
+        E-mail
+        <%= text_field "email", "email", "class"=>"t", "size" => 18 %>
+        
+        Password
+        <%= text_field "password", "password", "size" => 18 %>
+        </div>
+        <input type="submit" class="submit" value="Login">
+      </form>
+      </div></div><div class="ft">
+    <div class="c"></div></div></div>
+      
+      
 
-Username
-
-password
 </div>
 
-<h1>What's this about?</h1>
+<h1>Get to know your visitors</h1>
 
-Breadcrumbs tracks visitors coming to your website. It works like this:
+Breadcrumbs anonymously tracks visitors coming to your website. It works like this:
 
 
 
 
 <ol>
-<li> Sign up (it's quick and free)</li>
+<li>Sign up (it's quick and free)</li>
 
 <li>Paste some code we give you into your webpages</li>
 
@@ -26,8 +39,8 @@ Breadcrumbs tracks visitors coming to your website. It works like this:
 
 
 <p class="intro-links">
-<a class="linkbox" href="">Play with a live breadcrumbs demo</a>
-<a class="linkbox" href="">Sign up in seconds>></a>
+<a class="linkbox" href="">Try out a live Breadcrumbs setup</a>
+<a class="linkbox" href="">Sign up in seconds &raquo;</a>
 </p>
 
 <br clear="both"/>

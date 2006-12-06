@@ -77,8 +77,9 @@
       </div>
       <br clear="both"/>
 
-      <%= render :partial=>"panel", :locals=>{:p=>"glance",:force_visible=>"true",:v=>"referers_today"} %>
-      <%= render :partial=>"panel", :locals=>{:p=>"glance",:force_visible=>"true",:v=>"referers_week"} %>
+      <%= render :partial=>"panel", :locals=>{:p=>"glance",:v=>"referers_today",:options=>{:force_visible=>"true"}} %>
+      
+      <%= render :partial=>"panel", :locals=>{:p=>"glance",:v=>"referers_week",:options=>{:force_visible=>"true"}} %>
       <br clear="both"/>
     </div>
     
@@ -96,10 +97,10 @@
       <!-- <div class="side left"> <div id="line_graph" class="line_graph"></div>    </div>
       <div class="side right">     
       -->
-        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"today",:c=>"date"} %>
-        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"week",:c=>"date"} %>
-        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"month",:c=>"date"} %>
-        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"total",:c=>"date"} %>
+        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"today",:options=>{:c=>"date"}} %>
+        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"week",:options=>{:c=>"date"}} %>
+        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"month",:options=>{:c=>"date"}} %>
+        <%= render :partial=>"panel", :locals=>{:p=>"hits",:v=>"total",:options=>{:c=>"date"}} %>
         
       
       
@@ -115,9 +116,9 @@
               <%= render :partial=>"navlink", :locals=>{:s=>"referers",:v=>"total",:d=>"Totals"} %>
             </div>
             
-            <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"recent",:c=>"links"} %>
-            <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"unique",:c=>"links"} %>
-            <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"total",:c=>"links"} %>
+            <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"recent",:options=>{:c=>"links"}} %>
+            <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"unique",:options=>{:c=>"links"}} %>
+            <%= render :partial=>"panel", :locals=>{:p=>"referers",:v=>"total",:options=>{:c=>"links"}} %>
             
       <br clear="both"/>
   

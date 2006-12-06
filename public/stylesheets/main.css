@@ -36,11 +36,12 @@ img{ border:0;}
   margin-bottom:20px;
   }
 #content{
-  
+  /*border:1px solid blue;*/
   width:100%;
   /*position:relative;*/
   /*text-align:center;*/
   min-height:320px;
+  
 }
 #content-right{
   /*padding-top:30px;*/
@@ -113,23 +114,24 @@ img{ border:0;}
   border-right:0;
 }
 /*#header-menu .dialog {border:1px solid blue;}*/
-#header-menu .dialog .hd {  background:#fbeac8 url(/images/d/menutl.gif) no-repeat 0px 0px; }
-#header-menu .dialog .hd .c {  background:transparent url(/images/d/menutr.gif) no-repeat right 0px; }
-#header-menu .dialog .bd { background:#fbeac8 none repeat-y 0px 0px;}
-#header-menu .dialog .bd .c { background:#fbeac8 none repeat-y right 0px; }
-#header-menu .dialog .ft .c, .dialog .hd .c { height:5px;  }
-#header-menu .dialog .ft {   background:#fbeac8 url(/images/d/menubl.gif) no-repeat 0px 0px;
+.small-dialog .dialog .hd {  background:#fbeac8 url(/images/d/menutl.gif) no-repeat 0px 0px; }
+.small-dialog .dialog .hd .c {  background:transparent url(/images/d/menutr.gif) no-repeat right 0px; }
+.small-dialog .dialog .bd { background:#fbeac8 none repeat-y 0px 0px;}
+.small-dialog .dialog .bd .c { background:#fbeac8 none repeat-y right 0px; }
+.small-dialog .dialog .ft .c, .dialog .hd .c { height:5px;  }
+.small-dialog .dialog .ft {   background:#fbeac8 url(/images/d/menubl.gif) no-repeat 0px 0px;
 }
-#header-menu .dialog .ft .c { background:transparent url(/images/d/menubr.gif) no-repeat right 0px;}
-#header-menu .dialog .bd .c{  background-color:transparent; padding-left:6px; padding-right:6px;}
+.small-dialog .dialog .ft .c {background:transparent url(/images/d/menubr.gif) no-repeat right 0px;}
+.small-dialog .dialog .bd .c{  background-color:transparent; padding-left:6px; padding-right:6px;}
 
 
 /* page-level stuff */
 .copy{
   line-height:160%;
+  margin-right:20px;
 }
 .copy h1{
-  font-size:2em;
+  font-size:1.8em;
   font-weight:normal;
   margin-bottom:10px;
 }
@@ -145,8 +147,33 @@ img{ border:0;}
   /*margin-left:30%;*/
 }
 a.linkbox{
-  padding:6px;
+  padding:0px;
   float:left;
+  margin:10px;
+  margin-right:5px;
+  margin-left:5px;
   /*display:block;*/
-  border:1px solid blue;
+  border:1px solid #edd7ab;
+  background-color:#fffae8;
+  padding-left:4px;
+  padding-right:4px;
+}
+
+/* Sign in code*/
+#signin-box{
+  float:right;
+  /* offset the margins that the dialog box brings, so we line up with the other header*/
+  margin-top:-5px;  
+}
+
+#signin-box .dialog .bd .c{
+  padding-left:5px;padding-right:5px;
+}
+input{
+  padding:2px;
+}
+.text-form input{
+  border:1px solid #b89c65;
+  display:block;  
+  margin-bottom:8px;
 }
