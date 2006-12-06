@@ -215,6 +215,7 @@ float:right;
   /*  Should match the padding on <td> */
   padding-left:10px;
   display:block;
+  text-decoration:none;
 }
 /* alt*/
 .dialog table .a{
