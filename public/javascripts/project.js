@@ -184,18 +184,24 @@ function populate(){
   tb=new TableDisplay("Most recent referers",["Recent referer", "Visited"],referersRecentData,2,referersWithDate);
   $("referers_recent").innerHTML=tb.buildTable();
 
+  tb=new TableDisplay("", ["Top referers today","Hits"],referersTotalData,2,referersTotal);
+  $("glance_referers_today").innerHTML=tb.buildTable();
+  
+  tb=new TableDisplay("", ["Top referers this week","Hits"],referersTotalData,2,referersTotal);
+  $("glance_referers_week").innerHTML=tb.buildTable();
+  
   var data2=[];
   
   testdata.each(function(d,i){if (i%2==0) data2[i/2]=d;});
   
-  lg=new LineGraph("linegraph",hitsWeekData, 300,150, "week",1);
+  lg=new LineGraph("hitsweek-linegraph",hitsWeekData, 150,120, "week",1);
   lg.drawGraph();
   
 //   lg=new LineGraph("linegraph2",hitsWeekData, 300,150, "week",2);
 //   lg.drawGraph();
 
-  pg = new PieGraphDisplay("chart",chartData);
-  pg.drawChart();  
+//   pg = new PieGraphDisplay("chart",chartData);
+//   pg.drawChart();  
 };
 
 
@@ -394,10 +400,17 @@ LineGraph.prototype={
     // Graph container
     var g=document.createElement("div");
     g.className="linegraph";
-//     console.log(this.data);
     var imgs=[]
     var hwidth=this.width/(this.data.length-1);
   
+    // Add the first "dot" on the graph
+    if (this.data.length>0)
+      
+    // Append the first data point to the diagram
+    g.appendChild(this.dataPointDot(this.originalData[0],0,this.height-this.data[0],1));
+
+    // Only draw lines starting with the second point (i=1); the first point is our starting point
+    // (the intersection with the Y axis)
     for (i=1;i<this.data.length; i++){
       var div=document.createElement("div");
       div.className="color";
@@ -408,11 +421,12 @@ LineGraph.prototype={
       
       // Height of the point before this one
       var prevHeight=this.data[i-1] ? this.data[i-1] : 0;
-//       w("prevheight",prevHeight, "data",this.data);
       // Whether the line is pointing up. Up=1, down=-1
-      var u=prevHeight<this.data[i] ? 1 : -1;
+      var u=prevHeight<this.data[i] ? 1 : -1;     
+      
       //img.src=(u==1 ? "/images/c/line13.png" : "/images/c/line10.png");    
       //img.src=(u==1 ? page.imageForQuadrant(this.lineColor,3) : page.imageForQuadrant(this.lineColor,0));
+      
       img.src=this.lineGraphImage(this.style,u);
       img.className="line";
       
@@ -430,8 +444,6 @@ LineGraph.prototype={
       img.style.height=px(h*u);
       
       var ourTop = t-(u>0  ? h : 0)
-//       console.log("height",this.height,"calc",this.height-(h*u)-ourTop);
-//       console.log(h,u,ourTop);
       div.style.height=this.height-(h*u)-ourTop+"px";
       
       div.style.top=ourTop+(h*u)+"px";
@@ -439,10 +451,9 @@ LineGraph.prototype={
       div.style.left=(i-1)*hwidth+ "px";
       img.style.left=(i-1)*hwidth+ "px";
       
-      g.appendChild(this.dataPointDot(
-        this.originalData[i],i*hwidth,this.height-this.data[i],u==1));
+      // Add a dot for the datapoint to a curve.
+      g.appendChild(this.dataPointDot(this.originalData[i],i*hwidth,this.height-this.data[i],u==1));
       
-//       g.appendChild(dot);
       g.appendChild(img);
       g.appendChild(div);
     }    
@@ -454,8 +465,8 @@ LineGraph.prototype={
     var dot=document.createElement("div");
     console.log(data);
     dot.className="linegraph-dot" + (pointingUp ? "" : " linegraph-dot-up");
-    //dot.style.left=px(i*hwidth);
     dot.style.left=px(x);
+
     dot.onmouseover=function(){Element.show(this.firstChild);};
     dot.onmouseout=function(){Element.hide(this.firstChild);};
     //dot.style.top=u==1 ? img.style.top : px(ourTop+(h*u)-7);
@@ -466,6 +477,7 @@ LineGraph.prototype={
     text = document.createElement("div");
     text.className="linegraph-dot-caption";
     text.style.display="none";
+  
     text.innerHTML=data+"";    
     
     dot.appendChild(text);

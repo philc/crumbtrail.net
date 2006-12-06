@@ -228,11 +228,58 @@ a:hover{
   background-color:#e4eaf4;
 }
 
+/*
+ * Glance panel
+ */
+#glance-left{
+  width:50%;
+}
+#glance-right{
+float:right;
+  width:200px;
+  height:200px;
+}
+#summary_stats div{
+  /*font-size:1.5em;*/
+  padding-top:.15em;
+  min-height:2em;   /* THIS NEEDS TO BE CHECKED IN IE */
+  display:inline;
+  float:left;
+  vertical-align:bottom;
+  /*width:50%;*/
+  /*width:100px;*/
+  /*border:1px solid red;*/
+}
+
+#summary_stats .today{
+  font-size:1.5em;
+  text-align:right;
+  padding-right:10px;
+}
+#summary_stats .yesterday{
+  font-size:1em;
+  text-align:right;
+  padding-right:10px;
+}
+/* row padding between the first set of numbers and the second*/
+#summary_stats .padding{
+  padding-bottom:8px;
+}
+
+#summary_stats .number{
+  font-size:2em;  
+}
+#summary_stats .unique{
+  font-size:.9em;
+  color:#666666;
+  text-align:center;
+}
+
+
 /* 
  * Tables
  */
-table{
-  
+.dialog table{  
   /*border:1px solid black;*/
   text-align:right;
   background-color:#fffae8;
@@ -243,46 +290,46 @@ table{
   width:100%;
 }
 /* dates that are yesterday */
-table .old{
+.dialog table .old{
   color:#666666;
   color:#555555;
 }
-table .header{
+.dialog table .header{
   /*background-color:#fffae8;*/
   /*background-color:#ebcd96;*/
 }
 /* alt*/
-table .a{
+.dialog table .a{
   background-color:white;
   background-color:#fbeac8;
   background-color:#fffae8;
 }
-table a:hover{
+.dialog table a:hover{
 /*  background-color:#fef6e4;
   background-color:white;
   background-color:#e4eaf4;*/
   background-color:#fff8f1;  
 }
-table .a a:hover{
+.dialog table .a a:hover{
   /*background-color:#fefcf4;*/
   /*background-color:#fbeac8;*/  
 }
 /* the title of tables */
-h1.title{
+.dialog h1.title{
   font-size:1.2em;
   font-weight:normal;
   margin-left:5px;
   margin-right:5px;  
   border-bottom:1px solid #ebcd96;
 }
-th{
+.dialog th{
   font-weight:normal;
   padding-left:5px !important;
   padding-right:5px !important;
   text-align:center;
   white-space:nowrap;  
 }
-td{
+.dialog td{
   padding-right:10px !important;
   text-align:right;
   width:49%;
@@ -291,16 +338,16 @@ td{
 }
 /* td cells that contain links should have 
   the link run up to the edge. the link has its own padding */
-.links td{
+.dialog .links td{
   padding-left:0px !important;
 }
-td.f, th.f{
+.dialog td.f, th.f{
   text-align:left;  
   padding-right:0px !important;
   
 }
 /* alternate rows */
-td a {
+.dialog td a {
   position:relative; 
   /*  Should match the padding on <td> */
   padding-left:10px;
@@ -382,7 +429,7 @@ td a {
   /*border:1px solid blue;*/
   /*width:100px;
   height:20px;*/
-  z-index:200;
+  z-index:100;
   right:100%;
 }
 .line-x-label{
@@ -391,7 +438,7 @@ td a {
   /*border:1px solid blue;*/
   /*width:100px;
   height:20px;*/
-  z-index:200;
+  z-index:100;
   /*right:100%;*/
   margin-left:-.8em;
   padding-top:2px;
@@ -404,7 +451,7 @@ td a {
   margin-left:-10px;  
   width:20px;
   height:20px;
-  z-index:200;
+  z-index:50;
   position:absolute;
   background-image:url(/images/c/dot.gif);
 }
@@ -420,9 +467,10 @@ td a {
 .linegraph-dot-caption{
   position:absolute;
   padding:2px;
-  /*top:-1.6em;*/
-  bottom:17px;
+  
+  bottom:17px;  
   left:-.3em;
+  z-index:200;
   background-color:white;
   border:1px solid #dfdfdf;
 }

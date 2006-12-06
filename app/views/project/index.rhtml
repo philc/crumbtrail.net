@@ -14,6 +14,7 @@
    referersTotalData=[<%= @referers_total -%>];
    referersUniqueData=[<%= @referers_unique -%>];
    referersRecentData=[<%= @referers_recent -%>];
+   
   
 //      referersTotalData=[];
 //    referersUniqueData=[];
@@ -111,22 +112,35 @@
     
     
     <div id="glance" class="section" <%=panel_style("glance")-%> >
-          <img src="/images/h/glance.png" class="section_title"/>        
-          
-          
-          <div class="chart">          
-            <div id="chart"></div>
+      <img src="/images/h/glance.png" class="section_title"/>        
+      <div id="glance-right">
+         <div id="hitsweek-linegraph" class="linegraph_container">
+         </div>
+      </div>
+      <div id="glance-left">    
+         <div id ="summary_stats">
+          <table border=0><tr><td class="today">Hits today:</td><td><span class="number">5000</span></td>
+          <tr><td  class="padding"> </td><td class="unique padding">(3000 unique)</td></tr>
+          <tr><td class="yesterday">Hits yesterday:</td><td>4000</span><td>
+          <tr><td> </td><td><span class="unique">(2000 unique)</td></tr>
+          </table>
+         </div>
+      </div>
+      <br clear="both"/>
+      <%= render :partial=>"panel", :locals=>{:p=>"glance",:force_visible=>true,:v=>"referers_today"} %>
+      <%= render :partial=>"panel", :locals=>{:p=>"glance",:force_visible=>true,:v=>"referers_week"} %>
             <!-- 
-            
-            -->
-            <div class="chart_frame"></div>    
-          </div>
-          
-          <div id="linegraph" class="linegraph_container">
+             <div class="chart">          
+            <div id="chart"></div>
+            <div id="linegraph" class="linegraph_container">
           </div>
           <br/><br/><br/>
           <div id="linegraph2" class="linegraph_container">
-          </div>      
+          </div>   
+            -->
+            
+          
+             
           
           <br clear="both"/>
     </div>
