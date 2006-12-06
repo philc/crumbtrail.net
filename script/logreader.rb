@@ -14,13 +14,13 @@ class ApacheRequest
   attr_reader   :project
   attr_reader   :time
   attr_reader   :referer
-  attr_reader   :internal_url
+  attr_reader   :landing_url
   
-  def initialize(project, ip, time, landing_url, referer_url, browser, os)
+  def initialize(project, ip, time, url, referer_url, browser, os)
     @project = project
     @ip = ip
     @time = time
-    @landing_url = landing_url
+    @url = url
     @referer_url = referer_url
     @browser = browser
     @os = os
@@ -45,8 +45,8 @@ class ApacheRequest
     @referer = Referer.find_by_url(@referer_url)
     @referer = Referer.create(:url => @referer_url) if @referer.nil?
 
-    @internal_url = InternalUrl.find_by_url(@landing_url)
-    @internal_url = InternalUrl.create(:url => @landing_url) if @internal_url.nil?
+    @landing_url = LandingUrl.find_by_url(@url)
+    @landing_url = LandingUrl.create(:url => @url) if @landing_url.nil?
 
     @project.increment_referer(self)
     @project.increment_hit_count(self)

@@ -34,6 +34,14 @@ class CreateAccountTables < ActiveRecord::Migration
       t.column :identifier, :string, :null => false
     end
 
+    # Create Row Tracker Table
+    create_table :row_trackers do |t|
+      t.column :project_id, :integer, :null => false
+      t.column :referrals_row, :integer, :default => 0
+      t.column :hits_row, :integer, :default => 0
+    end
+
+    add_index :row_trackers, :project_id
   end
 
   def self.down
@@ -41,5 +49,6 @@ class CreateAccountTables < ActiveRecord::Migration
     drop_table :projects
     drop_table :countries
     drop_table :zones
+    drop_table :row_trackers
   end
 end

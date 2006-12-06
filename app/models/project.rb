@@ -1,55 +1,62 @@
 class Project < ActiveRecord::Base
   belongs_to :account
   belongs_to :zone
-  has_many :hourly_referrals
-  has_many :daily_referrals
+  has_one  :row_tracker
+  has_many :recent_referrals
   has_many :total_referrals
-  has_one  :hit_row_tracker
-  has_many :recent_hits
   has_many :hourly_hits
   has_many :daily_hits
-  has_many :total_hits
+  has_one  :total_hit
 
   def increment_referer(request)
-    TotalReferral::increment_referer(request)
-    HourlyReferral::increment_referer(request)
-    DailyReferral::increment_referer(request)
+    TotalReferral.increment_referer(request)
+    RecentReferral.add_new_referer(request)
   end
 
   def increment_hit_count(request)
-    RecentHit::add_new_hit(request)
-    HourlyHit::increment_hit(request)
-    DailyHit::increment_hit(request)
-    TotalHit::increment_hit(self)
+    HourlyHit.increment_hit(request)
+    DailyHit.increment_hit(request)
+    MonthlyHit.increment_hit(request)
+    TotalHit::increment_hit(request)
   end
-  
-  # Returns the hit count for a specified period
+
+  # Returns an array of RecentReferrals (Length hardcoded at 10)
+  def recent_referers()
+    return RecentReferral.get_recent_referers(self)
+  end
+
+  # Returns an array of TotalReferrals
+  #  limit - the number of referers you want returned
+  def recent_unique_referers(limit)
+    return TotalReferral.get_recent_unique(self, limit)
+  end
+
+  # Returns an array of TotalReferrals
+  #  limit - the number of referers you want returned
+  def top_referers(limit)
+    return TotalReferral.get_top_referers(self, limit)
+  end
+
+  # Get the hit count for a specified period.
   # Period can be :day, :week, or :month
+  #
+  # Returns an array containing hit counts for time devisions of the specified
+  # period, most recent first
   def hits(period)
     if period == :day
       return HourlyHit.get_hits(self)
-    else
-      return DailyHit.get_hits(self, period)
+    elsif period == :week
+      return DailyHit.get_past_week_hits(self)
+    elsif period == :month
+      return DailyHit.get_past_month_hits(self)
+    elsif period == :year
+      return MonthlyHit.get_hits(self)
     end
   end
-  
-  # Returns the total hits for the project
-  def total_hits()
-    total = TotalHit.find_by_project_id(self.id)
-    return total.count
+
+  def time(*t)
+    t[0] = Time.now if t.empty?
+    TimeHelpers.convert_to_client_time(self, t[0])
   end
-  
-  # Returns an array of RecentHits
-  def recent_hits()
-    return RecentHit.get_recent_hits(self)
-  end
-  
-  # Returns and array of TotalReferrals, with the most recent
-  # unique hit first.
-  def recent_unique()
-    return TotalReferral.get_recent_unique(self)
-  end
-  
-  private
 
 end
