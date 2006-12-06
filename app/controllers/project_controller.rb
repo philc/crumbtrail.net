@@ -55,6 +55,7 @@ class ProjectController < ApplicationController
      rs.map{|r| "\"#{r.referer.url}\",#{r.count}" }.flatten.join(",\n")
   end
   def format_referers_recent(rs)
+    #rs.map{|r| "\"#{r.referer.url}\",#{to_js_date(r.visit_time)}" }.flatten.join(",\n")
     rs.map{|r| "\"#{r.referer.url}\",#{to_js_date(r.visit_time)}" }.flatten.join(",\n")
   end
   def format_referers_date(rs)
