@@ -79,13 +79,11 @@ Page.prototype = {
   },
   // Switch section
   menuNav: function(e){
-    console.log("menu nav");
     var section=e.title;
     
     this.removeClassFromElements("active","menu");
     e.className+=" active";
     
-    console.log(this.activeSection);
     Element.hide(this.activeSection);
     this.activeSection=section;        
     Element.show(section);
@@ -479,7 +477,6 @@ LineGraph.prototype={
   // if the line is pointing up, we need to move the dot upward somewhat
   dataPointDot: function(data,x,y, pointingUp){
     var dot=document.createElement("div");
-    console.log(data);
     dot.className="linegraph-dot" + (pointingUp ? "" : " linegraph-dot-up");
     dot.style.left=px(x);
 

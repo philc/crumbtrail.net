@@ -1,11 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<title>Wireframe</title>
+<% content_for (:head) do %>
+
+
 <%= stylesheet_link_tag "project" %>
+<!--[if lt IE 7.]>
+<%= stylesheet_link_tag "main-ie" %>
+<%= stylesheet_link_tag "project-ie" %>
+<![endif]-->
+
+
 <%= javascript_include_tag "prototype" %>
-<%= javascript_include_tag "effects"
- %>
+<%= javascript_include_tag "effects" %>
 <%= javascript_include_tag "project" %> 
 
 <script type="text/javascript">
@@ -22,77 +26,22 @@
 //   
   hitsWeekData=[<%= @hits_week %>];
   hitsWeekData=[300,500,200,300,500,600,450];
-//   hitsWeekData=[1,2];
   hitsMonthData=[<%= @hits_month %>];
   
   
 </script>
 
-<!--[if lt IE 7.]>
-<%= stylesheet_link_tag "main-ie" %>
-<%= stylesheet_link_tag "project-ie" %>
-<![endif]-->
-
-<!-- styles for vertical centering-->
-<!--[if IE]>
-  <style type="text/css">
-  .outer2{position:absolute;height:100%;}
-  .outer {height: 100%; position:relative;}
-  .middle {position: absolute; top: 50%;}
-  .inner { position: relative;top: -50%;}
-  </style>
-<![endif] -->
-<!--[if gt IE 6]>
-<style type="text/css">
-  .middle{width:100%;}
-</style>
-<![endif]-->
-<![if !IE]>
-<style>
-.outer{ display: table; height: 98%;}
-.middle {display: table-cell;vertical-align: middle;
-}
-</style>
-<![endif]>
 
 
 
-</script>
-
-
-</head>
-
-
-<body  >
-<!--
-  onload="populate();
--->
-
-<div id="page">
-<div id="header">
-  <img src="/images/logo.png"/><!--<img src="/images/logo2.png"/>-->
-  
-      <div id="header-menu">
-  <div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">
-  <div class="c">
-    <ul>
-      <li><a href="">Sign in</a></li>
-      <li class="last"><a href="">About</a></li>
-    </ul>
-      
-    <br clear="both"/>
-  
-  </div></div><div class="ft">
-  <div class="c"></div></div></div>
-  </div>  
-  
-  
-
-</div>
+<% end %>
 
 
 
-<div id="content">
+
+
+
+
   <div id="project-menu">Viewing stats for <span id="project-id">InstallPad</span>. 
     <a href="">Setup</a> | <a href="">View another project</a>
   </div>
@@ -195,14 +144,3 @@
 
   </div>
 
-</div>
-  <div id="footer">
-      <span id="copyright">&copy; 2006 Breadcrumbs</span>
-  </div>  
-
-</div>
-
-
-
-</body>
-</html>
