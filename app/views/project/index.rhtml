@@ -127,22 +127,10 @@
          </div>
       </div>
       <br clear="both"/>
+
       <%= render :partial=>"panel", :locals=>{:p=>"glance",:force_visible=>true,:v=>"referers_today"} %>
       <%= render :partial=>"panel", :locals=>{:p=>"glance",:force_visible=>true,:v=>"referers_week"} %>
-            <!-- 
-             <div class="chart">          
-            <div id="chart"></div>
-            <div id="linegraph" class="linegraph_container">
-          </div>
-          <br/><br/><br/>
-          <div id="linegraph2" class="linegraph_container">
-          </div>   
-            -->
-            
-          
-             
-          
-          <br clear="both"/>
+      <br clear="both"/>
     </div>
     
     <div id="hits" class="section" <%=panel_style("hits")-%> >

@@ -3,6 +3,7 @@ require 'lib/time_helpers'
 # Is there a better place to put this?
 class Array
   def sum
+    
     inject( 0 ) { |sum,x| sum+x }
   end
 end

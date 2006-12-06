@@ -7,21 +7,24 @@ class ProjectController < ApplicationController
     # Select top 10 referers
     @referers_total=TotalReferral.find(:all, 
     :conditions=>["project_id = ?",@project_id],:order=>"count DESC")
-
-    @referers_total=format_referers_with_count(@referers_total)
-
-    p = Project.find(@project_id)
     
+    @referers_total=format_referers_with_count(@referers_total)
+#     @referers_total=[]
+    
+    p = Project.find(@project_id)    
     
     @referers_unique= format_referers_date(p.recent_unique())
 
     @referers_recent=format_referers_recent(p.recent_hits())
+  
     
     # for hits today, I need to know what timezone they're in    
     @hits_week=p.hits(:week)[0].join(",")
+    
     @hits_month=p.hits(:month).join(",")
     
     @preferences = ViewPreference.find_by_project_id(@project_id)
+    
   end
   def lag()
     sleep 3

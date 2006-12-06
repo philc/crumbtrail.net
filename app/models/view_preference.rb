@@ -17,7 +17,7 @@ class ViewPreference < ActiveRecord::Base
     end
     def visible(section,id)
       return if  @@sections[section].nil?
-      puts self.send(section)
+      #puts self.send(section)
       return (self.send(section)==id)
     end
     
