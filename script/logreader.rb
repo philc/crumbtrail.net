@@ -15,6 +15,8 @@ class ApacheRequest
   attr_reader   :time
   attr_reader   :referer
   attr_reader   :landing_url
+  attr_reader   :browser
+  attr_reader   :os
   
   def initialize(project, ip, time, url, referer_url, browser, os)
     @project = project
@@ -50,16 +52,14 @@ class ApacheRequest
 
     @project.increment_referer(self)
     @project.increment_hit_count(self)
+    @project.increment_details(self)
   end
 end
 
 class ApacheLogReader
-  
+
   @@regex = Regexp.new('(.*)\s+\[(.*)\]\s+(.*)\s+(.*)\s+"(.*)"\s+"(.*)"')
-  @@browser_replacements = { "Windows NT 6.0" => "Vista",
-                             "Windows NT 5.2" => "Win 2003",
-                             "Windows NT 5.1" => "XP",
-                             "Windows NT 5.0" => "Win 2000" }
+
 #------------------------------------------------------------------------------
 
   def self.establish_connection()
@@ -119,19 +119,39 @@ class ApacheLogReader
   end
 
 #------------------------------------------------------------------------------
+  @@os_hash = {
+    'Windows NT 5.0' => 'os_w2k',
+    'Windows NT 5.1' => 'os_xp',
+    'Windows NT 5.2' => 'os_w2k3',
+    'Windows NT 6.0' => 'os_vista',
+    'Windows 98' => 'os_w98',
+    'Windows 95' => 'os_w95',
+    'Linux' => 'os_linux',
+    'Mac OS X' => 'os_macosx'
+  }
 
   def self.parse_os(user_agent)
     user_agent.match(/(Windows NT 5.0|Windows NT 5.1|Windows NT 5.2|Windows NT 6.0|Windows 98|Windows 95|Linux|Mac OS X)/);
-    browser = $1 || "Other"
-    browser = @@browser_replacements[browser] if browser.match(/Windows NT/)
-    return browser
+    os = $1 || "Other"
+    return @@os_hash[os]
   end
 
 #------------------------------------------------------------------------------
 
+  @@browser_hash = {
+    'Firefox/1.5' => 'b_firefox15',
+    'Firefox/2.0' => 'b_firefox20',
+    'MSIE 5' => 'b_ie5',
+    'MSIE 6.0' => 'b_ie6',
+    'MSIE 7.0' => 'b_ie7',
+    'Safari' => 'b_safari',
+    'Other' => 'b_other'
+  }
+  
   def self.parse_browser(user_agent)
-    user_agent.match(/.*(Firefox\/1.5|Firefox\/2\.0|MSIE 6.0|MSIE 5.5|MSIE 7.0|Safari).*/)
-    return $1 || "Other"
+    user_agent.match(/.*(Firefox\/1.5|Firefox\/2\.0|MSIE 6.0|MSIE 5|MSIE 7.0|Safari).*/)
+    browser = $1 || "Other"
+    return @@browser_hash[browser]
   end
 
 #------------------------------------------------------------------------------

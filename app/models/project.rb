@@ -7,6 +7,7 @@ class Project < ActiveRecord::Base
   has_many :hourly_hits
   has_many :daily_hits
   has_one  :total_hit
+  has_one  :hit_detail
 
   def increment_referer(request)
     TotalReferral.increment_referer(request)
@@ -20,6 +21,10 @@ class Project < ActiveRecord::Base
     TotalHit::increment_hit(request)
   end
 
+  def increment_details(request)
+    HitDetail.increment_browser(request)
+  end
+  
   # Returns an array of RecentReferrals (Length hardcoded at 10)
   def recent_referers()
     return RecentReferral.get_recent_referers(self)
@@ -52,6 +57,10 @@ class Project < ActiveRecord::Base
     elsif period == :year
       return MonthlyHit.get_hits(self)
     end
+  end
+
+  def get_details(type)
+    return HitDetail.get_details(self, type)
   end
 
   def time(*t)

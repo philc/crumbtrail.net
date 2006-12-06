@@ -42,15 +42,13 @@ class DailyHit < ActiveRecord::Base
   end
 
   def self.get_past_week_hits(project)
-    c_time = TimeHelpers.convert_to_client_time(project, Time.now)
-    c_date = Date.parse(c_time.to_s)
+    c_date = Date.parse(project.time.to_s)
 
     return build_hit_array(project, c_date-6, c_date)
   end
 
   def self.get_past_month_hits(project)
-    c_time = TimeHelpers.convert_to_client_time(project, Time.now)
-    c_date = Date.parse(c_time.to_s)
+    c_date = Date.parse(project.time.to_s)
 
     hit_array = []
     hit_array << (build_hit_array(project, c_date-6, c_date).sum)
