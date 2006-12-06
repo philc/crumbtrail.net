@@ -48,7 +48,7 @@
   /*position:absolute;*/
   /*right:50%;*/
   /*display:inline;*/
-  
+  margin-top:-20px; /* so it sits right under header line*/
   text-align:center;
   border-bottom:1px dashed #c6c6c6;
   color:#666666;
