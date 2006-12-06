@@ -3,7 +3,6 @@ require 'lib/time_helpers'
 # Is there a better place to put this?
 class Array
   def sum
-    
     inject( 0 ) { |sum,x| sum+x }
   end
 end
@@ -25,12 +24,19 @@ class DailyHit < ActiveRecord::Base
 
     row = find_by_project_id_and_row(project.id, row_track.hits_row)
     if row.nil?
-      row = DailyHit.create(:project => project, :date => request.time, :count => 1, :row => row_track.hits_row)
+      row = DailyHit.create(:project => project, :date => request.time, :total => 1, :row => row_track.hits_row)
+      row.unique = 1 if request.unique
     elsif row.date == date
-      row.count += 1
+      row.total += 1
+      row.unique += 1 if request.unique
       row.save
     elsif row.date < past
-      row.count = 1
+      row.total = 1
+      if request.unique
+        row.unique = 1
+      else
+        row.unique = 0
+      end 
       row.date = date
       row.save
     else
@@ -44,17 +50,27 @@ class DailyHit < ActiveRecord::Base
   def self.get_past_week_hits(project)
     c_date = Date.parse(project.time.to_s)
 
-    return build_hit_array(project, c_date-6, c_date)
+    hits = build_hit_array(project, c_date-6, c_date)
+    return hits[0].zip(hits[1])
   end
 
   def self.get_past_month_hits(project)
     c_date = Date.parse(project.time.to_s)
 
     hit_array = []
-    hit_array << (build_hit_array(project, c_date-6, c_date).sum)
-    hit_array << (build_hit_array(project, c_date-13, c_date-7).sum)
-    hit_array << (build_hit_array(project, c_date-20, c_date-14).sum)
-    hit_array << (build_hit_array(project, c_date-27, c_date-21).sum)
+
+    hits = build_hit_array(project, c_date-6, c_date)
+    hit_array << [hits[0].sum, hits[1].sum]
+
+    hits = build_hit_array(project, c_date-13, c_date-7)
+    hit_array << [hits[0].sum, hits[1].sum]
+
+    hits = build_hit_array(project, c_date-20, c_date-14)
+    hit_array << [hits[0].sum, hits[1].sum]
+
+    hits = build_hit_array(project, c_date-27, c_date-21)
+    hit_array << [hits[0].sum, hits[1].sum]
+
     return hit_array
   end
 
@@ -62,15 +78,17 @@ class DailyHit < ActiveRecord::Base
 
   def self.build_hit_array(project, first, last)
     rows = find(:all, 
-                :conditions => ['project_id = ? AND date >= ? AND date <= ?', project.id, first, last], 
+                :conditions => ['project_id = ? AND date >= ? AND date <= ?', project.id, first, last],
                 :order => 'date ASC')
 
-    days = Array.new((last - first).to_i + 1, 0)
+    hits = Array.new((last - first).to_i + 1, 0)
+    uniques = Array.new((last - first).to_i + 1, 0)
     for r in rows
-      days[(r.date - first).to_i] = r.count
+      hits[(r.date - first).to_i] = r.total
+      uniques[(r.date - first).to_i] = r.unique
     end
 
-    return days.reverse
+    return hits.reverse, uniques.reverse
   end
 
 end

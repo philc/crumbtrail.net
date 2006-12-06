@@ -15,15 +15,17 @@ class ApacheRequest
   attr_reader   :time
   attr_reader   :referer
   attr_reader   :landing_url
+  attr_reader   :unique
   attr_reader   :browser
   attr_reader   :os
   
-  def initialize(project, ip, time, url, referer_url, browser, os)
+  def initialize(project, ip, time, url, referer_url, unique, browser, os)
     @project = project
     @ip = ip
     @time = time
     @url = url
     @referer_url = referer_url
+    @unique = unique
     @browser = browser
     @os = os
   end
@@ -83,11 +85,12 @@ class ApacheLogReader
         ip          = $1
         time        = parse_time($2, project)
         referer     = parse_referer($3)
+        unique      = parse_unique($3)
         landing_url = $4
         browser     = parse_browser($5)
         os          = parse_os($5)
 
-        request = ApacheRequest.new(project, ip, time, landing_url, referer, browser, os)
+        request = ApacheRequest.new(project, ip, time, landing_url, referer, unique, browser, os)
         request.save
       end
     end
@@ -157,14 +160,23 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
   
   def self.parse_referer(query)
-    query.match(/r=([A-Za-z0-9\/:%\.]+)/)
+    query.match(/[&\?]r=([A-Za-z0-9\/:%\.]+)/)
     return $1 || "none"
   end
 
 #------------------------------------------------------------------------------
+  def self.parse_unique(query)
+    query.match(/[&\?]u=([0-9])/)
+    if !$1.nil?
+      return $1.to_i == 1
+    else
+      return false
+    end
+  end
+#------------------------------------------------------------------------------
 
   def self.parse_project_id(query)
-    query.match(/p=([0-9]+)/)
+    query.match(/[&\?]p=([0-9]+)/)
     return $1 || "none"
   end
 end

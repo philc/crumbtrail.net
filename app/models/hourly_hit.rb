@@ -12,10 +12,12 @@ class HourlyHit < ActiveRecord::Base
 
     row_t = row.last_update
     if row_t.day != time.day || row_t.month != time.month || row_t.year != time.year
-      row.count = 0
+      row.total = 0
+      row.unique = 0
     end
 
-    row.count += 1
+    row.total += 1
+    row.unique += 1 if request.unique
     row.last_update = time
     row.save
   end
@@ -31,10 +33,13 @@ class HourlyHit < ActiveRecord::Base
                 :order => 'last_update DESC')
 
     hits = Array.new(24, 0)
+    uniques = Array.new(24,0)
     for r in rows
-        hits[r.hour] = r.count
+        hits[r.hour] = r.total
+        uniques[r.hour] = r.unique
     end
-
+    hits = hits.zip(uniques)
+    
     return hits[c_time.hour+1, hits.length].concat(hits[0, c_time.hour+1]).reverse
   end
 end
