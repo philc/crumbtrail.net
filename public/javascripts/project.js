@@ -194,7 +194,7 @@ function populate(){
   
   testdata.each(function(d,i){if (i%2==0) data2[i/2]=d;});
   
-  lg=new LineGraph("hitsweek-linegraph",hitsWeekData, 150,120, "week",1);
+  lg=new LineGraph("hitsweek-linegraph",hitsWeekData, 200,110, "week",1);
   lg.drawGraph();
   
 //   lg=new LineGraph("linegraph2",hitsWeekData, 300,150, "week",2);
