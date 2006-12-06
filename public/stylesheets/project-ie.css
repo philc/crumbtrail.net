@@ -1,0 +1,4 @@
+.graph-cell div div{
+  background-image:none;
+  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/table-graph.png', sizingMethod='crop');
+}

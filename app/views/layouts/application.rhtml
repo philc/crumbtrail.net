@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <title>Wireframe</title>
 
-
+<%= stylesheet_link_tag "main" %>
 
 <%= yield :head %>
 
@@ -13,7 +13,7 @@
 
 <div id="page">
   <div id="header">
-    <img src="/images/logo.png"/><!--<img src="/images/logo2.png"/>-->  
+    <a href="/"><img src="/images/logo.png" id="logo"/></a>
     <div id="header-menu">
       <div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">
       <div class="c">

@@ -366,9 +366,13 @@ function referersWithDate(i,data){
 }
 
 function referersTotal(i,data){
-  var url=unescape(data[i*2]);
-  var cell1 = this.td(linkFor(url,url), "f");
-  var cell2 = this.td(data[i*2+1]);
+  var url=unescape(data[i*3]);
+  var landedOn=unescape(data[i*3+1]);
+  var html = linkFor(url,url) + '<span class="to">To&nbsp;<a href="'+landedOn+'">'+
+    DisplayHelper.truncateLeft(landedOn,15)+'</a></span>';
+  //var cell1 = this.td(linkFor(url,url), "f");
+  var cell1 = this.td(html, "f");
+  var cell2 = this.td(data[i*3+2]);
   return this.tr(cell1 + cell2, this.classString(i));
 }
 function linkFor(url,caption){

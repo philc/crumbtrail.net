@@ -3,23 +3,24 @@ class ProjectController < ApplicationController
    
   def index
     @project_id=@@project_id
+    p = Project.find(@project_id)    
     
     # Select top 10 referers
-    @referers_total=TotalReferral.find(:all, 
-    :conditions=>["project_id = ?",@project_id],:order=>"count DESC")
-    
+#     @referers_total=TotalReferral.find(:all, 
+#     :conditions=>["project_id = ?",@project_id],:order=>"count DESC")
+    @referers_total = p.top_referers(20)
     @referers_total=format_referers_with_count(@referers_total)
 #     @referers_total=[]
     
-    p = Project.find(@project_id)    
     
-    @referers_unique= format_referers_date(p.recent_unique())
+    
+    @referers_unique= format_referers_date(p.recent_unique_referers(10))
 
-    @referers_recent=format_referers_recent(p.recent_hits())
+    @referers_recent=format_referers_recent(p.recent_referers())
   
     
     # for hits today, I need to know what timezone they're in    
-    @hits_week=p.hits(:week)[0].join(",")
+    @hits_week=p.hits(:week).join(",")
     
     @hits_month=p.hits(:month).join(",")
     
@@ -52,14 +53,14 @@ class ProjectController < ApplicationController
     p.save!
   end
   def format_referers_with_count(rs)
-     rs.map{|r| "\"#{r.referer.url}\",#{r.count}" }.flatten.join(",\n")
+     rs.map{|r| "\"#{r.referer.url}\", \"#{r.landing_url.url}\",#{r.count}" }.flatten.join(",\n")
   end
   def format_referers_recent(rs)
     #rs.map{|r| "\"#{r.referer.url}\",#{to_js_date(r.visit_time)}" }.flatten.join(",\n")
-    rs.map{|r| "\"#{r.referer.url}\",#{to_js_date(r.visit_time)}" }.flatten.join(",\n")
+    rs.map{|r| "\"#{r.referer.url}\", \"#{r.landing_url.url}\", #{to_js_date(r.visit_time)}" }.flatten.join(",\n")
   end
   def format_referers_date(rs)
-     rs.map{|r| "\"#{r.referer.url}\", \"#{r.internal_url.url}\", #{to_js_date(r.first_visit)}" }.flatten.join(",\n")
+     rs.map{|r| "\"#{r.referer.url}\", \"#{r.landing_url.url}\", #{to_js_date(r.first_visit)}" }.flatten.join(",\n")
   end
   def to_js_date(d)
     return "new Date(#{d.to_i*1000})"
