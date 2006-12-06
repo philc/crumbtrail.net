@@ -54,7 +54,7 @@ a:hover{
   text-align:center;
 }
 .dialog .hd {  background:#fbeac8 url(/images/d/tl.gif) no-repeat 0px 0px; }
-.dialog .hd .c {  background:transparent url(/images/d/tr.gif) no-repeat right 0px; }
+.dialog .hd .c {  background:transparent url(/images/d/tr.gif) no-repeat right 0px; padding-right:20px; }
 .dialog .bd { background:#fbeac8 none repeat-y 0px 0px; }
 .dialog .bd .c { background:#fbeac8 none repeat-y right 0px; }
 .dialog .ft .c, .dialog .hd .c { height:10px;  }
@@ -282,9 +282,6 @@ float:right;
 .dialog table{  
   /*border:1px solid black;*/
   text-align:right;
-  background-color:#fffae8;
-  background-color:white;
-  background-color:#fbeac8;
   padding-bottom:2px;
   /*border-collapse: collapse;*/
   width:100%;
@@ -298,22 +295,7 @@ float:right;
   /*background-color:#fffae8;*/
   /*background-color:#ebcd96;*/
 }
-/* alt*/
-.dialog table .a{
-  background-color:white;
-  background-color:#fbeac8;
-  background-color:#fffae8;
-}
-.dialog table a:hover{
-/*  background-color:#fef6e4;
-  background-color:white;
-  background-color:#e4eaf4;*/
-  background-color:#fff8f1;  
-}
-.dialog table .a a:hover{
-  /*background-color:#fefcf4;*/
-  /*background-color:#fbeac8;*/  
-}
+
 /* the title of tables */
 .dialog h1.title{
   font-size:1.2em;
@@ -332,7 +314,7 @@ float:right;
 .dialog td{
   padding-right:10px !important;
   text-align:right;
-  width:49%;
+  width:48%;
   padding-top:1px;
   padding-bottom:1px;  
 }
@@ -346,12 +328,42 @@ float:right;
   padding-right:0px !important;
   
 }
-/* alternate rows */
 .dialog td a {
   position:relative; 
   /*  Should match the padding on <td> */
   padding-left:10px;
   display:block;
+}
+/* alt*/
+.dialog table .a{
+  background-color:white;
+  background-color:#fbeac8;
+  background-color:#fffae8;
+}
+.dialog td a:hover{
+/*  background-color:#fef6e4;
+  background-color:white;
+  background-color:#e4eaf4;*/
+  background-color:#fff8f1;  
+}
+.dialog td .a a:hover{
+  /*background-color:#fefcf4;*/
+  /*background-color:#fbeac8;*/  
+}
+/* little to: box in the referer tables*/
+.dialog td .to{
+  padding-left:14px;
+  padding-top:2px;
+  color:#666666;
+  font-size:.8em;
+}
+.dialog td .to a{  
+  /*border:1px solid blue;*/
+  display:inline;
+  padding:0px;
+}
+.dialog td .to a:hover{
+  background-color:transparent;
 }
 /* Styles for table cells that have graphs in the background of them */
 .graph-cell div{

@@ -177,11 +177,11 @@ function populate(){
   tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,1,hitsWeek);
   $("hits_week").innerHTML=tb.buildTable();
   
-  tb=new TableDisplay("Total referrals", ["Referer","Total hits"],referersTotalData,2,referersTotal);
+  tb=new TableDisplay("Total referrals", ["Referer","Total hits"],referersTotalData,3,referersTotal);
   $("referers_total").innerHTML=tb.buildTable();
-  tb=new TableDisplay("Unqiue referrals", ["Referer","First visited"],referersUniqueData,2,referersWithDate);
+  tb=new TableDisplay("Unqiue referrals", ["Referer","First visited"],referersUniqueData,3,referersWithDate);
   $("referers_unique").innerHTML=tb.buildTable();
-  tb=new TableDisplay("Most recent referers",["Recent referer", "Visited"],referersRecentData,2,referersWithDate);
+  tb=new TableDisplay("Most recent referers",["Recent referer", "Visited"],referersRecentData,3,referersWithDate);
   $("referers_recent").innerHTML=tb.buildTable();
 
   tb=new TableDisplay("", ["Top referers today","Hits"],referersTotalData,2,referersTotal);
@@ -311,6 +311,18 @@ DisplayHelper.Methods={
     i=i<0 ? 7+i : i;
     
     return i==0? (showToday ? "Today" : this.days[i]) : this.days[i];
+  },
+  // Will ellipsize from the left, e.g. philisoft.com/blog => ...isoft.com/blog.
+  // Should we try and break on periods or slashes, if they're close?
+  // Usually that's what we want
+  truncateLeft: function(str,n){
+    if (str<n) return str;
+    var mod = str.slice(n,str.length);
+    for (var i=0; i<5; i++){
+      if (mod[i]=="." || mod[i]=="/")
+        return ".."+mod.slice(i,mod.length);
+    }
+    return ".." + mod;
   }
 }
 Object.extend(DisplayHelper,DisplayHelper.Methods);
@@ -345,9 +357,13 @@ function referersRecent(i,data){
   return '<tr' + classString(i) +'><td class="f">' + linkFor(url,url)+ "</td></tr>"
 }
 function referersWithDate(i,data){
-  var url=unescape(data[i*2]);
-  var cell1 = this.td(linkFor(url,url), "f");
-  var cell2 = this.td(DisplayHelper.timeAgo(data[i*2+1]));
+  
+  var url=unescape(data[i*3]);
+  var landedOn=unescape(data[i*3+1]);
+  var html = linkFor(url,url) + '<span class="to">To&nbsp;<a href="'+landedOn+'">'+
+    DisplayHelper.truncateLeft(landedOn,15)+'</a></span>';
+  var cell1 = this.td(html, "f");
+  var cell2 = this.td(DisplayHelper.timeAgo(data[i*3+2]));
   return this.tr(cell1 + cell2, this.classString(i));
 }
 

@@ -11,13 +11,13 @@ class ProjectController < ApplicationController
     @referers_total=format_referers_with_count(@referers_total)
 
     p = Project.find(@project_id)
+    
+    
     @referers_unique= format_referers_date(p.recent_unique())
 
     @referers_recent=format_referers_recent(p.recent_hits())
     
-    # for hits today, I need to know what timezone they're in
-    
-    
+    # for hits today, I need to know what timezone they're in    
     @hits_week=p.hits(:week)[0].join(",")
     @hits_month=p.hits(:month).join(",")
     
@@ -55,7 +55,7 @@ class ProjectController < ApplicationController
     rs.map{|r| "\"#{r.referer.url}\",#{to_js_date(r.visit_time)}" }.flatten.join(",\n")
   end
   def format_referers_date(rs)
-     rs.map{|r| "\"#{r.referer.url}\", #{to_js_date(r.first_visit)}" }.flatten.join(",\n")
+     rs.map{|r| "\"#{r.referer.url}\", \"#{r.internal_url.url}\", #{to_js_date(r.first_visit)}" }.flatten.join(",\n")
   end
   def to_js_date(d)
     return "new Date(#{d.to_i*1000})"
