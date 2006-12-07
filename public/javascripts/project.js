@@ -1,4 +1,3 @@
-
 // Dean Edwards/Matthias Miller/John Resig
 
 /* for Mozilla/Opera9 */
@@ -166,8 +165,6 @@ function init(){  // quit if this function has already been called
 
 
 
-
-
 function populate(){
   //var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
   var tb=new TableDisplay("Hits today", ["","Hits","Unique"],testdata,2,hitsToday);
@@ -196,12 +193,18 @@ function populate(){
   lg=new LineGraph("hitsweek-linegraph",hitsWeekData, 200,110, "week",1);
   lg.drawGraph();
   
+  
 //   lg=new LineGraph("linegraph2",hitsWeekData, 300,150, "week",2);
 //   lg.drawGraph();
-
-  pg = new PieGraphDisplay("browser_details",chartData,
-    ["jump","cat2", "I'm feeling lovely", "hey there"]);
+  pg = new PieGraphDisplay("browser_details","Web browsers", browserData,
+  browserLabels);
   pg.drawChart();  
+  pg = new PieGraphDisplay("os_details","Operating systems", osData,
+  osLabels);
+  pg.drawChart();  
+//   pg = new PieGraphDisplay("browser_details",chartData,
+//     ["jump","cat2", "I'm feeling lovely", "hey there"]);
+  
 };
 
 
@@ -577,11 +580,12 @@ Object.extend(LineGraph,LineGraph.Methods);
 
 PieGraphDisplay = Class.create();
 PieGraphDisplay.prototype={
-  initialize: function(id,data,labels){
+  initialize: function(id,title,data,labels){
     this.element=$(id);
     this.size=150;
     this.qsize=this.size/2;
     this.data=[];
+    this.title=title;
     // relativize data
     //var total = this.sumPrevious(data.length-1,data);
     var total=data.sum();
@@ -775,9 +779,12 @@ PieGraphDisplay.prototype={
   },
   drawTextLabels: function(placeholder){
     console.log("drawing labels",this.labels);
-    var labelBox=document.createElement("ul");
+    var labelBox=document.createElement("div");
     labelBox.className="label_box";
     labelBox.style.left=px(this.size);
+    labelBox.innerHTML="<span class='title'>"+this.title+"</a>"
+    var ul = document.createElement("ul");
+    ul;
     for (var i=0; i<this.labels.length;i++){
 //       var color=document.createElement("div");
 //       color.style.width=px(10);
@@ -794,9 +801,10 @@ PieGraphDisplay.prototype={
       //div.style.top=1.4*i+"em";
       div.className="label";
       
-      labelBox.appendChild(div);
+      ul.appendChild(div);
       
     }
+    labelBox.appendChild(ul);
     placeholder.appendChild(labelBox);
   },
   // Returns the sum of all entries up to i in an array
@@ -811,12 +819,4 @@ PieGraphDisplay.prototype={
 
 
 
-
-  
-
-
 function px(v) {  return v + "px";}
-  function w(str){
-//     if (console.log && console.log)
-//       console.log(str);
-  }

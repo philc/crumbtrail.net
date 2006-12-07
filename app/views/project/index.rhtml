@@ -28,8 +28,11 @@
   hitsWeekData=[300,500,200,300,500,600,450];
   hitsMonthData=[<%= @hits_month %>];
   
-  os_data=[<%= @os_data %>];
-  browser_data=[<%= @browser_data %>];
+  osData=[<%= @os_data %>];
+  osLabels=[<%= @os_labels %>];
+  browserData=[<%= @browser_data %>];
+  browserLabels=[<%= @browser_labels %>];
+  
   
 </script>
 
@@ -140,9 +143,12 @@
     <div id="details" class="section" <%=panel_style("details")-%> >
       <img src="/images/h/details.png" class="section_title"/>  
       
-      <div class="chart"  id="browser_details"><div class="chart_frame"></div>
-        
+      <div class="chart"  id="browser_details"><div class="chart_frame"></div>        
       </div>
+      
+      <div class="chart"  id="os_details"><div class="chart_frame"></div>        
+      </div>
+      
       <br clear="both"/>
     </div>
   

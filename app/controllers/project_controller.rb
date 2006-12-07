@@ -26,13 +26,37 @@ class ProjectController < ApplicationController
     
     @preferences = ViewPreference.find_by_project_id(@project_id)
     
-    @os_data = p.get_details(:os)    
-    @os_data = @os_data.map{|k,v| "\"#{k}\",#{v}"}.join(',')
     
-    @browser_data = p.get_details(:browser)
-    @browser_data = @browser_data.map{|k,v| "\"#{k}\",#{v}"}.join(',')
+    # drop entries that are 0
+    @browser_labels=[]
+    @browser_data=[]
+    @browsers = p.get_details(:browser).select{|k,v| v>0}
+    # Data is now [ [browser,5], ... ]    
+    @browsers.each do |pair|    
+      @browser_labels<<"\"#{pair[0]}\""
+      @browser_data<<pair[1]
+    end
+    
+    @browser_labels=@browser_labels.join(',')
+    @browser_data=@browser_data.join(',')
+    
+    # drop entries that are 0
+    @os_labels=[]
+    @os_data=[]
+    @os= p.get_details(:os).select{|k,v| v>0}
+    @os.each do |pair|    
+      @os_labels<<"\"#{pair[0]}\""
+      @os_data<<pair[1]
+    end
+    
+    @os_labels=@os_labels.join(',')
+    @os_data=@os_data.join(',')
+    
+    puts @os_labels
+    puts @os_data
     
   end
+  
   def lag()
     sleep 3
   end
