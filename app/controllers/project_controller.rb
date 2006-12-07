@@ -18,8 +18,9 @@ class ProjectController < ApplicationController
 
     @referers_recent=format_referers_recent(p.recent_referers())
   
-    
     # for hits today, I need to know what timezone they're in    
+    @hits_day=p.hits(:day).flatten.join(",")    
+    
     @hits_week=p.hits(:week).join(",")
     
     @hits_month=p.hits(:month).join(",")
@@ -39,6 +40,8 @@ class ProjectController < ApplicationController
     
     @browser_labels=@browser_labels.join(',')
     @browser_data=@browser_data.join(',')
+    
+    
     
     # drop entries that are 0
     @os_labels=[]

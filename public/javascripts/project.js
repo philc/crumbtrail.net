@@ -166,12 +166,12 @@ function init(){  // quit if this function has already been called
 
 
 function populate(){
-  //var tb=new TableDisplay("Hits today", ["","Hits","Unique"],data,2,hitsToday);
-  var tb=new TableDisplay("Hits today", ["","Hits","Unique"],testdata,2,hitsToday);
-  //var tb=new TableDisplay("Hits today", ["Unique"],data,2,hitsToday);
+  var tb=new TableDisplay("Hits today", ["","Hits","Unique"],hitsDayData,2,hitsToday);
   $("hits_today").innerHTML=tb.buildTable();
-  tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,1,hitsWeek);
-  $("hits_week").innerHTML=tb.buildTable();
+  tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,2,hitsWeek);
+  $("hits_week").innerHTML=tb.buildTable();  
+  tb = new TableDisplay("Hits this month", ["","Hits","Unique"],hitsMonthData,2,hitsMonth);
+  $("hits_month").innerHTML=tb.buildTable();
   
   tb=new TableDisplay("Total referrals", ["Referer","Total hits"],referersTotalData,3,referersTotal);
   $("referers_total").innerHTML=tb.buildTable();
@@ -301,6 +301,11 @@ DisplayHelper.Methods={
   formatTimeAgo: function(n,word){
     return n + "&nbsp;" + (n>1 ? word+"s" : word) + "&nbsp;ago";
   },
+  formatWeeksAgo: function(n,weeks){
+    if (n==0) return "this&nbsp;week";
+    if (n==1) return "last&nbsp;week";
+    return n + "&nbsp;weeks&nbsp;ago";
+  },
   showHour: function(i){
     var t=i%24;
     t=t<0 ? 24+i : i;
@@ -329,14 +334,24 @@ DisplayHelper.Methods={
 Object.extend(DisplayHelper,DisplayHelper.Methods);
 
 
+function hitsMonth(i,data,dataMax){
+  var percent=this.columnPercent(data[i],dataMax);
+  var percent2=this.columnPercent(data[i],dataMax);
+  
+  var day=this.td(DisplayHelper.formatWeeksAgo(i),"f");
+  
+  var cell1 = this.graphCell(data[i],percent);  
+  var cell2 = this.graphCell(data[i],percent2);  
 
+  return this.tr(day +cell1 + cell2, this.classString(i));  
+};
 function hitsWeek(i,data, dataMax){
   var percent=this.columnPercent(data[i],dataMax);
-  
+  var percent2=this.columnPercent(data[i],dataMax);
   var day=this.td(DisplayHelper.showDay((new Date()).getDay()-i),"f ");
   
   var cell1 = this.graphCell(data[i],percent);  
-  var cell2 = this.td("who knows");
+  var cell2 = this.graphCell(data[i+1],percent2);  
 
   return this.tr(day +cell1 + cell2, this.classString(i));  
 }
