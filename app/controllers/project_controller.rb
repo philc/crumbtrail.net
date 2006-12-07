@@ -26,6 +26,12 @@ class ProjectController < ApplicationController
     
     @preferences = ViewPreference.find_by_project_id(@project_id)
     
+    @os_data = p.get_details(:os)    
+    @os_data = @os_data.map{|k,v| "\"#{k}\",#{v}"}.join(',')
+    
+    @browser_data = p.get_details(:browser)
+    @browser_data = @browser_data.map{|k,v| "\"#{k}\",#{v}"}.join(',')
+    
   end
   def lag()
     sleep 3
@@ -52,6 +58,7 @@ class ProjectController < ApplicationController
     end
     p.save!
   end
+  
   def format_referers_with_count(rs)
      rs.map{|r| "\"#{r.referer.url}\", \"#{r.landing_url.url}\",#{r.count}" }.flatten.join(",\n")
   end

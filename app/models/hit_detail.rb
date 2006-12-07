@@ -1,9 +1,36 @@
+# Access hit details through project.hit_details(:browser|:os)
+# What time period are these hit details for?
 class HitDetail < ActiveRecord::Base
   belongs_to :project
-
-  @@os_keys = %w[os_w2k os_xp os_w2k3 os_vista os_w98 os_w95 os_linux os_macosx]
-  @@browser_keys = %w[b_firefox15 b_firefox20 b_ie5 b_ie6 b_ie7 b_safari b_other]
-
+  # Do we need to keep track of so many windows versions? Can we intelligently group some of these windows
+  # together? I don't think many people with server 2003, a $900 OS, browse the net with it such
+  # that it will be an important statistic. Can we have a "windows-based" other or something?
+  
+  #@@os_keys = %w[os_w2k os_xp os_w2k3 os_vista os_w98 os_w95 os_linux os_macosx]
+  #@@browser_keys = %w[b_firefox15 b_firefox20 b_ie5 b_ie6 b_ie7 b_safari b_other]
+  
+  @@os_display={
+   "os_w2k"=>"Windows 2000",
+   "os_w2k3"=>"Windows 2003", 
+   "os_vista"=>"Windows Vista",
+   "os_w98"=>"Windows 98", 
+   "os_w95"=>"Windows 95",
+   "os_linux"=>"Linux",
+   "os_macosx"=>"Mac OSX"}
+   
+  @@os_keys=@@os_display.keys
+    
+  @@browser_display = {
+    "b_firefox15"=>"Firefox 1.5",
+    "b_firefox20"=>"Firefox 2.0",
+    "b_ie5"=>"Internet Explorer 5",
+    "b_ie6"=>"Internet Explorer 6",
+    "b_ie7"=>"Internet Explorer 7",
+    "b_safari"=>"Safari",
+    "b_other"=>"Other"}
+    
+  @@browser_keys=@@browser_display.keys
+  
   def self.increment_browser(request)
     project = request.project
     browser = request.browser
@@ -38,30 +65,29 @@ class HitDetail < ActiveRecord::Base
 
     stats = Hash.new(0)
     hash_call = (type.to_s + "_stats").to_sym
+    
     for r in rows
-      r_hash = r.send(hash_call) 
-      r_hash.each_key {|key| stats[key] += r_hash[key]}
+      r_hash = r.send(hash_call)
+      r_hash.each {|k,v| stats[k]+=v}
     end
 
-    return stats
+    return stats    
   end
 
   def browser_stats()
-    hash = Hash.new(0)
-    for key in @@browser_keys
-      hash[key[2, key.length].to_sym] = send(key.to_sym)
+    results = Hash.new(0)
+    @@browser_display.each do |key,display_key| 
+      results[display_key]=send(key.to_sym)
     end
-
-    return hash;
+    return results
   end
 
   def os_stats()
-    hash = Hash.new(0)
-    for key in @@os_keys
-      hash[key[3, key.length].to_sym] = send(key.to_sym)
+    results = Hash.new(0)
+    @@os_display.each do |key,display_key| 
+      results[display_key]=send(key.to_sym)
     end
-
-    return hash;
+    return results
   end
 
 end

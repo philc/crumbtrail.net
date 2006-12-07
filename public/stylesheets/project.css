@@ -387,27 +387,52 @@ img{
  * Pie charts
  */
 .chart{
-  width:150px;
-  height:150px;
+  width:160px;
+  height:160px;
+  padding-top:5px;
+  padding-left:5px;
   /*background-color:red;*/
   /*border:10px solid green;*/
   position:relative;
+}
+.chart ul.label_box{
+  margin-top:20px;
+  /*border:1px solid blue;*/
+  position:absolute;
+  list-style-type:none;
+  margin-left:15px;
+}
+.chart .label_box li{
+  font-size:.8em;
+  /*border:1px solid blue;*/
+  white-space:nowrap;  
+  margin-bottom:4px;
+}
+.chart .color_box{
+  margin-top:.1em;
+  width:1em;
+  height:1em;
+  float:left;  
+  margin-right:5px;
 }
 .chart_frame{
   background-image:url(/images/c/circle.png);
   z-index:200;
   position:absolute;  
-  width:150px;
-  height:150px;
+  width:160px;
+  height:160px;
+  margin-left:-5px;
+  margin-top:-5px;
   /*border:1px solid black;*/
 }
 .chart_inside{
-  position;absolute;
+  position:absolute;
+  /*border:1px solid blue;*/
 }
 .chart_image{
   position:absolute;
 }
-.chart_panel{
+.chart_filler{
   width:75px;
   height:75px;
   /*border:1px solid blue;*/

@@ -144,7 +144,8 @@ function init(){  // quit if this function has already been called
   }  
   chartData=[12,22,10,26];
   chartData=[.5,2,5,5];
-  chartData=[1,8,1];
+  chartData=[0.4,6,3,4];
+//   chartData=[1,2,3,354];
   
   
   
@@ -198,8 +199,9 @@ function populate(){
 //   lg=new LineGraph("linegraph2",hitsWeekData, 300,150, "week",2);
 //   lg.drawGraph();
 
-//   pg = new PieGraphDisplay("chart",chartData);
-//   pg.drawChart();  
+  pg = new PieGraphDisplay("browser_details",chartData,
+    ["jump","cat2", "I'm feeling lovely", "hey there"]);
+  pg.drawChart();  
 };
 
 
@@ -575,7 +577,7 @@ Object.extend(LineGraph,LineGraph.Methods);
 
 PieGraphDisplay = Class.create();
 PieGraphDisplay.prototype={
-  initialize: function(id,data){
+  initialize: function(id,data,labels){
     this.element=$(id);
     this.size=150;
     this.qsize=this.size/2;
@@ -583,8 +585,22 @@ PieGraphDisplay.prototype={
     // relativize data
     //var total = this.sumPrevious(data.length-1,data);
     var total=data.sum();
-    for (var i=0;i<data.length;i++){ this.data[i]=Math.floor((data[i]/total)*360);}
-    w(this.data);
+    this.labels=labels;
+    // skip an element each time
+//     for (var i=0;i<data.length;i+=2){ 
+// //       this.data[i]=Math.floor((data[i]/total)*360);
+//       this.data[i/2]=Math.floor((data[i+1]/total)*360);
+//       this.labels[i/2]=data[i];
+//     }
+    //for (var i=0;i<data.length;i+=2){ 
+    
+    for (var i=0;i<data.length;i++)
+           this.data[i]=Math.floor((data[i]/total)*360);
+//       this.data[i]=Math.floor((data[i]/total)*360);
+      //this.data[i/2]=Math.floor((data[i+1]/total)*360);
+      //this.labels[i/2]=data[i];
+    //}
+    
     //this.data=data;
   },
 
@@ -610,17 +626,14 @@ PieGraphDisplay.prototype={
   //   graphQuadrant(1,data, placeholder);
   //   graphQuadrant(2,data, placeholder);
   //   graphQuadrant(3,data, placeholder);
-    
+    this.drawTextLabels(placeholder);
     this.element.appendChild(placeholder);
   },
 
   graphQuadrant: function(i,data, placeholder){
-    //var v=data[i]+this.sumPrevious(i,data);
-      
-
-     
+    //var v=data[i]+this.sumPrevious(i,data);     
     var v=data[i]+this.sumPrevious(i,data);
-
+  console.log(v);
     // quadrant
     
     //var q=cap(Math.floor(v/90),3);
@@ -636,7 +649,7 @@ PieGraphDisplay.prototype={
     var w,h;
     var s=this.size;
     var qs=this.qsize;
-    
+    console.log("drawing image for ",q);
     if (q==0){
       w=(v <=(45+q*90) ? qs : s*(deg));
       h=(v >=(45+q*90) ? qs : s*(1-deg));
@@ -648,12 +661,13 @@ PieGraphDisplay.prototype={
       w=(v <=(45+q*90) ? qs : s*(deg));
       h=(v >=(45+q*90) ? qs : s*(1-deg));  
     }else{
+      console.log(deg);
+      console.log(v);
       h=(v <=(45+q*90) ? qs : s*(deg));
+      
       //a=(v >=(45+q*90) ? qsize : size*(1-v/m));
       w=(v >=(45+q*90) ? qs : s*(1-deg));
-    }
-  
-  
+    } 
   
     var img=document.createElement("img");    
     img.className="chart_image";  
@@ -678,7 +692,7 @@ PieGraphDisplay.prototype={
   },
 
   drawFillerBoxes: function(element,color,q,level,w,h){  
-    for (i=0; i<q; i++)
+    for (var i=0; i<q; i++)
     {
       element.appendChild(this.drawFillerBox(color, i, level,0,0));
     }
@@ -697,9 +711,10 @@ PieGraphDisplay.prototype={
   // Puts a square in the given quadrant, next to the angle image that has a width & height of w & h
   drawFillerBox: function(color, q, level,w,h){  
     //return null;
+    
     var div=document.createElement("div");
     div.style.backgroundColor=color;
-    div.className="chart_panel";
+    div.className="chart_filler";
     
   //   t = (q==2 || q==3) ? size/2 : 0;
   //   div.style.top=t + "px";
@@ -724,6 +739,7 @@ PieGraphDisplay.prototype={
     if (q==0){
   //      div.style.width=px(qsize-w);
       dl=0; 
+      dh=qs;
     }
     if (q==1){
   //     div.style.width=px(w);
@@ -733,15 +749,20 @@ PieGraphDisplay.prototype={
     if (q==2){
   //     div.style.width=px(qsize-w);
       dl=qs+w;
-      dt=qs;  
-      dh=qs-h;
+      dt=qs;        
+      //dh=qs-h;
+      dh=h;
+      console.log("setting q2 height to ",dh, " h",h);
     }
     if (q==3){
   //     div.style.width=px(w);
       dh=qs-h;
+      
       dt=qs+h;
       //div.style.left=px(0);
     }
+    
+    //console.log("q",q, " dh", dh , " h",+ h);
     
     div.style.left=px(dl);
     
@@ -752,12 +773,38 @@ PieGraphDisplay.prototype={
   
     return div;
   },
+  drawTextLabels: function(placeholder){
+    console.log("drawing labels",this.labels);
+    var labelBox=document.createElement("ul");
+    labelBox.className="label_box";
+    labelBox.style.left=px(this.size);
+    for (var i=0; i<this.labels.length;i++){
+//       var color=document.createElement("div");
+//       color.style.width=px(10);
+//       color.style.height=px(10);
+//       color.style.backgroundColor=page.colors[i];
+      var div=document.createElement("li"); 
+//       placeholder.appendChild(div);
+//     console.log("<div class='color_box' style='background-color:" + 
+//       page.colors[i] + "></div>" + this.labels[i]);
+      div.innerHTML="<div class='color_box' style='background-color:" + 
+      page.colors[i] + "'></div>" + this.labels[i];
+      //div.style.position="absolute";      
+      //div.style.left=px(this.size);
+      //div.style.top=1.4*i+"em";
+      div.className="label";
+      
+      labelBox.appendChild(div);
+      
+    }
+    placeholder.appendChild(labelBox);
+  },
   // Returns the sum of all entries up to i in an array
   sumPrevious: function(i,array){
     //return array.inject(0, function (a,v){return a+v;}) - array[i];
     var s=0;
-    for (var j=0; j<i-1;j++)
-      s+=array[i];
+    for (var j=0; j<i;j++)
+      s+=array[j];
     return s;
   }
 }

@@ -28,6 +28,8 @@
   hitsWeekData=[300,500,200,300,500,600,450];
   hitsMonthData=[<%= @hits_month %>];
   
+  os_data=[<%= @os_data %>];
+  browser_data=[<%= @browser_data %>];
   
 </script>
 
@@ -35,7 +37,6 @@
 
 
 <% end %>
-
 
 
 
@@ -138,6 +139,10 @@
     
     <div id="details" class="section" <%=panel_style("details")-%> >
       <img src="/images/h/details.png" class="section_title"/>  
+      
+      <div class="chart"  id="browser_details"><div class="chart_frame"></div>
+        
+      </div>
       <br clear="both"/>
     </div>
   
