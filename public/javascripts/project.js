@@ -267,13 +267,11 @@ TableDisplay.prototype={
     return Math.round(data/max*80);   
   },
   classString: function(i, func){
-  var c=(i%2==0 ? "a" : "");  
-   if (func!=null)
-     c+=func(i);
-  //return(c=="" ? "" : ' class="' + c +'"');
-  return c;
+    var c=(i%2==0 ? "a" : "");  // alt row
+    if (func!=null)
+      c+=func(i);
+    return c;
   }
-
 };
 
 
