@@ -13,4 +13,4 @@ this part is done in the migration
 #--v.save
 
 script/server
-browse to: localhost:3000/projects
+browse to: localhost:3000/project

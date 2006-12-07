@@ -10,26 +10,25 @@
 #
 # And be sure to use new-style password hashing:
 #   http://dev.mysql.com/doc/refman/5.0/en/old-client.html
-development:
+
+defaults: &defaults
   adapter: mysql
-  database: achilles_development
   username: achilles
-  password: achilles1
+  password: dbpass3
   host: localhost
+  socket: /var/run/mysqld/mysqld.sock
+
+development:
+  database: achilles_development
+  <<: *defaults
 
 # Warning: The database defined as 'test' will be erased and
 # re-generated from your development database when you run 'rake'.
 # Do not set this db to the same as development or production.
 test:
-  adapter: mysql
   database: achilles_test
-  username: achilles
-  password: achilles1
-  host: localhost
+  <<: *defaults
 
 production:
-  adapter: mysql
   database: achilles_production
-  username: achilles
-  password: achilles1
-  host: localhost
+  <<: *defaults
