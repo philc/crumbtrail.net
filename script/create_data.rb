@@ -8,7 +8,7 @@ require "app/models/server.rb"
 def establish_connection()
   f=YAML::load(File.open('config/database.yml'))
   args={}
-  env="production"
+  env="development"
   f[env].map{ |k,v| args[k.intern]=v}
 
   ActiveRecord::Base.establish_connection(args)
@@ -29,8 +29,8 @@ def add
                          :country_id => 1,
                          :zone_id   => 2)
   proj = Project.new(:account_id => philc.id,
-                     :title => "Phil Crosby's Amazing Website",
-                     :url => "http%3A//192.168.0.56/philisoft/personal/",
+                     :title => "Ninja Words",
+                     :url => "http%3A//www.ninjawords.com/",
                      :zone_id => philc.zone_id)
   proj.id = 1050
   proj.save
