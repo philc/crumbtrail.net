@@ -318,7 +318,7 @@ TableDisplay.Methods={
   },
   hitsToday: function(i,data, dataMax){
     var classString=this.classString(i, function(i){return (page.date.getHours()-i < 0 ? " old" : "")});
-    var day=DisplayHelper.showHour(page.date.getHours()-i-1);
+    var day=DisplayHelper.showHour(page.date.getHours()-i);
     return this.hitsRow(i,data,dataMax,day,classString);
   }
 };
@@ -360,8 +360,9 @@ DisplayHelper.Methods={
   },
   showHour: function(i){
     var t=i%24;
-    t=t<0 ? 24+i : i;
-    return (t%12)+1 + ":00" + ( (t<12 || t>=23) ? "am" : "pm");
+    t=t<0 ? 24+t : t;
+    h=(t)%12;
+    return (h==0 ? 12 : h) + ":00" + ( (t<11) ? "am" : "pm");
   },
   days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
   showDay: function(i, showToday){
