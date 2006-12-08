@@ -1,0 +1,4 @@
+./script/drop_db.sh development
+rake db:migrate
+./script/setup_test_env.sh
+
