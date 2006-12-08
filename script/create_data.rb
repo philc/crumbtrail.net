@@ -27,7 +27,7 @@ def add
                          :firstname  => "Phil",
                          :lastname   => "Crosby",
                          :country_id => 1,
-                         :zone_id   => 2)
+                         :zone_id   => 1)
   proj = Project.new(:account_id => philc.id,
                      :title => "Ninja Words",
                      :url => "http%3A//www.ninjawords.com/",
