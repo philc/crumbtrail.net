@@ -130,7 +130,7 @@ class ApacheLogReader
     'Windows 98' => 'os_w9x',
     'Windows 95' => 'os_w9x',
     'Linux' => 'os_linux',
-    'Mac OS X' => 'os_macosx'
+    'Mac OS X' => 'os_macosx',
     'Other' => 'os_other'
   }
 

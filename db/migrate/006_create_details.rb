@@ -12,7 +12,7 @@ class CreateDetails < ActiveRecord::Migration
       t.column :b_other, :integer, :default => 0
 
       t.column :os_nt, :integer, :default => 0
-      t.column :os_w9x, :integer, :default => 0
+      t.column :os_9x, :integer, :default => 0
       t.column :os_vista, :integer, :default => 0
       t.column :os_linux, :integer, :default => 0
       t.column :os_macosx, :integer, :default => 0
