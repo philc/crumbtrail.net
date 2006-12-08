@@ -8,6 +8,7 @@ class Project < ActiveRecord::Base
   has_many :daily_hits
   has_one  :total_hit
   has_one  :hit_detail
+  has_many :landing_urls
 
   def increment_referer(request)
     TotalReferral.increment_referer(request)
@@ -59,6 +60,14 @@ class Project < ActiveRecord::Base
     end
   end
 
+  def most_popular_pages(limit)
+    return LandingUrl.get_most_popular(self, limit)
+  end
+  
+  def most_recent_pages(limit)
+    return LandingUrl.get_most_recent(self, limit)
+  end
+  
   def get_details(type)
     return HitDetail.get_details(self, type)
   end

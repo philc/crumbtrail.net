@@ -9,10 +9,14 @@ class CreateReferralTables < ActiveRecord::Migration
 
     # Create Internal Url Table
     create_table :landing_urls do |t|
+      t.column :project_id, :integer, :null => false
       t.column :url, :string, :null => false
+      t.column :count, :integer, :default => 0
+      t.column :referer_id, :integer, :default => 0
+      t.column :last_visit, :datetime
     end
 
-    add_index :landing_urls, :url
+    add_index :landing_urls, :project_id
 
     # Create Recent Referral Table
     create_table :recent_referrals do |t|

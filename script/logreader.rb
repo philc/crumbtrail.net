@@ -46,15 +46,21 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
-    if @referer_url != 'none' && @referer_url.match("^#{project.url}").nil?
-      @referer = Referer.find_by_url(@referer_url)
-      @referer = Referer.create(:url => @referer_url) if @referer.nil?
-    end
+    @referer = Referer.find_by_url(@referer_url)
+    @referer = Referer.create(:url => @referer_url) if @referer.nil?
 
-    @landing_url = LandingUrl.find_by_url(@url)
-    @landing_url = LandingUrl.create(:url => @url) if @landing_url.nil?
+    @landing_url = LandingUrl.find(:first, :conditions => ['project_id = ? AND url = ?', @project.id, @url])
+    @landing_url = LandingUrl.create(:project_id => @project.id, 
+                                     :url => @url, 
+                                     :count => 0,
+                                     :referer_id => @referer.id,
+                                     :last_visit => @project.time) if @landing_url.nil?
+    @landing_url.count += 1
+    @landing_url.referer_id = @referer.id
+    @landing_url.last_visit = @project.time
+    @landing_url.save
 
-    @project.increment_referer(self) if !@referer.nil?
+    @project.increment_referer(self) if @referer_url != '/'
     @project.increment_hit_count(self)
     @project.increment_details(self)
   end
@@ -62,7 +68,7 @@ end
 
 class ApacheLogReader
 
-  @@regex = Regexp.new('(.*)\s+\[(.*)\]\s+(.*)\s+(.*)\s+"(.*)"')
+  @@regex = Regexp.new('(.+)\s+\[(.+)\]\s+(.+)\s+(.+)\s+"(.+)"')
 
 #------------------------------------------------------------------------------
 
@@ -80,23 +86,33 @@ class ApacheLogReader
   def self.process_line(line)
     if @@regex.match(line)
 
-      id = parse_project_id($3).to_i
-      project = Project.find(id)
+      begin
+        id = parse_project_id($3).to_i
+        project = Project.find(id)
 
-      if !project.nil?
-        ip          = $1
-        time        = parse_time($2, project)
-        referer_url = parse_referer($3)
-        unique      = parse_unique($3)
-        landing_url = $4
-        browser     = parse_browser($5)
-        os          = parse_os($5)
+        if !project.nil?
+          ip          = $1
+          time        = parse_time($2, project)
+          referer_url = parse_referer($3)
+          unique      = parse_unique($3)
+          landing_url = $4
+          browser     = parse_browser($5)
+          os          = parse_os($5)
 
-        strip_protocol(referer_url)
-        strip_protocol(landing_url)
+          strip_protocol(referer_url)
+          if !referer_url.match("^#{project.url}").nil?
+            referer_url = '/'
+          end
 
-        request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
-        request.save
+          strip_protocol(landing_url)
+          #strip_server_url(project, landing_url)
+
+          request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
+          request.save
+        end
+
+      rescue ActiveRecord::RecordNotFound
+        puts "Couldn't find project : " + line
       end
     end
   end
@@ -132,8 +148,8 @@ class ApacheLogReader
     'Windows NT 5.1' => 'os_nt',
     'Windows NT 5.2' => 'os_nt',
     'Windows NT 6.0' => 'os_vista',
-    'Windows 98' => 'os_w9x',
-    'Windows 95' => 'os_w9x',
+    'Windows 98' => 'os_9x',
+    'Windows 95' => 'os_9x',
     'Linux' => 'os_linux',
     'Mac OS X' => 'os_macosx',
     'Other' => 'os_other'
@@ -167,7 +183,7 @@ class ApacheLogReader
   
   def self.parse_referer(query)
     query.match(/[&\?]r=([A-Za-z0-9\/:%\.]+)/)
-    return $1 || "none"
+    return $1 || '/'
   end
 
 #------------------------------------------------------------------------------
@@ -196,9 +212,18 @@ class ApacheLogReader
       elsif url =~ /http%3A\/\//
         url.slice!(0..8)
       end
-      
+
       if url =~ /www\./
         url.slice!(0..3)
+      end
+    end
+    return nil
+  end
+  
+  def self.strip_server_url(project, url)
+    if !url.nil?
+      if url =~ /^#{project.url}/
+        url.slice!(0..project.url.length-2)
       end
     end
     return nil
@@ -206,5 +231,6 @@ class ApacheLogReader
 end
 
 # ApacheLogReader::establish_connection()
-ApacheLogReader::tail_log("script/test.log")
-#ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")
+#ApacheLogReader::tail_log("script/test.log")
+#ApacheLogReader::tail_log("script/test-long.log")
+ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")
