@@ -9,24 +9,32 @@ class HitDetail < ActiveRecord::Base
   #@@os_keys = %w[os_w2k os_xp os_w2k3 os_vista os_w98 os_w95 os_linux os_macosx]
   #@@browser_keys = %w[b_firefox15 b_firefox20 b_ie5 b_ie6 b_ie7 b_safari b_other]
   
-  @@os_display={
+  @@os={
    "os_nt"=>"Windows XP/2000/2003",
    "os_9x"=>"Windows 95/98", 
    "os_vista"=>"Windows Vista",
    "os_linux"=>"Linux",
    "os_macosx"=>"Mac OSX",
    "os_other" => "Other"}
-
-  @@os_keys=@@os_display.keys
-
-  @@browser_display = {
+  
+  # order to display
+  @@os_display=[ @@os["vista"],@@os["os_nt"],@@os["os_9x"],@@os["os_linux"],@@os["os_macosx"],@@os["os_other"]]
+  def self.os_display
+    return @@os_display
+  end
+  
+  @@browser = {
     "b_firefox"=>"Firefox 1.5/2.0",
     "b_ie5_6"=>"Internet Explorer 5/6",
     "b_ie7"=>"Internet Explorer 7",
     "b_safari"=>"Safari",
     "b_other"=>"Other"}
     
-  @@browser_keys=@@browser_display.keys
+  @@browser_display= [@@browser["b_firefox"],@@browser["b_ie5_6"],@@browser["b_ie7"],
+      @@browser["b_safari"],@@browser["b_other"]]
+  def self.browser_display
+    return @@browser_display
+  end  
   
   def self.increment_browser(request)
     project = request.project
@@ -38,11 +46,11 @@ class HitDetail < ActiveRecord::Base
     row = new(:project => project, :day => date.wday, :last_update => date) if row.nil?
 
     if row.last_update != date
-      for key in @@os_keys
+      for key in @os.keys
         row.send((key+"=").to_sym, 0)
       end
 
-      for key in @@browser_keys
+      for key in @@browser.keys
         row.send((key+"=").to_sym, 0)
       end
     end
@@ -74,7 +82,7 @@ class HitDetail < ActiveRecord::Base
 
   def browser_stats()
     results = Hash.new(0)
-    @@browser_display.each do |key,display_key| 
+    @@browser.each do |key,display_key| 
       results[display_key]=send(key.to_sym)
     end
     return results
@@ -82,7 +90,7 @@ class HitDetail < ActiveRecord::Base
 
   def os_stats()
     results = Hash.new(0)
-    @@os_display.each do |key,display_key| 
+    @@os.each do |key,display_key| 
       results[display_key]=send(key.to_sym)
     end
     return results

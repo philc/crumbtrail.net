@@ -10,7 +10,7 @@ class ProjectController < ApplicationController
     @referers_total = p.top_referers(10)
     @referers_total=format_referers_with_count(@referers_total)
     
-    
+    # use the date in the view that we have on record for them.    
     @date = to_js_date(p.time);
     
     
@@ -18,7 +18,6 @@ class ProjectController < ApplicationController
 
     @referers_recent=format_referers_recent(p.recent_referers()[0..limit])
   
-    # for hits today, I need to know what timezone they're in    
     @hits_day=p.hits(:day).join(",")    
     
     weekData=p.hits(:week)
@@ -32,39 +31,41 @@ class ProjectController < ApplicationController
     
     @preferences = ViewPreference.find_by_project_id(@project_id)
     
-    
+    build_details(p)
+
+   
+  end
+  def build_details(p)
     # drop entries that are 0
     @browser_labels=[]
     @browser_data=[]
-    @browsers = p.get_details(:browser).select{|k,v| v>0}
+    #@browsers = p.get_details(:browser).select{|k,v| v>0}
+    browsers = p.get_details(:browser)
     # Data is now [ [browser,5], ... ]    
-    @browsers.each do |pair|    
-      @browser_labels<<"\"#{pair[0]}\""
-      @browser_data<<pair[1]
+    HitDetail.browser_display.each do |key|
+      v=browsers[key]
+      next if v <=0
+      @browser_labels << "\"#{key}\""
+      @browser_data<<v
     end
     
     @browser_labels=@browser_labels.join(',')
-    @browser_data=@browser_data.join(',')
-    
-    
+    @browser_data=@browser_data.join(',')   
     
     # drop entries that are 0
     @os_labels=[]
     @os_data=[]
-    @os= p.get_details(:os).select{|k,v| v>0}
-    @os.each do |pair|    
-      @os_labels<<"\"#{pair[0]}\""
-      @os_data<<pair[1]
-    end
+    os = p.get_details(:os)
+    HitDetail.os_display.each do |key|
+      v=os[key]
+      next if v <=0
+      @os_labels << "\"#{key}\""
+      @os_data<<v
+    end    
     
     @os_labels=@os_labels.join(',')
     @os_data=@os_data.join(',')
-    
-    puts @os_labels
-    puts @os_data
-    
   end
-  
   def lag()
     sleep 3
   end
