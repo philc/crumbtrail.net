@@ -123,14 +123,15 @@ class ApacheLogReader
 
 #------------------------------------------------------------------------------
   @@os_hash = {
-    'Windows NT 5.0' => 'os_w2k',
-    'Windows NT 5.1' => 'os_xp',
-    'Windows NT 5.2' => 'os_w2k3',
+    'Windows NT 5.0' => 'os_nt',
+    'Windows NT 5.1' => 'os_nt',
+    'Windows NT 5.2' => 'os_nt',
     'Windows NT 6.0' => 'os_vista',
-    'Windows 98' => 'os_w98',
-    'Windows 95' => 'os_w95',
+    'Windows 98' => 'os_w9x',
+    'Windows 95' => 'os_w9x',
     'Linux' => 'os_linux',
     'Mac OS X' => 'os_macosx'
+    'Other' => 'os_other'
   }
 
   def self.parse_os(user_agent)
@@ -142,10 +143,10 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
 
   @@browser_hash = {
-    'Firefox/1.5' => 'b_firefox15',
-    'Firefox/2.0' => 'b_firefox20',
-    'MSIE 5' => 'b_ie5',
-    'MSIE 6.0' => 'b_ie6',
+    'Firefox/1.5' => 'b_firefox',
+    'Firefox/2.0' => 'b_firefox',
+    'MSIE 5' => 'b_ie5_6',
+    'MSIE 6.0' => 'b_ie5_6',
     'MSIE 7.0' => 'b_ie7',
     'Safari' => 'b_safari',
     'Other' => 'b_other'

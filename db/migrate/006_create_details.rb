@@ -5,20 +5,15 @@ class CreateDetails < ActiveRecord::Migration
       t.column :day, :integer, :null => false
       t.column :last_update, :date, :null => false
 
-      t.column :b_firefox15, :integer, :default => 0
-      t.column :b_firefox20, :integer, :default => 0
-      t.column :b_ie5, :integer, :default => 0
-      t.column :b_ie6, :integer, :default => 0
+      t.column :b_firefox, :integer, :default => 0
+      t.column :b_ie5_6, :integer, :default => 0
       t.column :b_ie7, :integer, :default => 0
       t.column :b_safari, :integer, :default => 0
       t.column :b_other, :integer, :default => 0
 
+      t.column :os_nt, :integer, :default => 0
+      t.column :os_w9x, :integer, :default => 0
       t.column :os_vista, :integer, :default => 0
-      t.column :os_w2k3, :integer, :default => 0
-      t.column :os_xp, :integer, :default => 0
-      t.column :os_w2k, :integer, :default => 0
-      t.column :os_w98, :integer, :default => 0
-      t.column :os_w95, :integer, :default => 0
       t.column :os_linux, :integer, :default => 0
       t.column :os_macosx, :integer, :default => 0
       t.column :os_other, :integer, :default => 0

@@ -10,21 +10,18 @@ class HitDetail < ActiveRecord::Base
   #@@browser_keys = %w[b_firefox15 b_firefox20 b_ie5 b_ie6 b_ie7 b_safari b_other]
   
   @@os_display={
-   "os_w2k"=>"Windows 2000",
-   "os_w2k3"=>"Windows 2003", 
+   "os_nt"=>"Windows XP/2000/2003",
+   "os_9x"=>"Windows 95/98", 
    "os_vista"=>"Windows Vista",
-   "os_w98"=>"Windows 98", 
-   "os_w95"=>"Windows 95",
    "os_linux"=>"Linux",
-   "os_macosx"=>"Mac OSX"}
-   
+   "os_macosx"=>"Mac OSX",
+   "os_other" => "Other"}
+
   @@os_keys=@@os_display.keys
-    
+
   @@browser_display = {
-    "b_firefox15"=>"Firefox 1.5",
-    "b_firefox20"=>"Firefox 2.0",
-    "b_ie5"=>"Internet Explorer 5",
-    "b_ie6"=>"Internet Explorer 6",
+    "b_firefox"=>"Firefox 1.5/2.0",
+    "b_ie5_6"=>"Internet Explorer 5/6",
     "b_ie7"=>"Internet Explorer 7",
     "b_safari"=>"Safari",
     "b_other"=>"Other"}
