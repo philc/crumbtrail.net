@@ -362,7 +362,7 @@ DisplayHelper.Methods={
     var t=i%24;
     t=t<0 ? 24+t : t;
     h=(t)%12;
-    return (h==0 ? 12 : h) + ":00" + ( (t<13&&t!=0) ? "am" : "pm");
+    return (h==0 ? 12 : h) + ":00" + ( (t<12) ? "am" : "pm");
   },
   days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
   showDay: function(i, showToday){
