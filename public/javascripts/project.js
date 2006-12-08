@@ -172,7 +172,7 @@ function populatePage(){
   
   // referer section
   TableDisplay.showTable("referers_total",referersTotalData,TableDisplay.refererRow,3,
-    "Total referrals", ["Referer","Total hits"]);
+    "Top referrals", ["Referer","Total hits"]);
     
   TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
     "Unique referrals", ["Referer","First visited"]);
@@ -536,7 +536,9 @@ LineGraph.prototype={
       for (var i = this.data.length-1;i>=0;i--){
         var t="";
         if (this.labels=="week")
-          t=DisplayHelper.showDay(i-page.date.getHours()-1,false);
+          //t=DisplayHelper.showDay(i-page.date.getHours()-1,false);
+          //t=DisplayHelper.showDay(i);
+          t=day=DisplayHelper.showDay((new Date()).getDay()-i)
         var l=this.xLabel(t.slice(0,2));
         l.style.left=px(hwidth*i);
         graphContainer.appendChild(l);
