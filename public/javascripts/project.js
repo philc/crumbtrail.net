@@ -175,10 +175,10 @@ function populatePage(){
     "Total referrals", ["Referer","Total hits"]);
     
   TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
-    "Total referrals", ["Referer","First visited"]);
+    "Unique referrals", ["Referer","First visited"]);
     
   TableDisplay.showTable("referers_recent",referersRecentData,TableDisplay.refererRowWithDate,3,
-    "Recent Referer", ["Recent referer","Visited"]);
+    "Recent Referer", ["Referer","Visited"]);
 
 
   // glance section

@@ -5,18 +5,17 @@ class ProjectController < ApplicationController
     @project_id=@@project_id
     p = Project.find(@project_id)    
     
-    # Select top 10 referers
-#     @referers_total=TotalReferral.find(:all, 
-#     :conditions=>["project_id = ?",@project_id],:order=>"count DESC")
-    @referers_total = p.top_referers(20)
+    # only take the first 10 referers. Change this to a better way when we do pagination
+    limit=9
+    @referers_total = p.top_referers(10)
     @referers_total=format_referers_with_count(@referers_total)
-#     @referers_total=[]
     
     
     
-    @referers_unique= format_referers_date(p.recent_unique_referers(10))
+    
+    @referers_unique= format_referers_date(p.recent_unique_referers(10)[0..limit])
 
-    @referers_recent=format_referers_recent(p.recent_referers())
+    @referers_recent=format_referers_recent(p.recent_referers()[0..limit])
   
     # for hits today, I need to know what timezone they're in    
     @hits_day=p.hits(:day).join(",")    

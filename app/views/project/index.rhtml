@@ -73,9 +73,9 @@
       <div id="glance-left">    
          <div id ="summary_stats">
           <table border=0><tr><td class="today">Hits today:</td><td><span class="number"><%=@glance_today[0]%></span></td>
-          <tr><td  class="padding"> </td><td class="unique padding">(<%=@glance_today[1]%>)</td></tr>
+          <tr><td  class="padding"> </td><td class="unique padding">(<%=@glance_today[1]%> unique)</td></tr>
           <tr><td class="yesterday">Hits yesterday:</td><td><%=@glance_yesterday[0]%></span><td>
-          <tr><td> </td><td><span class="unique">(<%=@glance_yesterday[1]%>)</td></tr>
+          <tr><td> </td><td><span class="unique">(<%=@glance_yesterday[1]%> unique)</td></tr>
       
           </table>
          </div>
@@ -134,11 +134,13 @@
     <div id="pages" class="section" <%=panel_style("pages")-%> >
       <img src="/images/h/pages.png" class="section_title"/>  
       <br clear="both"/>
+      <i>[working out a few bugs]</i>
     </div>
     
     <div id="searches" class="section" <%=panel_style("searches")-%> >
       <img src="/images/h/searches.png" class="section_title"/>  
       <br clear="both"/>
+      <i>[working out a few bugs]</i>
     </div>
     
     <div id="details" class="section" <%=panel_style("details")-%> >
