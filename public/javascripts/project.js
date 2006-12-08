@@ -71,7 +71,7 @@ Preferences.prototype = {
 var Page = Class.create();
 Page.prototype = {
   initialize:function(){
-    //this.colors=["#a4d898","#fdde88","#d75b5c","#7285b7"];
+    //this.colors=["#a4d898","#fdde88","#d75b5c","#7285b7"];98d5d8
     this.colors=["#a4d898","#fdde88","#ff9e61","#d75b5c","#7285b7","#98d5d8","#989cd8","#d8bb98"];
     this.preferences=new Preferences();
     
@@ -155,7 +155,7 @@ function init(){  // quit if this function has already been called
 }
 
 
-chartData=[3,4,2,3,5,6];
+chartData=[3,4,2,3,5,6,3];
 
 function populate(){
   var tb=new TableDisplay("Hits today", ["","Hits","Unique"],hitsDayData,2,hitsToday);
@@ -327,18 +327,18 @@ Object.extend(DisplayHelper,DisplayHelper.Methods);
 
 function hitsMonth(i,data,dataMax){
   var percent=this.columnPercent(data[i],dataMax);
-  var percent2=this.columnPercent(data[i],dataMax);
+  var percent2=this.columnPercent(data[i+1],dataMax);
   
   var day=this.td(DisplayHelper.formatWeeksAgo(i),"f");
   
   var cell1 = this.graphCell(data[i],percent);  
-  var cell2 = this.graphCell(data[i],percent2);  
+  var cell2 = this.graphCell(data[i+1],percent2);  
 
   return this.tr(day +cell1 + cell2, this.classString(i));  
 };
 function hitsWeek(i,data, dataMax){
   var percent=this.columnPercent(data[i],dataMax);
-  var percent2=this.columnPercent(data[i],dataMax);
+  var percent2=this.columnPercent(data[i+1],dataMax);
   var day=this.td(DisplayHelper.showDay((new Date()).getDay()-i),"f ");
   
   var cell1 = this.graphCell(data[i],percent);  
@@ -738,7 +738,7 @@ PieGraphDisplay.prototype={
     // div dimentions
     //var dw,dh,dt,dl=0
     var dw=dh=dt=dl=0;
-    qs=this.qsize;
+    var qs=this.qsize;
     
     dw = ((q==1 || q==3) ? w : qs-w );
     
@@ -759,7 +759,8 @@ PieGraphDisplay.prototype={
       dl=qs+w;
       dt=qs;        
       //dh=qs-h;
-      dh=h;
+      // If it's a 0 height, we should fill up the whole box.
+      dh= (h==0 ? qs: h);
       console.log("setting q2 height to ",dh, " h",h);
     }
     if (q==3){
