@@ -71,7 +71,8 @@ Preferences.prototype = {
 var Page = Class.create();
 Page.prototype = {
   initialize:function(){
-    this.colors=["#a4d898","#fdde88","#d75b5c","#7285b7"];
+    //this.colors=["#a4d898","#fdde88","#d75b5c","#7285b7"];
+    this.colors=["#a4d898","#fdde88","#ff9e61","#d75b5c","#7285b7","#98d5d8","#989cd8","#d8bb98"];
     this.preferences=new Preferences();
     
     
@@ -134,18 +135,9 @@ function init(){  // quit if this function has already been called
   Object.extend(Array.prototype,ArrayMethods);
   
   // delete this junk
-
   now=10;
-  testdata=[];
-  for (i=0;i<24;i++){
-    testdata[i*2]=i*6*10;
-    testdata[i*2+1]=i*3*10;
-  }  
-  chartData=[12,22,10,26];
-  chartData=[.5,2,5,5];
-  chartData=[0.4,6,3,4];
-//   chartData=[1,2,3,354];
-  
+
+ 
   
   
   populate();
@@ -163,7 +155,7 @@ function init(){  // quit if this function has already been called
 }
 
 
-
+chartData=[3,4,2,3,5,6];
 
 function populate(){
   var tb=new TableDisplay("Hits today", ["","Hits","Unique"],hitsDayData,2,hitsToday);
@@ -186,17 +178,16 @@ function populate(){
   tb=new TableDisplay("", ["Top referers this week","Hits"],referersTotalData,2,referersTotal);
   $("glance_referers_week").innerHTML=tb.buildTable();
   
-  var data2=[];
-  
-  testdata.each(function(d,i){if (i%2==0) data2[i/2]=d;});
-  
+ 
   lg=new LineGraph("hitsweek-linegraph",hitsWeekData, 200,110, "week",1);
   lg.drawGraph();
   
   
 //   lg=new LineGraph("linegraph2",hitsWeekData, 300,150, "week",2);
 //   lg.drawGraph();
-  pg = new PieGraphDisplay("browser_details","Web browsers", browserData,
+  //pg = new PieGraphDisplay("browser_details","Web browsers", browserData,
+  pg = new PieGraphDisplay("browser_details","Web browsers", chartData,
+  
   browserLabels);
   pg.drawChart();  
   pg = new PieGraphDisplay("os_details","Operating systems", osData,
