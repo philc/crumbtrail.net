@@ -1,10 +1,8 @@
 // Dean Edwards/Matthias Miller/John Resig
 
 /* for Mozilla/Opera9 */
-if (document.addEventListener){
-    
+if (document.addEventListener)   
     document.addEventListener("DOMContentLoaded", init, false);
-    }
 
 /* for Internet Explorer */
 /*@cc_on @*/
@@ -41,6 +39,8 @@ function UITimer(){
   this.timeout=2000;
 }
 
+function px(v) {  return v + "px";}
+
 var Preferences = Class.create();
 Preferences.prototype = {
   initialize:function(){
@@ -71,11 +71,21 @@ Preferences.prototype = {
 var Page = Class.create();
 Page.prototype = {
   initialize:function(){
-    //this.colors=["#a4d898","#fdde88","#d75b5c","#7285b7"];98d5d8
     this.colors=["#a4d898","#fdde88","#ff9e61","#d75b5c","#7285b7","#98d5d8","#989cd8","#d8bb98"];
-    this.preferences=new Preferences();
-    
-    
+    this.preferences=new Preferences();  
+      
+    var StringMethods={
+      firstUpCase:function(){ return this[0].toUpperCase() + this.slice(1,this.length);}
+    };
+    Object.extend(String.prototype,StringMethods);
+  
+    var ArrayMethods={ 
+      sum:function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; },
+      max:function(){var m=0; for (var i=0; i<this.length; i++) if (this[i] > m) m=this[i]; return m},
+      min:function(){var m=Number.MAX_VALUE; for (var i=0; i<this.length; i++) if (this[i] < m) m=this[i]; return m}
+    };
+    Object.extend(Array.prototype,ArrayMethods);
+  
   },
   // Switch section
   menuNav: function(e){
@@ -90,7 +100,7 @@ Page.prototype = {
     
     this.preferences.update("section",section);
   },
-  //panelNav: function(section,v,linkElement){
+  // Navigate within a section
   panelNav: function(linkElement){
     var panel=linkElement.title;
     document.getElementsByClassName("panel",this.activeSection).each(
@@ -112,35 +122,26 @@ Page.prototype = {
   }
 };
 
-
-
-
 page = new Page();
 
-// Gets called when the page is done loading. Enables the structure with behavior
-function init(){  // quit if this function has already been called
-  
+
+
+function init(){  
+
+  // quit if this function has already been called  
   if (arguments.callee.done) return;
+  
   // flag this function so we don't do the same thing twice
   arguments.callee.done = true;
+  
   // kill the timer
   if (_timer) clearInterval(_timer);
   
-  
-  var ArrayMethods={ 
-    sum:function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; },
-    max:function(){var m=0; for (var i=0; i<this.length; i++) if (this[i] > m) m=this[i]; return m},
-    min:function(){var m=Number.MAX_VALUE; for (var i=0; i<this.length; i++) if (this[i] < m) m=this[i]; return m}
-    };
-  Object.extend(Array.prototype,ArrayMethods);
-  
-  // delete this junk
-  now=10;
-
  
+  // delete this junk
+  now=10; 
   
-  
-  populate();
+  populatePage();
   
   // set menu links
   $A($('menu-links').getElementsByTagName("LI")).each(function(e){
@@ -156,47 +157,50 @@ function init(){  // quit if this function has already been called
 
 
 chartData=[3,4,2,3,5,6,3];
+chartData=[3,2,2,1];
 
-function populate(){
-  var tb=new TableDisplay("Hits today", ["","Hits","Unique"],hitsDayData,2,hitsToday);
-  $("hits_today").innerHTML=tb.buildTable();
-  tb = new TableDisplay("Hits this week", ["","Hits","Unique"],hitsWeekData,2,hitsWeek);
-  $("hits_week").innerHTML=tb.buildTable();  
-  tb = new TableDisplay("Hits this month", ["","Hits","Unique"],hitsMonthData,2,hitsMonth);
-  $("hits_month").innerHTML=tb.buildTable();
-  
-  tb=new TableDisplay("Total referrals", ["Referer","Total hits"],referersTotalData,3,referersTotal);
-  $("referers_total").innerHTML=tb.buildTable();
-  tb=new TableDisplay("Unqiue referrals", ["Referer","First visited"],referersUniqueData,3,referersWithDate);
-  $("referers_unique").innerHTML=tb.buildTable();
-  tb=new TableDisplay("Most recent referers",["Recent referer", "Visited"],referersRecentData,3,referersWithDate);
-  $("referers_recent").innerHTML=tb.buildTable();
+function populatePage(){
 
-  tb=new TableDisplay("", ["Top referers today","Hits"],referersTotalData,2,referersTotal);
-  $("glance_referers_today").innerHTML=tb.buildTable();
+  // hits section
+  TableDisplay.showTable("hits_today",hitsDayData,TableDisplay.hitsToday,2,
+    "Hits today", ["","Hits","Unique"]);
+  TableDisplay.showTable("hits_week",hitsWeekData,TableDisplay.hitsWeek,2,
+    "Hits this week", ["","Hits","Unique"]);
+  TableDisplay.showTable("hits_month",hitsMonthData,TableDisplay.hitsMonth,2,
+    "Hits this month", ["","Hits","Unique"]);
   
-  tb=new TableDisplay("", ["Top referers this week","Hits"],referersTotalData,2,referersTotal);
-  $("glance_referers_week").innerHTML=tb.buildTable();
+  // referer section
+  TableDisplay.showTable("referers_total",referersTotalData,TableDisplay.refererRow,3,
+    "Total referrals", ["Referer","Total hits"]);
+    
+  TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
+    "Total referrals", ["Referer","First visited"]);
+    
+  TableDisplay.showTable("referers_recent",referersRecentData,TableDisplay.refererRowWithDate,3,
+    "Recent Referer", ["Recent referer","Visited"]);
+
+
+  // glance section
+  TableDisplay.showTable("glance_referers_today",[],TableDisplay.refererRow,2,
+    "", ["Top referers today","Hits"]);
+  TableDisplay.showTable("glance_referers_week",[],TableDisplay.refererRow,2,
+    "", ["Top referers this week","Hits"]);
   
- 
-  lg=new LineGraph("hitsweek-linegraph",hitsWeekData, 200,110, "week",1);
-  lg.drawGraph();
-  
-  
-//   lg=new LineGraph("linegraph2",hitsWeekData, 300,150, "week",2);
-//   lg.drawGraph();
-  //pg = new PieGraphDisplay("browser_details","Web browsers", browserData,
-  pg = new PieGraphDisplay("browser_details","Web browsers", chartData,
-  
-  browserLabels);
+  // don't graph uniques on the line graph
+  var onlyHits = [];
+  for (var i=0;i<hitsWeekData.length;i+=2) onlyHits[i/2]=hitsWeekData[i];
+  lg=new LineGraph("hitsweek-linegraph",onlyHits, 200,110, "week",1);
+  lg.drawGraph();  
+
+  // visitor details graphs
+  pg = new PieGraphDisplay("browser_details","Web browsers", browserData,browserLabels);
   pg.drawChart();  
   pg = new PieGraphDisplay("os_details","Operating systems", osData,
   osLabels);
   pg.drawChart();  
-//   pg = new PieGraphDisplay("browser_details",chartData,
-//     ["jump","cat2", "I'm feeling lovely", "hey there"]);
   
 };
+
 
 
 /*
@@ -205,7 +209,7 @@ function populate(){
 TableDisplay=Class.create();
 
 TableDisplay.prototype={
-  initialize: function(title, headerNames, data, step, cellFunc){
+  initialize: function(data, cellFunc, step, title,headerNames){  
     this.title=title;    
     this.headerNames=headerNames;
     this.data=data;
@@ -262,11 +266,66 @@ TableDisplay.prototype={
     if (func!=null)
       c+=func(i);
     return c;
-  }
+  },
+  hitsRow: function(i,data,dataMax, dateString, trClassString)
+  {
+    // data points
+    var p1=data[i*2], p2=data[i*2+1]
+    
+    var percent=this.columnPercent(p1,dataMax);
+    var percent2=this.columnPercent(p2,dataMax);
+    
+    var cell1 = this.graphCell(p1,percent);  
+    var cell2 = this.graphCell(p2,percent2);  
+    
+    var classString = trClassString ? trClassString  : this.classString(i);
+    return this.tr( this.td(dateString,"f") +cell1 + cell2, classString);  
+  },
+
 };
 
+TableDisplay.Methods={
+  refererRowWithDate: function(i,data,dataMax){
+    f=TableDisplay.refererRow.bind(this);
+    return f(i,data,dataMax,true);
+  },
+  // Is date displays the second column as "time ago"
+  refererRow: function(i,data,dataMax,isDate){
+    var url=unescape(data[i*3]);
+    var landedOn=unescape(data[i*3+1]);
+    var linkCaption = DisplayHelper.truncateRight(url,45);
+    var landedOnCaption = DisplayHelper.truncateLeft(landedOn,60);
+    var html = linkCaption.link(url) + '<span class="to">To&nbsp;'+landedOnCaption.link(landedOn)+'</a></span>';
+    var cell1 = this.td(html, "f");
+    var cell2 = this.td( isDate ? 
+      DisplayHelper.timeAgo(data[i*3+2]) : data[i*3+2]
+     );
+    return this.tr(cell1 + cell2, this.classString(i));
+  },
+  showTable: function(htmlID, data, cellFunction, dataStep, title, headerNames){
+      var display = new TableDisplay(data,cellFunction,dataStep,title,headerNames);
+      $(htmlID).innerHTML=display.buildTable();
+  },  
+  hitsMonth:function (i,data,dataMax){
+      var day=DisplayHelper.formatWeeksAgo(i);
+      return this.hitsRow(i,data,dataMax,day);
+  },
+  hitsWeek: function(i,data, dataMax){
+    var day=DisplayHelper.showDay((new Date()).getDay()-i);
+    return this.hitsRow(i,data,dataMax,day);
+  },
+  hitsToday: function(i,data, dataMax){
+    var classString=this.classString(i, function(i){return (now-i < 0 ? " old" : "")});
+    var day=DisplayHelper.showHour(now-i);
+    return this.hitsRow(i,data,dataMax,day,classString);
+  }
+};
+Object.extend(TableDisplay,TableDisplay.Methods);
 
 
+/*
+ * Generic display methods
+ */
 DisplayHelper = Class.create();
 DisplayHelper.Methods={
   timeAgo: function(date){
@@ -313,86 +372,25 @@ DisplayHelper.Methods={
   // Should we try and break on periods or slashes, if they're close?
   // Usually that's what we want
   truncateLeft: function(str,n){
-    if (str<n) return str;
+    if (str.length<n) return str;
     var mod = str.slice(n,str.length);
     for (var i=0; i<5; i++){
       if (mod[i]=="." || mod[i]=="/")
         return ".."+mod.slice(i,mod.length);
     }
     return ".." + mod;
+  },
+  truncateRight: function(str,n){
+    if (str.length<=n) return str;
+    var mod = str.slice(0,n);
+    for (var i=n; i>n-5; i--){
+      if (mod[i]=="." || mod[i]=="/")
+        return mod.slice(0,i)+"..";
+    }
+    return mod+"..";
   }
 }
 Object.extend(DisplayHelper,DisplayHelper.Methods);
-
-
-function hitsMonth(i,data,dataMax){
-  var percent=this.columnPercent(data[i*2],dataMax);
-  var percent2=this.columnPercent(data[i*2+1],dataMax);
-  
-  var day=this.td(DisplayHelper.formatWeeksAgo(i),"f");
-  
-  var cell1 = this.graphCell(data[i*2],percent);  
-  var cell2 = this.graphCell(data[i*2+1],percent2);  
-
-  return this.tr(day +cell1 + cell2, this.classString(i));  
-};
-function hitsWeek(i,data, dataMax){
-  var percent=this.columnPercent(data[i*2],dataMax);
-  var percent2=this.columnPercent(data[i*2+1],dataMax);
-  var day=this.td(DisplayHelper.showDay((new Date()).getDay()-i),"f ");
-  
-  var cell1 = this.graphCell(data[i*2],percent);  
-  var cell2 = this.graphCell(data[i*2+1],percent2);  
-
-  return this.tr(day +cell1 + cell2, this.classString(i));  
-}
-function hitsToday(i,data, dataMax){
-  var c=this.classString(i, function(i){return (now-i < 0 ? " old" : "")});
-
-  var percent=this.columnPercent(data[i*2],dataMax);
-  var percent2=this.columnPercent(data[i*2+1],dataMax);
-  
-  var day=this.td(DisplayHelper.showHour(now-i),"f");
-
-  var cell1 = this.graphCell(data[i*2],percent);
-  var cell2 = this.td(data[i*2+1],percent2);
-  
-  return this.tr(day +cell1 + cell2, c);
-}
-
-function referersRecent(i,data){
-  var url=unescape(data[i*2]);
-  return '<tr' + classString(i) +'><td class="f">' + linkFor(url,url)+ "</td></tr>"
-}
-function referersWithDate(i,data){
-  
-  var url=unescape(data[i*3]);
-  var landedOn=unescape(data[i*3+1]);
-  var html = linkFor(url,url) + '<span class="to">To&nbsp;<a href="'+landedOn+'">'+
-    DisplayHelper.truncateLeft(landedOn,15)+'</a></span>';
-  var cell1 = this.td(html, "f");
-  var cell2 = this.td(DisplayHelper.timeAgo(data[i*3+2]));
-  return this.tr(cell1 + cell2, this.classString(i));
-}
-
-function referersTotal(i,data){
-  var url=unescape(data[i*3]);
-  var landedOn=unescape(data[i*3+1]);
-  var html = linkFor(url,url) + '<span class="to">To&nbsp;<a href="'+landedOn+'">'+
-    DisplayHelper.truncateLeft(landedOn,15)+'</a></span>';
-  //var cell1 = this.td(linkFor(url,url), "f");
-  var cell1 = this.td(html, "f");
-  var cell2 = this.td(data[i*3+2]);
-  return this.tr(cell1 + cell2, this.classString(i));
-}
-function linkFor(url,caption){
-  return '<a href="' + url + '">' + caption + '</a>';
-}
-
-
-
-
-
 
 
 /*
@@ -579,6 +577,7 @@ LineGraph.Methods={
 }
 Object.extend(LineGraph,LineGraph.Methods);
   
+  
 /*
  * Pie chart graphing
  */
@@ -591,26 +590,13 @@ PieGraphDisplay.prototype={
     this.qsize=this.size/2;
     this.data=[];
     this.title=title;
-    // relativize data
-    //var total = this.sumPrevious(data.length-1,data);
-    var total=data.sum();
     this.labels=labels;
-    // skip an element each time
-//     for (var i=0;i<data.length;i+=2){ 
-// //       this.data[i]=Math.floor((data[i]/total)*360);
-//       this.data[i/2]=Math.floor((data[i+1]/total)*360);
-//       this.labels[i/2]=data[i];
-//     }
-    //for (var i=0;i<data.length;i+=2){ 
-    
+        
+    // relativize data
+    var total=data.sum();    
     for (var i=0;i<data.length;i++)
            this.data[i]=Math.floor((data[i]/total)*360);
-//       this.data[i]=Math.floor((data[i]/total)*360);
-      //this.data[i/2]=Math.floor((data[i+1]/total)*360);
-      //this.labels[i/2]=data[i];
-    //}
-    
-    //this.data=data;
+
   },
 
   drawChart: function (){   
@@ -618,34 +604,20 @@ PieGraphDisplay.prototype={
     placeholder.style.position="absolute";
     placeholder.style.width=px(this.size);
     placeholder.style.height=px(this.size);
-    //placeholder.className="placeholder";
-  
-    /*var max=0;
-    var total=0;
-    data.each(function(e){ total+=e; if (e>max) max=e; });  */ 
-    
-    
     
     for (var i=0;i<this.data.length-1;i++){
       this.graphQuadrant(i,this.data,placeholder);
     }
     placeholder.style.backgroundColor=page.colors[this.data.length-1];
     
-  //   graphQuadrant(0,data, placeholder);
-  //   graphQuadrant(1,data, placeholder);
-  //   graphQuadrant(2,data, placeholder);
-  //   graphQuadrant(3,data, placeholder);
     this.drawTextLabels(placeholder);
     this.element.appendChild(placeholder);
   },
 
   graphQuadrant: function(i,data, placeholder){
-    //var v=data[i]+this.sumPrevious(i,data);     
     var v=data[i]+this.sumPrevious(i,data);
-  console.log(v);
-    // quadrant
     
-    //var q=cap(Math.floor(v/90),3);
+    // quadrant this datum falls in
     var q=Math.floor(v/90);
     
     // Multiplier
@@ -658,7 +630,7 @@ PieGraphDisplay.prototype={
     var w,h;
     var s=this.size;
     var qs=this.qsize;
-    console.log("drawing image for ",q);
+    //console.log("drawing image for ",i, q, "deg", v);
     if (q==0){
       w=(v <=(45+q*90) ? qs : s*(deg));
       h=(v >=(45+q*90) ? qs : s*(1-deg));
@@ -669,12 +641,9 @@ PieGraphDisplay.prototype={
       //a=(v <=(45+q*90) ? qsize : size*(1-v/m));
       w=(v <=(45+q*90) ? qs : s*(deg));
       h=(v >=(45+q*90) ? qs : s*(1-deg));  
+      h=(v >=(45+q*90) ? qs : s*(1-deg));  
     }else{
-      console.log(deg);
-      console.log(v);
-      h=(v <=(45+q*90) ? qs : s*(deg));
-      
-      //a=(v >=(45+q*90) ? qsize : size*(1-v/m));
+      h=(v <=(45+q*90) ? qs : s*(deg));      
       w=(v >=(45+q*90) ? qs : s*(1-deg));
     } 
   
@@ -692,8 +661,7 @@ PieGraphDisplay.prototype={
   
     img.src=page.imageForQuadrant(i,q);
     
-    img.style.zIndex=data.length*2-i*2+"";
-    
+    img.style.zIndex=data.length*2-i*2+"";    
     
     this.drawFillerBoxes(placeholder,page.colors[i],q,this.data.length*2-i*2-1,w,h);
     
@@ -703,7 +671,7 @@ PieGraphDisplay.prototype={
   drawFillerBoxes: function(element,color,q,level,w,h){  
     for (var i=0; i<q; i++)
     {
-      element.appendChild(this.drawFillerBox(color, i, level,0,0));
+      element.appendChild(this.drawFillerBox(color, i, level,0,0,true));
     }
     // Make sure we should add the last element..
     
@@ -715,29 +683,16 @@ PieGraphDisplay.prototype={
     d= this.drawFillerBox(color,q,level,w,h);
     if (d)
       element.appendChild(d);
-    //element.appendChild(drawFillerBox(color,q,level,w,h));
   },
   // Puts a square in the given quadrant, next to the angle image that has a width & height of w & h
-  drawFillerBox: function(color, q, level,w,h){  
-    //return null;
+  drawFillerBox: function(color, q, level,w,h,block){  
     
     var div=document.createElement("div");
     div.style.backgroundColor=color;
     div.className="chart_filler";
-    
-  //   t = (q==2 || q==3) ? size/2 : 0;
-  //   div.style.top=t + "px";
-  //   l = (q==1 || q==2) ? size/2 : 0;
-  //     //have to special case this one
-  //   if (q==0){
-  //      div.style.width=(qsize-w)+"px";
-  //      //div.style.height=(qsize-h)+"px";     
-  //   }
-  //   div.style.left=l + "px";
     div.style.zIndex=level+"";
     
     // div dimentions
-    //var dw,dh,dt,dl=0
     var dw=dh=dt=dl=0;
     var qs=this.qsize;
     
@@ -759,10 +714,11 @@ PieGraphDisplay.prototype={
   //     div.style.width=px(qsize-w);
       dl=qs+w;
       dt=qs;        
+      //console.log("drawing filler for q2. w",w,"qs",qs,"dl",dl, "dw",dw);
       //dh=qs-h;
       // If it's a 0 height, we should fill up the whole box.
       dh= (h==0 ? qs: h);
-      console.log("setting q2 height to ",dh, " h",h);
+      //console.log("setting q2 height to ",dh, " h",h);
     }
     if (q==3){
   //     div.style.width=px(w);
@@ -777,14 +733,16 @@ PieGraphDisplay.prototype={
     div.style.left=px(dl);
     
     div.style.top=px(dt);
-    if (dw==0) dw=qs;
+    if (block){
+      dw=qs;
+      dh=qs;
+    }
     div.style.width=px(dw);
     div.style.height=px(dh);
   
     return div;
   },
   drawTextLabels: function(placeholder){
-    console.log("drawing labels",this.labels);
     var labelBox=document.createElement("div");
     labelBox.className="label_box";
     labelBox.style.left=px(this.size);
@@ -792,30 +750,17 @@ PieGraphDisplay.prototype={
     var ul = document.createElement("ul");
     ul;
     for (var i=0; i<this.labels.length;i++){
-//       var color=document.createElement("div");
-//       color.style.width=px(10);
-//       color.style.height=px(10);
-//       color.style.backgroundColor=page.colors[i];
       var div=document.createElement("li"); 
-//       placeholder.appendChild(div);
-//     console.log("<div class='color_box' style='background-color:" + 
-//       page.colors[i] + "></div>" + this.labels[i]);
       div.innerHTML="<div class='color_box' style='background-color:" + 
       page.colors[i] + "'></div>" + this.labels[i];
-      //div.style.position="absolute";      
-      //div.style.left=px(this.size);
-      //div.style.top=1.4*i+"em";
-      div.className="label";
-      
-      ul.appendChild(div);
-      
+      div.className="label";      
+      ul.appendChild(div);      
     }
     labelBox.appendChild(ul);
     placeholder.appendChild(labelBox);
   },
   // Returns the sum of all entries up to i in an array
   sumPrevious: function(i,array){
-    //return array.inject(0, function (a,v){return a+v;}) - array[i];
     var s=0;
     for (var j=0; j<i;j++)
       s+=array[j];
@@ -824,5 +769,3 @@ PieGraphDisplay.prototype={
 }
 
 
-
-function px(v) {  return v + "px";}

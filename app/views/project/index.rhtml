@@ -72,10 +72,11 @@
       </div>
       <div id="glance-left">    
          <div id ="summary_stats">
-          <table border=0><tr><td class="today">Hits today:</td><td><span class="number">5000</span></td>
-          <tr><td  class="padding"> </td><td class="unique padding">(3000 unique)</td></tr>
-          <tr><td class="yesterday">Hits yesterday:</td><td>4000</span><td>
-          <tr><td> </td><td><span class="unique">(2000 unique)</td></tr>
+          <table border=0><tr><td class="today">Hits today:</td><td><span class="number"><%=@glance_today[0]%></span></td>
+          <tr><td  class="padding"> </td><td class="unique padding">(<%=@glance_today[1]%>)</td></tr>
+          <tr><td class="yesterday">Hits yesterday:</td><td><%=@glance_yesterday[0]%></span><td>
+          <tr><td> </td><td><span class="unique">(<%=@glance_yesterday[1]%>)</td></tr>
+      
           </table>
          </div>
       </div>
@@ -145,7 +146,7 @@
       
       <div class="chart"  id="browser_details"><div class="chart_frame"></div>        
       </div>
-      
+      <br/>
       <div class="chart"  id="os_details"><div class="chart_frame"></div>        
       </div>
       

@@ -60,8 +60,9 @@ class HitDetail < ActiveRecord::Base
     rows = find(:all,
                 :conditions => ['project_id = ? AND last_update >= ?', project.id, last_week])
 
-    stats = Hash.new(0)
     hash_call = (type.to_s + "_stats").to_sym
+    
+    stats = Hash.new(0)
     
     for r in rows
       r_hash = r.send(hash_call)

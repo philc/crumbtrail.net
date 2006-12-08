@@ -228,6 +228,9 @@ float:right;
   background-color:white;
   background-color:#e4eaf4;*/
   background-color:#fff8f1;  
+  background-color:#efd39e; /* dark brown */
+  background-color:#f0f3f8; /* light blue*/
+  background-color:#efd39e;
 }
 .dialog td .a a:hover{
   /*background-color:#fefcf4;*/
@@ -242,7 +245,8 @@ float:right;
 }
 .dialog td .to a{  
   /*border:1px solid blue;*/
-    text-decoration:none;
+  text-decoration:none;
+  color:#666666;
   display:inline;
   padding:0px;
 }
@@ -319,17 +323,12 @@ float:right;
 }
 .linegraph_container{
   position:relative;
- /* height:200px;
-  width:200px;*/
-  /*border:1px solid blue;*/
 }
 .line-y-label{
   position:absolute;
   font-size:.8em;
-  padding-right:2px;
+  padding-right:8px;
   /*border:1px solid blue;*/
-  /*width:100px;
-  height:20px;*/
   z-index:100;
   right:100%;
 }
@@ -337,13 +336,9 @@ float:right;
   position:absolute;
   /*padding-right:2px;*/
   font-size:.8em;
-  /*border:1px solid blue;*/
-  /*width:100px;
-  height:20px;*/
   z-index:100;
-  /*right:100%;*/
   margin-left:-.8em;
-  padding-top:2px;
+  padding-top:7px;
   top:100%;
   bottom:0;
 }

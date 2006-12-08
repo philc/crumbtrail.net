@@ -19,9 +19,15 @@ class ProjectController < ApplicationController
     @referers_recent=format_referers_recent(p.recent_referers())
   
     # for hits today, I need to know what timezone they're in    
-    @hits_day=p.hits(:day).flatten.join(",")    
+    @hits_day=p.hits(:day).join(",")    
     
-    @hits_week=p.hits(:week).join(",")
+    weekData=p.hits(:week)
+    @hits_week=weekData.join(",")  
+    
+    
+    @glance_today=weekData[0]
+    puts weekData
+    @glance_yesterday=weekData[1]
     
     @hits_month=p.hits(:month).join(",")
     
