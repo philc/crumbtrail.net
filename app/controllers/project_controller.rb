@@ -11,6 +11,7 @@ class ProjectController < ApplicationController
     @referers_total=format_referers_with_count(@referers_total)
     
     
+    @date = to_js_date(p.time);
     
     
     @referers_unique= format_referers_date(p.recent_unique_referers(10)[0..limit])
@@ -24,8 +25,7 @@ class ProjectController < ApplicationController
     @hits_week=weekData.join(",")  
     
     
-    @glance_today=weekData[0]
-    puts weekData
+    @glance_today=weekData[0]    
     @glance_yesterday=weekData[1]
     
     @hits_month=p.hits(:month).join(",")

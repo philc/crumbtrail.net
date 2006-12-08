@@ -316,8 +316,8 @@ TableDisplay.Methods={
     return this.hitsRow(i,data,dataMax,day);
   },
   hitsToday: function(i,data, dataMax){
-    var classString=this.classString(i, function(i){return (now-i < 0 ? " old" : "")});
-    var day=DisplayHelper.showHour(now-i);
+    var classString=this.classString(i, function(i){return (page.date.getHours()-i < 0 ? " old" : "")});
+    var day=DisplayHelper.showHour(page.date.getHours()-i);
     return this.hitsRow(i,data,dataMax,day,classString);
   }
 };
@@ -535,7 +535,7 @@ LineGraph.prototype={
       for (var i = this.data.length-1;i>=0;i--){
         var t="";
         if (this.labels=="week")
-          t=DisplayHelper.showDay(i-now-1,false);
+          t=DisplayHelper.showDay(i-page.date.getHours()-1,false);
         var l=this.xLabel(t.slice(0,2));
         l.style.left=px(hwidth*i);
         graphContainer.appendChild(l);
