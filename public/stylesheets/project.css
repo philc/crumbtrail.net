@@ -231,10 +231,13 @@ float:right;
   background-color:#efd39e; /* dark brown */
   background-color:#f0f3f8; /* light blue*/
   background-color:#efd39e;
+  background-color:#f5d9a2;
+  /*background-color:#ffe5b2;*/
 }
-.dialog td .a a:hover{
+.dialog .a a:hover{
   /*background-color:#fefcf4;*/
   /*background-color:#fbeac8;*/  
+  /*background-color:#ffe5b2;*/
 }
 /* little to: box in the referer tables*/
 .dialog td .to{
