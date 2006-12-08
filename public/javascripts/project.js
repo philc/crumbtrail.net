@@ -97,6 +97,7 @@ Page.prototype = {
     Element.hide(this.activeSection);
     this.activeSection=section;        
     Element.show(section);
+    //Effect.Appear(section,{duration:.25});  // this looks lilke trash in IE
     
     this.preferences.update("section",section);
   },
@@ -280,7 +281,7 @@ TableDisplay.prototype={
     
     var classString = trClassString ? trClassString  : this.classString(i);
     return this.tr( this.td(dateString,"f") +cell1 + cell2, classString);  
-  },
+  }
 
 };
 
