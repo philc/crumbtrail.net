@@ -296,7 +296,7 @@ TableDisplay.Methods={
     var landedOn=unescape(data[i*3+1]);
     var linkCaption = DisplayHelper.truncateRight(url,45);
     var landedOnCaption = DisplayHelper.truncateLeft(landedOn,60);
-    var html = linkCaption.link("http://"+url) + '<span class="to">To&nbsp;'+landedOnCaption.link(landedOn)+'</a></span>';
+    var html = linkCaption.link("http://"+url) + '<span class="to">To&nbsp;'+landedOnCaption.link("http://"+landedOn)+'</a></span>';
     var cell1 = this.td(html, "f");
     var cell2 = this.td( isDate ? 
       // might be -1
