@@ -414,7 +414,8 @@ margin-top:3px;
 .chart .label_box li{
   font-size:.9em;
   /*border:1px solid blue;*/
-
+  /*width:500px;*/
+  display:block;
   margin-bottom:4px;
 }
 .chart .color_box{
