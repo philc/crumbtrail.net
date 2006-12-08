@@ -292,10 +292,10 @@ TableDisplay.Methods={
   },
   // Is date displays the second column as "time ago"
   refererRow: function(i,data,dataMax,isDate){
-    var url=unescape(data[i*3]);
-    var landedOn=unescape(data[i*3+1]);
-    var linkCaption = DisplayHelper.truncateRight(url,45);
-    var landedOnCaption = DisplayHelper.truncateLeft(landedOn,60);
+    var url=data[i*3];
+    var landedOn=data[i*3+1];
+    var linkCaption = DisplayHelper.truncateRight(unescape(url),45);
+    var landedOnCaption = DisplayHelper.truncateLeft(unescape(landedOn),60);
     var html = linkCaption.link("http://"+url) + '<span class="to">To&nbsp;'+landedOnCaption.link("http://"+landedOn)+'</a></span>';
     var cell1 = this.td(html, "f");
     var cell2 = this.td( isDate ? 
