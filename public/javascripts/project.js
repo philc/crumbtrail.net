@@ -299,6 +299,7 @@ TableDisplay.Methods={
     var html = linkCaption.link(url) + '<span class="to">To&nbsp;'+landedOnCaption.link(landedOn)+'</a></span>';
     var cell1 = this.td(html, "f");
     var cell2 = this.td( isDate ? 
+      // might be -1
       DisplayHelper.timeAgo(data[i*3+2]) : data[i*3+2]
      );
     return this.tr(cell1 + cell2, this.classString(i));
@@ -317,7 +318,7 @@ TableDisplay.Methods={
   },
   hitsToday: function(i,data, dataMax){
     var classString=this.classString(i, function(i){return (page.date.getHours()-i < 0 ? " old" : "")});
-    var day=DisplayHelper.showHour(page.date.getHours()-i);
+    var day=DisplayHelper.showHour(page.date.getHours()-i-1);
     return this.hitsRow(i,data,dataMax,day,classString);
   }
 };
@@ -360,7 +361,7 @@ DisplayHelper.Methods={
   showHour: function(i){
     var t=i%24;
     t=t<0 ? 24+i : i;
-    return (t%12)+1 + ":00" + (t<12 ? "am" : "pm");
+    return (t%12)+1 + ":00" + ( (t<12 || t>=23) ? "am" : "pm");
   },
   days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
   showDay: function(i, showToday){

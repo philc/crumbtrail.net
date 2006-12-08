@@ -102,6 +102,6 @@ class ProjectController < ApplicationController
      rs.map{|r| "\"#{r.referer.url}\", \"#{r.landing_url.url}\", #{to_js_date(r.first_visit)}" }.flatten.join(",\n")
   end
   def to_js_date(d)
-    return "new Date(#{d.to_i*1000})"
+    return "new Date(\"#{d.to_s.sub("UTC","")}\")"
   end
 end
