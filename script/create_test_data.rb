@@ -30,7 +30,7 @@ def add
                          :zone_id   => 1)
   proj = Project.new(:account_id => philc.id,
                      :title => "Ninja Words",
-                     :url => "http%3A//www.ninjawords.com/",
+                     :url => "ninjawords.com/",
                      :zone_id => philc.zone_id)
   proj.id = 1050
   proj.save

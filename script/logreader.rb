@@ -46,13 +46,15 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
-    @referer = Referer.find_by_url(@referer_url)
-    @referer = Referer.create(:url => @referer_url) if @referer.nil?
+    if @referer_url != 'none' && @referer_url.match("^#{project.url}").nil?
+      @referer = Referer.find_by_url(@referer_url)
+      @referer = Referer.create(:url => @referer_url) if @referer.nil?
+    end
 
     @landing_url = LandingUrl.find_by_url(@url)
     @landing_url = LandingUrl.create(:url => @url) if @landing_url.nil?
 
-    @project.increment_referer(self)
+    @project.increment_referer(self) if !@referer.nil?
     @project.increment_hit_count(self)
     @project.increment_details(self)
   end
@@ -84,13 +86,16 @@ class ApacheLogReader
       if !project.nil?
         ip          = $1
         time        = parse_time($2, project)
-        referer     = parse_referer($3)
+        referer_url = parse_referer($3)
         unique      = parse_unique($3)
         landing_url = $4
         browser     = parse_browser($5)
         os          = parse_os($5)
 
-        request = ApacheRequest.new(project, ip, time, landing_url, referer, unique, browser, os)
+        strip_protocol(referer_url)
+        strip_protocol(landing_url)
+
+        request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
         request.save
       end
     end
@@ -117,7 +122,7 @@ class ApacheLogReader
     if time_string.match(/^(\d{4}) (\d\d) (\d\d) (\d\d) (\d\d) (\d\d)$/)
       time = Time.local($1, $2, $3, $4, $5, $6)
 
-      return TimeHelpers::convert_to_client_time(project, time)
+      return project.time(time)
     end
   end
 
@@ -174,11 +179,29 @@ class ApacheLogReader
       return false
     end
   end
+
 #------------------------------------------------------------------------------
 
   def self.parse_project_id(query)
     query.match(/[&\?]p=([0-9]+)/)
     return $1 || "none"
+  end
+
+#------------------------------------------------------------------------------
+
+  def self.strip_protocol(url)
+    if !url.nil?
+      if url =~ /^http:\/\//
+        url.slice!(0..6)
+      elsif url =~ /http%3A\/\//
+        url.slice!(0..8)
+      end
+      
+      if url =~ /www\./
+        url.slice!(0..3)
+      end
+    end
+    return nil
   end
 end
 
