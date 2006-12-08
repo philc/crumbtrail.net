@@ -4,7 +4,7 @@ class ProjectController < ApplicationController
   def index
     @project_id=@@project_id
     p = Project.find(@project_id)    
-    
+    @project=p
     # only take the first 10 referers. Change this to a better way when we do pagination
     limit=9
     @referers_total = p.top_referers(10)
