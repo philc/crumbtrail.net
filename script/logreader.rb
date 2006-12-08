@@ -60,7 +60,7 @@ end
 
 class ApacheLogReader
 
-  @@regex = Regexp.new('(.*)\s+\[(.*)\]\s+(.*)\s+(.*)\s+"(.*)"\s+"(.*)"')
+  @@regex = Regexp.new('(.*)\s+\[(.*)\]\s+(.*)\s+(.*)\s+"(.*)"')
 
 #------------------------------------------------------------------------------
 
@@ -183,3 +183,4 @@ end
 
 # ApacheLogReader::establish_connection()
 ApacheLogReader::tail_log("script/test.log")
+#ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")
