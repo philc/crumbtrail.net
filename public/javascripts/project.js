@@ -326,23 +326,23 @@ Object.extend(DisplayHelper,DisplayHelper.Methods);
 
 
 function hitsMonth(i,data,dataMax){
-  var percent=this.columnPercent(data[i],dataMax);
-  var percent2=this.columnPercent(data[i+1],dataMax);
+  var percent=this.columnPercent(data[i*2],dataMax);
+  var percent2=this.columnPercent(data[i*2+1],dataMax);
   
   var day=this.td(DisplayHelper.formatWeeksAgo(i),"f");
   
-  var cell1 = this.graphCell(data[i],percent);  
-  var cell2 = this.graphCell(data[i+1],percent2);  
+  var cell1 = this.graphCell(data[i*2],percent);  
+  var cell2 = this.graphCell(data[i*2+1],percent2);  
 
   return this.tr(day +cell1 + cell2, this.classString(i));  
 };
 function hitsWeek(i,data, dataMax){
-  var percent=this.columnPercent(data[i],dataMax);
-  var percent2=this.columnPercent(data[i+1],dataMax);
+  var percent=this.columnPercent(data[i*2],dataMax);
+  var percent2=this.columnPercent(data[i*2+1],dataMax);
   var day=this.td(DisplayHelper.showDay((new Date()).getDay()-i),"f ");
   
-  var cell1 = this.graphCell(data[i],percent);  
-  var cell2 = this.graphCell(data[i+1],percent2);  
+  var cell1 = this.graphCell(data[i*2],percent);  
+  var cell2 = this.graphCell(data[i*2+1],percent2);  
 
   return this.tr(day +cell1 + cell2, this.classString(i));  
 }
@@ -350,11 +350,12 @@ function hitsToday(i,data, dataMax){
   var c=this.classString(i, function(i){return (now-i < 0 ? " old" : "")});
 
   var percent=this.columnPercent(data[i*2],dataMax);
+  var percent2=this.columnPercent(data[i*2+1],dataMax);
   
   var day=this.td(DisplayHelper.showHour(now-i),"f");
 
   var cell1 = this.graphCell(data[i*2],percent);
-  var cell2 = this.td(data[i*2+1]);
+  var cell2 = this.td(data[i*2+1],percent2);
   
   return this.tr(day +cell1 + cell2, c);
 }
