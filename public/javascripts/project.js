@@ -416,9 +416,11 @@ LineGraph.prototype={
     if (this.min / this.max < .1)
       this.min=0;    
     
+    var reversed = data.reverse();
+    
     // non-relative data
-    this.originalData=data;
-    this.data=LineGraph.relativize(data,this.height,this.max,this.min);
+    this.originalData=reversed;
+    this.data=LineGraph.relativize(reversed,this.height,this.max,this.min);
     //this.min=data.min();
     // Pick a line color. Colors are defined in page.colors
     this.lineColor=(style==0 ? 1 : 0);
@@ -440,6 +442,7 @@ LineGraph.prototype={
 
     // Only draw lines starting with the second point (i=1); the first point is our starting point
     // (the intersection with the Y axis)
+    
     for (i=1;i<this.data.length; i++){
       var div=document.createElement("div");
       div.className="color";
@@ -451,7 +454,7 @@ LineGraph.prototype={
       // Height of the point before this one
       var prevHeight=this.data[i-1] ? this.data[i-1] : 0;
       // Whether the line is pointing up. Up=1, down=-1
-      var u=prevHeight<this.data[i] ? 1 : -1;     
+      var u=prevHeight<=this.data[i] ? 1 : -1;     
       
       //img.src=(u==1 ? "/images/c/line13.png" : "/images/c/line10.png");    
       //img.src=(u==1 ? page.imageForQuadrant(this.lineColor,3) : page.imageForQuadrant(this.lineColor,0));
@@ -539,7 +542,7 @@ LineGraph.prototype={
         if (this.labels=="week")
           //t=DisplayHelper.showDay(i-page.date.getHours()-1,false);
           //t=DisplayHelper.showDay(i);
-          t=day=DisplayHelper.showDay((new Date()).getDay()-i)
+          t=day=DisplayHelper.showDay((new Date()).getDay()+i+1)
         var l=this.xLabel(t.slice(0,2));
         l.style.left=px(hwidth*i);
         graphContainer.appendChild(l);

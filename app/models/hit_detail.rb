@@ -24,7 +24,7 @@ class HitDetail < ActiveRecord::Base
   end
   
   @@browser = {
-    "b_firefox"=>"Firefox 1.5/2.0",
+    "b_firefox"=>"Firefox",
     "b_ie5_6"=>"Internet Explorer 5/6",
     "b_ie7"=>"Internet Explorer 7",
     "b_safari"=>"Safari",

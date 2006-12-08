@@ -113,7 +113,7 @@
 }
 #glance-right{
 float:right;
-  width:200px;
+  width:220px;
   min-height:145px; /* IE */
   /*height:px;*/
 }
@@ -297,9 +297,10 @@ float:right;
  * Line graphs
  */
 .linegraph{
-  /*margin-left:50px;*/
-  width:200px;
+  /*margin-left:50px;*/  
   height:110px;
+  width:200px;  /* really 220px */
+  padding-right:20px;
   /*background-color:#EEEEEE;*/
   /*background-color:white;*/
   /*border:2px solid blue;*/
@@ -347,7 +348,8 @@ float:right;
 }
 .linegraph-dot{
   /*margin-top:-1px;*/
-  margin-top:-9px;
+  /*margin-top:-9px;*/
+  margin-top:-11px;
   margin-left:-10px;
   margin-left:-12px;    
   width:20px;
@@ -363,7 +365,8 @@ float:right;
 }
 
 .linegraph-dot-up{
-  margin-top:-12px;
+  /*margin-top:-12px;*/
+  margin-top:-11px;
   /*border:1px solid blue;*/
 }
 /* the text boxes that appear when you mouse over a dot on the graph */
