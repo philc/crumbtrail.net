@@ -197,7 +197,7 @@ function populatePage(){
   // pages section
   TableDisplay.showTable("pages_popular",pagesPopularData,TableDisplay.pagesRow,2,
     "Popular pages", ["","Hits"]);
-  TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRowWithDate,2,
+  TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRecentRow,3,
     "Recent pages", ["","Hits"]);
     
   // glance section
@@ -327,10 +327,23 @@ TableDisplay.Methods={
     f=TableDisplay.pagesRow.bind(this);
     return f(i,data,dataMax,true);
   },
+  pagesRecentRow:function(i,data,dataMax){
+    var url = data[i*3];
+    var referer = data[i*3+1];
+    var time = data[i*3+2];
+    var refererCaption = DisplayHelper.truncateRight(unescape(referer),45);
+    var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
+    //var html = linkCaption.link("http://"+url);
+    var tdHtml = linkCaption.link("http://"+url) + '<span class="to">From&nbsp;'+refererCaption.link("http://"+referer)+'</a></span>';
+    var cell1=this.td(tdHtml,"f");
+    var cell2 = this.td(DisplayHelper.timeAgo(time));
+    
+    return this.tr(cell1+cell2, this.classString(i));
+  },
   pagesRow:function(i,data,dataMax, isDate){
     var url = data[i*2];
-    
     var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
+    //var html = linkCaption.link("http://"+url);
     var html = linkCaption.link("http://"+url);
     var cell1=this.td(html,"f");
     var cell2 = isDate ? DisplayHelper.timeAgo(data[i*2+1]) : data[i*2+1];

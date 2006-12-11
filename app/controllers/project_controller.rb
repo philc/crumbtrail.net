@@ -101,7 +101,7 @@ class ProjectController < ApplicationController
     pages.map{|p| "\"#{p.page.url}\", #{p.count}"}.flatten.join(",\n")
   end
   def format_recent_pages(pages)
-    pages.map{|p| "\"#{p.page.url}\", #{to_js_date(p.visit_time)}"}.flatten.join(",\n")
+    pages.map{|p| "\"#{p.page.url}\", \"#{p.referer.url}\", #{to_js_date(p.visit_time)}"}.flatten.join(",\n")
   end
   
   def format_referers_with_count(rs)
