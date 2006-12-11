@@ -137,6 +137,7 @@
     <div id="pages" class="section" <%=panel_style("pages")-%> >
       <img src="/images/h/pages.png" class="section_title"/>  
         <div class="panel_links">
+          <span class="navlink_show">Show:</span>
           <%= render :partial=>"navlink", :locals=>{:s=>"pages",:v=>"recent",:d=>"Recent"} %>
           <%= render :partial=>"navlink", :locals=>{:s=>"pages",:v=>"popular",:d=>"Popular"} %>
         </div>
