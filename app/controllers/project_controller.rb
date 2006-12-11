@@ -31,6 +31,10 @@ class ProjectController < ApplicationController
     
     @preferences = ViewPreference.find_by_project_id(@project_id)
     
+    # Pages
+    @popular_pages=format_pages(p.most_popular_pages(10))
+    @recent_pages=format_pages(p.most_recent_pages(10))
+    
     build_details(p)
 
    
@@ -90,6 +94,10 @@ class ProjectController < ApplicationController
       p.set_panel(pref,value)
     end
     p.save!
+  end
+  
+  def format_pages(pages)
+    pages.map{|p| "\"#{p.url}\", #{p.count}"}.flatten.join(",\n")
   end
   
   def format_referers_with_count(rs)

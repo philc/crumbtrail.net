@@ -28,6 +28,9 @@
   hitsWeekData=[<%= @hits_week %>];
   hitsMonthData=[<%= @hits_month %>];
   
+  pagesPopularData=[<%=@popular_pages%>];
+  pagesRecentData=[<%=@recent_pages%>];
+  
   osData=[<%= @os_data %>];
   osLabels=[<%= @os_labels %>];
   browserData=[<%= @browser_data %>];
@@ -133,8 +136,14 @@
     
     <div id="pages" class="section" <%=panel_style("pages")-%> >
       <img src="/images/h/pages.png" class="section_title"/>  
-      <br clear="both"/>
-      <i>[working out a few bugs]</i>
+        <div class="panel_links">
+          <%= render :partial=>"navlink", :locals=>{:s=>"pages",:v=>"recent",:d=>"Recent"} %>
+          <%= render :partial=>"navlink", :locals=>{:s=>"pages",:v=>"popular",:d=>"Popular"} %>
+        </div>
+      <%= render :partial=>"panel",
+        :locals=>{:p=>"pages",:v=>"recent",:options=>{:c=>"links"}} %>
+      <%= render :partial=>"panel",
+        :locals=>{:p=>"pages",:v=>"popular",:options=>{:c=>"links"}} %>        
     </div>
     
     <div id="searches" class="section" <%=panel_style("searches")-%> >

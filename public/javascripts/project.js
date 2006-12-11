@@ -153,7 +153,6 @@ function init(){
   $A(document.getElementsByClassName("panel_link","content")).each(function (e){
     e.onclick=function(){ page.panelNav(this); return false;};
   });  
-  
 }
 
 
@@ -180,7 +179,12 @@ function populatePage(){
   TableDisplay.showTable("referers_recent",referersRecentData,TableDisplay.refererRowWithDate,3,
     "Recent Referer", ["Referer","Visited"]);
 
-
+  // pages section
+  TableDisplay.showTable("pages_popular",pagesPopularData,TableDisplay.pagesRow,2,
+    "Popular pages", ["","Hits"]);
+  TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRow,2,
+    "Recent pages", ["","Hits"]);
+    
   // glance section
   TableDisplay.showTable("glance_referers_today",[],TableDisplay.refererRow,2,
     "", ["Top referers today","Hits"]);
@@ -290,7 +294,7 @@ TableDisplay.Methods={
     f=TableDisplay.refererRow.bind(this);
     return f(i,data,dataMax,true);
   },
-  // Is date displays the second column as "time ago"
+  // "isDate" displays the second column as "time ago"
   refererRow: function(i,data,dataMax,isDate){
     var url=data[i*3];
     var landedOn=data[i*3+1];
@@ -303,6 +307,15 @@ TableDisplay.Methods={
       DisplayHelper.timeAgo(data[i*3+2]) : data[i*3+2]
      );
     return this.tr(cell1 + cell2, this.classString(i));
+  },
+  pagesRow:function(i,data,dataMax){
+    var url = data[i*2];
+    var hits = data[i*2+1];
+    var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
+    var html = linkCaption.link("http://"+url);
+    var cell1=this.td(html,"f");
+    var cell2=this.td(hits);
+    return this.tr(cell1+cell2, this.classString(i));
   },
   showTable: function(htmlID, data, cellFunction, dataStep, title, headerNames){
       var display = new TableDisplay(data,cellFunction,dataStep,title,headerNames);
@@ -338,7 +351,7 @@ DisplayHelper.Methods={
     var weeks=Math.floor(days/7);
     var mos=Math.floor(days/30);
     if (mins<1)
-      return "few&nbsp;secs&nbsp;ago";
+      return "just&nbsp;now";
     else if (hrs <1)
       return this.formatTimeAgo(mins,"min");
     else if (days < 1)

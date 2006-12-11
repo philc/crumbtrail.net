@@ -11,7 +11,7 @@ class ViewPreference < ActiveRecord::Base
     def defaults()
       self.hits="today"
       self.referers="total"
-      self.pages="today"
+      self.pages="recent"
       self.searches="today"
       self.panel="glance"
     end
@@ -26,9 +26,9 @@ class ViewPreference < ActiveRecord::Base
       self.panel=v unless (@@sections[v].nil?)
     end
     def set_panel(panel,value)
-      puts "settign panel" + panel;
+      
       return if  @@sections[panel].nil?
-      puts "settign panel" + panel;
+#       puts "settign panel" + panel;
       self.send(panel+"=",value)
     end
     

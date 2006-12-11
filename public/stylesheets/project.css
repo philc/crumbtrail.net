@@ -255,6 +255,7 @@ float:right;
 }
 .dialog td .to a:hover{
   background-color:transparent;
+  color:#021a41;  /* Should be the same as the global a hover */
 }
 /* Styles for table cells that have graphs in the background of them */
 .graph-cell div{
