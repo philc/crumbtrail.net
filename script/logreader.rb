@@ -14,16 +14,16 @@ class ApacheRequest
   attr_reader   :project
   attr_reader   :time
   attr_reader   :referer
-  attr_reader   :landing_url
+  attr_reader   :page
   attr_reader   :unique
   attr_reader   :browser
   attr_reader   :os
   
-  def initialize(project, ip, time, url, referer_url, unique, browser, os)
+  def initialize(project, ip, time, page_url, referer_url, unique, browser, os)
     @project = project
     @ip = ip
     @time = time
-    @url = url
+    @page_url = page_url
     @referer_url = referer_url
     @unique = unique
     @browser = browser
@@ -46,23 +46,24 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
-    @referer = Referer.find_by_url(@referer_url)
-    @referer = Referer.create(:url => @referer_url) if @referer.nil?
-
-    @landing_url = LandingUrl.find(:first, :conditions => ['project_id = ? AND url = ?', @project.id, @url])
-    @landing_url = LandingUrl.create(:project_id => @project.id, 
-                                     :url => @url, 
-                                     :count => 0,
-                                     :referer_id => @referer.id,
-                                     :last_visit => @project.time) if @landing_url.nil?
-    @landing_url.count += 1
-    @landing_url.referer_id = @referer.id
-    @landing_url.last_visit = @project.time
-    @landing_url.save
-
-    @project.increment_referer(self) if @referer_url != '/'
-    @project.increment_hit_count(self)
-    @project.increment_details(self)
+      @referer = Referer.get_referer(@referer_url)
+      @page = Page.get_page(@page_url)
+      @project.process_request(self)
+#   
+#     @landing_url = LandingUrl.find(:first, :conditions => ['project_id = ? AND url = ?', @project.id, @url])
+#     @landing_url = LandingUrl.create(:project_id => @project.id, 
+#                                       :url => @url, 
+#                                       :count => 0,
+#                                       :referer_id => @referer.id,
+#                                       :last_visit => @project.time) if @landing_url.nil?
+#     @landing_url.count += 1
+#     @landing_url.referer_id = @referer.id
+#     @landing_url.last_visit = @project.time
+#     @landing_url.save
+#   
+#     @project.increment_referer(self) if @referer_url != '/'
+#     @project.increment_hit_count(self)
+#     @project.increment_details(self)
   end
 end
 
@@ -231,7 +232,6 @@ class ApacheLogReader
 end
 
 # ApacheLogReader::establish_connection()
-ApacheLogReader::tail_log("script/ninjawords-access.log")
-#ApacheLogReader::tail_log("script/test.log")
+ApacheLogReader::tail_log("script/test.log")
 #ApacheLogReader::tail_log("script/test-long.log")
 #ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")

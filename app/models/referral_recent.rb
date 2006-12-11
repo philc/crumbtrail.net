@@ -1,7 +1,7 @@
-class RecentReferral < ActiveRecord::Base
+class ReferralRecent < ActiveRecord::Base
   belongs_to :project
-  belongs_to :landing_url
   belongs_to :referer
+  belongs_to :page
 
   @@max_rows = 10
 
@@ -16,13 +16,13 @@ class RecentReferral < ActiveRecord::Base
     if !row.nil?
       row.referer = request.referer
       row.visit_time = request.time
-      row.landing_url = request.landing_url
+      row.page = request.page
     else
       row = new(:project => project,
                 :referer => request.referer,
+                :page => request.page,
                 :visit_time => request.time,
-                :row => row_track.referrals_row,
-                :landing_url => request.landing_url)
+                :row => row_track.referrals_row)
     end
     row.save
 

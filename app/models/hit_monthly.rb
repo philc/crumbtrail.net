@@ -1,4 +1,4 @@
-class MonthlyHit < ActiveRecord::Base
+class HitMonthly < ActiveRecord::Base
   belongs_to :project
 
   def self.increment_hit(request)

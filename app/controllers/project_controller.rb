@@ -32,8 +32,9 @@ class ProjectController < ApplicationController
     @preferences = ViewPreference.find_by_project_id(@project_id)
     
     # Pages
-    @popular_pages=format_pages(p.most_popular_pages(10))
-    @recent_pages=format_pages(p.most_recent_pages(10))
+    @popular_pages=format_pages(p.top_landings(10))
+    @recent_pages=nil
+#     @recent_pages=format_pages(p.recent_landings())
     
     build_details(p)
 
@@ -97,18 +98,18 @@ class ProjectController < ApplicationController
   end
   
   def format_pages(pages)
-    pages.map{|p| "\"#{p.url}\", #{p.count}"}.flatten.join(",\n")
+    pages.map{|p| "\"#{p.page.url}\", #{p.count}"}.flatten.join(",\n")
   end
   
   def format_referers_with_count(rs)
-     rs.map{|r| "\"#{r.referer.url}\", \"#{r.landing_url.url}\",#{r.count}" }.flatten.join(",\n")
+     rs.map{|r| "\"#{r.referer.url}\", \"#{r.page.url}\",#{r.count}" }.flatten.join(",\n")
   end
   def format_referers_recent(rs)
     #rs.map{|r| "\"#{r.referer.url}\",#{to_js_date(r.visit_time)}" }.flatten.join(",\n")
-    rs.map{|r| "\"#{r.referer.url}\", \"#{r.landing_url.url}\", #{to_js_date(r.visit_time)}" }.flatten.join(",\n")
+    rs.map{|r| "\"#{r.referer.url}\", \"#{r.page.url}\", #{to_js_date(r.visit_time)}" }.flatten.join(",\n")
   end
   def format_referers_date(rs)
-     rs.map{|r| "\"#{r.referer.url}\", \"#{r.landing_url.url}\", #{to_js_date(r.first_visit)}" }.flatten.join(",\n")
+     rs.map{|r| "\"#{r.referer.url}\", \"#{r.page.url}\", #{to_js_date(r.first_visit)}" }.flatten.join(",\n")
   end
   def to_js_date(d)
     return "new Date(\"#{d.to_s.sub("UTC","")}\")"

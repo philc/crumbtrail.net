@@ -1,46 +1,38 @@
 class Project < ActiveRecord::Base
-  belongs_to :account
-  belongs_to :zone
-  has_one  :row_tracker
-  has_many :recent_referrals
-  has_many :total_referrals
-  has_many :hourly_hits
-  has_many :daily_hits
-  has_one  :total_hit
-  has_one  :hit_detail
-  has_many :landing_urls
+   belongs_to :account
+   belongs_to :zone
+   has_one  :row_tracker
+#   has_many :recent_referrals
+#   has_many :total_referrals
+#   has_many :hourly_hits
+#   has_many :daily_hits
+#   has_one  :total_hit
+#   has_one  :hit_detail
+#   has_many :landing_urls
+#   has_many :search_referers
 
-  def increment_referer(request)
-    TotalReferral.increment_referer(request)
-    RecentReferral.add_new_referer(request)
+  def process_request(request)
+    increment_referer(request) if request.referer.url != '/'
+    increment_hit_count(request)
+    increment_page_landing(request) if request.page.url != '-'
+    record_details(request)
   end
 
-  def increment_hit_count(request)
-    HourlyHit.increment_hit(request)
-    DailyHit.increment_hit(request)
-    MonthlyHit.increment_hit(request)
-    TotalHit::increment_hit(request)
-  end
-
-  def increment_details(request)
-    HitDetail.increment_browser(request)
-  end
-  
   # Returns an array of RecentReferrals (Length hardcoded at 10)
   def recent_referers()
-    return RecentReferral.get_recent_referers(self)
+     return ReferralRecent.get_recent_referers(self)
   end
 
   # Returns an array of TotalReferrals
   #  limit - the number of referers you want returned
   def recent_unique_referers(limit)
-    return TotalReferral.get_recent_unique(self, limit)
+    return ReferralTotal.get_recent_unique(self, limit)
   end
 
   # Returns an array of TotalReferrals
   #  limit - the number of referers you want returned
   def top_referers(limit)
-    return TotalReferral.get_top_referers(self, limit)
+    return ReferralTotal.get_top_referers(self, limit)
   end
 
   # Get the hit count for a specified period.
@@ -50,22 +42,22 @@ class Project < ActiveRecord::Base
   # period, most recent first
   def hits(period)
     if period == :day
-      return HourlyHit.get_hits(self)
+      return HitHourly.get_hits(self)
     elsif period == :week
-      return DailyHit.get_past_week_hits(self)
+      return HitDaily.get_past_week_hits(self)
     elsif period == :month
-      return DailyHit.get_past_month_hits(self)
+      return HitDaily.get_past_month_hits(self)
     elsif period == :year
-      return MonthlyHit.get_hits(self)
+      return HitMonthly.get_hits(self)
     end
   end
 
-  def most_popular_pages(limit)
-    return LandingUrl.get_most_popular(self, limit)
+  def top_landings(limit)
+    return LandingTotal.get_most_popular(self, limit)
   end
   
-  def most_recent_pages(limit)
-    return LandingUrl.get_most_recent(self, limit)
+  def recent_landings()
+    return LandingRecent.get_recent_landings(self)
   end
   
   def get_details(type)
@@ -77,4 +69,26 @@ class Project < ActiveRecord::Base
     TimeHelpers.convert_to_client_time(self, t[0])
   end
 
+  private
+
+  def increment_referer(request)
+    ReferralTotal.increment(request)
+    ReferralRecent.add_new_referer(request)
+  end
+
+  def increment_hit_count(request)
+    HitHourly.increment_hit(request)
+    HitDaily.increment_hit(request)
+    HitMonthly.increment_hit(request)
+    HitTotal::increment_hit(request)
+  end
+
+  def increment_page_landing(request)
+    LandingTotal.increment(request)
+    LandingRecent.add_new_landing(request)
+  end
+
+  def record_details(request)
+    HitDetail.record_details(request)
+  end
 end

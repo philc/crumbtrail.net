@@ -1,21 +1,19 @@
-class TotalReferral < ActiveRecord::Base
+class ReferralTotal < ActiveRecord::Base
   belongs_to :project
   belongs_to :referer
-  belongs_to :landing_url
+  belongs_to :page
 
-  def self.increment_referer(request)
+  def self.increment(request)
     project = request.project
-
     row = find_by_project_id_and_referer_id(project.id, request.referer.id)
-    
+
     if row.nil?
-      row = new(:project_id => project.id,
-                :referer_id => request.referer.id,
-                :first_visit => request.time,
-                :count => 0,
-                :landing_url => request.landing_url)
+      row = new(:project => project,
+                :referer => request.referer,
+                :page => request.page,
+                :first_visit => request.time)
     else
-      row.landing_url = request.landing_url
+      row.page = request.page
     end
 
     row.count += 1

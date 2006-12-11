@@ -1,6 +1,6 @@
 require 'lib/time_helpers.rb'
 
-class HourlyHit < ActiveRecord::Base
+class HitHourly < ActiveRecord::Base
   belongs_to :project
 
   def self.increment_hit(request)

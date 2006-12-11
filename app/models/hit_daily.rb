@@ -8,7 +8,7 @@ class Array
 end
 
 # Represents the number of hits for a project for any given day
-class DailyHit < ActiveRecord::Base
+class HitDaily < ActiveRecord::Base
   belongs_to :project
 
   @@max_rows = 35
@@ -24,7 +24,7 @@ class DailyHit < ActiveRecord::Base
 
     row = find_by_project_id_and_row(project.id, row_track.hits_row)
     if row.nil?
-      row = DailyHit.create(:project => project, :date => request.time, :total => 1, :row => row_track.hits_row)
+      row = create(:project => project, :date => request.time, :total => 1, :row => row_track.hits_row)
       row.unique = 1 if request.unique
     elsif row.date == date
       row.total += 1

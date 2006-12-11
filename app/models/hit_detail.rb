@@ -2,13 +2,7 @@
 # What time period are these hit details for?
 class HitDetail < ActiveRecord::Base
   belongs_to :project
-  # Do we need to keep track of so many windows versions? Can we intelligently group some of these windows
-  # together? I don't think many people with server 2003, a $900 OS, browse the net with it such
-  # that it will be an important statistic. Can we have a "windows-based" other or something?
-  
-  #@@os_keys = %w[os_w2k os_xp os_w2k3 os_vista os_w98 os_w95 os_linux os_macosx]
-  #@@browser_keys = %w[b_firefox15 b_firefox20 b_ie5 b_ie6 b_ie7 b_safari b_other]
-  
+
   @@os={
    "os_nt"=>"Windows XP/2000/2003",
    "os_9x"=>"Windows 95/98", 
@@ -16,27 +10,27 @@ class HitDetail < ActiveRecord::Base
    "os_linux"=>"Linux",
    "os_macosx"=>"Mac OSX",
    "os_other" => "Other"}
-  
+
   # order to display
   @@os_display=[ @@os["vista"],@@os["os_nt"],@@os["os_9x"],@@os["os_linux"],@@os["os_macosx"],@@os["os_other"]]
   def self.os_display
     return @@os_display
   end
-  
+
   @@browser = {
     "b_firefox"=>"Firefox",
     "b_ie5_6"=>"Internet Explorer 5/6",
     "b_ie7"=>"Internet Explorer 7",
     "b_safari"=>"Safari",
     "b_other"=>"Other"}
-    
+
   @@browser_display= [@@browser["b_firefox"],@@browser["b_ie5_6"],@@browser["b_ie7"],
       @@browser["b_safari"],@@browser["b_other"]]
   def self.browser_display
     return @@browser_display
-  end  
-  
-  def self.increment_browser(request)
+  end
+
+  def self.record_details(request)
     project = request.project
     browser = request.browser
     os      = request.os
@@ -69,15 +63,15 @@ class HitDetail < ActiveRecord::Base
                 :conditions => ['project_id = ? AND last_update >= ?', project.id, last_week])
 
     hash_call = (type.to_s + "_stats").to_sym
-    
+
     stats = Hash.new(0)
-    
+
     for r in rows
       r_hash = r.send(hash_call)
       r_hash.each {|k,v| stats[k]+=v}
     end
 
-    return stats    
+    return stats
   end
 
   def browser_stats()

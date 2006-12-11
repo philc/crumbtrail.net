@@ -1,4 +1,4 @@
-class TotalHit < ActiveRecord::Base
+class HitTotal < ActiveRecord::Base
   belongs_to :project
 
   def self.increment_hit(request)
