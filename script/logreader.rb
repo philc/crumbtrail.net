@@ -232,6 +232,7 @@ class ApacheLogReader
 end
 
 # ApacheLogReader::establish_connection()
-ApacheLogReader::tail_log("script/test.log")
+#ApacheLogReader::tail_log("script/test.log")
 #ApacheLogReader::tail_log("script/test-long.log")
 #ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")
+ApacheLogReader::tail_log("script/new.log")

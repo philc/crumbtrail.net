@@ -114,14 +114,29 @@ Page.prototype = {
     this.preferences.update(this.activeSection,panel);
   },
   removeClassFromElements: function(c,start){
-    document.getElementsByClassName(c,start).each(
-      function(e){e.className=e.className.replace(c,"");}) 
+    //console.log("testing document", document.getElementsByClassName);
+//     if ($)
+//       console.log("$ exists");
+//     if (document.getElementsByClassName){
+//       //console.log(document.getElementsByClassName);
+//       console.log("getElementsByClassName exists");
+//     }else{
+//       if (Element)
+//         console.log("Element exists");
+//       console.log("getElementsByClassName does not exist");
+//       }
+    var elements=document.getElementsByClassName(c,start);
+    if (elements!=null){
+      elements.each(
+        function(e){e.className=e.className.replace(c,"");}) 
+    }      
   },
   // Returns the image file used for a quadrant. i is the color (0-5ish)
   imageForQuadrant: function (i,q){
     return "/images/c/line" + i + "" + q + ".png"
   }
 };
+
 
 page = new Page();
 
@@ -182,7 +197,7 @@ function populatePage(){
   // pages section
   TableDisplay.showTable("pages_popular",pagesPopularData,TableDisplay.pagesRow,2,
     "Popular pages", ["","Hits"]);
-  TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRow,2,
+  TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRowWithDate,2,
     "Recent pages", ["","Hits"]);
     
   // glance section
@@ -308,13 +323,18 @@ TableDisplay.Methods={
      );
     return this.tr(cell1 + cell2, this.classString(i));
   },
-  pagesRow:function(i,data,dataMax){
+  pagesRowWithDate: function(i,data,dataMax){
+    f=TableDisplay.pagesRow.bind(this);
+    return f(i,data,dataMax,true);
+  },
+  pagesRow:function(i,data,dataMax, isDate){
     var url = data[i*2];
-    var hits = data[i*2+1];
+    
     var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
     var html = linkCaption.link("http://"+url);
     var cell1=this.td(html,"f");
-    var cell2=this.td(hits);
+    var cell2 = isDate ? DisplayHelper.timeAgo(data[i*2+1]) : data[i*2+1];
+    cell2=this.td(cell2);
     return this.tr(cell1+cell2, this.classString(i));
   },
   showTable: function(htmlID, data, cellFunction, dataStep, title, headerNames){
@@ -482,13 +502,15 @@ LineGraph.prototype={
       var h=this.data[i]-prevHeight;
       
       
+      
       // amount of space there is above the previous element
       var t=this.height-prevHeight;
       
-      
+      //console.log(h,u);
       img.style.height=px(h*u);
       
       var ourTop = t-(u>0  ? h : 0)
+      
       div.style.height=this.height-(h*u)-ourTop+"px";
       
       div.style.top=ourTop+(h*u)+"px";
@@ -497,6 +519,7 @@ LineGraph.prototype={
       img.style.left=(i-1)*hwidth+ "px";
       
       // Add a dot for the datapoint to a curve.
+      //g.appendChild(this.dataPointDot(this.originalData[i],i*hwidth,this.height-this.data[i],u==1));
       g.appendChild(this.dataPointDot(this.originalData[i],i*hwidth,this.height-this.data[i],u==1));
       
       g.appendChild(img);
@@ -589,9 +612,13 @@ LineGraph.Methods={
     var min = optionalMin? Math.round(optionalMin*.8) : 0;
     
     max-=min;
+    
+    // Avoid divide by zero
+    if (max==0) max=1;
     //data.each(function(e){ if (e>max) max=e; });
     for (i=0;i<data.length;i++){ 
       relativeData[i]=Math.floor(((data[i]-min)/max)*height); 
+
     }
     return relativeData;
   }
