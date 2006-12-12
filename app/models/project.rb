@@ -31,8 +31,8 @@ class Project < ActiveRecord::Base
 
   # Returns an array of TotalReferrals
   #  limit - the number of referers you want returned
-  def top_referers(limit)
-    return ReferralTotal.get_top_referers(self, limit)
+  def top_referers(limit, offset=0)
+    return ReferralTotal.get_top_referers(self, limit, offset)
   end
 
   # Get the hit count for a specified period.

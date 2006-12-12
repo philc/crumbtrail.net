@@ -27,10 +27,12 @@ class ReferralTotal < ActiveRecord::Base
                 :limit      => limit)
   end
 
-  def self.get_top_referers(project, limit)
+  def self.get_top_referers(project, limit, offset=0)
+    puts "offset",offset
     return find(:all,
                 :conditions => ["project_id = ?", project.id],
                 :order      => "count DESC",
+                :offset     => offset,
                 :limit      => limit)
   end
 end

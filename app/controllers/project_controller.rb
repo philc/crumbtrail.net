@@ -8,7 +8,10 @@ class ProjectController < ApplicationController
     # only take the first 10 referers. Change this to a better way when we do pagination
     limit=9
     @referers_total = p.top_referers(10)
-    @referers_total=format_referers_with_count(@referers_total)
+    #@referers_total=format_referers_with_count(@referers_total)
+    @referers_total=@referers_total.map{|r| 
+      [r.referer.url,r.page.url,r.count]}.flatten.to_json
+
     
     # use the date in the view that we have on record for them.    
     @date = to_js_date(p.time);
@@ -36,9 +39,7 @@ class ProjectController < ApplicationController
     @recent_pages=format_recent_pages(p.recent_landings)
 #     @recent_pages=format_pages(p.recent_landings())
     
-    build_details(p)
-
-   
+    build_details(p)   
   end
   def build_details(p)
     # drop entries that are 0
@@ -116,5 +117,16 @@ class ProjectController < ApplicationController
   end
   def to_js_date(d)
     return "new Date(\"#{d.to_s.sub("UTC","")}\")"
+  end
+  def data
+    size=10
+    project = Project.find(@@project_id)    
+    
+    page=params[:p].to_i
+    puts "p",page
+    @data=project.top_referers(size,page*size)
+    @data=@data.map{|r| 
+      [r.referer.url,r.page.url,r.count]}.flatten.to_json
+    render :layout=>false
   end
 end

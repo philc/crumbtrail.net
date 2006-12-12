@@ -29,7 +29,6 @@ if (/WebKit|KHTML/i.test(navigator.userAgent)) { // sniff
 window.onload = init;
 
 
-
 /*
  * Controlling the UI
  */
@@ -72,7 +71,6 @@ var Page = Class.create();
 Page.prototype = {
   initialize:function(){
     this.colors=["#a4d898","#fdde88","#ff9e61","#d75b5c","#7285b7","#98d5d8","#989cd8","#d8bb98"];
-    this.preferences=new Preferences();  
       
     var StringMethods={
       firstUpCase:function(){ return this[0].toUpperCase() + this.slice(1,this.length);}
@@ -85,7 +83,11 @@ Page.prototype = {
       min:function(){var m=Number.MAX_VALUE; for (var i=0; i<this.length; i++) if (this[i] < m) m=this[i]; return m}
     };
     Object.extend(Array.prototype,ArrayMethods);
-  
+    
+    this.preferences=new Preferences();  
+        
+    // Build the paginator objects
+    this.totalReferersPager=new Pagination("totalReferers",20);
   },
   // Switch section
   menuNav: function(e){
@@ -100,6 +102,8 @@ Page.prototype = {
     //Effect.Appear(section,{duration:.25});  // this looks lilke trash in IE
     
     this.preferences.update("section",section);
+    
+
   },
   // Navigate within a section
   panelNav: function(linkElement){
@@ -136,9 +140,6 @@ Page.prototype = {
     return "/images/c/line" + i + "" + q + ".png"
   }
 };
-
-
-page = new Page();
 
 
 
@@ -185,14 +186,18 @@ function populatePage(){
     "Hits this month", ["","Hits","Unique"]);
   
   // referer section
-  TableDisplay.showTable("referers_total",referersTotalData,TableDisplay.refererRow,3,
-    "Top referrals", ["Referer","Total hits"]);
+//   TableDisplay.showTable("referers_total",referersTotalData,TableDisplay.refererRow,3,
+//     "Top referrals", ["Referer","Total hits"], true);
+//   referersPager = new Pagination(0,0);
+   page.totalReferersPager.displayProperties("referers_total",referersTotalData,TableDisplay.refererRow,3,"Top referrals", ["Referer","Total hits"]);
+   page.totalReferersPager.showTable();
+  
     
   TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
     "Unique referrals", ["Referer","First visited"]);
     
   TableDisplay.showTable("referers_recent",referersRecentData,TableDisplay.refererRowWithDate,3,
-    "Recent Referer", ["Referer","Visited"]);
+    "Recent Referer", ["Referer","Visited"] );
 
   // pages section
   TableDisplay.showTable("pages_popular",pagesPopularData,TableDisplay.pagesRow,2,
@@ -244,13 +249,14 @@ TableDisplay.prototype={
       html+=this.cellFunc(i,this.data,dataMax);
     }
     html+="</table>" + '<div class="table-footer-cap"></div>';
-    return this.dialog(this.title,html)
+//     return this.dialog(this.title,html)
+    return html;
   },
-  dialog: function(t,content){
-    return '<div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">'+
-      '<div class="c"><h1 class="title">' + t + '</h1>'+content + '</div></div><div class="ft">' + 
-      '<div class="c"></div></div></div>';
-  },
+  //   dialog: function(t,content){
+//     return '<div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">'+
+//       '<div class="c"><h1 class="title">' + t + '</h1>'+content + '</div></div><div class="ft">' + 
+//       '<div class="c"></div></div></div>';
+//   },
   tableHeader: function(){
     if (this.headerNames==null)
       return "" 
@@ -352,7 +358,7 @@ TableDisplay.Methods={
   },
   showTable: function(htmlID, data, cellFunction, dataStep, title, headerNames){
       var display = new TableDisplay(data,cellFunction,dataStep,title,headerNames);
-      $(htmlID).innerHTML=display.buildTable();
+      $(htmlID).innerHTML=DisplayHelper.dialog(title,display.buildTable());
   },  
   hitsMonth:function (i,data,dataMax){
       var day=DisplayHelper.formatWeeksAgo(i);
@@ -369,6 +375,65 @@ TableDisplay.Methods={
   }
 };
 Object.extend(TableDisplay,TableDisplay.Methods);
+
+Pagination=Class.create();
+
+Pagination.prototype={
+  initialize: function(name, totalPages){
+    this.name=name;
+    this.total=0;  
+    this.current=0;
+    this.request=null;
+  },
+  displayProperties: function(htmlID,data,cellFunction,dataStep,title,headerNames){
+    this.htmlID=htmlID;
+    this.data=data;
+    this.title=title;
+    this.cellFunction=cellFunction;
+    this.dataStep=dataStep;
+    this.headerNames=headerNames;
+  },
+  showTable: function(){
+    var display = new TableDisplay(this.data,this.cellFunction,this.dataStep,this.title,this.headerNames);    
+    $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() + this.buildNavMenu());
+//     var navPanel = document.createElement("div");
+//     navPanel.innerHTML=this.buildNavMenu();
+//     $(this.htmlID).appendChild(navPanel);
+    //$(htmlID).innerHTML=page.dialog(title,display.buildTable());
+  },
+  buildNavMenu:function (){
+    html='<a href="" onclick="return page.' + this.name + 'Pager.next();"> > </a>';
+    return html;
+  },
+
+  next:function(){
+    new Ajax.Request('/project/data/'+this.name, 
+    {asynchronous:true, evalScripts:true, 
+      parameters:"p="+this.current+1,
+      onComplete:this.show.bind(this)
+    });
+    return false;
+  },
+  show: function(request, page){
+//   console.log(this.htmlID, $(this.htmlID));
+    console.log(request.responseText);
+    data=eval(request.responseText);    
+    console.log(data);
+    console.log($(this.htmlID));
+    //this.current++;
+     var display = new TableDisplay(data,this.cellFunction,this.dataStep,this.title,this.headerNames);    
+     $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() + this.buildNavMenu());
+
+//     $(this.htmlID).innerHTML="hey hey";
+    console.log("end of func");
+    
+  }
+};
+// pagination=new Pagination();
+Pagination.Methods={
+  
+}
+Object.extend(Pagination,Pagination.Methods);
 
 
 /*
@@ -437,6 +502,11 @@ DisplayHelper.Methods={
         return mod.slice(0,i)+"..";
     }
     return mod+"..";
+  },
+  dialog: function(title,content){
+    return '<div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">'+
+      '<div class="c"><h1 class="title">' + title + '</h1>'+content + '</div></div><div class="ft">' + 
+      '<div class="c"></div></div></div>';
   }
 }
 Object.extend(DisplayHelper,DisplayHelper.Methods);
@@ -830,3 +900,4 @@ PieGraphDisplay.prototype={
 }
 
 
+page = new Page();
