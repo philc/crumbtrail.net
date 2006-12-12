@@ -8,8 +8,7 @@
 <![endif]-->
 
 
-<%= javascript_include_tag "prototype" %>
-<%= javascript_include_tag "effects" %>
+
 <%= javascript_include_tag "project" %> 
 
 <script type="text/javascript">
@@ -53,6 +52,12 @@
     <a href="">Setup</a> | <a href="">View another project</a>
   </div>
   
+      <noscript>
+      <div class="warning">You don't have Javascript enabled. To view
+      your stats, you'll need to re-enable it in your web browser.
+      </div>
+    </noscript>
+  
   <div id="menu">
     <ul id="menu-links">
     <%= render :partial=>"menu_entry", :locals=>{:title=>"glance",:d=>"At a glance"} %>
@@ -67,6 +72,8 @@
   <div id="content-right">
     
     
+
+
     <div id="glance" class="section" <%=panel_style("glance")-%> >
       <img src="/images/h/glance.png" class="section_title"/>        
       <div id="glance-right">

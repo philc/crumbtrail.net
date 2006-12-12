@@ -23,6 +23,9 @@ a{
 a:hover{
   color:#021a41;  
 }
+input{
+  padding:2px;
+}
 img{ border:0;}
 #page{
   margin-left:20px;
@@ -136,6 +139,10 @@ img{ border:0;}
   margin-bottom:10px;
   margin-top:10px;
 }
+.copy h2{
+  font-size:1.2em;
+  font-weight:normal;
+}
 .copy ol{
   margin-top:10px;
   margin-bottom:10px;
@@ -176,11 +183,54 @@ a.linkbox:hover{
 #signin-box .dialog .bd .c{
   padding-left:5px;padding-right:5px;
 }
-input{
-  padding:2px;
+/* 
+ * signup
+ */
+#signup-cost{
+  float:right;
+  /*border:1px solid blue;*/
+  width:60%;
 }
+#signup-cost #letmeknow{
+  background-color:#e4eaf4;
+  margin-top:5px;
+  padding-left:3px;
+  
+}
+#letmeknow input{
+  vertical-align:0%;
+}
+#signup-fields{
+  /*width:200px;*/
+  float:left;  
+  
+}
+#signup_form{
+  margin-left:3px;
+}
+#signup_form .form_error{
+  width:200px;
+}
+.warning{
+  background-color:#fdde88;
+  padding:5px;
+  border:2px dashed #ff9e61;
+  border:2px dashed #bbbbbb;
+  margin-top:6px;
+  margin-bottom:6px;
+}
+
+
 .text-form input{
   border:1px solid #b89c65;
   display:block;  
   margin-bottom:8px;
+}
+.text-form input:focus{
+  background-color:#fffae8;
+}
+.form_error{
+  color:#d75b5c;
+  color:#ef6f22;
+  /*background-color:#f9f2c4;*/
 }

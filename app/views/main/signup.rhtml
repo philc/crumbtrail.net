@@ -1,28 +1,69 @@
-
+<% content_for (:head) do %>
+<script type="text/javascript">
+// function validate(){
+//   if ($("password").vale!=
+// }
+// function passwordsDont(){
+// }
+</script>
+<%end%>
 <div class="copy">
 
-<h1>Know your visitors</h1>
+<noscript>
+<div class="warning">You don't have Javascript enabled. To view
+your stats, you'll need to re-enable it in your web browser.
+</div>
+</noscript>
 
-Breadcrumbs anonymously tracks visitors coming to your website. It works like this:
+<h1>Sign up</h1>
 
+<div id="signup_form">
 
+  <form action="/signup" method="post">
 
+      <div id="signup-fields">
+       <div class="text-form">
+        E-mail
+        <%= show_signup_error(@email_error)%>
+        <input type="text" name="email" id="email" size="22"
+          value="<%=params[:email]%>" />
+        
+        Password
+        <%= show_signup_error(@password_error)%>
+        <input type="password" name="password" id="password" size="22"/>
+        Confirm your password
+        <input type="password" name="password_confirm" id="password_confirm" size="22"/>
+        </div>
+      
+        <input type="submit" class="submit" value="Sign up">
+        </div>        
+      </div>  
+      
+      <div id="signup-cost">
+      <h2>Does it cost anything?</h2>
+        <p><b>No way</b>. If you get under 6,000 hits a day,
+        you can use it for free, forever. If you get a ton of
+        traffic or need more features, we hope you'll try our pro version
+        (we're still building it).
+        </p>
+        
+        <div id="letmeknow">
+        <input type="checkbox" name="interested"/> Let me know when
+        you finish building the pro version
+        </div>
+        
+      </div>
+      
+  </form>
 
-<ol>
-<li>Sign up (it's quick and free)</li>
+<script type="text/javascript">
+  $("email").focus();
+</script>
 
-<li>Paste some code we give you into your webpages</li>
-
-<li>Visit Breadcrumbs and see all kinds of crazy stats about your visitors</li>
-</ol>
-
-
-<p class="intro-links">
-<a class="linkbox" href="/project/">Try out a live Breadcrumbs setup</a>
-<a class="linkbox" href="">Sign up in seconds &raquo;</a>
-</p>
 
 <br clear="both"/>
+
+
 
 <!--<h1>What's cool about this?</h1>
 # ...
