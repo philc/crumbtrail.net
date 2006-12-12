@@ -89,28 +89,7 @@ class ProjectController < ApplicationController
   def lag()
     sleep 3
   end
-  def setpref()
-    # TODO : check here to ensure that the logged in user
-    # owns this project. ACtually, change this so that view prefs are per user, not per project.
-    puts "seting preference"
-    render :nothing => true
-    pref=params[:p]
-    value=params[:v]
-    puts pref,value
-    puts value.class
-    return if pref.nil? || value.nil?
-    
-    p = ViewPreference.find_by_project_id(@@project_id)
-    
-    puts pref,value
-    
-    if (pref=="section")
-      p.set_section(value)
-    else
-      p.set_panel(pref,value)
-    end
-    p.save!
-  end
+ 
   
   def format_total_pages(pages)
     pages.map{|p| "\"#{p.page.url}\", #{p.count}"}.flatten.join(",\n")
