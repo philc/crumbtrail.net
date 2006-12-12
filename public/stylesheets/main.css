@@ -208,7 +208,6 @@ a.linkbox:hover{
 #signup-fields{
   /*width:200px;*/
   float:left;  
-  
 }
 #signup_form{
   margin-left:3px;
@@ -225,6 +224,10 @@ a.linkbox:hover{
   margin-bottom:6px;
 }
 
+.submit{
+  /*font-weight:bold;*/
+  font-size:1em;
+}
 
 .text-form input{
   border:1px solid #b89c65;

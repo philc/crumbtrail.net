@@ -1,4 +1,4 @@
 <div id="<%= "#{p}_#{v}" %>"
 
-<%= "style='display:none'" unless (options[:force_visible] || @preferences.visible(p,v))-%>
+<%= "style='display:none'" unless (options[:force_visible] || visible(p,v))-%>
 class="panel <%=p%> <%=options[:c] if options[:c] -%>"></div>

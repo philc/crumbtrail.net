@@ -1,10 +1,23 @@
 class ProjectController < ApplicationController
-   @@project_id=1050
-   
+  @@project_id=1050
+  
+  # These are the default view strings
+  @@default_view={
+    :section=>:glance,
+    :hits=>:today,
+    :referers=>:recent,
+    :pages=>:recent,
+    :searches=>:recent
+  }
+
   def index
-    @project_id=@@project_id
-    p = Project.find(@project_id)    
+    # get the view options from their cookie
+    @view_options=view_options_from_cookie(cookies[:breadcrumbs])
+    
+    
+    p = Project.find(@@project_id)    
     @project=p
+    
     # only take the first 10 referers. Change this to a better way when we do pagination
     limit=9
     @referers_total = p.top_referers(10)
@@ -32,14 +45,15 @@ class ProjectController < ApplicationController
     
     @hits_month=p.hits(:month).join(",")
     
-    @preferences = ViewPreference.find_by_project_id(@project_id)
+    @preferences = ViewPreference.find_by_project_id(@@project_id)
     
     # Pages
     @popular_pages=format_total_pages(p.top_landings(10))
     @recent_pages=format_recent_pages(p.recent_landings)
-#     @recent_pages=format_pages(p.recent_landings())
-    
-    build_details(p)   
+
+    # Details; browser and OS
+    build_details(p)       
+
   end
   def build_details(p)
     # drop entries that are 0
@@ -128,5 +142,19 @@ class ProjectController < ApplicationController
     @data=@data.map{|r| 
       [r.referer.url,r.page.url,r.count]}.flatten.to_json
     render :layout=>false
+  end
+  private
+  # Build view options from the incoming cookie
+  def view_options_from_cookie(cookie)
+    # the cookie string looks like 
+    # hits=today,referers=total,pages=recent,searches=recent,section=glance
+    options=@@default_view.clone()
+    return options if cookie.nil?
+    pairs=cookie.split(",")    
+    pairs.each do |pair|
+      part=pair.split("=")
+      options[part[0].to_sym]=part[1].to_sym
+    end
+    return options
   end
 end

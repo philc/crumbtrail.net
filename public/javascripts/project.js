@@ -42,30 +42,64 @@ function px(v) {  return v + "px";}
 
 var Preferences = Class.create();
 Preferences.prototype = {
-  initialize:function(){
-    // "section" is for the main menu preference
-    this.sections=["glance","hits","referers","pages","searches","details","section"];
-    this.timers=new Array();    
-    this.sections.each(function(e){
-      this.timers[e]=new UITimer();
-    }.bind(this));    
+  initialize:function(){    
+    //this.sections=["glance","hits","referers","pages","searches","details","section"];
+    this.sections=["hits","referers","pages","searches", "section"];
+    this.defaults=["today","recent","recent","recent","glance"];
+    this.re=/breadcrumbs=([^;]+);/
+  },
+  defaultCookie:function(){
+    var initDefaults = function(e,i){ return e + "=" + this.defaults[i];}.bind(this);
+    return this.sections.collect(initDefaults).join('&');
+  },
+  parseCookie:function(){
+    var m = this.re.exec(document.cookie);
+    if (m && m.length>0)
+      cookie=m[1]
+    else
+      cookie=this.defaultCookie();
+    // Make into an associative array
+    return ("?"+cookie.gsub(',','&')).toQueryParams();    
   },
   update: function(n,v){
-    var timer=this.timers[n];
-    clearTimeout(timer.timer);
-    timer.timer=setTimeout(this.sendPreference(n,v),timer.timeout);
+    cookie=this.parseCookie();
+    cookie[n]=v;
+    // Rails can't parse the ampersands in the cookie..
+    this.setCookie("breadcrumbs",$H(cookie).toQueryString().gsub('&',','));    
   },
-  // Sends a view preference and a value asynchronously.
-  // name/values can be are panel/panel that's active,
-  // and section/section that's active
-  sendPreference: function(n,v){
-    var pars="p="+n+"&v="+v;
-    return function(){new Ajax.Request('/project/setpref/',
-      {asynchronous:true, parameters:pars
-      });
-    }
+  setCookie: function(name,value){
+    d=new Date(); d.setTime(d.getTime()+3600000);
+    document.cookie=name+"="+value+'; expires=' + d.toGMTString() + ';'
+    console.log("sertting cookie:",name+"="+value+'; expires=' + d.toGMTString() + ';');
   }
-};
+}
+
+// var Preferences = Class.create();
+// Preferences.prototype = {
+//   initialize:function(){
+//     // "section" is for the main menu preference
+//     this.sections=["glance","hits","referers","pages","searches","details","section"];
+//     this.timers=new Array();    
+//     this.sections.each(function(e){
+//       this.timers[e]=new UITimer();
+//     }.bind(this));    
+//   },
+//   update: function(n,v){
+//     var timer=this.timers[n];
+//     clearTimeout(timer.timer);
+//     timer.timer=setTimeout(this.sendPreference(n,v),timer.timeout);
+//   },
+//   // Sends a view preference and a value asynchronously.
+//   // name/values can be are panel/panel that's active,
+//   // and section/section that's active
+//   sendPreference: function(n,v){
+//     var pars="p="+n+"&v="+v;
+//     return function(){new Ajax.Request('/project/setpref/',
+//       {asynchronous:true, parameters:pars
+//       });
+//     }
+//   }
+// };
 
 var Page = Class.create();
 Page.prototype = {
@@ -189,15 +223,16 @@ function populatePage(){
 //   TableDisplay.showTable("referers_total",referersTotalData,TableDisplay.refererRow,3,
 //     "Top referrals", ["Referer","Total hits"], true);
 //   referersPager = new Pagination(0,0);
-   page.totalReferersPager.displayProperties("referers_total",referersTotalData,TableDisplay.refererRow,3,"Top referrals", ["Referer","Total hits"]);
+   page.totalReferersPager.displayProperties("referers_total",referersTotalData,
+    TableDisplay.refererRow,3,"Top referrals", ["","Total hits"]);
    page.totalReferersPager.showTable();
   
     
   TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
-    "Unique referrals", ["Referer","First visited"]);
+    "Unique referrals", ["","First visited"]);
     
   TableDisplay.showTable("referers_recent",referersRecentData,TableDisplay.refererRowWithDate,3,
-    "Recent Referer", ["Referer","Visited"] );
+    "Recent referers", ["","Visited"] );
 
   // pages section
   TableDisplay.showTable("pages_popular",pagesPopularData,TableDisplay.pagesRow,2,

@@ -14,7 +14,7 @@ document.getElementsByTagName("head").item(0).appendChild(e);
 // 1 hour later.
 d=new Date(); d.setTime(d.getTime()+3600000);
 
-document.cookie='1050=1; expires=' + d.toGMTString() + ';'
+document.cookie='1050=1; path=/; expires=' + d.toGMTString() + ';'
 }
 if (typeof window.onload!='function'){window.onload=tracker;}
 else{ f1=window.onload; window.onload=function(){f1();tracker();}}

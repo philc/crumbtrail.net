@@ -4,9 +4,13 @@ class ViewPreference < ActiveRecord::Base
     # Any operations on it are basically a no-op.
     attr_accessor :details  
     @@sections={"glance"=>"","hits"=>"","referers"=>"","pages"=>"","searches"=>"","details"=>""}
+    #after_create :defaults
     
-    # add "valid values" for each section..
-    #     @@valid_hits={:today=>"",:week=>"",:month=>"",:year=>""}
+    def self.from_cookie(cookie)
+      keyvals=cookie.split('&')
+      v=ViewPreference.new
+      v.defaults()
+    end
 
     def defaults()
       self.hits="today"
@@ -14,6 +18,7 @@ class ViewPreference < ActiveRecord::Base
       self.pages="recent"
       self.searches="today"
       self.panel="glance"
+      self.save
     end
     def visible(section,id)
       return if  @@sections[section].nil?
