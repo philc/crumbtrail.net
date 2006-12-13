@@ -46,7 +46,7 @@ Preferences.prototype = {
     //this.sections=["glance","hits","referers","pages","searches","details","section"];
     this.sections=["hits","referers","pages","searches", "section"];
     this.defaults=["today","recent","recent","recent","glance"];
-    this.re=/breadcrumbs=([^;]+);/
+    this.re=/breadcrumbs=([^;]+)/
   },
   defaultCookie:function(){
     var initDefaults = function(e,i){ return e + "=" + this.defaults[i];}.bind(this);
@@ -440,7 +440,7 @@ Pagination.prototype={
   },
   buildNavMenu:function (){
     var html='<a href="">&#171;</a><a href=""><</a>';
-    html+='<a href="" onclick="return page.' + this.name + 'Pager.next();">></a>';
+    html+='<a href="" onclick="return page.' + this.name + 'Pager.next();">&#155;</a>';
     html+='<a href="">&#187;</a>';
     var page='<span class="page">Page '+(this.current+1)+'</span>';
     return '<div class="pagination_links">'+page+'<span class="buttons">' + html + '</span></div>';
