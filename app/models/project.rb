@@ -34,6 +34,9 @@ class Project < ActiveRecord::Base
   def top_referers(limit, offset=0)
     return ReferralTotal.get_top_referers(self, limit, offset)
   end
+  def count_top_referers()
+    return ReferralTotal.count_top_referers(self)
+  end
 
   # Get the hit count for a specified period.
   # Period can be :day, :week, or :month

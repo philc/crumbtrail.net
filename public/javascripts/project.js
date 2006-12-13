@@ -70,7 +70,7 @@ Preferences.prototype = {
   setCookie: function(name,value){
     d=new Date(); d.setTime(d.getTime()+3600000);
     document.cookie=name+"="+value+'; expires=' + d.toGMTString() + ';'
-    console.log("sertting cookie:",name+"="+value+'; expires=' + d.toGMTString() + ';');
+    //console.log("setting cookie:",name+"="+value+'; expires=' + d.toGMTString() + ';');
   }
 }
 
@@ -271,20 +271,25 @@ function populatePage(){
 TableDisplay=Class.create();
 
 TableDisplay.prototype={
-  initialize: function(data, cellFunc, step, title,headerNames){  
+  initialize: function(data, cellFunc, step, title,headerNames, minRows){  
     this.title=title;    
     this.headerNames=headerNames;
     this.data=data;
     this.step=step;
     this.cellFunc=cellFunc;
+    this.minRows=minRows ? minRows : data.length/step;
   },
   buildTable: function(){
     var html="<table>"+this.tableHeader();
     var dataMax=this.data.max();
-    for (i=0;i<this.data.length/this.step;i++)
+    //for (i=0;i<this.data.length/this.step;i++)
+    for (i=0;i<this.minRows;i++)
     {
       html+=this.cellFunc(i,this.data,dataMax);
     }
+//     Number(5).times(function(){
+//       html+="<tr><td> </td><td></td></tr>";
+//     });
     html+="</table>" + '<div class="table-footer-cap"></div>';
 //     return this.dialog(this.title,html)
     return html;
@@ -431,40 +436,85 @@ Pagination.prototype={
     this.headerNames=headerNames;
   },
   showTable: function(){
-    var display = new TableDisplay(this.data,this.cellFunction,this.dataStep,this.title,this.headerNames);    
-    $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() + this.buildNavMenu());
+    var page=this.data[0];
+    this.current=page;
+    var more=this.data[1];
+    var displayData=this.data[2];
+    console.log("display data",displayData);
+    var display = new TableDisplay(displayData,this.cellFunction,this.dataStep,this.title,this.headerNames);    
+    $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() + 
+      this.buildNavMenu(more));
+//     var display = new TableDisplay(this.data,this.cellFunction,this.dataStep,this.title,this.headerNames);    
+//     $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() + 
+//       this.buildNavMenu(false,));
 //     var navPanel = document.createElement("div");
 //     navPanel.innerHTML=this.buildNavMenu();
 //     $(this.htmlID).appendChild(navPanel);
     //$(htmlID).innerHTML=page.dialog(title,display.buildTable());
   },
-  buildNavMenu:function (){
-    var html='<a href="">&#171;</a><a href=""><</a>';
-    html+='<a href="" onclick="return page.' + this.name + 'Pager.next();">&#155;</a>';
-    html+='<a href="">&#187;</a>';
+  // prev and next are whether these links should be enabled
+  buildNavMenu:function(enableNext){
+    // Want the complete thing to be "return page.refererPager.next();" etc.
+    var onclick = "return page." + this.name + "Pager.";
+    var html = this.buildLink("&#171",this.current>0,"","button",onclick+"first();");
+    html+= this.buildLink("&#139",this.current>0,"","button", onclick+"prev();");
+    html+= this.buildLink("&#155;",enableNext,"","button", onclick+"next();");
+    html+= this.buildLink("&#187",enableNext,"","button",onclick+"last();");
+    //html+='<a href="" onclick="return page.' + this.name + 'Pager.next();" class="inner2">&#155;</a>';
+    //html+='<a href="" onclick="return page.' + this.name + 'Pager.next();" class="inner2">&#155;</a>';
+//     html+='<a href="">&#187;</a>';
     var page='<span class="page">Page '+(this.current+1)+'</span>';
     return '<div class="pagination_links">'+page+'<span class="buttons">' + html + '</span></div>';
   },
-
+  first:function(){
+    return this.makeRequest(0);
+  },
+  last:function(){
+    //return this.makeRequest(this.current+1);
+    return this.makeRequest(-1);
+  },
   next:function(){
+    return this.makeRequest(this.current+1);
+  },
+  prev:function(){
+    console.log("making prev request", this.current-1);
+    return this.makeRequest(this.current-1);
+  },
+  makeRequest:function(page){
     new Ajax.Request('/project/data/'+this.name, 
     {asynchronous:true, evalScripts:true, 
-      parameters:"p="+this.current+1,
+      parameters:"p="+page,
       onComplete:this.show.bind(this)
     });
+    console.log("done ajax");
     return false;
   },
   show: function(request, page){
+    console.log("showing request");
+    console.log(request);
 //   console.log(this.htmlID, $(this.htmlID));
-    console.log(request.responseText);
-    data=eval(request.responseText);    
+    //console.log(request.responseText);
+    console.log("done printing response text");
+    results=eval(request.responseText);
+    var page = results[0];
+    var more = results[1];
+    var data=results[2];
     console.log(data);
+    console.log("page",page);
     console.log($(this.htmlID));
-    this.current++;
+    this.current=page;
      var display = new TableDisplay(data,this.cellFunction,this.dataStep,this.title,this.headerNames);    
-     $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() + this.buildNavMenu());
-
-    
+     $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() 
+      + this.buildNavMenu(more));   
+  },
+  buildLink: function(caption, enabled,href,class,onclick){
+    if (!enabled)
+      return '<span class="' + class +'">' + caption + '</span>';
+//     console.log("building link");
+//     console.log('<a href="' + href + '" ' + (onclick? ' onclick="' + onclick + '" ':'') + 
+//     (class ? 'class="' + class + '" ':'') + '>'+caption+'</a>');
+    return '<a href="' + href + '"' + (onclick? ' onclick="' + onclick + '" ':'') + 
+    (class ? 'class="' + class + '" ':'') + '>'+caption+'</a>';
   }
 };
 // pagination=new Pagination();

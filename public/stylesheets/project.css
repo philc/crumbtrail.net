@@ -297,23 +297,36 @@ float:right;
 .pagination_links span.page{
   font-size:.9em;
   color:#666666;
-  margin-right:10px;
+  margin-right:14px;
 }
-.pagination_links a{
-
+.pagination_links .button{
+  padding-right:7px;
+  padding-left:7px;
+  border-bottom:1px solid #ebcd96;
+}
+.pagination_links span.button{
+  color:#AAAAAA;
+}
+.pagination_links a.button{
   text-decoration:none;
-  padding-right:5px;
-  padding-left:5px;
+  /*padding-right:7px;
+  padding-left:7px;*/
  /* border-right:1px solid #ebcd96;
   border-left:1px solid #ebcd96;*/
   border-bottom:1px solid #ebcd96;
 }
+/*.pagination_links .inner{
+  padding-left:14px;  
+}
+.pagination_links .inner2{
+  padding-right:14px;
+}*/
 .pagination_links span.buttons{
   /*position:relative;*/
   /*top:-1px;*/
   /*border-top:1px solid #fbeac8;*/
     font-weight:bold;
-  font-size:1.2em;
+  font-size:1.4em;
  border-right:1px solid #ebcd96;
   border-left:1px solid #ebcd96;
 }

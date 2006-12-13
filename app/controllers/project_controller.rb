@@ -14,13 +14,17 @@ class ProjectController < ApplicationController
     # get the view options from their cookie
     @view_options=view_options_from_cookie(cookies[:breadcrumbs])
     
+    size=10
     
     p = Project.find(@@project_id)    
-    @project=p
+    @project=p   
     
-    # only take the first 10 referers. Change this to a better way when we do pagination
-    limit=9
-    @referers_total = p.top_referers(10)
+    
+    @referers_total = p.top_referers(size+1)
+    @referers_more = @referers_total.length>size
+    @referers_total = @referers_total[0..-2] if @referers_more
+    
+    
     #@referers_total=format_referers_with_count(@referers_total)
     @referers_total=@referers_total.map{|r| 
       [r.referer.url,r.page.url,r.count]}.flatten.to_json
@@ -30,9 +34,9 @@ class ProjectController < ApplicationController
     @date = to_js_date(p.time);
     
     
-    @referers_unique= format_referers_date(p.recent_unique_referers(10)[0..limit])
+    @referers_unique= format_referers_date(p.recent_unique_referers(10)[0..size-1])
 
-    @referers_recent=format_referers_recent(p.recent_referers()[0..limit])
+    @referers_recent=format_referers_recent(p.recent_referers()[0..size-1])
   
     @hits_day=p.hits(:day).join(",")    
     
@@ -115,9 +119,29 @@ class ProjectController < ApplicationController
     size=10
     project = Project.find(@@project_id)    
     
+       
     page=params[:p].to_i
-    puts "p",page
-    @data=project.top_referers(size,page*size)
+    page=0 if (page<-1)
+    
+    puts "page we got:",page
+    
+    # a parameter of -1 means find the last page
+    if (page==-1)
+      rowCount = project.count_top_referers()
+      page = (rowCount/size).floor()
+    end
+    
+    # request one more than we need; if we get it, then there is more
+    # referers to show, and the "next" link should be enabled.
+    # if we don't get it, then there are no more items to show
+    @data=project.top_referers(size+1,page*size)
+    @more = @data.length>size
+    @data=@data[0..-2] if @more
+    
+    # Find out which page we're showing; the review won't know which page
+    # it's asking for in the case of when it requests the "last page"
+    @page=page    
+    
     @data=@data.map{|r| 
       [r.referer.url,r.page.url,r.count]}.flatten.to_json
     render :layout=>false

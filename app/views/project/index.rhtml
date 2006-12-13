@@ -14,7 +14,7 @@
 <script type="text/javascript">
    page.activeSection = "<%= @view_options[:section]%>";
   
-   referersTotalData=<%= @referers_total -%>;
+   referersTotalData=[0,<%=@referers_more%>,<%= @referers_total -%>];
    referersUniqueData=[<%= @referers_unique -%>];
    referersRecentData=[<%= @referers_recent -%>];
    page.date=<%=@date%>;
