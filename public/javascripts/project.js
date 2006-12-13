@@ -220,6 +220,8 @@ function populatePage(){
     "Hits this week", ["","Hits","Unique"]);
   TableDisplay.showTable("hits_month",hitsMonthData,TableDisplay.hitsMonth,2,
     "Hits this month", ["","Hits","Unique"]);
+  TableDisplay.showTable("hits_year",hitsYearData,TableDisplay.hitsYear,2,
+    "Hits this year", ["","Hits","Unique"]);
   
   // referer section
 //   TableDisplay.showTable("referers_total",referersTotalData,TableDisplay.refererRow,3,
@@ -402,9 +404,13 @@ TableDisplay.Methods={
       var display = new TableDisplay(data,cellFunction,dataStep,title,headerNames);
       $(htmlID).innerHTML=DisplayHelper.dialog(title,display.buildTable());
   },  
-  hitsMonth:function (i,data,dataMax){
-      var day=DisplayHelper.formatWeeksAgo(i);
-      return this.hitsRow(i,data,dataMax,day);
+  hitsYear:function(i,data,dataMax){
+    var month=DisplayHelper.showMonth((new Date()).getMonth()-i);
+    return this.hitsRow(i,data,dataMax,month);
+  },
+  hitsMonth:function(i,data,dataMax){
+      var week=DisplayHelper.formatWeeksAgo(i);
+      return this.hitsRow(i,data,dataMax,week);
   },
   hitsWeek: function(i,data, dataMax){
     var day=DisplayHelper.showDay((new Date()).getDay()-i);
@@ -566,9 +572,14 @@ DisplayHelper.Methods={
   days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
   showDay: function(i, showToday){
     i=i%7;
-    i=i<0 ? 7+i : i;
-    
+    i=i<0 ? 7+i : i;    
     return i==0? (showToday ? "Today" : this.days[i]) : this.days[i];
+  },
+  months:["January", "February","March","April","May","June",
+          "July","August", "September","October","November","December"],
+  showMonth:function(i){ 
+    i=i%12;
+    return this.months[i];
   },
   // Will ellipsize from the left, e.g. philisoft.com/blog => ...isoft.com/blog.
   // Should we try and break on periods or slashes, if they're close?

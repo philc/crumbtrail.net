@@ -26,6 +26,7 @@
   hitsDayData=[<%= @hits_day %>];   
   hitsWeekData=[<%= @hits_week %>];
   hitsMonthData=[<%= @hits_month %>];
+  hitsYearData=[<%= @hits_year %>];
   
   pagesPopularData=[<%=@popular_pages%>];
   pagesRecentData=[<%=@recent_pages%>];
@@ -105,7 +106,7 @@
         <%= render :partial=>"navlink", :locals=>{:s=>:hits,:v=>:today,:d=>"Today"} %> | 
         <%= render :partial=>"navlink", :locals=>{:s=>:hits,:v=>:week,:d=>"Week"} %> | 
         <%= render :partial=>"navlink", :locals=>{:s=>:hits,:v=>:month,:d=>"Month"} %> | 
-        <%= render :partial=>"navlink", :locals=>{:s=>:hits,:v=>:total,:d=>"Total"} %> 
+        <%= render :partial=>"navlink", :locals=>{:s=>:hits,:v=>:year,:d=>"Year"} %> 
   
         
       </div>
@@ -115,7 +116,7 @@
         <%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:today,:options=>{:c=>"date"}} %>
         <%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:week,:options=>{:c=>"date"}} %>
         <%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:month,:options=>{:c=>"date"}} %>
-        <%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:total,:options=>{:c=>"date"}} %>
+        <%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:year,:options=>{:c=>"date"}} %>
         
       
       

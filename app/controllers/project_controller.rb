@@ -43,6 +43,7 @@ class ProjectController < ApplicationController
     weekData=p.hits(:week)
     @hits_week=weekData.join(",")  
     
+    @hits_year=p.hits(:year).join(",")
     
     @glance_today=weekData[0]    
     @glance_yesterday=weekData[1]
