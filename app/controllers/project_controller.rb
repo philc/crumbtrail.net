@@ -9,34 +9,19 @@ class ProjectController < ApplicationController
     :pages=>:recent,
     :searches=>:recent
   }
-
+  @@size=10
+  
   def index
     # get the view options from their cookie
-    @view_options=view_options_from_cookie(cookies[:breadcrumbs])
-    
-    size=10
+    @view_options=view_options_from_cookie(cookies[:breadcrumbs])   
     
     p = Project.find(@@project_id)    
     @project=p   
     
-    
-    @referers_total = p.top_referers(size+1)
-    @referers_more = @referers_total.length>size
-    @referers_total = @referers_total[0..-2] if @referers_more
-    
-    
-    #@referers_total=format_referers_with_count(@referers_total)
-    @referers_total=@referers_total.map{|r| 
-      [r.referer.url,r.page.url,r.count]}.flatten.to_json
-
-    
     # use the date in the view that we have on record for them.    
     @date = to_js_date(p.time);
     
-    
-    @referers_unique= format_referers_date(p.recent_unique_referers(10)[0..size-1])
-
-    @referers_recent=format_referers_recent(p.recent_referers()[0..size-1])
+    build_referers(p)
   
     @hits_day=p.hits(:day).join(",")    
     
@@ -50,15 +35,34 @@ class ProjectController < ApplicationController
     
     @hits_month=p.hits(:month).join(",")
     
-    @preferences = ViewPreference.find_by_project_id(@@project_id)
-    
     # Pages
-    @popular_pages=format_total_pages(p.top_landings(10))
+    @popular_pages=format_total_pages(p.top_landings(@@size))
     @recent_pages=format_recent_pages(p.recent_landings)
 
     # Details; browser and OS
     build_details(p)       
 
+  end
+  def build_referers(p)
+    @referers_total = p.top_referers(@@size+1)
+    @referers_more = @referers_total.length>@@size
+    @referers_total = @referers_total[0..-2] if @referers_more    
+    
+    @referers_total=@referers_total.map{|r| 
+      [r.referer.url,r.page.url,r.count]}.flatten.to_json
+    
+    @referers_unique = p.recent_unique_referers(@@size).map {|r|
+      [r.referer.url,r.page.url,JSDate.new(r.first_visit)]
+    }.flatten.to_json
+
+    #@referers_recent=format_referers_recent(p.recent_referers())
+    @referers_recent = p.recent_referers().map{|r|
+      [r.referer.url,r.page.url,JSDate.new(r.visit_time)]
+    }.flatten.to_json
+#      def format_referers_recent(rs)
+#     #rs.map{|r| "\"#{r.referer.url}\",#{to_js_date(r.visit_time)}" }.flatten.join(",\n")
+#     rs.map{|r| "\"#{r.referer.url}\", \"#{r.page.url}\", #{to_js_date(r.visit_time)}" }.flatten.join(",\n")
+  
   end
   def build_details(p)
     # drop entries that are 0
@@ -113,6 +117,10 @@ class ProjectController < ApplicationController
   def format_referers_date(rs)
      rs.map{|r| "\"#{r.referer.url}\", \"#{r.page.url}\", #{to_js_date(r.first_visit)}" }.flatten.join(",\n")
   end
+
+  def to_js_date2(d)
+    return "new Date(#{d.to_s.sub("UTC","")})"
+  end
   def to_js_date(d)
     return "new Date(\"#{d.to_s.sub("UTC","")}\")"
   end
@@ -160,5 +168,14 @@ class ProjectController < ApplicationController
       options[part[0].to_sym]=part[1].to_sym
     end
     return options
+  end
+end
+class JSDate
+  def initialize(d)
+    @date=d.to_s.sub("UTC","")
+  end
+  def to_json
+    return "new Date(\"#{@date}\")"
+    #new Date(#{d.to_s.sub("UTC","")})"
   end
 end

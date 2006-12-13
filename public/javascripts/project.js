@@ -383,7 +383,6 @@ TableDisplay.Methods={
     var time = data[i*3+2];
     var refererCaption = DisplayHelper.truncateRight(unescape(referer),45);
     var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
-    //var html = linkCaption.link("http://"+url);
     var tdHtml = linkCaption.link("http://"+url) + '<span class="to">From&nbsp;'+refererCaption.link("http://"+referer)+'</a></span>';
     var cell1=this.td(tdHtml,"f");
     var cell2 = this.td(DisplayHelper.timeAgo(time));
