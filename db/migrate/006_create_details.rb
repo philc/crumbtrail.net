@@ -1,6 +1,6 @@
 class CreateDetails < ActiveRecord::Migration
   def self.up
-    create_table :hit_details do |t|
+    create_table (:hit_details, :options => 'ENGINE=MyISAM') do |t|
       t.column :project_id, :integer, :null => false
       t.column :day, :integer, :null => false
       t.column :last_update, :date, :null => false

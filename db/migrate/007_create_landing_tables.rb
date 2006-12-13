@@ -1,7 +1,7 @@
 class CreateLandingTables < ActiveRecord::Migration
   def self.up
     # Create Landing Totals Table
-    create_table :landing_totals do |t|
+    create_table (:landing_totals, :options => 'ENGINE=MyISAM') do |t|
       t.column :project_id, :integer, :null => false
       t.column :page_id, :integer, :default => 0
       t.column :referer_id, :integer, :default => 0
@@ -11,7 +11,7 @@ class CreateLandingTables < ActiveRecord::Migration
     add_index :landing_totals, :project_id
 
     # Create Landing Recents Table
-    create_table :landing_recents do |t|
+    create_table (:landing_recents, :options => 'ENGINE=MyISAM') do |t|
       t.column :project_id, :integer, :null => false
       t.column :page_id, :integer, :null => false 
       t.column :referer_id, :integer, :null => false
@@ -23,6 +23,7 @@ class CreateLandingTables < ActiveRecord::Migration
   end
 
   def self.down
-    drop_talbe :landing_totals
+    drop_table :landing_totals
+    drop_table :landing_recents
   end
 end

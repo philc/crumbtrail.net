@@ -1,6 +1,6 @@
 class CreateHitTables < ActiveRecord::Migration
   def self.up
-    create_table :hit_hourlies do |t|
+    create_table (:hit_hourlies, :options => 'ENGINE=MyISAM') do |t|
       t.column :project_id, :integer, :null => false
       t.column :hour, :integer, :null => false
       t.column :total, :integer, :default => 0
@@ -10,7 +10,7 @@ class CreateHitTables < ActiveRecord::Migration
 
     add_index :hit_hourlies, :project_id
 
-    create_table :hit_dailies do |t|
+    create_table (:hit_dailies, :options => 'ENGINE=MyISAM') do |t|
       t.column :project_id, :integer, :null => false
       t.column :date, :date
       t.column :total, :integer, :default => 0
@@ -20,7 +20,7 @@ class CreateHitTables < ActiveRecord::Migration
 
     add_index :hit_dailies, :project_id
 
-    create_table :hit_monthlies do |t|
+    create_table (:hit_monthlies, :options => 'ENGINE=MyISAM') do |t|
       t.column :project_id, :integer, :null => false
       t.column :month, :integer, :null => false
       t.column :total, :integer, :default => 0
@@ -30,7 +30,7 @@ class CreateHitTables < ActiveRecord::Migration
 
     add_index :hit_monthlies, :project_id
 
-    create_table :hit_totals do |t|
+    create_table (:hit_totals, :options => 'ENGINE=MyISAM') do |t|
       t.column :project_id, :integer, :null => false
       t.column :total, :integer, :default => 0
       t.column :unique, :integer, :default => 0
@@ -41,9 +41,9 @@ class CreateHitTables < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :hit_hourlys
-    drop_table :hit_dailys
-    drop_table :hit_monthlys
+    drop_table :hit_hourlies
+    drop_table :hit_dailies
+    drop_table :hit_monthlies
     drop_table :hit_totals
   end
 end

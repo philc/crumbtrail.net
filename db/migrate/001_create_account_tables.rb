@@ -40,6 +40,7 @@ class CreateAccountTables < ActiveRecord::Migration
       t.column :referrals_row, :integer, :default => 0
       t.column :hits_row, :integer, :default => 0
       t.column :landings_row, :integer, :default => 0
+      t.column :searches_row, :integer, :default => 0
     end
 
     add_index :row_trackers, :project_id

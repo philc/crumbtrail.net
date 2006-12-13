@@ -9,6 +9,7 @@
 # require "app/models/recent_hit.rb"
 # require "lib/rollable_time_table.rb"
 # require 'lib/time_helpers.rb'
+require 'benchmark'
 
 class ApacheRequest
   attr_reader   :project
@@ -46,9 +47,13 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
-      @referer = Referer.get_referer(@referer_url)
-      @page = Page.get_page(@page_url)
-      @project.process_request(self)
+#     Benchmark.benchmark("processing a request") do |x|
+#       x.report('request: ') {
+        @referer = Referer.get_referer(@referer_url)
+        @page = Page.get_page(@page_url)
+        @project.process_request(self)
+#       }
+#     end
 #   
 #     @landing_url = LandingUrl.find(:first, :conditions => ['project_id = ? AND url = ?', @project.id, @url])
 #     @landing_url = LandingUrl.create(:project_id => @project.id, 
@@ -69,7 +74,7 @@ end
 
 class ApacheLogReader
 
-  @@regex = Regexp.new('(.+)\s+\[(.+)\]\s+(.+)\s+(.+)\s+"(.+)"')
+  @@regex = Regexp.compile('(.+)\s+\[(.+)\]\s+(.+)\s+(.+)\s+"(.+)"')
 
 #------------------------------------------------------------------------------
 
@@ -126,7 +131,9 @@ class ApacheLogReader
     while (1)
       line = file.gets
       if !line.nil?
-        process_line(line)
+        Benchmark.benchmark("process line") do |x|
+          x.report("line") { process_line(line) }
+        end
       else
         sleep 1
       end
@@ -136,7 +143,8 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
   include TimeHelpers
   def self.parse_time(time_string, project)
-    if time_string.match(/^(\d{4}) (\d\d) (\d\d) (\d\d) (\d\d) (\d\d)$/)
+    @@time_regex = Regexp.compile('^(\d{4}) (\d\d) (\d\d) (\d\d) (\d\d) (\d\d)$')
+    if @@time_regex.match(time_string)
       time = Time.local($1, $2, $3, $4, $5, $6)
 
       return project.time(time)
@@ -233,6 +241,6 @@ end
 
 # ApacheLogReader::establish_connection()
 #ApacheLogReader::tail_log("script/test.log")
-#ApacheLogReader::tail_log("script/test-long.log")
+ApacheLogReader::tail_log("script/test-long.log")
 #ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")
-ApacheLogReader::tail_log("script/new.log")
+#ApacheLogReader::tail_log("script/new.log")

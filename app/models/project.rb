@@ -2,17 +2,16 @@ class Project < ActiveRecord::Base
    belongs_to :account
    belongs_to :zone
    has_one  :row_tracker
-#   has_many :recent_referrals
-#   has_many :total_referrals
-#   has_many :hourly_hits
-#   has_many :daily_hits
-#   has_one  :total_hit
-#   has_one  :hit_detail
-#   has_many :landing_urls
-#   has_many :search_referers
 
   def process_request(request)
-    increment_referer(request) if request.referer.url != '/'
+    search_terms = SearchTotal.analyze_search_url(request.referer.url)
+    if !search_terms.nil? && request.page.url != '-'
+      SearchTotal.increment_search_string(request, search_terms)
+      SearchRecent.add_new_search(request, search_terms)
+    elsif request.referer.url != '/'
+      increment_referer(request) if request.referer.url != '/'
+    end
+
     increment_hit_count(request)
     increment_page_landing(request) if request.page.url != '-'
     record_details(request)
@@ -34,8 +33,21 @@ class Project < ActiveRecord::Base
   def top_referers(limit, offset=0)
     return ReferralTotal.get_top_referers(self, limit, offset)
   end
+
   def count_top_referers()
     return ReferralTotal.count_top_referers(self)
+  end
+
+  def top_searches(limit, offset=0)
+    return SearchTotal.get_top_searches(self, limit, offset)
+  end
+
+  def count_top_searches()
+    return SearchTotal.count_top_searches(self)
+  end
+
+  def recent_searches()
+    return SearchRecent.get_recent_searches(self)
   end
 
   # Get the hit count for a specified period.
@@ -58,11 +70,11 @@ class Project < ActiveRecord::Base
   def top_landings(limit)
     return LandingTotal.get_most_popular(self, limit)
   end
-  
+
   def recent_landings()
     return LandingRecent.get_recent_landings(self)
   end
-  
+
   def get_details(type)
     return HitDetail.get_details(self, type)
   end

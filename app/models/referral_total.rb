@@ -35,6 +35,7 @@ class ReferralTotal < ActiveRecord::Base
                 :offset     => offset,
                 :limit      => limit)
   end
+
   def self.count_top_referers(project)
     return count(:conditions=>["project_id",project.id])
   end
