@@ -128,7 +128,8 @@ Page.prototype = {
     var section=e.title;
     
     this.removeClassFromElements("active","menu");
-    e.className+=" active";
+    
+    Element.addClassName(e,"active");
     
     Element.hide(this.activeSection);
     this.activeSection=section;        
@@ -146,7 +147,7 @@ Page.prototype = {
       function(e){Element.hide(e)});
     // Remove highlighting on the other link, highlight the new link    
     this.removeClassFromElements('panel_link_active',this.activeSection);
-    linkElement.className += " panel_link_active";
+    Element.addClassName(linkElement," panel_link_active");
     // Show e.g. "referers_current" panel
     Element.show(this.activeSection+"_"+panel);
     this.preferences.update(this.activeSection,panel);
@@ -166,7 +167,8 @@ Page.prototype = {
     var elements=document.getElementsByClassName(c,start);
     if (elements!=null){
       elements.each(
-        function(e){e.className=e.className.replace(c,"");}) 
+        //function(e){e.className=e.className.replace(c,"");}) 
+        function(e){Element.removeClassName(e,c)})
     }      
   },
   // Returns the image file used for a quadrant. i is the color (0-5ish)
@@ -437,8 +439,11 @@ Pagination.prototype={
     //$(htmlID).innerHTML=page.dialog(title,display.buildTable());
   },
   buildNavMenu:function (){
-    html='<a href="" onclick="return page.' + this.name + 'Pager.next();"> > </a>';
-    return html;
+    var html='<a href="">&#171;</a><a href=""><</a>';
+    html+='<a href="" onclick="return page.' + this.name + 'Pager.next();">></a>';
+    html+='<a href="">&#187;</a>';
+    var page='<span class="page">Page '+(this.current+1)+'</span>';
+    return '<div class="pagination_links">'+page+'<span class="buttons">' + html + '</span></div>';
   },
 
   next:function(){
@@ -455,12 +460,10 @@ Pagination.prototype={
     data=eval(request.responseText);    
     console.log(data);
     console.log($(this.htmlID));
-    //this.current++;
+    this.current++;
      var display = new TableDisplay(data,this.cellFunction,this.dataStep,this.title,this.headerNames);    
      $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() + this.buildNavMenu());
 
-//     $(this.htmlID).innerHTML="hey hey";
-    console.log("end of func");
     
   }
 };
@@ -581,7 +584,7 @@ LineGraph.prototype={
   drawGraph: function(){  
     // Graph container
     var g=document.createElement("div");
-    g.className="linegraph";
+    Element.addClassName(g,"linegraph");
     var imgs=[]
     var hwidth=this.width/(this.data.length-1);
   
@@ -596,7 +599,7 @@ LineGraph.prototype={
     
     for (i=1;i<this.data.length; i++){
       var div=document.createElement("div");
-      div.className="color";
+      Element.addClassName(div,"color");
       if (this.style<2)
         div.style.backgroundColor=page.colors[this.lineColor];
       div.id=i+"";
@@ -649,7 +652,10 @@ LineGraph.prototype={
   // if the line is pointing up, we need to move the dot upward somewhat
   dataPointDot: function(data,x,y, pointingUp){
     var dot=document.createElement("div");
-    dot.className="linegraph-dot" + (pointingUp ? "" : " linegraph-dot-up");
+    Element.addClassName(dot,"linegraph-dot");
+    if (pointingUp)
+      Element.addClassName(dot,"linegraph-dot-up");
+    //dot.className="linegraph-dot" + (pointingUp ? "" : " linegraph-dot-up");
     dot.style.left=px(x);
 
     dot.onmouseover=function(){Element.show(this.firstChild);};
@@ -660,7 +666,7 @@ LineGraph.prototype={
     dot.style.top=px(y);
     
     text = document.createElement("div");
-    text.className="linegraph-dot-caption";
+    Element.addClassName(text,"linegraph-dot-caption");
     text.style.display="none";
   
     text.innerHTML=data+"";    
@@ -707,7 +713,7 @@ LineGraph.prototype={
   },
   xLabel: function(text){
     var div=document.createElement("div");
-    div.className="line-x-label";
+    Element.addClassName(div,"line-x-label");
     div.innerHTML=text;
 //     div.style.top="100%";
 //     div.style.bottom=y;   
@@ -715,7 +721,7 @@ LineGraph.prototype={
   },
   yLabel: function(text){
     var div=document.createElement("div");
-    div.className="line-y-label";
+    Element.addClassName(div,"line-y-label");
     div.innerHTML=text;
 //     div.style.right="100%";
 //     div.style.bottom=y;   
@@ -814,7 +820,7 @@ PieGraphDisplay.prototype={
     } 
   
     var img=document.createElement("img");    
-    img.className="chart_image";  
+    Element.addClassName(img,"chart_image");
     img.style.width=w+"px";
     img.style.height=h+"px";
     img.style.zIndex="1";
@@ -855,7 +861,7 @@ PieGraphDisplay.prototype={
     
     var div=document.createElement("div");
     div.style.backgroundColor=color;
-    div.className="chart_filler";
+    Element.addClassName(div,"chart_filler");
     div.style.zIndex=level+"";
     
     // div dimentions
@@ -910,7 +916,7 @@ PieGraphDisplay.prototype={
   },
   drawTextLabels: function(placeholder){
     var labelBox=document.createElement("div");
-    labelBox.className="label_box";
+    Element.addClassName(labelBox,"label_box");
     labelBox.style.left=px(this.size);
     labelBox.innerHTML="<span class='title'>"+this.title+"</a>"
     var ul = document.createElement("ul");
@@ -919,7 +925,7 @@ PieGraphDisplay.prototype={
       var div=document.createElement("li"); 
       div.innerHTML="<div class='color_box' style='background-color:" + 
       page.colors[i] + "'></div>" + this.labels[i];
-      div.className="label";      
+      Element.addClassName(div,"label");
       ul.appendChild(div);      
     }
     labelBox.appendChild(ul);
