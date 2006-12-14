@@ -385,11 +385,11 @@ TableDisplay.Methods={
     return f(i,data,dataMax,true);
   },
   pagesRecentRow:function(i,data,dataMax){
-    var url = data[i*3];
-    var referer = data[i*3+1];
+    var url = unescape(data[i*3]);
+    var referer = unescape(data[i*3+1]);
     var time = data[i*3+2];
-    var refererCaption = DisplayHelper.truncateRight(unescape(referer),45);
-    var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
+    var refererCaption = DisplayHelper.truncateRight(referer,45);
+    var linkCaption = DisplayHelper.truncateLeft(url,45);
     var tdHtml = linkCaption.link("http://"+url) + '<span class="to">From&nbsp;'+refererCaption.link("http://"+referer)+'</a></span>';
     var cell1=this.td(tdHtml,"f");
     var cell2 = this.td(DisplayHelper.timeAgo(time));
@@ -403,7 +403,7 @@ TableDisplay.Methods={
   searchesRow:function(i,data,dataMax,isDate){
     console.log('in searches row');
     var terms = data[i*3];
-    var url = data[i*3+1];
+    var url = unescape(data[i*3+1]);
     //var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
     //var html = linkCaption.link("http://"+url);
     var html = terms.link("http://"+url);
