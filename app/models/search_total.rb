@@ -5,7 +5,7 @@ class SearchTotal < ActiveRecord::Base
   belongs_to :referer
   belongs_to :page
 
-  @@google = Regexp.compile('^google.*\/search\?.*&?q=([A-Za-z0-9\+\.%]+)&?')
+  @@google = Regexp.compile('^google.*\/search.*[&\?]q=([A-Za-z0-9\+\. %]+)&?')
   def self.increment_search_string(request, words)
     project = request.project
 

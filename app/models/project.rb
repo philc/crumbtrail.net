@@ -4,17 +4,22 @@ class Project < ActiveRecord::Base
    has_one  :row_tracker
 
   def process_request(request)
-    search_terms = SearchTotal.analyze_search_url(request.referer.url)
-    if !search_terms.nil? && request.page.url != '-'
-      SearchTotal.increment_search_string(request, search_terms)
-      SearchRecent.add_new_search(request, search_terms)
-    elsif request.referer.url != '/'
-      increment_referer(request) if request.referer.url != '/'
-    end
+    referer = request.referer
+    page = request.page
 
-    increment_hit_count(request)
-    increment_page_landing(request) if request.page.url != '-'
-    record_details(request)
+    if referer.url != '-' && referer.url != '/' && page.url != '-'
+      search_terms = SearchTotal.analyze_search_url(request.referer.url)
+      if !search_terms.nil?
+        SearchTotal.increment_search_string(request, search_terms)
+        SearchRecent.add_new_search(request, search_terms)
+      else
+        increment_referer(request)
+      end
+
+      increment_hit_count(request)
+      increment_page_landing(request)
+      record_details(request)
+    end
   end
 
   # Returns an array of RecentReferrals (Length hardcoded at 10)

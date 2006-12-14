@@ -47,28 +47,9 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
-#     Benchmark.benchmark("processing a request") do |x|
-#       x.report('request: ') {
-        @referer = Referer.get_referer(@referer_url)
-        @page = Page.get_page(@page_url)
-        @project.process_request(self)
-#       }
-#     end
-#   
-#     @landing_url = LandingUrl.find(:first, :conditions => ['project_id = ? AND url = ?', @project.id, @url])
-#     @landing_url = LandingUrl.create(:project_id => @project.id, 
-#                                       :url => @url, 
-#                                       :count => 0,
-#                                       :referer_id => @referer.id,
-#                                       :last_visit => @project.time) if @landing_url.nil?
-#     @landing_url.count += 1
-#     @landing_url.referer_id = @referer.id
-#     @landing_url.last_visit = @project.time
-#     @landing_url.save
-#   
-#     @project.increment_referer(self) if @referer_url != '/'
-#     @project.increment_hit_count(self)
-#     @project.increment_details(self)
+    @referer = Referer.get_referer(@referer_url)
+    @page = Page.get_page(@page_url)
+    @project.process_request(self)
   end
 end
 
@@ -191,7 +172,7 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
   
   def self.parse_referer(query)
-    query.match(/[&\?]r=([A-Za-z0-9\/:%\.]+)/)
+    query.match(/[&\?]r=([A-Za-z0-9\/:+%\.]+)/)
     return $1 || '/'
   end
 
@@ -241,7 +222,7 @@ end
 
 # ApacheLogReader::establish_connection()
 #ApacheLogReader::tail_log("script/test.log")
-#ApacheLogReader::tail_log("script/test-long.log")
+ApacheLogReader::tail_log("script/test-long.log")
 #ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")
 #ApacheLogReader::tail_log("script/new.log")
-ApacheLogReader::tail_log("script/searches.log")
+#ApacheLogReader::tail_log("script/searches.log")

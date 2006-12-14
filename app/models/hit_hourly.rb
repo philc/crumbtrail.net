@@ -4,11 +4,11 @@ class HitHourly < ActiveRecord::Base
   belongs_to :project
 
   def self.increment_hit(request)
-    proj = request.project
+    project = request.project
     time = request.time
 
-    row = find_by_project_id_and_hour(proj.id, time.hour)
-    row = new(:project_id => proj.id, :hour => time.hour, :last_update => time) if row.nil?
+    row = find_by_project_id_and_hour(project.id, time.hour)
+    row = new(:project => project, :hour => time.hour, :last_update => time) if row.nil?
 
     row_t = row.last_update
     if row_t.day != time.day || row_t.month != time.month || row_t.year != time.year
@@ -26,7 +26,7 @@ class HitHourly < ActiveRecord::Base
   # starting with the most recent hour
   def self.get_hits(project)
     c_time = project.time
-    c_yesterday = c_time - (60 * 60 * 24)
+    c_yesterday = c_time - (60 * 60 * 23)
 
     rows = find(:all, 
                 :conditions => ['project_id = ? AND last_update >= ?', project.id, c_yesterday], 
