@@ -10,10 +10,29 @@ class ProjectController < ApplicationController
     :pages=>:recent,
     :searches=>:recent
   }
-  
   # Number of entries to show in each table
   @@size=10
-  
+  def new
+    if (request.post?)
+      @site_name=params[:site_name]
+      @site_url=params[:site_url]
+      
+      if (@site_name.nil? || @site_name.empty?)
+        @name_error="Please fill in the name of your website"
+      end
+      if (@site_url.nil? || @site_url.empty?)
+        @url_error="Please fill in the URL of your website"
+      end      
+      
+      if (@url_error.nil? && @name_error.nil?)
+        # create the project, attach it to the current user
+        redirect_to :controller=>"project",:action=>"code"
+      end
+    end
+  end
+  def code
+    
+  end
   #
   # Fetches the user's project data and fills javascript variables with them.
   # Javascript does the actual table and graph drawing

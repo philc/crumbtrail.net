@@ -1,9 +1,6 @@
 module MainHelper
   
-  def show_signup_error(message)
-    return nil if (message.nil?)
-    return '<div class="form_error">'+message+'</div>'
-  end
+
   
   @@email_error="This is not a valid email address"
   def self.validate_email(email)

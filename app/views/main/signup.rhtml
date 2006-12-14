@@ -17,19 +17,19 @@ your stats, you'll need to re-enable it in your web browser.
 
 <h1>Sign up</h1>
 
-<div id="signup_form">
+<div id="signup_form" clas="left_form">
 
   <form action="/signup" method="post">
 
       <div id="signup-fields">
        <div class="text-form">
         E-mail
-        <%= show_signup_error(@email_error)%>
+        <%= show_form_error(@email_error)%>
         <input type="text" name="email" id="email" size="22"
           value="<%=params[:email]%>" />
         
         Password
-        <%= show_signup_error(@password_error)%>
+        <%= show_form_error(@password_error)%>
         <input type="password" name="password" id="password" size="22"/>
         Confirm your password
         <input type="password" name="password_confirm" id="password_confirm" size="22"/>

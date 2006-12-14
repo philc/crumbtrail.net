@@ -19,6 +19,11 @@ class MainController < ApplicationController
       if (pw1!=pw2 && @email_error.nil? && @password_error.nil?)
           @password_error="Your passwords don't match"
       end
+      redirect_to :controller=>"project", :action=>"first"
     end
+    
+    
+    
   end
+  
 end

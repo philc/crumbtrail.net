@@ -150,6 +150,10 @@ img{ border:0;}
 .copy li{
   margin-left:40px;
 }
+.copy p{
+  padding-top:12px;
+  padding-bottom:8px;
+}
 .intro-links{
   width:80%;
   /*margin-left:30%;*/
@@ -209,8 +213,15 @@ a.linkbox:hover{
   /*width:200px;*/
   float:left;  
 }
-#signup_form{
-  margin-left:3px;
+/* a form that's aligned on the left; it should be indented some*/
+.left_form{
+  margin-left:3px;  
+  display:table;
+}
+.centered_form{
+  display:table;
+  margin-left:auto;
+  margin-right:auto;
 }
 #signup_form .form_error{
   width:200px;
@@ -223,19 +234,46 @@ a.linkbox:hover{
   margin-top:6px;
   margin-bottom:6px;
 }
-
+.button_area{
+  padding-top:7px;
+  /*text-align:right;*/
+  text-align:center;
+}
 .submit{
   /*font-weight:bold;*/
   font-size:1em;
 }
-
-.text-form input{
+/* Used to indicate in example HTML where to paste your tracking code*/
+.paste{
+  font-size:1.4em;
+  color:green;
+}
+/* right side of the code form */
+.code_right{
+  float:right;
+  width:13em;
+  margin-left:15px;
+  background-color:#fffae8;
+  padding-left:10px;
+  padding-right:5px;
+}
+textarea.code_box{
+  background-color:#F6F6F6;
+}
+pre.code_example{
+  /*background-color:#EEEEEE;*/
+}
+.text-form input, .text-form textarea{
   border:1px solid #b89c65;
   display:block;  
   margin-bottom:8px;
 }
 .text-form input:focus{
   background-color:#fffae8;
+}
+.text-form .example{
+  font-size:.8em;
+  color:#666666;
 }
 .form_error{
   color:#d75b5c;
