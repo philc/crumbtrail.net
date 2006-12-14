@@ -30,6 +30,9 @@
   pagesPopularData=<%=@popular_pages%>;
   pagesRecentData=<%=@recent_pages%>;
   
+  searchesRecentData=<%=@searches_recent%>
+  searchesTotalData=<%=@searches_total%>
+  
   osData=[<%= @os_data %>];
   osLabels=[<%= @os_labels %>];
   browserData=[<%= @browser_data %>];
@@ -154,11 +157,26 @@
         :locals=>{:p=>:pages,:v=>:popular,:options=>{:c=>"links"}} %>        
     </div>
     
+    
+    
+    
+    
     <div id="searches" class="section" <%=panel_style(:searches)-%> >
       <img src="/images/h/searches.png" class="section_title"/>  
       <br clear="both"/>
-      <i>[working out a few bugs]</i>
+      <div class="panel_links">
+        <span class="navlink_show">Show:</span>
+        <%= render :partial=>"navlink", :locals=>{:s=>:searches,:v=>:recent,:d=>"Recent"} %> | 
+        <%= render :partial=>"navlink", :locals=>{:s=>:searches,:v=>:totals,:d=>"Popular"} %>
+      </div>
+            
+            <%= render :partial=>"panel", :locals=>{:p=>:searches,:v=>:recent,:options=>{:c=>"links"}} %>
+            <%= render :partial=>"panel", :locals=>{:p=>:searches,:v=>:totals,:options=>{:c=>"links"}} %>
+            
     </div>
+    
+    
+    
     
     <div id="details" class="section" <%=panel_style(:details)-%> >
       <img src="/images/h/details.png" class="section_title"/>  

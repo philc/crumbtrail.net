@@ -228,7 +228,7 @@ function populatePage(){
 //     "Top referrals", ["Referer","Total hits"], true);
 //   referersPager = new Pagination(0,0);
    page.totalReferersPager.displayProperties("referers_total",referersTotalData,
-    TableDisplay.refererRow,3,"Top referrals", ["","Total hits"]);
+    TableDisplay.refererRow,3,"Popular referers", ["","Total hits"]);
    page.totalReferersPager.showTable();
   
     
@@ -249,6 +249,13 @@ function populatePage(){
     "", ["Top referers today","Hits"]);
   TableDisplay.showTable("glance_referers_week",[],TableDisplay.refererRow,2,
     "", ["Top referers this week","Hits"]);
+  
+  TableDisplay.showTable("searches_recent",searchesRecentData,TableDisplay.searchesRowWithDate,3,
+    "Recent searches", ["Search keywords","Visited"]);
+  TableDisplay.showTable("searches_totals",searchesTotalData,TableDisplay.searchesRow,3,
+    "Popular searches", ["Search keywords","Hits"]);
+    
+  
   
   // don't graph uniques on the line graph
   var onlyHits = [];
@@ -387,6 +394,22 @@ TableDisplay.Methods={
     var cell1=this.td(tdHtml,"f");
     var cell2 = this.td(DisplayHelper.timeAgo(time));
     
+    return this.tr(cell1+cell2, this.classString(i));
+  },
+  searchesRowWithDate:function(i,data,dataMax,isDate){
+    f=TableDisplay.searchesRow.bind(this);
+    return f(i,data,dataMax,true);
+  },
+  searchesRow:function(i,data,dataMax,isDate){
+    console.log('in searches row');
+    var terms = data[i*3];
+    var url = data[i*3+1];
+    //var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
+    //var html = linkCaption.link("http://"+url);
+    var html = terms.link("http://"+url);
+    var cell1=this.td(html,"f");
+    var cell2 = isDate ? DisplayHelper.timeAgo(data[i*3+2]) : data[i*3+2];
+    cell2=this.td(cell2);
     return this.tr(cell1+cell2, this.classString(i));
   },
   pagesRow:function(i,data,dataMax, isDate){
@@ -585,7 +608,7 @@ DisplayHelper.Methods={
   // Usually that's what we want
   truncateLeft: function(str,n){
     if (str.length<n) return str;
-    var mod = str.slice(n,str.length);
+    var mod = str.slice(str.length-n,str.length);
     for (var i=0; i<5; i++){
       if (mod[i]=="." || mod[i]=="/")
         return ".."+mod.slice(i,mod.length);

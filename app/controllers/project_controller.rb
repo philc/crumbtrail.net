@@ -14,6 +14,10 @@ class ProjectController < ApplicationController
   # Number of entries to show in each table
   @@size=10
   
+  #
+  # Fetches the user's project data and fills javascript variables with them.
+  # Javascript does the actual table and graph drawing
+  #
   def index
     # get the view options from their cookie
     @view_options=view_options_from_cookie(cookies[:breadcrumbs])   
@@ -29,7 +33,9 @@ class ProjectController < ApplicationController
     build_referers(p) 
     
     build_pages()
-
+    
+    build_searches()
+    
     # Details; browser and OS
     build_details(p)       
   end
@@ -84,7 +90,15 @@ class ProjectController < ApplicationController
     end
     return options
   end
-   def build_pages()
+  def build_searches()
+    @searches_recent=@project.recent_searches().map{|s|
+      [s.search_words,s.referer.url,JSDate.new(s.visit_time)]
+      }.flatten.to_json
+    @searches_total=@project.top_searches(@@size).map{|s|
+      [s.search_words,s.referer.url,s.count]
+    }.flatten.to_json
+  end
+  def build_pages()
       @popular_pages=@project.top_landings(@@size).map{|p|
         [p.page.url,p.count]
       }.flatten.to_json
@@ -92,6 +106,7 @@ class ProjectController < ApplicationController
         [p.page.url,p.referer.url,JSDate.new(p.visit_time)]
       }.flatten.to_json
   end
+  
   def build_glance_and_hits()
     week_data=@project.hits(:week)
     
@@ -119,8 +134,8 @@ class ProjectController < ApplicationController
     @referers_recent = p.recent_referers().map{|r|
       [r.referer.url,r.page.url,JSDate.new(r.visit_time)]
     }.flatten.to_json
-
   end
+  
   def build_details(p)
     # drop entries that are 0
     @browser_labels=[]
