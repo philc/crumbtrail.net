@@ -1,5 +1,16 @@
 #!/usr/bin/env ruby
+#
+# Usage:
+#   logreader.rb nameOfLog
+#   nameOfLog should reside  in script. Omitting this parameter 
+#   runs it on the default log
+#
+
 require "vendor/rails/activerecord/lib/active_record.rb"
+
+
+
+
 
 # require "lib/rollable_time_table.rb"
 # require 'lib/time_helpers.rb'
@@ -104,8 +115,8 @@ class ApacheLogReader
           strip_protocol(landing_url)
           #strip_server_url(project, landing_url)
 
-          request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
-          request.save
+#           request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
+#           request.save
         end
 
       rescue ActiveRecord::RecordNotFound
@@ -131,6 +142,30 @@ class ApacheLogReader
     end
   end
 
+  def self.benchmark_log(logfile)
+    puts "Parsing log file: " + logfile
+    log_lines=0
+    #Benchmark.bmbm("processing the whole log") do |x|
+    Benchmark.bmbm do |x|      
+      x.report do
+        file = File.new(logfile, "r")
+        line=""
+        while (!line.nil?)
+          line = file.gets        
+          next if line.nil?
+          #Benchmark.benchmark("process line") do |x|
+            #x.report { process_line(line) }
+            process_line(line)
+          #end
+          log_lines+=1
+        end
+        file.close
+        file=nil
+      end
+      
+    end
+    puts "processed #{log_lines} lines"
+  end
 #------------------------------------------------------------------------------
   include TimeHelpers
   def self.parse_time(time_string, project)
@@ -231,10 +266,14 @@ class ApacheLogReader
 end
 
 # ApacheLogReader::establish_connection()
-#ApacheLogReader::tail_log("script/test.log")
 #ApacheLogReader::tail_log("script/test-long.log")
 #ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")
 #ApacheLogReader::tail_log("script/new.log")
 ApacheLogReader::establish_connection()
-ApacheLogReader::tail_log("script/searches.log")
+#ApacheLogReader::tail_log("script/searches.log")
+logfile="test-long.log"
+logfile=ARGV[0] if ARGV.length>0
+
+ApacheLogReader::benchmark_log("script/" + logfile)
+
 
