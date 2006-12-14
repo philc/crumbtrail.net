@@ -370,7 +370,7 @@ TableDisplay.Methods={
   refererRow: function(i,data,dataMax,isDate){
     var url=unescape(data[i*3]);
     var landedOn=unescape(data[i*3+1]);
-    var linkCaption = DisplayHelper.truncateRight(ur),45);
+    var linkCaption = DisplayHelper.truncateRight(url,45);
     var landedOnCaption = DisplayHelper.truncateLeft(landedOn,60);
     var html = linkCaption.link("http://"+url) + '<span class="to">To&nbsp;'+landedOnCaption.link("http://"+landedOn)+'</a></span>';
     var cell1 = this.td(html, "f");
