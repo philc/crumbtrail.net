@@ -1,15 +1,25 @@
-# #!/usr/bin/env ruby
-# require "vendor/rails/activerecord/lib/active_record.rb"
-# require "app/models/referer.rb"
-# require "app/models/project.rb"
-# require "app/models/server.rb"
-# require "app/models/total_referral.rb"
-# require "app/models/hourly_referral.rb"
-# require "app/models/daily_referral.rb"
-# require "app/models/recent_hit.rb"
+#!/usr/bin/env ruby
+require "vendor/rails/activerecord/lib/active_record.rb"
+
 # require "lib/rollable_time_table.rb"
 # require 'lib/time_helpers.rb'
+
 require 'benchmark'
+
+#
+# Require all files in a directory
+#
+require "find"
+def require_many(directory)  
+  Find.find(directory) do |f|
+    if f.ends_with?('~') || (FileTest.directory?(f) && f!=directory)
+      Find.prune 
+    end 
+    require f if f!=directory
+  end
+end
+
+require_many("app/models")
 
 class ApacheRequest
   attr_reader   :project
@@ -222,7 +232,9 @@ end
 
 # ApacheLogReader::establish_connection()
 #ApacheLogReader::tail_log("script/test.log")
-ApacheLogReader::tail_log("script/test-long.log")
+#ApacheLogReader::tail_log("script/test-long.log")
 #ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")
 #ApacheLogReader::tail_log("script/new.log")
-#ApacheLogReader::tail_log("script/searches.log")
+ApacheLogReader::establish_connection()
+ApacheLogReader::tail_log("script/searches.log")
+
