@@ -40,7 +40,7 @@ class MainController < ApplicationController
       
       unless (@password_error || @email_error || @duplicate_error)      
         create_account(email,pw1)
-        redirect_to :controller=>"project", :action=>"first"
+        redirect_to :controller=>"project", :action=>"new"
       end
     end       
   end

@@ -1,7 +1,11 @@
 class Project < ActiveRecord::Base
-   belongs_to :account
-   belongs_to :zone
+  belongs_to :account
+  belongs_to :zone
+  has_one  :row_tracker
+  has_one :recent_project, :class_name => "Project"
 
+
+  
   def process_request(request)
     referer = request.referer
     page = request.page

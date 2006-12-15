@@ -8,6 +8,8 @@ class CreateAccountTables < ActiveRecord::Migration
       t.column :lastname, :string, :null => false
       t.column :country_id, :integer, :null => false
       t.column :zone_id, :integer, :limit => 45, :null => false
+      # recently viewed project
+      t.column :recent_project_id, :int
     end
 
     add_index :accounts, :username, :unique => true

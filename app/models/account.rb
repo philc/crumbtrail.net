@@ -15,7 +15,14 @@ class Account < ActiveRecord::Base
     end
     return account    
   end
-  
+  def recent_project
+    rp=self.recent_project_id
+    return nil if (rp.nil?)
+    return Project.find_by_id(rp)    
+  end
+  def recent_project=(project)
+    self.recent_project_id=project.id    
+  end
   def self.from_token(token)
     return nil if token.nil?
     session=Session.from_token(token)

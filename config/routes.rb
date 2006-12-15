@@ -13,6 +13,7 @@ ActionController::Routing::Routes.draw do |map|
   # -- just remember to delete public/index.html.
   # map.connect '', :controller => "welcome"
   map.connect '/', :controller=>'main'
+  
   map.connect '/signout', :controller=>'main',:action=>'signout'
   map.connect '/about', :controller=>'main',:action=>'about'
   map.connect '/signup', :controller=>'main',:action=>'signup'
@@ -20,6 +21,12 @@ ActionController::Routing::Routes.draw do |map|
   # instead of a file named 'wsdl'
   map.connect ':controller/service.wsdl', :action => 'wsdl'
 
+  map.connect '/project/new', :controller=>'project', :action=>'new'
+  map.connect '/project/recent', :controller=>'project', :action=>'recent'
+  map.connect '/project/all', :controller=>'project', :action=>'all'
+  map.connect '/project/:id', :controller=>'project', :action=>"index"
   # Install the default route as the lowest priority.
   map.connect ':controller/:action/:id'
+  
+  
 end
