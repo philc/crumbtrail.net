@@ -1,7 +1,6 @@
 class Project < ActiveRecord::Base
    belongs_to :account
    belongs_to :zone
-   has_one  :row_tracker
 
   def process_request(request)
     referer = request.referer
@@ -16,10 +15,12 @@ class Project < ActiveRecord::Base
         increment_referer(request)
       end
 
-      increment_hit_count(request)
       increment_page_landing(request)
       record_details(request)
     end
+
+    increment_hit_count(request)
+    save
   end
 
   # Returns an array of RecentReferrals (Length hardcoded at 10)
@@ -100,7 +101,10 @@ class Project < ActiveRecord::Base
     HitHourly.increment_hit(request)
     HitDaily.increment_hit(request)
     HitMonthly.increment_hit(request)
-    HitTotal::increment_hit(request)
+#     HitTotal::increment_hit(request)
+    self.first_hit = request.time if self.first_hit.nil?
+    self.total_hits += 1
+    self.unique_hits += 1 if request.unique
   end
 
   def increment_page_landing(request)

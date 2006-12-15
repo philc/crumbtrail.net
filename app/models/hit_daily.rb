@@ -12,12 +12,9 @@ class HitDaily < ActiveRecord::Base
     date = Date.parse(request.time.to_s)
     past = date - (@@max_rows - 1)
 
-    row_track = project.row_tracker
-    row_track = RowTracker.new(:project => project) if row_track.nil?
-
-    row = find_by_project_id_and_row(project.id, row_track.hits_row)
+    row = find_by_project_id_and_row(project.id, project.hits_row)
     if row.nil?
-      row = create(:project => project, :date => request.time, :total => 1, :row => row_track.hits_row)
+      row = create(:project => project, :date => request.time, :total => 1, :row => project.hits_row)
       row.unique = 1 if request.unique
     elsif row.date == date
       row.total += 1
@@ -33,9 +30,8 @@ class HitDaily < ActiveRecord::Base
       row.date = date
       row.save
     else
-      row_track.hits_row += 1
-      row_track.hits_row = 0 if row_track == @@max_rows
-      row_track.save
+      project.hits_row += 1
+      project.hits_row = 0 if project == @@max_rows
       increment_hit(request)
     end
   end

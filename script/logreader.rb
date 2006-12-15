@@ -115,8 +115,8 @@ class ApacheLogReader
           strip_protocol(landing_url)
           #strip_server_url(project, landing_url)
 
-#           request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
-#           request.save
+           request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
+           request.save
         end
 
       rescue ActiveRecord::RecordNotFound
@@ -267,15 +267,9 @@ class ApacheLogReader
   end
 end
 
-# ApacheLogReader::establish_connection()
-#ApacheLogReader::tail_log("script/test-long.log")
-#ApacheLogReader::tail_log("/var/log/apache2/stats.crumbtrail/access.log")
-#ApacheLogReader::tail_log("script/new.log")
 ApacheLogReader::establish_connection()
-#ApacheLogReader::tail_log("script/searches.log")
-logfile="test-long.log"
+logfile="test.log"
 logfile=ARGV[0] if ARGV.length>0
-
 ApacheLogReader::benchmark_log("script/" + logfile)
 
 

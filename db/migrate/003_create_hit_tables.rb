@@ -30,20 +30,12 @@ class CreateHitTables < ActiveRecord::Migration
 
     add_index :hit_monthlies, :project_id
 
-    create_table (:hit_totals, :options => 'ENGINE=MyISAM') do |t|
-      t.column :project_id, :integer, :null => false
-      t.column :total, :integer, :default => 0
-      t.column :unique, :integer, :default => 0
-      t.column :first_hit, :date, :null => false
-    end
-
-    add_index :hit_totals, :project_id
   end
 
   def self.down
     drop_table :hit_hourlies
     drop_table :hit_dailies
     drop_table :hit_monthlies
-    drop_table :hit_totals
+#     drop_table :hit_totals
   end
 end

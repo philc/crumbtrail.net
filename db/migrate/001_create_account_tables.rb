@@ -11,21 +11,28 @@ class CreateAccountTables < ActiveRecord::Migration
     end
 
     add_index :accounts, :username, :unique => true
-    
+
     create_table :sessions do |t|
       t.column :token, :string, :null=>false
       t.column :account_id, :integer, :null=>false
       t.column :expires, :timestamp, :null=>false
     end
-    
+
     add_index :sessions, :token
 
     # Create Project Table
-    create_table :projects do |t|
+    create_table (:projects, :options => 'ENGINE=MyISAM') do |t|
       t.column :account_id, :integer, :null => false
       t.column :title, :string, :null => false
       t.column :url, :string, :null => false
       t.column :zone_id, :integer, :null => false
+      t.column :referrals_row, :integer, :default => 0
+      t.column :hits_row, :integer, :default => 0
+      t.column :landings_row, :integer, :default => 0
+      t.column :searches_row, :integer, :default => 0
+      t.column :total_hits, :integer, :default => 0
+      t.column :unique_hits, :integer, :default => 0
+      t.column :first_hit, :date
     end
 
     add_index :projects, :account_id
@@ -41,17 +48,6 @@ class CreateAccountTables < ActiveRecord::Migration
     create_table :zones do |t|
       t.column :identifier, :string, :null => false
     end
-
-    # Create Row Tracker Table
-    create_table :row_trackers do |t|
-      t.column :project_id, :integer, :null => false
-      t.column :referrals_row, :integer, :default => 0
-      t.column :hits_row, :integer, :default => 0
-      t.column :landings_row, :integer, :default => 0
-      t.column :searches_row, :integer, :default => 0
-    end
-
-    add_index :row_trackers, :project_id
   end
 
   def self.down
@@ -60,6 +56,5 @@ class CreateAccountTables < ActiveRecord::Migration
     drop_table :projects
     drop_table :countries
     drop_table :zones
-    drop_table :row_trackers
   end
 end
