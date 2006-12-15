@@ -1,5 +1,7 @@
 require 'digest/sha1'
 
+@@day=60*60*24
+
 # This is a user's logged in session. Basically keeping track of a 
 # login token that they have stored in a cookie
 class Session < ActiveRecord::Base
@@ -19,11 +21,11 @@ class Session < ActiveRecord::Base
   
   def self.create_for(account)
     # generate some random text, digest it
-    text = DateTime.now.to_s+rand(500000).to_s
+    text = Time.now.to_s+rand(500000).to_s
     s=Session.new
     s.token = Digest::SHA1.hexdigest(text)
     s.account=account
-    s.expires = DateTime.now
+    s.expires = Time.now+(30*@@day)
     s.save!
     return s
   end

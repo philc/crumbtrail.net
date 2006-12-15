@@ -179,7 +179,7 @@ a.linkbox:hover{
   float:right;
   /* offset the margins that the dialog box brings, so we line up with the other header*/
   /*margin-top:-5px;  */
-
+  margin-left:10px;
 }
 #signin-box h1{
   margin-top:0px;
