@@ -11,6 +11,14 @@ class CreateAccountTables < ActiveRecord::Migration
     end
 
     add_index :accounts, :username, :unique => true
+    
+    create_table :sessions do |t|
+      t.column :token, :string, :null=>false
+      t.column :account_id, :integer, :null=>false
+      t.column :expires, :date, :null=>false
+    end
+    
+    add_index :sessions, :token
 
     # Create Project Table
     create_table :projects do |t|
@@ -48,6 +56,7 @@ class CreateAccountTables < ActiveRecord::Migration
 
   def self.down
     drop_table :accounts
+    drop_table :sessions
     drop_table :projects
     drop_table :countries
     drop_table :zones

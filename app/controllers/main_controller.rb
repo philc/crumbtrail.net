@@ -1,8 +1,13 @@
 class MainController < ApplicationController
   helper MainHelper
   def index
-    puts params
-    puts cookies
+#     puts params
+#     puts cookies
+    if (request.post?)
+      @email=params[:email]
+      
+      @login_error=login(@email,params[:password])
+    end
   end
   def signup
   

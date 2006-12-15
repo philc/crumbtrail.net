@@ -4,4 +4,6 @@ module ApplicationHelper
     return nil if (message.nil?)
     return '<div class="form_error">'+message+'</div>'
   end
+  
+
 end

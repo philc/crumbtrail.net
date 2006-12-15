@@ -70,5 +70,6 @@ class CreateReferralTables < ActiveRecord::Migration
     drop_table :referral_recents
     drop_table :referral_totals
     drop_table :search_totals
+    drop_table :search_recents
   end
 end
