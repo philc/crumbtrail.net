@@ -146,7 +146,8 @@ class ApacheLogReader
     puts "Parsing log file: " + logfile
     log_lines=0
     #Benchmark.bmbm("processing the whole log") do |x|
-    Benchmark.bmbm do |x|      
+    times=Benchmark.bmbm do |x|      
+      log_lines=0
       x.report do
         file = File.new(logfile, "r")
         line=""
@@ -164,7 +165,8 @@ class ApacheLogReader
       end
       
     end
-    puts "processed #{log_lines} lines"
+    reqs=(log_lines/times[0].real).floor
+    puts "processed #{log_lines} lines, at #{reqs} req/s"
   end
 #------------------------------------------------------------------------------
   include TimeHelpers

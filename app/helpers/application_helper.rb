@@ -5,5 +5,4 @@ module ApplicationHelper
     return '<div class="form_error">'+message+'</div>'
   end
   
-
 end

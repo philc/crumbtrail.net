@@ -1,8 +1,6 @@
 class MainController < ApplicationController
   helper MainHelper
   def index
-#     puts params
-#     puts cookies
     @account=signed_in?
     if (request.post?)
       @email=params[:email]
@@ -11,9 +9,13 @@ class MainController < ApplicationController
     end
   end
   
-  # TODO disallow duplicate emails
-  
-  def signup  
+  def signup
+    # You shouldn't be able to get to this page if you're logged in. If they
+    # navigate here manually, forward them back to their projects
+    redirect_to "/project" if @account
+    
+    @title="Sign up"
+     
     if request.post?
       email=params[:email]
       @email_error=MainHelper::validate_email(email)
@@ -58,11 +60,7 @@ class MainController < ApplicationController
      a.country_id=1
      a.zone_id=1
      a.save!
-     s=Session.create_for(a)
-     t=Session.expiration_time
      cookies[@@login_cookie] = 
           {:value=>Session.create_for(a).token, :expires=>Session.expiration_time}
-#      cookies[@@login_cookie] = 
-#           {:value=>Session.create_for(a), :expires=>Session.expiration_time}
   end
 end

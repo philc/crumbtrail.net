@@ -10,9 +10,16 @@ class ProjectController < ApplicationController
     :pages=>:recent,
     :searches=>:recent
   }
+  
+  # Show all the projects the user has
+  def all
+    @projects=@account.projects
+  end
+  
   # Number of entries to show in each table
   @@size=10
   def new
+    @title="Create a new project"
     if (request.post?)
       @site_name=params[:site_name]
       @site_url=params[:site_url]
@@ -26,7 +33,17 @@ class ProjectController < ApplicationController
       
       if (@url_error.nil? && @name_error.nil?)
         # create the project, attach it to the current user
-        redirect_to :controller=>"project",:action=>"code"
+        
+        project=Project.new(:account=>@account,
+                :title=>@site_name, :url=>@site_url,:zone=>@account.zone
+        project.save!
+        
+        # set this project as their recently viewed one
+        @account.recently_viewed=project
+        @account.save!
+#         project=Project.new
+        redirect_to "/project/recent"
+        #redirect_to :controller=>"project",:action=>"code"
       end
     end
   end
