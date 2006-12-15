@@ -25,11 +25,18 @@ your stats, you'll need to re-enable it in your web browser.
        <div class="text-form">
         E-mail
         <%= show_form_error(@email_error)%>
+        <% if @duplicate_error %>
+          <div class="form_error">
+          We already have an account using that email. Forgotten your password?<br/>
+          <a href="">We can reset it and can email it to you</a>.
+          
+          </div>
+        <%end%>
         <input type="text" name="email" id="email" size="22"
           value="<%=params[:email]%>" />
         
         Password
-        <%= show_form_error(@password_error)%>
+        <%= show_form_error(@password_error) if !@duplicate_error %>
         <input type="password" name="password" id="password" size="22"/>
         Confirm your password
         <input type="password" name="password_confirm" id="password_confirm" size="22"/>

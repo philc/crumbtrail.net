@@ -16,6 +16,15 @@ class Account < ActiveRecord::Base
     return account    
   end
   
+  def self.from_token(token)
+    return nil if token.nil?
+    session=Session.from_token(token)
+   
+    
+    return (session.nil?) ? nil : session.account
+    
+  end
+  
   def password=(pass)
     write_attribute(:password,Account.encrypt(pass))
   end

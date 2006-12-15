@@ -4,14 +4,18 @@ class ApplicationController < ActionController::Base
   # Don't filter anything to the production logs that matches "password"
   filter_parameter_logging "password"
   
-  
+  @@login_cookie=:login_token
   
   protected
   
   def login(username,password)
     result=Account.authenticate(username,password)
+    
     if (result.class==Account)
-      # redirect to projects
+      # Create a new session & cookie for this client
+      cookies[@@login_cookie] = 
+        {:value=>Session.create_for(result).token, :expires=>Session.expiration_time}
+    
       redirect_to :controller=>"project"
     else
       # It's an error message
@@ -19,7 +23,19 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  def self.login_token(username)
+  def signed_in?
+    token = cookies[@@login_cookie]
+    return nil if token.nil?
     
+    # See if this token matches one of our accounts
+    account = Account.from_token(token)
+    
+    # Update their cookie
+      if (account)
+        cookies[@@login_cookie] = { :value => token, :expires => Session.expiration_time}
+      else #erase this state cookie
+        cookies[@@login_cookie] = { :value=>"", :expires=>5.days.ago}
+      end
+    return account    
   end
 end

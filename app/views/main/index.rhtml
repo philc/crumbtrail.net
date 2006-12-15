@@ -4,7 +4,8 @@
 <div id="signin-box">
     <div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">
       <div class="c">
-       <h1>Sign in</h1>
+      <% if !@account %>
+      <h1>Sign in</h1>
       <form action="/" method="post">
        <div class="text-form">
         <%=show_form_error(@login_error)%>
@@ -15,13 +16,25 @@
         </div>
         <input type="submit" class="submit" value="Sign in"  class="submit">
       </form>
+      
+      <% else %>
+       <h1>Welcome back</h1>
+       Show me my stats
+       
+       
+      <% end %>
       </div></div><div class="ft">
     <div class="c"></div></div></div>     
 
 </div>
+
+
+<%if !@account%>
 <script type="text/javascript">
 $("email").focus();
 </script>
+<%end%>
+
 
 <h1>Know your visitors</h1>
 

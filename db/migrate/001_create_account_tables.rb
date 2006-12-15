@@ -15,7 +15,7 @@ class CreateAccountTables < ActiveRecord::Migration
     create_table :sessions do |t|
       t.column :token, :string, :null=>false
       t.column :account_id, :integer, :null=>false
-      t.column :expires, :time, :null=>false
+      t.column :expires, :timestamp, :null=>false
     end
     
     add_index :sessions, :token
