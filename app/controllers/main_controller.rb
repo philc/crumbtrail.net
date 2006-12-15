@@ -13,8 +13,7 @@ class MainController < ApplicationController
   
   # TODO disallow duplicate emails
   
-  def signup
-  
+  def signup  
     if request.post?
       email=params[:email]
       @email_error=MainHelper::validate_email(email)
@@ -41,8 +40,12 @@ class MainController < ApplicationController
         create_account(email,pw1)
         redirect_to :controller=>"project", :action=>"first"
       end
-    end   
-    
+    end       
+  end
+  
+  def signout
+    logout()
+    redirect_to "/"
   end
   
   private
