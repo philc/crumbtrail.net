@@ -92,6 +92,7 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
 
   def self.process_line(line)
+    puts line
     if @@regex.match(line)
 
       begin
@@ -133,9 +134,7 @@ class ApacheLogReader
     while (1)
       line = file.gets
       if !line.nil?
-        Benchmark.benchmark("process line") do |x|
-          x.report("line") { process_line(line) }
-        end
+        process_line(line)
       else
         sleep 1
       end
@@ -147,8 +146,8 @@ class ApacheLogReader
     log_lines=0
     #Benchmark.bmbm("processing the whole log") do |x|
     times=Benchmark.bmbm do |x|      
-      log_lines=0
       x.report do
+        log_lines=0
         file = File.new(logfile, "r")
         line=""
         while (!line.nil?)
@@ -268,8 +267,9 @@ class ApacheLogReader
 end
 
 ApacheLogReader::establish_connection()
-logfile="test.log"
+logfile="errors.log"
 logfile=ARGV[0] if ARGV.length>0
-ApacheLogReader::benchmark_log("script/" + logfile)
+#ApacheLogReader::benchmark_log("script/" + logfile)
+ApacheLogReader::tail_log("script/" + logfile)
 
 

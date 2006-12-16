@@ -39,7 +39,7 @@ class HitHourly < ActiveRecord::Base
         uniques[r.hour] = r.unique
     end
     hits = hits.zip(uniques)
-    
+
     return hits[c_time.hour+1, hits.length].concat(hits[0, c_time.hour+1]).reverse
   end
 end

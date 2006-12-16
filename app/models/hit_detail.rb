@@ -40,7 +40,7 @@ class HitDetail < ActiveRecord::Base
     row = new(:project => project, :day => date.wday, :last_update => date) if row.nil?
 
     if row.last_update != date
-      for key in @os.keys
+      for key in @@os.keys
         row.send((key+"=").to_sym, 0)
       end
 
