@@ -36,6 +36,16 @@ class HitDaily < ActiveRecord::Base
     end
   end
 
+  def self.get_hits_today(project)
+    c_date = Date.parse(project.time.to_s)
+    row = find_by_project_id_and_date(project.id, c_date)
+    if !row.nil?
+      return row.total, row.unique
+    end
+    
+    return 0, 0
+  end
+
   def self.get_past_week_hits(project)
     c_date = Date.parse(project.time.to_s)
 

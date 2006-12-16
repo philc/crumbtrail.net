@@ -64,7 +64,9 @@ class Project < ActiveRecord::Base
   # Returns an array containing hit counts for time devisions of the specified
   # period, most recent first
   def hits(period)
-    if period == :day
+    if period == :today
+      return HitDaily.get_hits_today(self)
+    elsif period == :day
       return HitHourly.get_hits(self)
     elsif period == :week
       return HitDaily.get_past_week_hits(self)
