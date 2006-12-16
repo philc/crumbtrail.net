@@ -67,17 +67,29 @@ class ProjectController < ApplicationController
   # Javascript does the actual table and graph drawing
   #
   def index
-    @id=params[:id]
-    # get the view options from their cookie
-    @view_options=view_options_from_cookie(cookies[:breadcrumbs])   
+    @id=params[:id]    
     
+    @project=nil
+      
+    if (@id!="recent")
+      @project = Project.find_by_id(@id)
+    else
+      @project = @account.recent_project
+    end
     
-    @project = Project.find_by_id(@id)  
-    puts "project:::",@project
+    # If they don't have any projects, or we can't find the one they asked for,
+    # send them to where they can create a new one.
     if (@project.nil?)
       redirect_to "/project/all" 
       return
     end
+    
+    if @project!=@account.recent_project
+      @account.recent_project=@project
+      @account.save!
+    end
+    # get the view options from their cookie
+    @view_options=view_options_from_cookie(cookies[:breadcrumbs])   
     
     # use the date in the view that we have on record for them.    
     @date = JSDate.new(@project.time).to_json;

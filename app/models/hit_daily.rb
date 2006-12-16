@@ -63,7 +63,7 @@ class HitDaily < ActiveRecord::Base
     return hit_array
   end
 
-  private
+#   private
 
   def self.build_hit_array(project, first, last)
     rows = find(:all, 

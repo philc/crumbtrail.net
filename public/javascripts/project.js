@@ -774,9 +774,13 @@ LineGraph.prototype={
       minLabel.style.bottom=px(14);
       graphContainer.appendChild(minLabel);
     }
-    var maxLabel = this.yLabel(this.max);
-    maxLabel.style.top=0;
-    graphContainer.appendChild(maxLabel);
+    
+    // No need to show "0" as the max if there is are hits...
+    if (this.max>0){
+      var maxLabel = this.yLabel(this.max);
+      maxLabel.style.top=0;    
+      graphContainer.appendChild(maxLabel);
+    }
     
     if (this.labels){
       var hwidth=this.width/(this.data.length-1);

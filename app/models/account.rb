@@ -18,7 +18,14 @@ class Account < ActiveRecord::Base
   def recent_project
     rp=self.recent_project_id
     return nil if (rp.nil?)
-    return Project.find_by_id(rp)    
+    p=Project.find_by_id(rp)    
+    
+    # If this link is somehow bad, in the case of
+    # the their deleting a project or something, 
+    # then just use their first project
+    p = self.projects[0] if (p.nil?)
+      
+    return p
   end
   def recent_project=(project)
     self.recent_project_id=project.id    

@@ -47,10 +47,8 @@ img{ border:0;}
   
 }
 #content-right{
-  /*padding-top:30px;*/
   margin-top:20px;
-  padding-left:10em;
-  
+  padding-left:10em;  
   /*border:1px solid red;*/
 }
 #footer{
@@ -117,15 +115,14 @@ img{ border:0;}
   border-right:0;
 }
 /*#header-menu .dialog {border:1px solid blue;}*/
-.small-dialog .dialog .hd {  background:#fbeac8 url(/images/d/menutl.gif) no-repeat 0px 0px; }
-.small-dialog .dialog .hd .c {  background:transparent url(/images/d/menutr.gif) no-repeat right 0px; }
-.small-dialog .dialog .bd { background:#fbeac8 none repeat-y 0px 0px;}
-.small-dialog .dialog .bd .c { background:#fbeac8 none repeat-y right 0px; }
-.small-dialog .dialog .ft .c, .dialog .hd .c { height:5px;  }
-.small-dialog .dialog .ft {   background:#fbeac8 url(/images/d/menubl.gif) no-repeat 0px 0px;
-}
-.small-dialog .dialog .ft .c {background:transparent url(/images/d/menubr.gif) no-repeat right 0px;}
-.small-dialog .dialog .bd .c{  background-color:transparent; padding-left:6px; padding-right:6px;}
+.small-dialog  .hd {  background:#fbeac8 url(/images/d/menutl.gif) no-repeat 0px 0px; }
+.small-dialog  .hd .c {  background:transparent url(/images/d/menutr.gif) no-repeat right 0px; }
+.small-dialog  .bd { background:#fbeac8 none repeat-y 0px 0px;}
+.small-dialog  .bd .c { background:#fbeac8 none repeat-y right 0px; }
+.small-dialog  .ft .c, .small-dialog .hd .c { height:5px;  }
+.small-dialog  .ft {   background:#fbeac8 url(/images/d/menubl.gif) no-repeat 0px 0px;}
+.small-dialog  .ft .c {background:transparent url(/images/d/menubr.gif) no-repeat right 0px;}
+.small-dialog  .bd .c{  background-color:transparent; padding-left:6px; padding-right:6px;}
 
 
 /* page-level stuff */
@@ -154,10 +151,18 @@ img{ border:0;}
   padding-top:12px;
   padding-bottom:8px;
 }
+
+/*
+ * Used to wrap the big block link buttons
+ */
 .intro-links{
   width:80%;
   /*margin-left:30%;*/
 }
+
+/*
+ * Boxed links
+ */
 a.linkbox{
   padding:0px;
   float:left;
@@ -174,11 +179,15 @@ a.linkbox:hover{
   background-color:#fbf0c8;
 }
 
-/* Sign in code*/
+
+
+/* 
+ * Sign in
+ */
 #signin-box{
   float:right;
   /* offset the margins that the dialog box brings, so we line up with the other header*/
-  /*margin-top:-5px;  */
+  margin-top:-9px;  
   margin-left:10px;
 }
 #signin-box h1{
@@ -186,7 +195,8 @@ a.linkbox:hover{
 }
 
 #signin-box .dialog .bd .c{
-  padding-left:5px;padding-right:5px;
+  padding: 2px 8px 0 8px;
+  /*padding-left:5px;padding-right:5px;*/
 }
 #signin-box .form_error{
   width:200px;
