@@ -98,7 +98,7 @@
 #projects_popup a{
   
   position:relative; 
-  padding: 3px 2px 4px 6px;
+  padding: 3px 6px 4px 6px;
   display:block;
 }
 #projects_popup a:hover{

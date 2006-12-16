@@ -84,6 +84,8 @@ class ProjectController < ApplicationController
       return
     end
     
+    puts "account: ",@account
+    
     if @project!=@account.recent_project
       @account.recent_project=@project
       @account.save!
@@ -161,10 +163,10 @@ class ProjectController < ApplicationController
   end
   def build_searches()
     @searches_recent=@project.recent_searches().map{|s|
-      [s.search_words,s.referer.url,JSDate.new(s.visit_time)]
+      [s.search_words,s.referer.url,s.page.url,JSDate.new(s.visit_time)]
       }.flatten.to_json
     @searches_total=@project.top_searches(@@size).map{|s|
-      [s.search_words,s.referer.url,s.count]
+      [s.search_words,s.referer.url,s.page.url,s.count]
     }.flatten.to_json
   end
   def build_pages()

@@ -250,9 +250,9 @@ function populatePage(){
   TableDisplay.showTable("glance_referers_week",[],TableDisplay.refererRow,2,
     "", ["Top referers this week","Hits"]);
   
-  TableDisplay.showTable("searches_recent",searchesRecentData,TableDisplay.searchesRowWithDate,3,
+  TableDisplay.showTable("searches_recent",searchesRecentData,TableDisplay.searchesRowWithDate,4,
     "Recent searches", ["Search keywords","Visited"]);
-  TableDisplay.showTable("searches_totals",searchesTotalData,TableDisplay.searchesRow,3,
+  TableDisplay.showTable("searches_totals",searchesTotalData,TableDisplay.searchesRow,4,
     "Popular searches", ["Search keywords","Hits"]);
     
   
@@ -402,13 +402,15 @@ TableDisplay.Methods={
   },
   searchesRow:function(i,data,dataMax,isDate){
     console.log('in searches row');
-    var terms = data[i*3];
-    var url = unescape(data[i*3+1]);
+    var terms = DisplayHelper.truncateLeft(data[i*4],45);
+    var url = unescape(data[i*4+1]);
+    var to = unescape(data[i*4+2]);
+    var toCaption = DisplayHelper.truncateRight(to,45);
     //var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
     //var html = linkCaption.link("http://"+url);
-    var html = terms.link("http://"+url);
+    var html = terms.link("http://"+url) + '<span class="to">To&nbsp;'+toCaption.link("http://"+to)+'</a></span>';
     var cell1=this.td(html,"f");
-    var cell2 = isDate ? DisplayHelper.timeAgo(data[i*3+2]) : data[i*3+2];
+    var cell2 = isDate ? DisplayHelper.timeAgo(data[i*4+3]) : data[i*4+3];
     cell2=this.td(cell2);
     return this.tr(cell1+cell2, this.classString(i));
   },
