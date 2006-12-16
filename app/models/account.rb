@@ -48,7 +48,7 @@ class Account < ActiveRecord::Base
     return find(:first, :conditions=>["role = ?","d"])
   end
   def demo?()
-    return this.role=="d"
+    return self.role=="d"
   end
   
   protected

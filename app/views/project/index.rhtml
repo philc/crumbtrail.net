@@ -52,18 +52,26 @@
 
 
   <div id="project-menu">Viewing stats for <span id="project-id"><%=@project.title%></span>. 
-    <a href="">Setup</a> | 
+    <%=demo_link("","Setup","")%>
     <span id="projects_popup_wrapper">
         <div id="projects_popup" style="display:none"/>
           <ul>
-          <% @account.projects.each  do |p| %>    
-            <li><a href="/project/<%=p.id%>"><%=p.title%></a></li>
-          <% end %>
-          <li ><a href="/project/new" class="create_new">Create a new project</a></li>
+          <%if !@account.demo? %>
+            <% @account.projects.each  do |p| %>    
+              <li><a href="/project/<%=p.id%>"><%=p.title%></a></li>
+            <% end %>
+          <%end%>
+          <li> 
+            <%if @account.demo? %>
+              <a href="#" onclick="return false;" class="create_new">Create a new project</a>
+            <% else %>
+              <a href="/project/new" class="create_new">Create a new project</a>
+          <%end%>
+          </li>
           </ul>
         </div>
     </span>
-    <a href="#" onclick="Element.toggle($('projects_popup')); return false">View another project</a>
+    <%=demo_link("#","View another project","Element.toggle($('projects_popup')); return false")%>
   </div>
 
     <noscript>
