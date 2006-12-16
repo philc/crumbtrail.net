@@ -54,7 +54,7 @@
   color:#666666;
   background-color:#F8F8F8;
   padding:4px;
-  padding: 1px 0 1px 0;
+  padding: 1px 0 2px 0;
   
 }
 #project-menu #project-id{
@@ -64,6 +64,48 @@
   color:black;
 }
 
+/*
+ * Project selection popup
+ */
+#projects_popup_wrapper{
+  position:relative;  
+  width:1px;
+  /* This is strange. Mozilla needs a border to render this element*/
+  border-left:1px solid white;
+}
+#projects_popup{
+  position:absolute;
+  left:0;
+  margin-top:2px;
+  background-color:#F8F8F8;
+  z-index:1000;
+  white-space:nowrap;
+ /* padding-left:3px;
+  padding-right:2px;*/
+  border:1px dashed #c6c6c6;
+  border-top-width:0;
+  text-align:left;
+  padding-top:5px;
+}
+#projects_popup ul{
+  /*list-style-image:none;*/
+  list-style-type:none;
+  margin:0px;
+  padding:0;
+}
+#projects_popup a{
+  
+  position:relative; 
+  padding: 3px 2px 4px 6px;
+  display:block;
+}
+#projects_popup a:hover{
+  background-color:#e4eaf4;
+}
+#projects_popup .create_new{
+  margin-top:10px;
+  margin-bottom:10px;
+}
 /*
  * Section navigation/layout
  */

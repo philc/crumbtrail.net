@@ -91,6 +91,10 @@ class ProjectController < ApplicationController
     # get the view options from their cookie
     @view_options=view_options_from_cookie(cookies[:breadcrumbs])   
     
+    #@all_projects=@account.projects.reject{|p| p!=@project}
+    
+    @title="Stats for " + @project.title.to_s
+    
     # use the date in the view that we have on record for them.    
     @date = JSDate.new(@project.time).to_json;
     

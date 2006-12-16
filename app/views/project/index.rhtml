@@ -52,14 +52,27 @@
 
 
   <div id="project-menu">Viewing stats for <span id="project-id"><%=@project.title%></span>. 
-    <a href="">Setup</a> | <a href="">View another project</a>
+    <a href="">Setup</a> | 
+    <span id="projects_popup_wrapper">
+        <div id="projects_popup" style="display:none"/>
+          <ul>
+          <% @account.projects.each  do |p| %>    
+            <li><a href="/project/<%=p.id%>"><%=p.title%></a></li>
+          <% end %>
+          <li ><a href="/project/new" class="create_new">Create a new project</a></li>
+          </ul>
+        </div>
+    </span>
+    <a href="#" onclick="Element.toggle($('projects_popup')); return false">View another project</a>
   </div>
-  
-      <noscript>
+
+    <noscript>
       <div class="warning">You don't have Javascript enabled. To view
       your stats, you'll need to re-enable it in your web browser.
       </div>
     </noscript>
+    
+ 
   
   <div id="menu">
     <ul id="menu-links">
