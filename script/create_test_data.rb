@@ -22,16 +22,18 @@ def add
                              :lastname   => "Quinn",
                              :country_id => 1,
                              :zone_id   => 1) 
-  philc = Account.create(:username   => "philc",
+                             
+  demo = Account.create(:username   => "demo",
                          :password   => "pass1",
-                         :firstname  => "Phil",
-                         :lastname   => "Crosby",
+                         :firstname  => "Demo",
+                         :lastname   => "Account",
                          :country_id => 1,
-                         :zone_id   => 1)
-  proj = Project.new(:account_id => philc.id,
+                         :zone_id   => 1,
+                         :role=>"d")
+  proj = Project.new(:account => demo,
                      :title => "Ninja Words",
                      :url => "ninjawords.com/",
-                     :zone_id => philc.zone_id)
+                     :zone_id => demo.zone_id)
   proj.id = 1050
   proj.save
   

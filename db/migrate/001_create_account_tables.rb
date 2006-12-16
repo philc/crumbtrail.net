@@ -8,6 +8,11 @@ class CreateAccountTables < ActiveRecord::Migration
       t.column :lastname, :string, :null => false
       t.column :country_id, :integer, :null => false
       t.column :zone_id, :integer, :limit => 45, :null => false
+      # account type;
+        # d=demo
+        # p1=paid level 1, p2 etc.
+        # f=free
+      t.column :role, :string, :limit=>2, :default=>"f"
       # recently viewed project
       t.column :recent_project_id, :int
     end

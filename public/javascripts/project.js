@@ -105,7 +105,7 @@ var Page = Class.create();
 Page.prototype = {
   initialize:function(){
     this.colors=["#a4d898","#fdde88","#ff9e61","#d75b5c","#7285b7","#98d5d8","#989cd8","#d8bb98"];
-      
+   
     var StringMethods={
       firstUpCase:function(){ return this[0].toUpperCase() + this.slice(1,this.length);}
     };
@@ -370,8 +370,8 @@ TableDisplay.Methods={
   refererRow: function(i,data,dataMax,isDate){
     var url=unescape(data[i*3]);
     var landedOn=unescape(data[i*3+1]);
-    var linkCaption = DisplayHelper.truncateRight(url,45);
-    var landedOnCaption = DisplayHelper.truncateLeft(landedOn,60);
+    var linkCaption = DisplayHelper.truncateRight(url,DisplayHelper.truncateBig);
+    var landedOnCaption = DisplayHelper.truncateLeft(landedOn,DisplayHelper.truncateSmall);
     var html = linkCaption.link("http://"+url) + '<span class="to">To&nbsp;'+landedOnCaption.link("http://"+landedOn)+'</a></span>';
     var cell1 = this.td(html, "f");
     var cell2 = this.td( isDate ? 
@@ -388,8 +388,8 @@ TableDisplay.Methods={
     var url = unescape(data[i*3]);
     var referer = unescape(data[i*3+1]);
     var time = data[i*3+2];
-    var refererCaption = DisplayHelper.truncateRight(referer,45);
-    var linkCaption = DisplayHelper.truncateLeft(url,45);
+    var refererCaption = DisplayHelper.truncateRight(referer,DisplayHelper.truncateSmall);
+    var linkCaption = DisplayHelper.truncateLeft(url,DisplayHelper.truncateBig);
     var tdHtml = linkCaption.link("http://"+url) + '<span class="to">From&nbsp;'+refererCaption.link("http://"+referer)+'</a></span>';
     var cell1=this.td(tdHtml,"f");
     var cell2 = this.td(DisplayHelper.timeAgo(time));
@@ -402,10 +402,10 @@ TableDisplay.Methods={
   },
   searchesRow:function(i,data,dataMax,isDate){
     console.log('in searches row');
-    var terms = DisplayHelper.truncateLeft(data[i*4],45);
+    var terms = DisplayHelper.truncateLeft(data[i*4],DisplayHelper.truncateBig);
     var url = unescape(data[i*4+1]);
     var to = unescape(data[i*4+2]);
-    var toCaption = DisplayHelper.truncateRight(to,45);
+    var toCaption = DisplayHelper.truncateRight(to,DisplayHelper.truncateSmall);
     //var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
     //var html = linkCaption.link("http://"+url);
     var html = terms.link("http://"+url) + '<span class="to">To&nbsp;'+toCaption.link("http://"+to)+'</a></span>';
@@ -416,7 +416,7 @@ TableDisplay.Methods={
   },
   pagesRow:function(i,data,dataMax, isDate){
     var url = unescape(data[i*2]);
-    var linkCaption = DisplayHelper.truncateLeft(url,45);
+    var linkCaption = DisplayHelper.truncateLeft(url,DisplayHelper.truncateBig);
     //var html = linkCaption.link("http://"+url);
     var html = linkCaption.link("http://"+url);
     var cell1=this.td(html,"f");
@@ -559,6 +559,9 @@ Object.extend(Pagination,Pagination.Methods);
  */
 DisplayHelper = Class.create();
 DisplayHelper.Methods={
+  // Truncatation value for big and small text
+  truncateBig:40,
+  truncateSmall:45,
   timeAgo: function(date){
     var diff=(new Date())-date;
     var mins=Math.floor(diff/1000/60);
@@ -765,13 +768,6 @@ LineGraph.prototype={
   },
   showLabels: function(graphContainer){
     if (this.min>0){
-//       var div=document.createElement("div");
-//       div.className="line-x-axis";
-//       div.innerHTML=this.min;
-//       div.style.right="100%";
-//       div.style.bottom=px(14);
-      
-//       graphContainer.appendChild(div);
       var minLabel = this.yLabel(this.min);
       minLabel.style.bottom=px(14);
       graphContainer.appendChild(minLabel);

@@ -62,6 +62,8 @@ class ProjectController < ApplicationController
   def code
     
   end
+  
+  
   #
   # Fetches the user's project data and fills javascript variables with them.
   # Javascript does the actual table and graph drawing
@@ -71,10 +73,14 @@ class ProjectController < ApplicationController
     
     @project=nil
       
-    if (@id!="recent")
-      @project = Project.find_by_id(@id)
-    else
+    if (@id=="recent")
       @project = @account.recent_project
+    elsif (@id=="livedemo")
+      puts "demo account"
+      @account=Account.get_demo_account()
+      @project=@account.projects[0]
+    else
+      @project = Project.find_by_id(@id)      
     end
     
     # If they don't have any projects, or we can't find the one they asked for,
@@ -145,6 +151,10 @@ class ProjectController < ApplicationController
       [r.referer.url,r.page.url,r.count]}.flatten.to_json
     render :layout=>false
   end
+  
+  
+  
+  
   
   private  
   

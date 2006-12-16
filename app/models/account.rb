@@ -43,6 +43,14 @@ class Account < ActiveRecord::Base
     write_attribute(:password,Account.encrypt(pass))
   end
   
+  # Account related methods
+  def self.get_demo_account()
+    return find(:first, :conditions=>["role = ?","d"])
+  end
+  def demo?()
+    return this.role=="d"
+  end
+  
   protected
   
   def self.encrypt(text)
