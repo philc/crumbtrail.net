@@ -70,7 +70,6 @@ Preferences.prototype = {
   setCookie: function(name,value){
     d=new Date(); d.setTime(d.getTime()+3600000);
     document.cookie=name+"="+value+'; expires=' + d.toGMTString() + ';'
-    //console.log("setting cookie:",name+"="+value+'; expires=' + d.toGMTString() + ';');
   }
 }
 
@@ -153,9 +152,7 @@ Page.prototype = {
     this.preferences.update(this.activeSection,panel);
   },
   removeClassFromElements: function(c,start){
-    //console.log("testing document", document.getElementsByClassName);
 //     if ($)
-//       console.log("$ exists");
 //     if (document.getElementsByClassName){
 //       //console.log(document.getElementsByClassName);
 //       console.log("getElementsByClassName exists");
@@ -401,7 +398,6 @@ TableDisplay.Methods={
     return f(i,data,dataMax,true);
   },
   searchesRow:function(i,data,dataMax,isDate){
-    console.log('in searches row');
     var terms = DisplayHelper.truncateLeft(data[i*4],DisplayHelper.truncateBig);
     var url = unescape(data[i*4+1]);
     var to = unescape(data[i*4+2]);
@@ -470,7 +466,6 @@ Pagination.prototype={
     this.current=page;
     var more=this.data[1];
     var displayData=this.data[2];
-    console.log("display data",displayData);
     var display = new TableDisplay(displayData,this.cellFunction,this.dataStep,this.title,this.headerNames);    
     $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() + 
       this.buildNavMenu(more));
@@ -507,7 +502,6 @@ Pagination.prototype={
     return this.makeRequest(this.current+1);
   },
   prev:function(){
-    console.log("making prev request", this.current-1);
     return this.makeRequest(this.current-1);
   },
   makeRequest:function(page){
@@ -516,35 +510,23 @@ Pagination.prototype={
       parameters:"p="+page,
       onComplete:this.show.bind(this)
     });
-    console.log("done ajax");
     return false;
   },
   show: function(request, page){
-    console.log("showing request");
-    console.log(request);
-//   console.log(this.htmlID, $(this.htmlID));
-    //console.log(request.responseText);
-    console.log("done printing response text");
     results=eval(request.responseText);
     var page = results[0];
     var more = results[1];
     var data=results[2];
-    console.log(data);
-    console.log("page",page);
-    console.log($(this.htmlID));
     this.current=page;
      var display = new TableDisplay(data,this.cellFunction,this.dataStep,this.title,this.headerNames);    
      $(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() 
       + this.buildNavMenu(more));   
   },
-  buildLink: function(caption, enabled,href,class,onclick){
+  buildLink: function(caption, enabled,href,cls,onclickFunc){
     if (!enabled)
-      return '<span class="' + class +'">' + caption + '</span>';
-//     console.log("building link");
-//     console.log('<a href="' + href + '" ' + (onclick? ' onclick="' + onclick + '" ':'') + 
-//     (class ? 'class="' + class + '" ':'') + '>'+caption+'</a>');
-    return '<a href="' + href + '"' + (onclick? ' onclick="' + onclick + '" ':'') + 
-    (class ? 'class="' + class + '" ':'') + '>'+caption+'</a>';
+      return '<span class="' + cls +'">' + caption + '</span>';
+    return '<a href="' + href + '"' + (onclickFunc? ' onclick="' + onclickFunc + '" ':'') + 
+    (cls ? 'class="' + cls + '" ':'') + '>'+caption+'</a>';
   }
 };
 // pagination=new Pagination();
@@ -715,7 +697,6 @@ LineGraph.prototype={
       // amount of space there is above the previous element
       var t=this.height-prevHeight;
       
-      //console.log(h,u);
       img.style.height=px(h*u);
       
       var ourTop = t-(u>0  ? h : 0)
@@ -887,7 +868,6 @@ PieGraphDisplay.prototype={
     var w,h;
     var s=this.size;
     var qs=this.qsize;
-    //console.log("drawing image for ",i, q, "deg", v);
     if (q==0){
       w=(v <=(45+q*90) ? qs : s*(deg));
       h=(v >=(45+q*90) ? qs : s*(1-deg));
@@ -971,11 +951,9 @@ PieGraphDisplay.prototype={
   //     div.style.width=px(qsize-w);
       dl=qs+w;
       dt=qs;        
-      //console.log("drawing filler for q2. w",w,"qs",qs,"dl",dl, "dw",dw);
       //dh=qs-h;
       // If it's a 0 height, we should fill up the whole box.
       dh= (h==0 ? qs: h);
-      //console.log("setting q2 height to ",dh, " h",h);
     }
     if (q==3){
   //     div.style.width=px(w);
@@ -985,7 +963,6 @@ PieGraphDisplay.prototype={
       //div.style.left=px(0);
     }
     
-    //console.log("q",q, " dh", dh , " h",+ h);
     
     div.style.left=px(dl);
     

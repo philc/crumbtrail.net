@@ -26,7 +26,7 @@ a:hover{
 input{
   padding:2px;
 }
-img{ border:0;}
+table,img{ border:0;}
 #page{
   margin-left:20px;
   margin-right:20px;
@@ -35,11 +35,12 @@ img{ border:0;}
 #header{
   height:80px;
   border-bottom:1px solid #c6c6c6;
+/*
   position:relative;
+*/
   margin-bottom:20px;
   }
 #content{
-  /*border:1px solid blue;*/
   width:100%;
   /*position:relative;*/
   /*text-align:center;*/
@@ -49,7 +50,6 @@ img{ border:0;}
 #content-right{
   margin-top:20px;
   padding-left:10em;  
-  /*border:1px solid red;*/
 }
 #footer{
   margin-top:20px;
@@ -64,14 +64,30 @@ img{ border:0;}
 .dialog .ft {  background:#fbeac8 url(/images/d/bl.gif) no-repeat 0px 0px;
 }
 .dialog .ft .c { background:transparent url(/images/d/br.gif) no-repeat right 0px;}
-.dialog .bd .c{  background-color:#fbeac8;}
+.dialog .bd .c{  background-color:#fbeac8;
+}
 
+#logo{
+	width:100px;
+	float:left;
+}
+#header-container{
+	float:right;
+}
+
+/*.small-dialog div{
+	display:inline;
+}*/
 #header-menu{
-  position:absolute;
+/*	display:inline;
+	float:right;
+*/
+  /*position:absolute;*/
   right:20px; /* Should be equal to whatever the table's right margin is*/
   /*top:22px;*/
   /* This should sit on the same baseline as the logo.*/
   bottom:32px;
+	float:right;
   background-color:#fff9ed;
   background-color:#fbeac8;
   /*background-color:#fdf1d8;*/
@@ -89,14 +105,14 @@ img{ border:0;}
   /*font-weight:bold;*/
   /*border:1px solid blue;*/
   float:left;
-  border-right:1px solid #b89c65;
   /*margin-right:5px;*/
 
-  /*border:1px solid red;*/
 }
 #header-menu a{
   /*border:1px solid blue;*/
   padding: 1px 10px 1px 10px;
+  border-right:1px solid #b89c65;
+
   /*border:1px solid #fbeac8;*/
   display:block;
   /*width:100px;*/
@@ -118,11 +134,18 @@ img{ border:0;}
 .small-dialog  .hd {  background:#fbeac8 url(/images/d/menutl.gif) no-repeat 0px 0px; }
 .small-dialog  .hd .c {  background:transparent url(/images/d/menutr.gif) no-repeat right 0px; }
 .small-dialog  .bd { background:#fbeac8 none repeat-y 0px 0px;}
-.small-dialog  .bd .c { background:#fbeac8 none repeat-y right 0px; }
-.small-dialog  .ft .c, .small-dialog .hd .c { height:5px;  }
+.small-dialog  .bd .c { background:#fbeac8 none repeat-y right 
+0px; }
+.small-dialog  .ft .c, .small-dialog .hd .c { height:5px; font-size:1px;
+ }
 .small-dialog  .ft {   background:#fbeac8 url(/images/d/menubl.gif) no-repeat 0px 0px;}
-.small-dialog  .ft .c {background:transparent url(/images/d/menubr.gif) no-repeat right 0px;}
-.small-dialog  .bd .c{  background-color:transparent; padding-left:6px; padding-right:6px;}
+.small-dialog  .ft .c {background:transparent url(/images/d/menubr.gif) no-repeat right 0px;
+
+
+}
+.small-dialog  .bd .c{  background-color:transparent; padding-left:6px; padding-right:6px;
+
+}
 
 
 /* page-level stuff */
@@ -255,7 +278,6 @@ a.linkbox:hover{
  */
 #signup-cost{
   float:right;
-  /*border:1px solid blue;*/
   width:60%;
 }
 #signup-cost #letmeknow{
