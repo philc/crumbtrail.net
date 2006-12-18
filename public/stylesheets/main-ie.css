@@ -1,4 +1,10 @@
 
+#header-menu{
+  /* Should be equal to whatever the table's right margin is*/ 
+  /* this is 20 in firefox; 10 in IE. Not sure why.*/
+  margin-right:10px;
+}
+
 #menu li{
   height:1%;
 }

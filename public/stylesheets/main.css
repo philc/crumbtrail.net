@@ -13,6 +13,7 @@ body{
   font-family: bitstream-vera-sans, Arial, Helvetica, sans-serif;
   background-color:white;
   max-width:800px;
+  min-width:690px;
   margin-left:auto;
   margin-right:auto;
 }
@@ -27,8 +28,6 @@ input{
   padding:2px;
 }
 table,img{ border:0;}
-table{
-}
 #page{
   margin-left:20px;
   margin-right:20px;
@@ -90,17 +89,14 @@ table{
 	display:inline;
 }*/
 #header-menu{
-/*	display:inline;
-	float:right;
-*/
-  /*position:absolute;*/
-  right:20px; /* Should be equal to whatever the table's right margin is*/
+  right:20px; 
   /*top:22px;*/
   /* This should sit on the same baseline as the logo.*/
   bottom:32px;
 	float:right;
 	margin-top:16px;
-	margin-right:10px;
+  /* Should be equal to whatever the table's right margin is*/ 
+	margin-right:20px;
   background-color:#fff9ed;
   background-color:#fbeac8;
   /*background-color:#fdf1d8;*/
@@ -152,9 +148,9 @@ table{
 .small-dialog  .hd {  background:#fbeac8 url(/images/d/menutl.gif) no-repeat 0px 0px; }
 .small-dialog  .hd .c {  background:transparent url(/images/d/menutr.gif) no-repeat right 0px; }
 .small-dialog  .bd { background:#fbeac8 none repeat-y 0px 0px;}
-.small-dialog  .bd .c { background:#fbeac8 none repeat-y right 
-0px; }
+.small-dialog  .bd .c { background:#fbeac8 none repeat-y right 0px; }
 .small-dialog  .ft .c, .small-dialog .hd .c { height:5px; font-size:1px;
+
  }
 .small-dialog  .ft {   background:#fbeac8 url(/images/d/menubl.gif) no-repeat 0px 0px;}
 .small-dialog  .ft .c {background:transparent url(/images/d/menubr.gif) no-repeat right 0px;
@@ -287,7 +283,7 @@ a.linkbox:hover{
   /* offset the margins that the dialog box brings, so we line up with the other header*/
   margin-top:-9px;  
   margin-left:10px;
-  width:12em;
+  /*width:12em;*/
 	/*width:50%;*/
 /* width:12em; */
 }

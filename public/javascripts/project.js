@@ -236,10 +236,11 @@ function populatePage(){
     "Recent referers", ["","Visited"] );
 
   // pages section
+  TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRecentRow,3,
+    "Recent pages", ["","Accessed"]);
   TableDisplay.showTable("pages_popular",pagesPopularData,TableDisplay.pagesRow,2,
     "Popular pages", ["","Hits"]);
-  TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRecentRow,3,
-    "Recent pages", ["","Hits"]);
+  
     
   // glance section
   TableDisplay.showTable("glance_referers_today",[],TableDisplay.refererRow,2,
