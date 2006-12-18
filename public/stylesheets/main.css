@@ -27,6 +27,8 @@ input{
   padding:2px;
 }
 table,img{ border:0;}
+table{
+}
 #page{
   margin-left:20px;
   margin-right:20px;
@@ -70,6 +72,11 @@ table,img{ border:0;}
 #logo{
 	width:100px;
 	float:left;
+/*	width:100px;
+	float:left;*/
+}
+#rhs{
+	float:right;
 }
 #header-container{
 	float:right;
@@ -88,6 +95,8 @@ table,img{ border:0;}
   /* This should sit on the same baseline as the logo.*/
   bottom:32px;
 	float:right;
+	margin-top:16px;
+	margin-right:10px;
   background-color:#fff9ed;
   background-color:#fbeac8;
   /*background-color:#fdf1d8;*/
@@ -98,6 +107,12 @@ table,img{ border:0;}
   
   position:static;
 }
+
+#header-menu table{
+	border-collapse:collapse;
+
+}
+
 #header-menu li{
   /*padding:2px;*/
   display:inline;
@@ -260,6 +275,7 @@ a.linkbox:hover{
   /* offset the margins that the dialog box brings, so we line up with the other header*/
   margin-top:-9px;  
   margin-left:10px;
+	width:50%;
 }
 #signin-box h1{
   margin-top:0px;
