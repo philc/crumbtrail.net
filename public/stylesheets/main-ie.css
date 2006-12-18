@@ -13,7 +13,7 @@
   it an approximate width..*/
 #signin-box{
  /*width:16em; */
- width:200px;
+ width:180px;
  /*width:16em; */
  
  /* IE can't handle negative margins to make the signup box
@@ -22,7 +22,7 @@
 }
 
 #signin-box .field{
-  width:180px;
+  width:160px;
 }
 
 .dialog .ft .c{

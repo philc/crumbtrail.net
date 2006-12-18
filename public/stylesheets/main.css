@@ -198,10 +198,6 @@ table,img{ border:0;}
 /*
  * Used to wrap the big block link buttons
  */
-.intro-links{
-  width:80%;
-  /*margin-left:30%;*/
-}
 .intro-links .linkbox{
   white-space:nowrap;
 }
@@ -292,7 +288,7 @@ a.linkbox:hover{
   margin:0px;
 }
 #signin-box .field{
-  width:12em;
+  width:13em;
 }
 #signin-box .dialog .bd .c{
   padding: 2px 8px 0 8px;
