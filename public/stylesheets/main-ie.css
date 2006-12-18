@@ -2,7 +2,29 @@
 #menu li{
   height:1%;
 }
-/* IE will only make this as small as the text can be*/
+
+/* IE won't shrink-wrap the signin box, so we have to give
+  it an approximate width..*/
+#signin-box{
+ /*width:16em; */
+ width:200px;
+ /*width:16em; */
+ 
+ /* IE can't handle negative margins to make the signup box
+  line up with the header. So we'll display it lower in IE..*/
+  margin-top:0;   
+}
+
+#signin-box .field{
+  width:180px;
+}
+
 .dialog .ft .c{
   font-size:1%;
+}
+
+/* IE will only make this as small as the text can be*/
+.dialog .ft .c, .dialog .hd .c {
+  font-size:1%;
+  
 }

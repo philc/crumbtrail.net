@@ -12,10 +12,13 @@ class MainController < ApplicationController
   def signup
     # You shouldn't be able to get to this page if you're logged in. If they
     # navigate here manually, forward them back to their projects
-    redirect_to "/project" if @account
+    
+    puts "account",@account
+    
+    redirect_to "/project/recent" if @account
     
     @title="Sign up"
-     
+    
     if request.post?
       email=params[:email]
       @email_error=MainHelper::validate_email(email)

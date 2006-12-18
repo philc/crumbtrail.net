@@ -1,4 +1,5 @@
 
+<div class="copy-content">
 <div class="copy">
 
 <div id="signin-box">
@@ -10,9 +11,9 @@
        <div class="text-form">
         <%=show_form_error(@login_error)%>
         E-mail
-        <input type="text" name="email" id="email" size="18" value="<%=@email%>"/>
+        <input type="text" name="email" id="email" class="field" value="<%=@email%>"/>
         Password
-        <input type="password" name="password" id="password" size="18"/>
+        <input type="password" name="password" id="password" class="field"/>
         </div>
         <input type="submit" class="submit" value="Sign in"/>
       </form>
@@ -38,10 +39,8 @@ $("email").focus();
 
 <h1>Know your visitors</h1>
 
+<p>
 Breadcrumbs anonymously tracks visitors coming to your website. It works like this:
-
-
-
 
 <ol>
 <li>Sign up (it's quick and free)</li>
@@ -51,6 +50,7 @@ Breadcrumbs anonymously tracks visitors coming to your website. It works like th
 <li>Visit Breadcrumbs and see all kinds of crazy stats about your visitors</li>
 </ol>
 
+</p>
 
 <p class="intro-links">
 <a class="linkbox" href="/project/livedemo">Try out a live Breadcrumbs setup</a>
@@ -62,4 +62,5 @@ Breadcrumbs anonymously tracks visitors coming to your website. It works like th
 <!--<h1>What's cool about this?</h1>
 # ...
 -->
+</div>
 </div>

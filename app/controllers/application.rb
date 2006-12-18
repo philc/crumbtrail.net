@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   def signed_in?
       
     # TESTING - just log in with a test user
-    @account=Account.authenticate("philc","pass1")
+    @account=Account.authenticate("demo","pass1")
     return
     token = cookies[@@login_cookie]    
     # TODO - re-enable this

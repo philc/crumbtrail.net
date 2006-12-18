@@ -40,7 +40,7 @@ table{
 /*
   position:relative;
 */
-  margin-bottom:20px;
+  /*margin-bottom:20px;*/
   }
 #content{
   width:100%;
@@ -58,8 +58,12 @@ table{
   clear:both;
   text-align:center;
 }
-.dialog .hd {  background:#fbeac8 url(/images/d/tl.gif) no-repeat 0px 0px; }
-.dialog .hd .c {  background:transparent url(/images/d/tr.gif) no-repeat right 0px; padding-right:20px; }
+
+.dialog .hd {  background:#fbeac8 url(/images/d/tl.gif) no-repeat 0px 0px;}
+.dialog .hd .c {  background:transparent url(/images/d/tr.gif) no-repeat right 0px; 
+
+/*padding-right:20px;*/
+ }
 .dialog .bd { background:#fbeac8 none repeat-y 0px 0px; }
 .dialog .bd .c { background:#fbeac8 none repeat-y right 0px; }
 .dialog .ft .c, .dialog .hd .c { height:10px;  }
@@ -145,7 +149,6 @@ table{
   margin-right:0px;
   border-right:0;
 }
-/*#header-menu .dialog {border:1px solid blue;}*/
 .small-dialog  .hd {  background:#fbeac8 url(/images/d/menutl.gif) no-repeat 0px 0px; }
 .small-dialog  .hd .c {  background:transparent url(/images/d/menutr.gif) no-repeat right 0px; }
 .small-dialog  .bd { background:#fbeac8 none repeat-y 0px 0px;}
@@ -162,6 +165,10 @@ table{
 
 }
 
+/* encloses the whole bottom part. Don't use for project pages.*/
+.copy-content{
+  padding-top:20px;
+}
 
 /* page-level stuff */
 .copy{
@@ -171,7 +178,7 @@ table{
 .copy h1{
   font-size:1.8em;
   font-weight:normal;
-  margin-bottom:10px;
+  /*margin-bottom:10px;*/
   margin-top:10px;
 }
 .copy h2{
@@ -179,15 +186,17 @@ table{
   font-weight:normal;
 }
 .copy ol{
-  margin-top:10px;
+  /*margin-top:10px;*/
   margin-bottom:10px;
 }
 .copy li{
   margin-left:40px;
 }
 .copy p{
-  padding-top:12px;
-  padding-bottom:8px;
+  /*padding-top:12px;*/
+  margin-top:12px;
+  margin-bottom:8px;
+  /*padding-bottom:8px;*/
 }
 
 /*
@@ -196,6 +205,9 @@ table{
 .intro-links{
   width:80%;
   /*margin-left:30%;*/
+}
+.intro-links .linkbox{
+  white-space:nowrap;
 }
 
 /*
@@ -275,12 +287,17 @@ a.linkbox:hover{
   /* offset the margins that the dialog box brings, so we line up with the other header*/
   margin-top:-9px;  
   margin-left:10px;
-	width:50%;
+  width:12em;
+	/*width:50%;*/
+/* width:12em; */
 }
 #signin-box h1{
-  margin-top:0px;
+  /*margin-top:0px;*/
+  margin:0px;
 }
-
+#signin-box .field{
+  width:12em;
+}
 #signin-box .dialog .bd .c{
   padding: 2px 8px 0 8px;
   /*padding-left:5px;padding-right:5px;*/
@@ -296,6 +313,7 @@ a.linkbox:hover{
   float:right;
   width:60%;
 }
+
 #signup-cost #letmeknow{
   background-color:#e4eaf4;
   margin-top:5px;
