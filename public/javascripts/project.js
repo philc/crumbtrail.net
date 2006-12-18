@@ -249,9 +249,9 @@ function populatePage(){
     "", ["Top referers this week","Hits"]);
   
   TableDisplay.showTable("searches_recent",searchesRecentData,TableDisplay.searchesRowWithDate,4,
-    "Recent searches", ["Search keywords","Visited"]);
+    "Recent searches", ["Keywords","Visited"]);
   TableDisplay.showTable("searches_totals",searchesTotalData,TableDisplay.searchesRow,4,
-    "Popular searches", ["Search keywords","Hits"]);
+    "Popular searches", ["Keywords","Hits"]);
     
   
   
