@@ -1,10 +1,8 @@
 class Referer < ActiveRecord::Base
-  has_many :recent_referrals
-  has_many :total_referrals
-  has_many :landing_urls
+  belongs_to :project
 
-  def self.find_by_url(url)
-    referers = find(:all, :conditions => ['url_hash = ?', url.hash])
+  def self.find_by_url(project, url)
+    referers = find_all_by_project_id_and_url_hash(project.id, url.hash)
     for id in referers
       return id if id.url = url
     end
@@ -12,9 +10,9 @@ class Referer < ActiveRecord::Base
     return nil
   end
 
-  def self.get_referer(url)
-    referer = find_by_url(url)
-    referer = create(:url_hash => url.hash, :url => url) if referer.nil?
+  def self.get_referer(project, url)
+    referer = find_by_url(project, url)
+    referer = create(:project => project, :url_hash => url.hash, :url => url) if referer.nil?
     return referer
   end
 end

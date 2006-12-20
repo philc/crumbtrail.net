@@ -68,9 +68,9 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
-    @referer = Referer.get_referer(@referer_url)
+    @referer = @project.get_referer(@referer_url)
     @page = Page.get_page(@page_url)
-    @project.process_request(self)
+    @project.process_request(self) if !@referer.nil? && !@page.nil?
   end
 end
 
@@ -92,7 +92,6 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
 
   def self.process_line(line)
-    puts line
     if @@regex.match(line)
 
       begin
@@ -145,13 +144,13 @@ class ApacheLogReader
     puts "Parsing log file: " + logfile
     log_lines=0
     #Benchmark.bmbm("processing the whole log") do |x|
-    times=Benchmark.bmbm do |x|      
+    times=Benchmark.bm do |x|
       x.report do
         log_lines=0
         file = File.new(logfile, "r")
         line=""
         while (!line.nil?)
-          line = file.gets        
+          line = file.gets
           next if line.nil?
           #Benchmark.benchmark("process line") do |x|
             #x.report { process_line(line) }
@@ -162,10 +161,10 @@ class ApacheLogReader
         file.close
         file=nil
       end
-      
+
     end
-    reqs=(log_lines/times[0].real).floor
-    puts "processed #{log_lines} lines, at #{reqs} req/s"
+    #reqs=(log_lines/times[0].real).floor
+    #puts "processed #{log_lines} lines, at #{reqs} req/s"
   end
 #------------------------------------------------------------------------------
   include TimeHelpers
@@ -249,13 +248,17 @@ class ApacheLogReader
         url.slice!(0..8)
       end
 
-      if url =~ /www\./
+      if url =~ /^www\./
         url.slice!(0..3)
+      end
+
+      if url =~ /^[A-Za-z0-9\.]+$/
+        url << '/'
       end
     end
     return nil
   end
-  
+
   def self.strip_server_url(project, url)
     if !url.nil?
       if url =~ /^#{project.url}/
@@ -267,9 +270,9 @@ class ApacheLogReader
 end
 
 ApacheLogReader::establish_connection()
-logfile="errors.log"
+logfile="test.log"
 logfile=ARGV[0] if ARGV.length>0
-#ApacheLogReader::benchmark_log("script/" + logfile)
-ApacheLogReader::tail_log("script/" + logfile)
+ApacheLogReader::benchmark_log("script/" + logfile)
+#ApacheLogReader::tail_log("script/" + logfile)
 
 

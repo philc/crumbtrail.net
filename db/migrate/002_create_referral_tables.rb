@@ -2,11 +2,12 @@ class CreateReferralTables < ActiveRecord::Migration
   def self.up
     # Create Referer Table
     create_table (:referers, :options => 'ENGINE=MyISAM') do |t|
+      t.column :project_id, :integer, :null => false
       t.column :url_hash, :integer, :null => false
       t.column :url, :string, :null => false
     end
 
-    add_index :referers, :url_hash
+    add_index :referers, [:project_id, :url_hash]
 
     # Create Pages Table
     create_table (:pages, :options => 'ENGINE=MyISAM') do |t|
@@ -48,8 +49,7 @@ class CreateReferralTables < ActiveRecord::Migration
       t.column :count, :integer, :default => 0
     end
 
-    add_index :search_totals, :project_id
-    add_index :search_totals, :search_words_hash
+    add_index :search_totals, [:project_id, :search_words_hash]
 
     # Create Search Recent Table
     create_table (:search_recents, :options => 'ENGINE=MyISAM') do |t|
