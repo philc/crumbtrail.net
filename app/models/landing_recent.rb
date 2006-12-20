@@ -3,35 +3,13 @@ class LandingRecent < ActiveRecord::Base
   belongs_to :referer
   belongs_to :page
 
-  @@max_rows = 10
+  require './lib/rollable_recent_table.rb'
 
   def self.add_new_landing(request)
-    project = request.project
-
-    # Update the proper row for the project, or create a new row
-    row = find_by_project_id_and_row(project.id, project.landings_row)
-    if !row.nil?
-      row.page = request.page
-      row.referer = request.referer
-      row.visit_time = request.time
-    else
-      row = new(:project => project,
-                :page => request.page,
-                :referer => request.referer,
-                :visit_time => request.time,
-                :row => project.landings_row)
-    end
-    row.save
-
-    # Increment row.
-    # Set row back to 0 if we have gone over 10 rows.  Could move
-    # this into a user preference.
-    project.landings_row += 1
-    project.landings_row = 0 if project.landings_row == @@max_rows
-
+    RollableRecentTable::add_new(LandingRecent, :landings_row, request)
   end
 
   def self.get_recent_landings(project)
-    return find(:all, :conditions => ["project_id = ?", project.id], :order => "visit_time DESC")
+    RollableRecentTable::get_recent(LandingRecent, project)
   end
 end
