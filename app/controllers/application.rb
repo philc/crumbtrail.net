@@ -28,11 +28,11 @@ class ApplicationController < ActionController::Base
   def signed_in?
       
     # TESTING - just log in with a test user
-    @account=Account.authenticate("demo","pass1")
-    return
+#     @account=Account.authenticate("demo","pass1")
+#     return
     token = cookies[@@login_cookie]    
     # TODO - re-enable this
-    #return nil if token.nil?
+    return nil if token.nil?
     
     # See if this token matches one of our accounts
     @account = Account.from_token(token)
