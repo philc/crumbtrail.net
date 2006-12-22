@@ -38,7 +38,10 @@ function UITimer(){
   this.timeout=2000;
 }
 
-function px(v) {  return v + "px";}
+
+//function px(v) {  return v + "px";}
+function px(v) {  return Math.ceil(v) + "px";}
+// function px(v) {  return Math.floor(v) + "px";}
 
 var Preferences = Class.create();
 Preferences.prototype = {
@@ -53,7 +56,9 @@ Preferences.prototype = {
     return this.sections.collect(initDefaults).join('&');
   },
   parseCookie:function(){
+//     alert("parsing this cookie:" + document.cookie);
     var m = this.re.exec(document.cookie);
+    
     if (m && m.length>0)
       cookie=m[1]
     else
@@ -68,7 +73,9 @@ Preferences.prototype = {
     this.setCookie("breadcrumbs",$H(cookie).toQueryString().gsub('&',','));    
   },
   setCookie: function(name,value){
-    d=new Date(); d.setTime(d.getTime()+3600000);
+    // 1 hour * 24 * days
+    d=new Date(); d.setTime(d.getTime()+3600000*24*28);
+//     alert("SEtting cookie: " +name+"="+value+'; expires=' + d.toGMTString() + ';'); 
     document.cookie=name+"="+value+'; expires=' + d.toGMTString() + ';'
   }
 }
@@ -671,8 +678,7 @@ LineGraph.prototype={
     for (i=1;i<this.data.length; i++){
       var div=document.createElement("div");
       Element.addClassName(div,"color");
-      if (this.style<2)
-        div.style.backgroundColor=page.colors[this.lineColor];
+      div.style.backgroundColor=page.colors[this.lineColor];
       div.id=i+"";
       var img=document.createElement("img");    
       
@@ -885,24 +891,31 @@ PieGraphDisplay.prototype={
       w=(v >=(45+q*90) ? qs : s*(1-deg));
     } 
   
+  // Add a div here. IE uses the div, while everyone else uses the img.
+    var div=document.createElement("div");
     var img=document.createElement("img");    
-    Element.addClassName(img,"chart_image");
-    img.style.width=w+"px";
-    img.style.height=h+"px";
-    img.style.zIndex="1";
+    Element.addClassName(img,"chart_image ");
+    Element.addClassName(div,"chart_image chart_image_div");
+    img.style.width=div.style.width=px(w);
+    img.style.height=div.style.height=px(h);
+    //img.style.zIndex=div.style.zIndex=="1";
     o1=(q==1||q==2) ? 0 : 1;
     o2=(q==2||q==3) ? 0 : 1;
     
-    img.style.left=this.qsize-o1*w+"px";
+    img.style.left=div.style.left=this.qsize-o1*w+"px";
     
-    img.style.top=this.qsize-o2*h + "px";
+    img.style.top=div.style.top=this.qsize-o2*h + "px";
   
     img.src=page.imageForQuadrant(i,q);
+    Element.addClassName(div,"pc"+i+q);
     
-    img.style.zIndex=data.length*2-i*2+"";    
+    img.style.zIndex=div.style.zIndex=data.length*2-i*2+"";    
     
     this.drawFillerBoxes(placeholder,page.colors[i],q,this.data.length*2-i*2-1,w,h);
     
+    
+    
+    placeholder.appendChild(div);
     placeholder.appendChild(img);
   },
 
@@ -987,7 +1000,8 @@ PieGraphDisplay.prototype={
     for (var i=0; i<this.labels.length;i++){
       var div=document.createElement("li"); 
       div.innerHTML="<div class='color_box' style='background-color:" + 
-      page.colors[i] + "'></div>" + this.labels[i];
+      page.colors[i] + "'></div>" + 
+      "<span class='caption'>" + this.labels[i] + "</span>";
       Element.addClassName(div,"label");
       ul.appendChild(div);      
     }

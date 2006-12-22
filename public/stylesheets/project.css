@@ -491,9 +491,9 @@ img{
 }
 .label_box{
 /*border:10px solid blue;*/
-position:absolute;
-margin-left:15px;
-margin-top:3px;
+  position:absolute;
+  margin-left:15px;
+  margin-top:3px;
   white-space:nowrap;  
 }
 .label_box .title{
@@ -504,7 +504,7 @@ margin-top:3px;
 .chart .label_box ul{ 
   
   list-style-type:none;
-  
+  white-space:nowrap;  
   
 }
 .chart .label_box li{
@@ -513,6 +513,8 @@ margin-top:3px;
   /*width:500px;*/
   display:block;
   margin-bottom:4px;
+  white-space:nowrap;  
+
 }
 .chart .color_box{
   margin-top:.1em;
@@ -520,6 +522,13 @@ margin-top:3px;
   height:1em;
   float:left;  
   margin-right:5px;
+ position:absolute;
+}
+.chart .caption{
+  padding-left:1.2em;
+  position:static;
+  display:block;
+/*   border:1px solid blue; */
 }
 .chart_frame{
   background-image:url(/images/c/circle.png);
@@ -530,7 +539,9 @@ margin-top:3px;
   margin-left:-5px;
   margin-top:-5px;
   /*border:1px solid black;*/
+
 }
+
 .chart_inside{
   position:absolute;
   /*border:1px solid blue;*/
@@ -538,9 +549,14 @@ margin-top:3px;
 .chart_image{
   position:absolute;
 }
+/* IE uses this instead of the IMG element to display the lines*/
+.chart_image_div{
+  display:none;
+}
 .chart_filler{
   width:75px;
   height:75px;
   /*border:1px solid blue;*/
   position:absolute;  
+  
 }
