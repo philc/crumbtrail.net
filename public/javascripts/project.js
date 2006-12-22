@@ -1,5 +1,7 @@
 // Dean Edwards/Matthias Miller/John Resig
 
+
+
 /* for Mozilla/Opera9 */
 if (document.addEventListener)   
     document.addEventListener("DOMContentLoaded", init, false);
@@ -893,7 +895,7 @@ PieGraphDisplay.prototype={
   
   // Add a div here. IE uses the div, while everyone else uses the img.
     var div=document.createElement("div");
-    var img=document.createElement("img");    
+    var img=document.createElement("img");
     Element.addClassName(img,"chart_image ");
     Element.addClassName(div,"chart_image chart_image_div");
     img.style.width=div.style.width=px(w);
@@ -904,11 +906,14 @@ PieGraphDisplay.prototype={
     
     img.style.left=div.style.left=this.qsize-o1*w+"px";
     
-    img.style.top=div.style.top=this.qsize-o2*h + "px";
+    img.style.top=div.style.top=this.qsize-o2*h + "px";  
   
-    img.src=page.imageForQuadrant(i,q);
-    Element.addClassName(div,"pc"+i+q);
-    
+  
+    img.src=page.imageForQuadrant(i,q);    
+    // for IE
+    div.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"
+      + page.imageForQuadrant(i,q) + "', sizingMethod='scale')";
+
     img.style.zIndex=div.style.zIndex=data.length*2-i*2+"";    
     
     this.drawFillerBoxes(placeholder,page.colors[i],q,this.data.length*2-i*2-1,w,h);

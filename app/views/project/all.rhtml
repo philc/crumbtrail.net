@@ -1,0 +1,49 @@
+<% content_for (:head) do %>
+
+
+<%= stylesheet_link_tag "project" %>
+<!--[if lt IE 7.]>
+<%= stylesheet_link_tag "main-ie" %>
+<%= stylesheet_link_tag "project-ie" %>
+<![endif]-->
+
+
+
+<script type="text/javascript">
+ 
+  
+</script>
+
+
+
+
+<% end %>
+
+<div class="copy">
+
+<h1>Your projects</h2>
+
+</div>
+
+<% if @projects.empty? %>
+
+You don't have any projects. <a href="/project/new/">Create one!</a>
+
+<% else %>
+  <div class="dialog" style="WIDTH:80%">
+    <table>
+    <tr><th class='f' style="width:100%"></th><th>Hits today</th></tr>
+    <%@projects.each do |p|%>
+      <tr class=" <%= cycle("a", "")%>"> <td th class='f'><a href="/project/<%=p.id%>"><%=p.title%></a>
+      <span class="to"><%=p.url%></span>
+      
+      </td><td>20</td></tr>
+    <%end%>
+    </table>
+  </div>
+  
+  Create a new project
+  
+<% end %>
+
+</div>

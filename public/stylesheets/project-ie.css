@@ -18,53 +18,11 @@
 .chart_filler{
   font-size:1px;
 }
+
 /*
  * transparent pngs
  */
-
 .chart_frame{
   background-image:none;
   filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/circle.png', sizingMethod='crop');
 }
-
-
-/* images for the pie charts*/
-.pc00{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line00.png', sizingMethod='scale'); }
-.pc01{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line01.png', sizingMethod='scale'); }
-.pc02{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line02.png', sizingMethod='scale'); }
-.pc03{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line03.png', sizingMethod='scale'); }
-
-.pc10{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line10.png', sizingMethod='scale'); }
-.pc11{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line11.png', sizingMethod='scale'); }
-.pc12{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line12.png', sizingMethod='scale'); }
-.pc13{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line13.png', sizingMethod='scale'); }
-
-.pc20{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line20.png', sizingMethod='scale'); }
-.pc21{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line21.png', sizingMethod='scale'); }
-.pc22{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line22.png', sizingMethod='scale'); }
-.pc23{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line23.png', sizingMethod='scale'); }
-
-.pc30{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line30.png', sizingMethod='scale'); }
-.pc31{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line31.png', sizingMethod='scale'); }
-.pc32{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line32.png', sizingMethod='scale'); }
-.pc33{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line33.png', sizingMethod='scale'); }
-
-.pc40{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line40.png', sizingMethod='scale'); }
-.pc41{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line41.png', sizingMethod='scale'); }
-.pc42{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line42.png', sizingMethod='scale'); }
-.pc43{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line43.png', sizingMethod='scale'); }
-
-.pc50{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line50.png', sizingMethod='scale'); }
-.pc51{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line51.png', sizingMethod='scale'); }
-.pc52{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line52.png', sizingMethod='scale'); }
-.pc53{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line53.png', sizingMethod='scale'); }
-
-.pc60{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line60.png', sizingMethod='scale'); }
-.pc61{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line61.png', sizingMethod='scale'); }
-.pc62{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line62.png', sizingMethod='scale'); }
-.pc63{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line63.png', sizingMethod='scale'); }
-
-.pc70{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line70.png', sizingMethod='scale'); }
-.pc71{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line71.png', sizingMethod='scale'); }
-.pc72{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line72.png', sizingMethod='scale'); }
-.pc73{  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/line73.png', sizingMethod='scale'); }
