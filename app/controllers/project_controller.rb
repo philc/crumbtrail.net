@@ -12,7 +12,7 @@ class ProjectController < ApplicationController
   }
   
   # Show all the projects the user has
-  def all
+  def all    
     @projects=@account.projects
   end
   
@@ -152,7 +152,24 @@ class ProjectController < ApplicationController
     render :layout=>false
   end
   
+  @@domain_regex=/^[\w]+[\.][\w\.]+[\w]+$/
   
+  def save_options
+    puts params
+    project = Project.find_by_id(params[:pid])
+    return if project.nil?
+    # make sure they own this project
+    return if @account.nil? || project.acccount!=@account
+    
+    # make sure it's a valid domain
+    # return if @@domain_regex.match(condense).nil?
+#     
+#     result = project.collapse_referer(condense)
+#     
+#     if (result.nil?)
+#       
+#     end
+  end
   
   
   

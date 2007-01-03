@@ -560,3 +560,47 @@ img{
   position:absolute;  
   
 }
+
+
+/* 
+ * Options panels
+*/
+.options{
+	text-align:center;
+}
+.options_panel{
+	width:350px;
+	background-color:#EEEEEE;
+	  background-color:#f5f5f5;
+/*	  background-color:#F8F8F8;*/
+	text-align:left;
+	margin-left:auto;
+	margin-right:auto;
+	padding:10px;
+}
+.options_panel .text-form input{
+	width:335px;
+	margin-left:10px;
+}
+.options_panel .example{ margin-left:10px; 
+	font-size:0.8em;
+	}
+.options_panel h1{
+	font-size:1.4em;
+  font-weight:normal;
+	padding-bottom:5px;
+/*  margin-top:10px*/
+}
+.options_panel p{
+/*	padding-top:5px;*/
+	padding-bottom:5px;
+	line-height:130%;
+}
+.options_panel .submit{
+	margin-top:10px;
+	text-align:right;	
+/*	margin-right:10px;*/
+}
+
+
+

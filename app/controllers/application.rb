@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   end
   
   def signed_in?
-      
+
     # TESTING - just log in with a test user
 #     @account=Account.authenticate("demo","pass1")
 #     return
