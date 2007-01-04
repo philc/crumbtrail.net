@@ -45,6 +45,12 @@ function UITimer(){
 function px(v) {  return Math.ceil(v) + "px";}
 // function px(v) {  return Math.floor(v) + "px";}
 
+function getNextElement(node){
+	if(node.nodeType==1) return node;
+	if (node.nextSibling) return getNextElement(next.nextSibling);
+	return null;
+}
+
 var Preferences = Class.create();
 Preferences.prototype = {
   initialize:function(){    
@@ -77,37 +83,11 @@ Preferences.prototype = {
   setCookie: function(name,value){
     // 1 hour * 24 * days
     d=new Date(); d.setTime(d.getTime()+3600000*24*28);
-//     alert("SEtting cookie: " +name+"="+value+'; expires=' + d.toGMTString() + ';'); 
+//     alert("Setting cookie: " +name+"="+value+'; expires=' + d.toGMTString() + ';'); 
     document.cookie=name+"="+value+'; expires=' + d.toGMTString() + ';'
   }
 }
 
-// var Preferences = Class.create();
-// Preferences.prototype = {
-//   initialize:function(){
-//     // "section" is for the main menu preference
-//     this.sections=["glance","hits","referers","pages","searches","details","section"];
-//     this.timers=new Array();    
-//     this.sections.each(function(e){
-//       this.timers[e]=new UITimer();
-//     }.bind(this));    
-//   },
-//   update: function(n,v){
-//     var timer=this.timers[n];
-//     clearTimeout(timer.timer);
-//     timer.timer=setTimeout(this.sendPreference(n,v),timer.timeout);
-//   },
-//   // Sends a view preference and a value asynchronously.
-//   // name/values can be are panel/panel that's active,
-//   // and section/section that's active
-//   sendPreference: function(n,v){
-//     var pars="p="+n+"&v="+v;
-//     return function(){new Ajax.Request('/project/setpref/',
-//       {asynchronous:true, parameters:pars
-//       });
-//     }
-//   }
-// };
 
 var Page = Class.create();
 Page.prototype = {
@@ -180,7 +160,14 @@ Page.prototype = {
   // Returns the image file used for a quadrant. i is the color (0-5ish)
   imageForQuadrant: function (i,q){
     return "/images/c/line" + i + "" + q + ".png"
-  }
+  },
+	// Ensures that the link's caption matches the input field value.
+	// They can get out of sync if you do a soft reload
+	syncRefererPreferenceLink: function(link){
+		input=link.nextElement();
+		link.firstChild.nodeValue = input.value=="on" ? 
+			"Stop condensing" : "Undo";
+	}
 };
 
 
@@ -211,7 +198,18 @@ function init(){
   $A(document.getElementsByClassName("panel_link","content")).each(function (e){
     e.onclick=function(){ page.panelNav(this); return false;};
   });  
+	// set collapse links
+	Event.addBehavior({
+		'#currently_condensing a:click' : function(e){ 
+			input=this.nextElement();
+			input.value = input.value=="on" ? "off" : "on";
+			page.syncRefererPreferenceLink(this);
+			return false;}
+	})
+	// Sync all the referer links to their hidden form elements
+	$$("#currently_condensing a").each(function (e){page.syncRefererPreferenceLink(e);});
 }
+
 
 
 chartData=[3,4,2,3,5,6,3];
@@ -342,6 +340,7 @@ TableDisplay.prototype={
     (c ? 'class="' + c+'" ' : "") + ">" + data + "</tr>";
   },
   columnPercent: function(data, max){
+	if (max==0) return 0;
     // 80 means only allow graphs in the background to grow to 80% of the td width
     return Math.round(data/max*80);   
   },

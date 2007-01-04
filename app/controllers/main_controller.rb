@@ -13,7 +13,6 @@ class MainController < ApplicationController
     # You shouldn't be able to get to this page if you're logged in. If they
     # navigate here manually, forward them back to their projects
     
-    puts "account",@account
     
     redirect_to "/project/recent" if @account
     

@@ -59,11 +59,10 @@ class HitDetail < ActiveRecord::Base
     date = Date.parse(project.time.to_s)
     last_week = date - 6
     
+    # TODO: which is it?
     rows = find(:all,
                 :conditions => ['project_id = ? AND last_update >= ?', project.id, last_week])
-    rows=find(:all, :conditions=>['project_id = ?',project.id])
-    puts "rows: ",rows
-    puts "done rows"
+    rows = find(:all, :conditions=>['project_id = ?',project.id])
     hash_call = (type.to_s + "_stats").to_sym
 
     stats = Hash.new(0)

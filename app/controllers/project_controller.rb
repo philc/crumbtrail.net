@@ -49,9 +49,7 @@ class ProjectController < ApplicationController
   end
   
   def recent
-    puts "getting rec proj"
     p=@account.recent_project
-    puts "done getting"
     if (p.nil?)
       redirect_to "/project/all"
     else
@@ -90,7 +88,6 @@ class ProjectController < ApplicationController
       return
     end
     
-    puts "account: ",@account
     
     if @project!=@account.recent_project
       @account.recent_project=@project
@@ -164,9 +161,7 @@ class ProjectController < ApplicationController
       flash[:notice]=result
     end
     
-    puts "redirecting"
     redirect_to "/project/" + params[:pageid]
-    puts "done redirecting"
   end
   
   
@@ -179,23 +174,36 @@ class ProjectController < ApplicationController
   def process_options
     puts params
     project = Project.find_by_id(params[:pid])
-    puts 
     return "" if project.nil?
     # make sure they own this project
     return "" if @account.nil? || project.account!=@account
 
+    # Loop through each domain we're collapsing; if they set it to "off" in the UI,
+    # delete it.
+    # TODO: this would be much easier if collapsing_refs was a hash
+    to_delete=[]
+    project.collapsing_refs.each_with_index do |r,i|
+      url = r[0]
+      to_delete<<i if (params[url]=="off")        
+    end
+    puts "to_delete", to_delete
+    puts project.collapsing_refs
+    to_delete.reverse.each { |i| project.collapsing_refs.delete_at(i)}
+    puts project.collapsing_refs
+    project.save
+
     domain=params[:domain]
     domain.strip! unless domain.nil?
-    return "That is not a valid domain." if (domain.nil? || domain.empty?)
-
+    # return "That is not a valid domain." if (domain.nil? || domain.empty?)
+    return nil if (domain.nil? || domain.empty?)
     # make sure it's a valid domain
-    return "That is not a valid domain." if @@domain_regex.match(domain).nil?
-    #     
-    puts "collapsing"
-    puts "domain",domain
-    result = project.collapse_referer(domain)
+    #return "That is not a valid domain." if @@domain_regex.match(domain).nil?
+    return nil if (@@domain_regex.match(domain).nil?)
+         
+    #puts "collapsing"
+    #puts "domain",domain
+    result = project.collapse_referer(domain)   
 
-    puts "done collapsing"
     return "You don't have any referers matching the domain \"#{domain}\"" if result.nil?
   end
   

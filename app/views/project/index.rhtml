@@ -5,7 +5,7 @@
 	<!--[if lt IE 7.]>
 		<%= stylesheet_link_tag "main-ie" %>
 		<%= stylesheet_link_tag "project-ie" %>
-		<![endif]-->
+	<![endif]-->
 
 
 
@@ -45,7 +45,6 @@
 
 
 		<% end %>
-
 
 
 
@@ -184,7 +183,7 @@
 									</p>
 									<p id="condense_explanation" style="display:none">
 										Condensing a referer will physically change the logs for your project, which
-										can't be undone. At anytime you can stop condensing a referer,
+										can't be undone. At any time you can stop condensing a referer,
 										but all past hits from the referer's domain will remain condensed.
 									</p>
 									<div class="text-form">
@@ -193,6 +192,18 @@
 											e.g. digg.com, del.icio.us
 										</div>
 									</div>
+									<% if (!@project.collapsing_refs.nil? &&
+										!@project.collapsing_refs.empty?) %>
+									<h2>Currently condensing</h2>
+									<table id="currently_condensing">
+									<% @project.collapsing_refs.each do |r| %>
+									<% #TODO - truncate this referer %>
+										<tr><td class="f"><%= r[0] %></td><td><a id="hey" href="">Stop condensing</a>
+											<input type="hidden" name="<%= r[0] %>" value="on"/>
+											</td></tr>
+									<% end %>
+									</table>
+									<% end %>
 									<div class="submit">
 										<input type="submit" value="Save options">
 									</div>

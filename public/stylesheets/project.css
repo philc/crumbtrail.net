@@ -571,7 +571,7 @@ img{
 .options_panel{
 	width:350px;
 	background-color:#EEEEEE;
-	  background-color:#f5f5f5;
+	  background-color:#f2f2f2;
 /*	  background-color:#F8F8F8;*/
 	text-align:left;
 	margin-left:auto;
@@ -584,6 +584,7 @@ img{
 }
 .options_panel .example{ margin-left:10px; 
 	font-size:0.8em;
+	margin-bottom:10px;
 	}
 .options_panel h1{
 	font-size:1.4em;
@@ -591,10 +592,24 @@ img{
 	padding-bottom:5px;
 /*  margin-top:10px*/
 }
+.options_panel h2{
+	font-size:1.25em;
+	font-weight:normal;
+	padding-top:5px;
+	border-top:1px dashed gray;
+}
 .options_panel p{
 /*	padding-top:5px;*/
 	padding-bottom:5px;
 	line-height:130%;
+}
+/* first TD in the table*/
+.options_panel td{
+	white-space:nowrap;
+	padding-bottom:3px;
+}
+.options_panel .f{
+	width:100%;
 }
 .options_panel .submit{
 	margin-top:10px;

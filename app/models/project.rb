@@ -5,13 +5,13 @@ class Project < ActiveRecord::Base
   has_many   :referral_totals
   has_one    :row_tracker
   has_one    :recent_project, :class_name => "Project"
-  
+
   # An array of collapsed referers. Contains entries of ["referer string", "row_id"]
   serialize  :collapsing_refs
 
   def process_request(request)
-    
-    # Why does this need to be locked? I bet this is a huge perf hit    
+
+    # Why does this need to be locked? I bet this is a huge perf hit
     locked do
 
       referer = request.referer
@@ -59,7 +59,7 @@ class Project < ActiveRecord::Base
     url.match(@@domain_regex)
     domain = $1
 
-    locked do 
+    locked do
 
 
       # Return if the domain is already collapsed
@@ -67,8 +67,7 @@ class Project < ActiveRecord::Base
       return nil if domain.nil? || self.collapsing_refs.find { |ref| ref[0] == domain }
 
       #todo - make sure its not a search domain
-
-
+      \
       # Find all the referers from the collapsing domain (including subdomains of the domain)
       collapsables = Referer.find(:all, :conditions => ['project_id = ? AND url REGEXP ?', id, "[A-Za-z0-9\.]*#{domain}/"])
 
@@ -95,7 +94,7 @@ class Project < ActiveRecord::Base
         page_id = ref.page_id
         ref.destroy
       end
-      
+
       ReferralTotal.create(:project_id => id,
       :referer_id => domain_row.id,
       :page_id => page_id,
@@ -249,32 +248,32 @@ class Project < ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   @@tables = %w{ search_totals search_recents
-    landing_totals landing_recents 
-    referral_totals referral_recents 
-    hit_hourlies hit_dailies hit_monthlies 
-    referers }
-    @@sql_lock = nil
+    landing_totals landing_recents
+    referral_totals referral_recents
+    hit_hourlies hit_dailies hit_monthlies
+  referers }
+  @@sql_lock = nil
 
-    def locked()
-      lock()
-      yield
-    ensure
-      unlock()
-    end
-    def lock()
-      build_lock_string if @@sql_lock.nil?
-      connection.execute @@sql_lock
-    end
-
-    def unlock()
-      connection.execute "UNLOCK TABLES;"
-    end
-
-    def build_lock_string
-      @@sql_lock = "LOCK TABLES #{@@tables[0]} WRITE"
-      for table in @@tables[1..@@tables.length]
-        @@sql_lock += ", #{table} WRITE"
-      end
-    end
-
+  def locked()
+    lock()
+    yield
+  ensure
+    unlock()
   end
+  def lock()
+    build_lock_string if @@sql_lock.nil?
+    connection.execute @@sql_lock
+  end
+
+  def unlock()
+    connection.execute "UNLOCK TABLES;"
+  end
+
+  def build_lock_string
+    @@sql_lock = "LOCK TABLES #{@@tables[0]} WRITE"
+    for table in @@tables[1..@@tables.length]
+      @@sql_lock += ", #{table} WRITE"
+    end
+  end
+
+end
