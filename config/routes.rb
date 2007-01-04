@@ -24,6 +24,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/project/new', :controller=>'project', :action=>'new'
   #map.connect '/project/recent', :controller=>'project', :action=>'recent'
   map.connect '/project/all', :controller=>'project', :action=>'all'
+  map.connect '/project/save_options', :controller=>'project', :action=>'save_options'
   map.connect '/project/:id', :controller=>'project', :action=>"index"
   # Install the default route as the lowest priority.
   map.connect ':controller/:action/:id'

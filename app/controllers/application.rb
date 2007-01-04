@@ -11,6 +11,7 @@ class ApplicationController < ActionController::Base
   protected
   
   def login(username,password)
+      puts "login"
     result=Account.authenticate(username,password)
     
     if (result.class==Account)
@@ -26,7 +27,7 @@ class ApplicationController < ActionController::Base
   end
   
   def signed_in?
-
+    puts "signed in?"
     # TESTING - just log in with a test user
 #     @account=Account.authenticate("demo","pass1")
 #     return
@@ -37,14 +38,15 @@ class ApplicationController < ActionController::Base
     # See if this token matches one of our accounts
     @account = Account.from_token(token)
     
-    
-    
     # Update their cookie
     if (@account)
       cookies[@@login_cookie] = { :value => token, :expires => Session.expiration_time}
     else #erase this state cookie
       cookies[@@login_cookie] = { :value=>"", :expires=>5.days.ago}
     end
+    puts "got account: " + @account.username
+    @pastel="hopna"
+    puts @pastel
     #return account    
   end
   

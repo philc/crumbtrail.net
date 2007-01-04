@@ -1,7 +1,7 @@
 class MainController < ApplicationController
   helper MainHelper
   def index
-    @account=signed_in?
+    #@account=signed_in?
     if (request.post?)
       @email=params[:email]
       

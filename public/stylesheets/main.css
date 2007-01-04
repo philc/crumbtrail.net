@@ -161,6 +161,14 @@ table,img{ border:0;}
 
 }
 
+/* Page level notification messages*/
+.notification{
+	text-align:center;
+	color:#C60F14;
+	color:#FF723B;
+	padding-top:3px;
+}
+
 /* encloses the whole bottom part. Don't use for project pages.*/
 .copy-content{
   padding-top:20px;

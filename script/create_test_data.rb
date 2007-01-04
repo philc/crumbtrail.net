@@ -23,6 +23,14 @@ def add
                              :country_id => 1,
                              :zone_id   => 1) 
                              
+  test  = Account.create(:username => "a@b.c", 
+    :password => "password",
+    :firstname => "",  
+    :lastname=>"",
+    :country_id=>1,
+    :zone_id=>1
+  )
+                            
   demo = Account.create(:username   => "demo",
                          :password   => "pass1",
                          :firstname  => "Demo",
@@ -30,6 +38,8 @@ def add
                          :country_id => 1,
                          :zone_id   => 1,
                          :role=>"d")
+                         
+                         
   proj = Project.new(:account => demo,
                      :title => "Ninja Words",
                      :url => "ninjawords.com/",

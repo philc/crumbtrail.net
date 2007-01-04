@@ -152,28 +152,52 @@ class ProjectController < ApplicationController
     render :layout=>false
   end
   
-  @@domain_regex=/^[\w]+[\.][\w\.]+[\w]+$/
+
   
   def save_options
-    puts params
-    project = Project.find_by_id(params[:pid])
-    return if project.nil?
-    # make sure they own this project
-    return if @account.nil? || project.acccount!=@account
     
-    # make sure it's a valid domain
-    # return if @@domain_regex.match(condense).nil?
-#     
-#     result = project.collapse_referer(condense)
-#     
-#     if (result.nil?)
-#       
-#     end
+    result = process_options()
+
+    if (result.nil?)
+      flash[:notice]="Updated referer options."
+    else
+      flash[:notice]=result
+    end
+    
+    puts "redirecting"
+    redirect_to "/project/" + params[:pageid]
+    puts "done redirecting"
   end
   
   
   
   private  
+
+  @@domain_regex=/^[\w]+[\.][\w\.]+[\w]+$/
+  
+  # Process a request to save the referer options. Involves collapsing referers
+  def process_options
+    puts params
+    project = Project.find_by_id(params[:pid])
+    puts 
+    return "" if project.nil?
+    # make sure they own this project
+    return "" if @account.nil? || project.account!=@account
+
+    domain=params[:domain]
+    domain.strip! unless domain.nil?
+    return "That is not a valid domain." if (domain.nil? || domain.empty?)
+
+    # make sure it's a valid domain
+    return "That is not a valid domain." if @@domain_regex.match(domain).nil?
+    #     
+    puts "collapsing"
+    puts "domain",domain
+    result = project.collapse_referer(domain)
+
+    puts "done collapsing"
+    return "You don't have any referers matching the domain \"#{domain}\"" if result.nil?
+  end
   
   # Build view options from the incoming cookie
   def view_options_from_cookie(cookie)

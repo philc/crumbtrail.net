@@ -5,31 +5,35 @@ class Project < ActiveRecord::Base
   has_many   :referral_totals
   has_one    :row_tracker
   has_one    :recent_project, :class_name => "Project"
+  
+  # An array of collapsed referers. Contains entries of ["referer string", "row_id"]
   serialize  :collapsing_refs
 
   def process_request(request)
-    lock
+    
+    # Why does this need to be locked? I bet this is a huge perf hit    
+    locked do
 
-    referer = request.referer
-    page = request.page
+      referer = request.referer
+      page = request.page
 
-    if referer.url != '-' && referer.url != '/' && page.url != '-'
-      search_terms = SearchTotal.analyze_search_url(request.referer.url)
-      if !search_terms.nil?
-        SearchTotal.increment_search_string(request, search_terms)
-        SearchRecent.add_new_search(request, search_terms)
-      else
-        increment_referer(request)
+      if referer.url != '-' && referer.url != '/' && page.url != '-'
+        search_terms = SearchTotal.analyze_search_url(request.referer.url)
+        if !search_terms.nil?
+          SearchTotal.increment_search_string(request, search_terms)
+          SearchRecent.add_new_search(request, search_terms)
+        else
+          increment_referer(request)
+        end
+
+        increment_page_landing(request)
+        record_details(request)
       end
 
-      increment_page_landing(request)
-      record_details(request)
+      increment_hit_count(request)
+      save
+
     end
-
-    increment_hit_count(request)
-    save
-
-    unlock
   end
 
   @@domain_regex = '^([A-Za-z0-9\.]+)'
@@ -55,71 +59,72 @@ class Project < ActiveRecord::Base
     url.match(@@domain_regex)
     domain = $1
 
-    # Return if the domain is already collapsed
-    self.collapsing_refs = [] if self.collapsing_refs.nil?
-    return nil if domain.nil? || self.collapsing_refs.find { |ref| ref[0] == domain }
+    locked do 
 
-    #todo - make sure its not a search domain
 
-    lock
+      # Return if the domain is already collapsed
+      self.collapsing_refs = [] if self.collapsing_refs.nil?
+      return nil if domain.nil? || self.collapsing_refs.find { |ref| ref[0] == domain }
 
-    # Find all the referers from the collapsing domain (including subdomains of the domain)
-    collapsables = Referer.find(:all, :conditions => ['project_id = ? AND url REGEXP ?', id, "[A-Za-z0-9\.]*#{domain}/"])
+      #todo - make sure its not a search domain
 
-    return nil if collapsables.length == 0
 
-    # Create the record for the collapsed domain
-    domain_row = Referer.create(:project_id => id, :url_hash => domain.hash, :url => domain+'/')
+      # Find all the referers from the collapsing domain (including subdomains of the domain)
+      collapsables = Referer.find(:all, :conditions => ['project_id = ? AND url REGEXP ?', id, "[A-Za-z0-9\.]*#{domain}/"])
 
-    # Update the project to collapse this domain in the future
-    self.collapsing_refs << [domain, domain_row.id]
-    self.save
+      return nil if collapsables.length == 0
 
-    # Collapse ReferralTotal
-    count = 0
-    first_visit = self.time
-    page_id = nil
-    collapsing_ref_totals = find_collapsable_records(collapsables, referral_totals)
+      # Create the record for the collapsed domain
+      domain_row = Referer.create(:project_id => id, :url_hash => domain.hash, :url => domain+'/')
 
-    return nil if collapsing_ref_totals.length == 0 # shouldn't happen, but just in case
+      # Update the project to collapse this domain in the future
+      self.collapsing_refs << [domain, domain_row.id]
+      self.save
 
-    collapsing_ref_totals.each do |ref|
-      count += ref.count
-      first_visit = ref.first_visit if ref.first_visit < first_visit
-      page_id = ref.page_id
-      ref.destroy
-    end
-    ReferralTotal.create(:project_id => id,
-                         :referer_id => domain_row.id,
-                         :page_id => page_id,
-                         :first_visit => first_visit,
-                         :count => count)
+      # Collapse ReferralTotal
+      count = 0
+      first_visit = self.time
+      page_id = nil
+      collapsing_ref_totals = find_collapsable_records(collapsables, referral_totals)
 
-    # Redirect referer ID in remaining tables
-    change_tables = [LandingTotal, LandingRecent, ReferralRecent]
-    change_tables.each do |table|
-      table.find_all_by_project_id(id).each do |record|
-        if is_collapsable_record(collapsables, record)
-          record.referer_id = domain_row.id
-          record.save
+      return nil if collapsing_ref_totals.length == 0 # shouldn't happen, but just in case
+
+      collapsing_ref_totals.each do |ref|
+        count += ref.count
+        first_visit = ref.first_visit if ref.first_visit < first_visit
+        page_id = ref.page_id
+        ref.destroy
+      end
+      
+      ReferralTotal.create(:project_id => id,
+      :referer_id => domain_row.id,
+      :page_id => page_id,
+      :first_visit => first_visit,
+      :count => count)
+
+      # Redirect referer ID in remaining tables
+      change_tables = [LandingTotal, LandingRecent, ReferralRecent]
+      change_tables.each do |table|
+        table.find_all_by_project_id(id).each do |record|
+          if is_collapsable_record(collapsables, record)
+            record.referer_id = domain_row.id
+            record.save
+          end
         end
       end
+
+      # Destroy the referer records
+      collapsables.each { |ref| ref.destroy }
+      return domain_row.id
     end
-
-    # Destroy the referer records
-    collapsables.each { |ref| ref.destroy }
-
-    unlock
-
-    return domain_row.id
   end
 
-# =Referers
-#------------------------------------------------------------------------------
+  # =Referers
+  #------------------------------------------------------------------------------
 
   # Returns an array of RecentReferrals (Length hardcoded at 10)
   def recent_referers()
-     return ReferralRecent.get_recent_referers(self)
+    return ReferralRecent.get_recent_referers(self)
   end
 
   # Returns an array of TotalReferrals
@@ -138,8 +143,8 @@ class Project < ActiveRecord::Base
     return ReferralTotal.count_top_referers(self)
   end
 
-# =Searches
-#------------------------------------------------------------------------------
+  # =Searches
+  #------------------------------------------------------------------------------
 
   def top_searches(limit, offset=0)
     return SearchTotal.get_top_searches(self, limit, offset)
@@ -153,8 +158,8 @@ class Project < ActiveRecord::Base
     return SearchRecent.get_recent_searches(self)
   end
 
-# =Hits
-#------------------------------------------------------------------------------
+  # =Hits
+  #------------------------------------------------------------------------------
 
   # Get the hit count for a specified period.
   # Period can be :day, :week, or :month
@@ -175,8 +180,8 @@ class Project < ActiveRecord::Base
     end
   end
 
-# =Landings
-#------------------------------------------------------------------------------
+  # =Landings
+  #------------------------------------------------------------------------------
 
   def top_landings(limit)
     return LandingTotal.get_most_popular(self, limit)
@@ -186,22 +191,22 @@ class Project < ActiveRecord::Base
     return LandingRecent.get_recent_landings(self)
   end
 
-# =Details
-#------------------------------------------------------------------------------
+  # =Details
+  #------------------------------------------------------------------------------
 
   def get_details(type)
     return HitDetail.get_details(self, type)
   end
 
-# =Time
-#------------------------------------------------------------------------------
+  # =Time
+  #------------------------------------------------------------------------------
 
   def time(*t)
     t[0] = Time.now if t.empty?
     TimeHelpers.convert_to_client_time(self, t[0])
   end
 
-private
+  private
 
   def increment_referer(request)
     ReferralTotal.increment(request)
@@ -226,8 +231,8 @@ private
     HitDetail.record_details(request)
   end
 
-# =Collapsing
-#------------------------------------------------------------------------------
+  # =Collapsing
+  #------------------------------------------------------------------------------
 
   def find_collapsable_records(collapsed_referers, rows)
     return rows.select { |row| is_collapsable_record(collapsed_referers, row) }
@@ -240,30 +245,36 @@ private
     return bool
   end
 
-# =Locking
-#------------------------------------------------------------------------------
+  # =Locking
+  #------------------------------------------------------------------------------
 
   @@tables = %w{ search_totals search_recents
-                 landing_totals landing_recents 
-                 referral_totals referral_recents 
-                 hit_hourlies hit_dailies hit_monthlies 
-                 referers }
-  @@sql_lock = nil
+    landing_totals landing_recents 
+    referral_totals referral_recents 
+    hit_hourlies hit_dailies hit_monthlies 
+    referers }
+    @@sql_lock = nil
 
-  def lock()
-    build_lock_string if @@sql_lock.nil?
-    connection.execute @@sql_lock
-  end
-
-  def unlock()
-    connection.execute "UNLOCK TABLES;"
-  end
-
-  def build_lock_string
-    @@sql_lock = "LOCK TABLES #{@@tables[0]} WRITE"
-    for table in @@tables[1..@@tables.length]
-      @@sql_lock += ", #{table} WRITE"
+    def locked()
+      lock()
+      yield
+    ensure
+      unlock()
     end
-  end
+    def lock()
+      build_lock_string if @@sql_lock.nil?
+      connection.execute @@sql_lock
+    end
 
-end
+    def unlock()
+      connection.execute "UNLOCK TABLES;"
+    end
+
+    def build_lock_string
+      @@sql_lock = "LOCK TABLES #{@@tables[0]} WRITE"
+      for table in @@tables[1..@@tables.length]
+        @@sql_lock += ", #{table} WRITE"
+      end
+    end
+
+  end

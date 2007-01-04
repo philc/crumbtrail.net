@@ -37,10 +37,9 @@
       <div class="small-dialog"><div class="hd"><div class="c"></div></div><div class="bd">
       <div class="c">
 	<table><tr><td>
-	
-          <% if @account && !@account.demo? %>
-          <li><a href="/signout">Sign out</a></li>
-          <% end %>
+	 <% if @account && !@account.demo? %>
+	  <li><a href="/signout">Sign out</a></li>
+	  <% end %>         
           <td><a href="/project/all">My projects</a></td>
           <td><a href="" class="last">About</a></td>
 	</tr></table>
