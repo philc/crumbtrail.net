@@ -168,7 +168,9 @@ class ProjectController < ApplicationController
   
   private  
 
-  @@domain_regex=/^[\w]+[\.][\w\.]+[\w]+$/
+
+  # Accept "digg.com/" and "digg.com", but not "digg.com/user1"
+  @@domain_regex=/^[\w]+[\.][\w\.]+[\w]+\/?$/
   
   # Process a request to save the referer options. Involves collapsing referers
   def process_options
@@ -186,11 +188,11 @@ class ProjectController < ApplicationController
       url = r[0]
       to_delete<<i if (params[url]=="off")        
     end
-    puts "to_delete", to_delete
-    puts project.collapsing_refs
+    # puts "to_delete", to_delete
+    # puts project.collapsing_refs
     to_delete.reverse.each { |i| project.collapsing_refs.delete_at(i)}
-    puts project.collapsing_refs
-    project.save
+    # puts project.collapsing_refs
+    project.save unless to_delete.empty?
 
     domain=params[:domain]
     domain.strip! unless domain.nil?

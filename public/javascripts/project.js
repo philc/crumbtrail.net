@@ -208,9 +208,20 @@ function init(){
 	})
 	// Sync all the referer links to their hidden form elements
 	$$("#currently_condensing a").each(function (e){page.syncRefererPreferenceLink(e);});
+	
+	Event.addBehavior({
+		'#domain:blur' : function(e){
+			//text=this.value;
+			if (this.value != "" && !this.value.match(/^[\w]+[\.][\w\.]+[\w]+\/?$/))
+				//Element.show("domain_validation");
+				Effect.Appear("domain_validation", {duration:.5})
+			else
+				Effect.Fade("domain_validation",{duration:.5});
+		}
+	})
 }
 
-
+//domainRegex=
 
 chartData=[3,4,2,3,5,6,3];
 chartData=[3,2,2,1];

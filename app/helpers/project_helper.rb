@@ -12,7 +12,6 @@ module ProjectHelper
   end
   # Creates a link, which will be disabled if the account is a demo account
   def demo_link(href,title,onclick="")
-    puts "account:",@account
     return (@account.demo?) ? title : "<a href=\"#{href}\" onclick=\"#{onclick}\">#{title}</a>"
     
   end

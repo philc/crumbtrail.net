@@ -187,10 +187,14 @@
 										but all past hits from the referer's domain will remain condensed.
 									</p>
 									<div class="text-form">
-										<input type="text" name="domain"/>
+										<div class="form_error" style="display:none" id="domain_validation">
+											<p>This is not a valid domain.</p>
+										</div>
+										<input type="text" name="domain" id="domain"/>
 										<div class="example">
 											e.g. digg.com, del.icio.us
 										</div>
+
 									</div>
 									<% if (!@project.collapsing_refs.nil? &&
 										!@project.collapsing_refs.empty?) %>
