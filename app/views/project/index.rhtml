@@ -170,11 +170,11 @@
 						
 						<div class="options">
 							<a href="#" title="referer_options" 
-							onclick="return showOptions(this);">Referer options</a>
+							onclick="return toggleAppear('referer_options');">Referer options</a>
 							<form action="/project/save_options" method="post">
 								<input type="hidden" name="pid" value="<%= @project.id %>" />
 								<input type="hidden" name="pageid" value="<%= @id %>"/>
-								<div id="referer_options" class="options_panel">
+								<div id="referer_options" class="options_panel" style="display:none">
 									<h1>Condense referers</h1>
 									<p>
 										Treat all referers from this domain as a single referer. 

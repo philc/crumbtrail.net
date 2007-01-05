@@ -1,0 +1,10 @@
+/* beef up the size of the link in comparison to the normal links */
+.dialog td a{
+	  padding: 2px 0px 3px 10px;
+	margin:2px;
+}
+#create_new {
+	margin-top:20px;
+	float:right;
+}
+

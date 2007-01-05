@@ -59,18 +59,13 @@ table,img{ border:0;}
 }
 
 .dialog .hd {  background:#fbeac8 url(/images/d/tl.gif) no-repeat 0px 0px;}
-.dialog .hd .c {  background:transparent url(/images/d/tr.gif) no-repeat right 0px; 
-
-/*padding-right:20px;*/
- }
+.dialog .hd .c {  background:transparent url(/images/d/tr.gif) no-repeat right 0px;  }
 .dialog .bd { background:#fbeac8 none repeat-y 0px 0px; }
 .dialog .bd .c { background:#fbeac8 none repeat-y right 0px; }
 .dialog .ft .c, .dialog .hd .c { height:10px;  }
-.dialog .ft {  background:#fbeac8 url(/images/d/bl.gif) no-repeat 0px 0px;
-}
+.dialog .ft {  background:#fbeac8 url(/images/d/bl.gif) no-repeat 0px 0px;}
 .dialog .ft .c { background:transparent url(/images/d/br.gif) no-repeat right 0px;}
-.dialog .bd .c{  background-color:#fbeac8;
-}
+.dialog .bd .c{  background-color:#fbeac8;}
 
 #logo{
 	width:100px;
@@ -184,6 +179,7 @@ table,img{ border:0;}
   font-weight:normal;
   /*margin-bottom:10px;*/
   margin-top:10px;
+margin-bottom:8px;
 }
 .copy h2{
   font-size:1.2em;
@@ -208,22 +204,25 @@ table,img{ border:0;}
  */
 .intro-links .linkbox{
   white-space:nowrap;
+
 }
+
 
 /*
  * Boxed links
  */
 a.linkbox{
   padding:0px;
-  float:left;
+	float:left;
   margin:10px;
   margin-right:5px;
   margin-left:5px;
-  /*display:block;*/
+  display:block;
   border:1px solid #edd7ab;
   background-color:#fffae8;
   padding-left:4px;
   padding-right:4px;
+	  line-height:160%;
 }
 a.linkbox:hover{
   background-color:#fbf0c8;
