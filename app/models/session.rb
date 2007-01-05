@@ -24,7 +24,7 @@ class Session < ActiveRecord::Base
     elsif s.expires< (self.expiration_time-1.day)         
     # If the last time we've accessed this thing is 24 hours ago,
     # then update its time stamp. Saves us a few writes to the db    
-      s.exipres=self.expiration_time
+      s.expires=self.expiration_time
       s.save!
     end
     return s
