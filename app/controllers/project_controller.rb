@@ -42,8 +42,9 @@ class ProjectController < ApplicationController
         @account.recent_project=project
         @account.save!
 #         project=Project.new
-        redirect_to "/project/recent"
-        #redirect_to :controller=>"project",:action=>"code"
+        # redirect_to "/project/recent"
+        redirect_to :controller=>"project",:action=>"code", :id=>project.id
+        #redirect_to "/project/#{project.id}/code"
       end
     end
   end
@@ -59,6 +60,8 @@ class ProjectController < ApplicationController
   
   def code
     
+    @project=Project.find_by_id(params[:id])
+    # @project=nil
   end
   
   

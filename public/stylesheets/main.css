@@ -167,6 +167,7 @@ table,img{ border:0;}
 /* encloses the whole bottom part. Don't use for project pages.*/
 .copy-content{
   padding-top:20px;
+  padding-top:15px;
 }
 
 /* page-level stuff */

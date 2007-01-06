@@ -1,0 +1,35 @@
+
+    
+    <p>To start recording stats,
+    copy and paste this code into your website. You can stick it anywhere in your HTML, but we recommend putting it
+    in the "head" section. It's usually at the top of your HTML.
+    </p>
+    <p>
+    Here's an example:
+    </p>
+    
+<pre class="code_example">
+&lt;html&gt;
+
+&lt;head&gt;
+&lt;title&gt;Acme Products&lt;/title&gt;
+<span class="paste">Paste your code anywhere in here</span>
+&lt;/head&gt;
+
+&lt;body&gt;
+...
+</pre>
+    </p>   
+    
+    <p>Here's the code for your project:</p>
+    
+    
+    <% jscode=render(:partial=>"javascript")
+        jscode='&lt;script type="text/javascript"&gt;' + jscode + '&lt;/script&gt;'
+    %>
+   
+    
+
+<textarea  cols="70" rows="10" class="code_box" readonly="true"><%= jscode %></textarea>
+
+
