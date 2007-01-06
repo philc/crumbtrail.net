@@ -24,12 +24,7 @@ class ProjectController < ApplicationController
       @site_name=params[:site_name]
       @site_url=params[:site_url]
       
-      if (@site_name.nil? || @site_name.empty?)
-        @name_error="Please fill in the name of your website"
-      end
-      if (@site_url.nil? || @site_url.empty?)
-        @url_error="Please fill in the URL of your website"
-      end      
+           validate_project_properties()
       
       if (@url_error.nil? && @name_error.nil?)
         # create the project, attach it to the current user
@@ -49,6 +44,17 @@ class ProjectController < ApplicationController
     end
   end
   
+  # Will fill @url_error or @name_error with error messages
+  # if they are empty
+  def validate_project_properties
+    if (@site_name.nil? || @site_name.empty?)
+      @name_error="Please fill in the name of your website"
+    end
+    if (@site_url.nil? || @site_url.empty?)
+      @url_error="Please fill in the URL of your website"
+    end
+  end
+  
   def recent
     p=@account.recent_project
     if (p.nil?)
@@ -58,12 +64,40 @@ class ProjectController < ApplicationController
     end    
   end
   
-  def code
-    
+  # This is part of the signup process which shows them the code they need
+  def code    
     @project=Project.find_by_id(params[:id])
     # @project=nil
   end
   
+  def setup
+    @project=Project.find_by_id(params[:id])
+
+    if (!request.post?)
+      # First time, fill out the form from the project
+      @site_name=@project.title
+      @site_url=@project.url
+    else
+      # Post back. process the form.
+      @site_name=params[:site_name]
+      @site_url=params[:site_url]
+      
+      validate_project_properties()
+      
+      if (@url_error.nil? && @name_error.nil?)
+        # create the project, attach it to the current user
+        @project.title=@site_name
+        @project.url=@site_url
+        @project.save!
+        
+        flash[:notice]="Project options saved. <a href='/project/#{@project.id}'>Return to your stats.</a>"
+        # I need a redirect here, otherwise the flash:notice will persist across two pages.
+        redirect_to "/project/setup/" + @project.id.to_s
+        #redirect_to :controller=>"project",:action=>"code", :id=>project.id
+        #redirect_to "/project/#{project.id}/code"
+      end
+    end
+  end
   
   #
   # Fetches the user's project data and fills javascript variables with them.

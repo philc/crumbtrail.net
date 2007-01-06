@@ -56,6 +56,7 @@ table,img{ border:0;}
   margin-top:20px;
   clear:both;
   text-align:center;
+	margin-bottom:10px;
 }
 
 .dialog .hd {  background:#fbeac8 url(/images/d/tl.gif) no-repeat 0px 0px;}

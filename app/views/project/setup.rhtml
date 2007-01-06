@@ -1,0 +1,34 @@
+<% content_for (:head) do %>
+
+<%= stylesheet_link_tag "project" %>
+<%= stylesheet_link_tag "project-meta" %>
+<% end %>
+<% if flash[:notice] %>
+<div class="notification"><%= flash[:notice] %></div>
+<% end %>
+<div class="copy-content">
+	<div id="setup_options">
+		<div class="copy">
+
+			<h1>Project details</h1>
+			<div class="left_form">
+				<form action="/project/setup/<%=@project.id%>" method="post">
+					<%= render :partial=>"new_project" %>
+
+					<div class="button_area">
+						<input type="submit" class="submit" value="Save details" class="submit">
+					</div>
+				</form>
+
+				<script type="text/javascript">
+				$("site_name").focus();
+				</script>
+			</div>
+			<br/>
+			<h1>Your tracking code</h1>
+
+			<%= render :partial=>"tracking_code", :object=>@project%>
+
+		</div>
+	</div>
+</div>

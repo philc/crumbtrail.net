@@ -9,15 +9,8 @@
     
     <div class="left_form">
       <form action="/project/new" method="post">
-        <div class="text-form">
-          Website name <span class="example">(e.g. Greg's Blog)</span>
-          <%= show_form_error(@name_error)%>
-          <input type="text" name="site_name" id="site_name" size="30" value="<%=@site_name%>" />
-          
-          Website URL <span class="example">(e.g. gregsblog.com)</span>
-          <%= show_form_error(@url_error)%>
-          <input type="text" name="site_url" id="site_url" size="30" value="<%=@site_url%>" />
-        </div>
+		<%= render :partial=>"new_project" %>
+        
       
         <div class="button_area">
           <input type="submit" class="submit" value="Create project" class="submit">

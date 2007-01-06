@@ -51,7 +51,7 @@
 
 
 		<div id="project-menu">Viewing stats for <span id="project-id"><%=@project.title%></span>. 
-			<%=demo_link("","Setup","")%> | 
+			<%=demo_link("/project/setup/" + @project.id.to_s,"Setup","")%> | 
 			<span id="projects_popup_wrapper">
 				<div id="projects_popup" style="display:none"/>
 				<ul>

@@ -8,25 +8,26 @@ end
 <div class="copy">
 
 
-	<h1>Tracking code</h1>    
+	<h1>Your tracking code</h1>    
 
 	<div class="code_right">
-		<p><b>Want to do this later?</b><br/> You can come back to this page and get this code at any time.</p>
+		<p><b>Want to do this later?</b><br/> You can come back to this page and get this code at any time.
+			Just go to your project's "setup" page.</p>
 	</div>
 
-	<%= render :partial=>"tracking_code" %>
+	<%= render :partial=>"tracking_code", :object=>@project %>
 
 
 	<p>That's it; you're done.</p>
 	
 	
 	<div class="left_form">
-		<form action="/project/" method="get">
+		<!-- <form action="/project/recent/" method="get">
 			<div class="button_area">
 				<input type="submit" class="submit" value="View my stats" class="submit">
 			</div>
-		</form>      
-
+		</form>       -->
+		<a class="linkbox" href="/project/recent">Show me my stats</a>
 	</div>
 
 </div>
