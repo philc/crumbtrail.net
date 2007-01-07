@@ -272,7 +272,7 @@ end
 ApacheLogReader::establish_connection()
 logfile="test.log"
 logfile=ARGV[0] if ARGV.length>0
-ApacheLogReader::benchmark_log("script/" + logfile)
+ApacheLogReader::benchmark_log("script/testlogs/" + logfile)
 #ApacheLogReader::tail_log("script/" + logfile)
 
 
