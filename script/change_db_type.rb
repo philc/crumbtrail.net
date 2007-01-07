@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+
+# Changes the table type of a database table
+
 database = "achilles_development"
 if ARGV.length <2
 	puts "usage: change_db_type [dbtype (myisam|innodb)] table1 table2..."
