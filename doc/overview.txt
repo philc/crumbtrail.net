@@ -1,0 +1,26 @@
+
+./script/testlog has all of the testing logs
+./script/log will have logs you download using fetch_log.rb
+
+
+
+Scripts
+-------
+
+
+create_log_dirs.sh - housekeeping. Creates log/*, since they're not in svn.
+
+create_test_data.rb - creates a few demo accounts, timezones, etc.
+
+drop_db.sh - drops the database
+
+recycle_env - recyles the environment (database, data) to give you a fresh start
+
+logreader.rb - runs continuously, reading Apache's access.log
+
+fetch_mysql.rb - dumps the db from the production server and downloads it to ./script/db
+fetch_log.rb - fetches n lines from the apache log on the server into ./script/log
+
+change_db_type.rb - changes the table type of a database table
+
+migrate.sh - migrate up and down. Saves a few characters.

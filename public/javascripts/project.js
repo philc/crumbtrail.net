@@ -445,7 +445,8 @@ TableDisplay.Methods={
       $(htmlID).innerHTML=DisplayHelper.dialog(title,display.buildTable());
   },  
   hitsYear:function(i,data,dataMax){
-    var month=DisplayHelper.showMonth((new Date()).getMonth()-i);
+/*    var month=DisplayHelper.showMonth((new Date()).getMonth()-i);*/
+	var month = DisplayHelper.showMonthAndYear((new Date()).getMonth()-i);
     return this.hitsRow(i,data,dataMax,month);
   },
   hitsMonth:function(i,data,dataMax){
@@ -607,9 +608,16 @@ DisplayHelper.Methods={
   months:["January", "February","March","April","May","June",
           "July","August", "September","October","November","December"],
   showMonth:function(i){ 
-    i=i%12;
-    return this.months[i];
+    i=(i+12)%12;
+    return this.months[i].substring(0,3);
   },
+  showMonthAndYear:function(i){
+	// date returns year since 1900
+	var year = ''+(page.date.getYear()-(i<0? 101 : 100));
+	if (year.length==1)
+		year='0'+year;
+	return this.showMonth(i) + " '" + year;
+	},
   // Will ellipsize from the left, e.g. philisoft.com/blog => ...isoft.com/blog.
   // Should we try and break on periods or slashes, if they're close?
   // Usually that's what we want

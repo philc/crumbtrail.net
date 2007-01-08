@@ -10,8 +10,6 @@ require "vendor/rails/activerecord/lib/active_record.rb"
 
 
 
-
-
 # require "lib/rollable_time_table.rb"
 # require 'lib/time_helpers.rb'
 
@@ -130,13 +128,30 @@ class ApacheLogReader
   def self.tail_log(logfile)
     puts "Parsing log file: " + logfile
     file = File.new(logfile, "r")
+    
+    # Skip into the log file, in case we're restarting logreader because of a crash
+    # n=30
+   #  puts "Skipping ahead #{n} lines into the log file"
+   #  skip_ahead file, n
+    
+    # keep a counter of which line we're on
+    at_line=n
+    
     while (1)
       line = file.gets
+      at_line+=1
       if !line.nil?
         process_line(line)
       else
         sleep 1
       end
+    end
+  end
+  
+  def self.skip_ahead(file,n)
+    
+    n.times do
+      file.gets
     end
   end
 
@@ -269,10 +284,29 @@ class ApacheLogReader
   end
 end
 
+def log_path()
+  logfile = ARGV[0]
+  if (logfile.nil?)
+    return "./script/testlogs/test.log"
+  end
+  
+  # First try the file outright, e.g. /var/log/apache2/access.log
+  # Then try ./script/testlogs, which is where the main testing logs are
+  # Then try ./script/log, which are where custom downloaded logs are
+
+  return logfile if (FileTest.exists? logfile )
+
+  return "./script/testlogs/#{logfile}" if (FileTest.exists?("./script/testlogs/#{logfile}"))
+  return "./script/log/#{logfile}" if (FileTest.exists?("./script/log/#{logfile}"))
+end
+
+
 ApacheLogReader::establish_connection()
-logfile="test.log"
-logfile=ARGV[0] if ARGV.length>0
-ApacheLogReader::benchmark_log("script/testlogs/" + logfile)
-#ApacheLogReader::tail_log("script/" + logfile)
+#logfile="test.log"
+#logfile=ARGV[0] if ARGV.length>0
+logfile = log_path()
+#ApacheLogReader::benchmark_log("script/testlogs/" + logfile)
+#ApacheLogReader::tail_log("script/testlogs/" + logfile)
+ApacheLogReader::tail_log(logfile)
 
 

@@ -20,6 +20,8 @@ defaults: &defaults
 
 development:
   database: achilles_development
+  # Make a symlink from tmp/mysql.sock to /var/run/mysqld/mysqld.sock if you're on linux
+  socket: /tmp/mysql.sock
   <<: *defaults
 
 # Warning: The database defined as 'test' will be erased and

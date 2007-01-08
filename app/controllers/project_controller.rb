@@ -36,10 +36,7 @@ class ProjectController < ApplicationController
         # set this project as their recently viewed one
         @account.recent_project=project
         @account.save!
-#         project=Project.new
-        # redirect_to "/project/recent"
         redirect_to :controller=>"project",:action=>"code", :id=>project.id
-        #redirect_to "/project/#{project.id}/code"
       end
     end
   end
@@ -93,8 +90,6 @@ class ProjectController < ApplicationController
         flash[:notice]="Project options saved. <a href='/project/#{@project.id}'>Return to your stats.</a>"
         # I need a redirect here, otherwise the flash:notice will persist across two pages.
         redirect_to "/project/setup/" + @project.id.to_s
-        #redirect_to :controller=>"project",:action=>"code", :id=>project.id
-        #redirect_to "/project/#{project.id}/code"
       end
     end
   end
@@ -104,6 +99,7 @@ class ProjectController < ApplicationController
   # Javascript does the actual table and graph drawing
   #
   def index
+    # TODO: show them that they need to log in if they're not logged in 
     @id=params[:id]    
     
     @project=nil
@@ -124,8 +120,8 @@ class ProjectController < ApplicationController
       redirect_to "/project/all" 
       return
     end
-    
-    
+    puts "project and account"
+    puts @project, @account
     if @project!=@account.recent_project
       @account.recent_project=@project
       @account.save!

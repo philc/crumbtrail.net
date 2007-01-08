@@ -331,6 +331,7 @@ float:right;
   text-align:right;
   padding-right:10px !important;
   width:1%;
+	white-space:nowrap;
 }
 .table-footer-cap{
   border-bottom:1px solid #ebcd96;

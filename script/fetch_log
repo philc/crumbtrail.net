@@ -13,7 +13,8 @@
 require "yaml"
 
 host="crumbtrail.net"
-log_path = "/var/log/apache2/crumbtrail/access.log"
+
+log_path = "/var/log/apache2/stats.crumbtrail/access.log"
 
 name = ARGV[0]
 if (name.nil?)
@@ -38,4 +39,4 @@ puts "downloading log from server"
 
 `mkdir ./script/log 2> /dev/null`
 puts `scp #{host}:~/logdump/#{name}.log.gz ./script/log/`
-`gunzip ./script/log/#{name}.log.gz`
+`gunzip -f ./script/log/#{name}.log.gz`
