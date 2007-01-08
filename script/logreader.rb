@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 #
 # Usage:
-#   logreader.rb nameOfLog
+#   logreader.rb nameOfLog  [resume]
 #   nameOfLog should reside  in script. Omitting this parameter 
 #   runs it on the default log
 #
@@ -75,7 +75,15 @@ end
 class ApacheLogReader
 
   @@regex = Regexp.compile('(.+)\s+\[(.+)\]\s+(.+)\s+(.+)\s+"(.+)"')
-
+  
+  @@log_dir="/var/log/breadcrumbs/"
+  def self.log_dir; @@log_dir end
+ 
+  @@progress_file = @@log_dir+"/progress.txt"
+ 
+  # How often to record (in lines) how far we are into the log file
+  @@progress_frequency=5
+  
 #------------------------------------------------------------------------------
 
   def self.establish_connection()
@@ -125,22 +133,32 @@ class ApacheLogReader
 
 #------------------------------------------------------------------------------
 
-  def self.tail_log(logfile)
+
+  def self.tail_log(logfile, resume=false)
     puts "Parsing log file: " + logfile
     file = File.new(logfile, "r")
     
-    # Skip into the log file, in case we're restarting logreader because of a crash
-    # n=30
-   #  puts "Skipping ahead #{n} lines into the log file"
-   #  skip_ahead file, n
+    #
+    # Try and resume into the log file if we need to
+    #    
+    count=0
+    if (resume)
+      count=load_progress
+       puts "Resuming #{count} lines into the log file"
+       skip_ahead(file,count)
+    else
+      puts "Starting at the beginning of the log file"
+    end
     
-    # keep a counter of which line we're on
-    at_line=n
+    
     
     while (1)
       line = file.gets
-      at_line+=1
+      
       if !line.nil?
+        count+=1            
+        record_progress(count) if (count % @@progress_frequency==0)
+        
         process_line(line)
       else
         sleep 1
@@ -148,8 +166,26 @@ class ApacheLogReader
     end
   end
   
-  def self.skip_ahead(file,n)
-    
+  # Load how far we've read into the log file, so we can start from there
+  def self.load_progress
+    count=0
+    if (FileTest.exists? @@progress_file)
+      f=File.open @@progress_file, "r"
+      count=f.read.strip.to_i
+      f.close()      
+    end
+    return count
+  end
+  
+  # Record how are we are into the log file
+  def self.record_progress(count)
+    f=File.new @@log_dir + "/progress.txt", "w"
+    f.write count
+    f.close()
+  end
+  
+  # Skip n lines into the log file
+  def self.skip_ahead(file,n)    
     n.times do
       file.gets
     end
@@ -284,7 +320,7 @@ class ApacheLogReader
   end
 end
 
-def log_path()
+def log_to_process()
   logfile = ARGV[0]
   if (logfile.nil?)
     return "./script/testlogs/test.log"
@@ -300,13 +336,38 @@ def log_path()
   return "./script/log/#{logfile}" if (FileTest.exists?("./script/log/#{logfile}"))
 end
 
+def check_logger_setup()
+  puts ApacheLogReader::log_dir
+  log_dir=ApacheLogReader::log_dir
+  # Make sure we can record our progress
+  if (! FileTest.exists? log_dir)
+    `mkdir #{log_dir}`
+  end
+  if (! FileTest.exists? log_dir)
+    puts "Trying to create #{log_dir} with sudo:"
+    
+    user = `whoami`.strip
+    puts "chown -R #{user}:#{user} #{log_dir}"
+    `sudo mkdir #{log_dir}`
+    # Make sure the current user can write to it
+    `sudo chown -R #{user}:#{user} #{log_dir}`
+  end
+  if (! FileTest.exists? log_dir)
+    puts "Couldn not create util folder for logreader. Exiting."
+    exit
+  end
+end
+
+##
+
+check_logger_setup()
 
 ApacheLogReader::establish_connection()
 #logfile="test.log"
 #logfile=ARGV[0] if ARGV.length>0
-logfile = log_path()
+logfile = log_to_process()
 #ApacheLogReader::benchmark_log("script/testlogs/" + logfile)
 #ApacheLogReader::tail_log("script/testlogs/" + logfile)
-ApacheLogReader::tail_log(logfile)
+ApacheLogReader::tail_log(logfile, ARGV[1])
 
 
