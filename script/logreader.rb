@@ -80,6 +80,7 @@ class ApacheLogReader
   def self.log_dir; @@log_dir end
  
   @@progress_file = @@log_dir+"/progress.txt"
+  @@error_file = @@log_dir + "/errors.txt"
  
   # How often to record (in lines) how far we are into the log file
   @@progress_frequency=5
@@ -99,7 +100,6 @@ class ApacheLogReader
 
   def self.process_line(line)
     if @@regex.match(line)
-
       begin
         id = parse_project_id($3).to_i
         project = Project.find(id)
@@ -137,34 +137,48 @@ class ApacheLogReader
   def self.tail_log(logfile, resume=false)
     puts "Parsing log file: " + logfile
     file = File.new(logfile, "r")
-    
+
     #
     # Try and resume into the log file if we need to
     #    
-    count=0
+    count=1
     if (resume)
       count=load_progress
-       puts "Resuming #{count} lines into the log file"
-       skip_ahead(file,count)
+      puts "Resuming #{count} lines into the log file"
+      skip_ahead(file,count)
     else
       puts "Starting at the beginning of the log file"
+      # Back up the old progress file in case we wanted to run
+      # with 'resume' enabled but forgot to.
+      `cp #{@@progress_file} #{@@progress_file}.bak 2> /dev/null`
     end
     
-    
-    
+
     while (1)
-      line = file.gets
-      
-      if !line.nil?
-        count+=1            
-        record_progress(count) if (count % @@progress_frequency==0)
-        
-        process_line(line)
-      else
-        sleep 1
+      begin
+        line = file.gets
+
+        if !line.nil?
+          process_line(line)
+          
+          count+=1
+          record_progress(count) if (count % @@progress_frequency==0)
+        else
+          sleep 1
+        end
+      rescue Exception=>e
+        # Let interrupts (ctrl+C) go through
+        raise e if e.class==Interrupt
+        f=File.new @@error_file, 'a'
+        err="#{count} : #{e}\n for this line: #{line}"
+        f.puts err
+        puts err
+        f.close()
       end
     end
   end
+  
+  #------------------------------------------------------------------------------
   
   # Load how far we've read into the log file, so we can start from there
   def self.load_progress
@@ -190,7 +204,9 @@ class ApacheLogReader
       file.gets
     end
   end
-
+  
+  #------------------------------------------------------------------------------
+  
   def self.benchmark_log(logfile)
     puts "Parsing log file: " + logfile
     log_lines=0
@@ -354,8 +370,9 @@ def check_logger_setup()
   end
   if (! FileTest.exists? log_dir)
     puts "Couldn not create util folder for logreader. Exiting."
-    exit
+    exit      
   end
+    
 end
 
 ##
