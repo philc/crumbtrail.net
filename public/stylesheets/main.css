@@ -53,7 +53,8 @@ table,img{ border:0;}
   padding-left:10em;  
 }
 #footer{
-  margin-top:20px;
+/*  margin-top:20px;*/
+  padding-top:20px;
   clear:both;
   text-align:center;
 	margin-bottom:10px;
@@ -206,7 +207,7 @@ margin-bottom:8px;
  */
 .intro-links .linkbox{
   white-space:nowrap;
-
+  float:left;
 }
 
 
@@ -214,8 +215,8 @@ margin-bottom:8px;
  * Boxed links
  */
 a.linkbox{
-  padding:0px;
-	float:left;
+/*  padding:20px;*/
+  padding:4px 0 5px 0;
   margin:10px;
   margin-right:5px;
   margin-left:5px;
@@ -224,7 +225,9 @@ a.linkbox{
   background-color:#fffae8;
   padding-left:4px;
   padding-right:4px;
-	  line-height:160%;
+/*padding:20px;*/
+/*	  line-height:160%;*/
+	line-height:100%;
 }
 a.linkbox:hover{
   background-color:#fbf0c8;
@@ -284,13 +287,16 @@ a.linkbox:hover{
  * Sign in
  */
 #signin-box{
-  float:right;
+/*  float:right;*/
   /* offset the margins that the dialog box brings, so we line up with the other header*/
   margin-top:-9px;  
   margin-left:10px;
   /*width:12em;*/
 	/*width:50%;*/
 /* width:12em; */
+}
+#overview #signin-box{
+	float:right;
 }
 #signin-box h1{
   /*margin-top:0px;*/

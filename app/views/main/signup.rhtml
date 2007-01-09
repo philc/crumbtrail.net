@@ -51,8 +51,9 @@ your stats, you'll need to re-enable it in your web browser.
 		</select>
 		</p>
         </div>
+
 		<script type="text/javascript">
-		set_select('timezone',get_tz_name());
+		set_select('timezone',<%= params[:timezone].nil? ? "get_tz_name()" : "\"#{params[:timezone]}\"" %>);
 		</script>
 
         <input type="submit" class="submit" value="Sign up" class="submit">

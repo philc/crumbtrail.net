@@ -15,7 +15,6 @@ module ProjectHelper
     return (@account.demo?) ? title : "<a href=\"#{href}\" onclick=\"#{onclick}\">#{title}</a>"    
   end
   
-  # These are the timezones we're supporting in the timezone drop-down dialog
   
  
   

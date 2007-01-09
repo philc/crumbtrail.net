@@ -1,41 +1,14 @@
 
+<div id="overview">
+
 <div class="copy-content">
 <div class="copy">
 
-<div id="signin-box">
-    <div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">
-      <div class="c">
-      <% if !@account %>
-      <h1>Sign in</h1>
-      <p>
-      <form action="/" method="post">
-       <div class="text-form">
-        <%=show_form_error(@login_error)%>
-        E-mail
-        <input type="text" name="email" id="email" class="field" value="<%=@email%>"/>
-        Password
-        <input type="password" name="password" id="password" class="field"/>
-        </div>
-        <input type="submit" class="submit" value="Sign in"/>
-      </form>
-      
-      <% else %>
-       <h1>Welcome back</h1>
-       <a href="/project/recent">Show me my stats</a>
-       
-       
-      <% end %>
-      </p>
-      </div></div><div class="ft">
-    <div class="c"></div></div></div>     
-</div>
+
+<%= render :partial=>"signin_form"%>
 
 
-<%if !@account%>
-<script type="text/javascript">
-$("email").focus();
-</script>
-<%end%>
+
 
 
 <h1>Know your visitors</h1>
@@ -63,5 +36,6 @@ Breadcrumbs anonymously tracks visitors coming to your website. It works like th
 <!--<h1>What's cool about this?</h1>
 # ...
 -->
+</div>
 </div>
 </div>

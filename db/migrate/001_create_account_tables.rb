@@ -57,6 +57,8 @@ class CreateAccountTables < ActiveRecord::Migration
       t.column :identifier, :string, :null => false
       t.column :offset, :float, :null=>false
     end
+    add_index :zones, :identifier
+    
   end
 
   def self.down
