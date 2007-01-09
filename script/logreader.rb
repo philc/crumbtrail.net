@@ -9,7 +9,6 @@
 require "vendor/rails/activerecord/lib/active_record.rb"
 
 
-
 # require "lib/rollable_time_table.rb"
 # require 'lib/time_helpers.rb'
 
@@ -99,6 +98,7 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
 
   def self.process_line(line)
+    
     if @@regex.match(line)
       begin
         id = parse_project_id($3).to_i
@@ -176,6 +176,8 @@ class ApacheLogReader
         f.close()
       end
     end
+  ensure
+    file.close()
   end
   
   #------------------------------------------------------------------------------
@@ -200,7 +202,7 @@ class ApacheLogReader
   
   # Skip n lines into the log file
   def self.skip_ahead(file,n)    
-    n.times do
+    n-1.times do
       file.gets
     end
   end
@@ -353,7 +355,6 @@ def log_to_process()
 end
 
 def check_logger_setup()
-  puts ApacheLogReader::log_dir
   log_dir=ApacheLogReader::log_dir
   # Make sure we can record our progress
   if (! FileTest.exists? log_dir)
