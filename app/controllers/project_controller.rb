@@ -1,4 +1,7 @@
 class ProjectController < ApplicationController
+  
+  before_filter :authorize, :except=>:index
+  
   @@project_id=1050
   
   # These are the default view strings, in case they don't have a cookie
@@ -99,10 +102,16 @@ class ProjectController < ApplicationController
   # Javascript does the actual table and graph drawing
   #
   def index
-    # TODO: show them that they need to log in if they're not logged in 
+    # TODO: show them that they need to log in if they're not logged in.
+    # Applies to demo account
     @id=params[:id]    
     
     @project=nil
+    
+    # Ensure that they are logged in, unless we're viewing a demo
+    if @id!="livedemo"
+      authorize()
+    end
       
     if (@id=="recent")
       @project = @account.recent_project
@@ -114,18 +123,19 @@ class ProjectController < ApplicationController
       @project = Project.find_by_id(@id)      
     end
     
+    
     # If they don't have any projects, or we can't find the one they asked for,
     # send them to where they can create a new one.
     if (@project.nil?)
       redirect_to "/project/all" 
       return
     end
-    puts "project and account"
-    puts @project, @account
+
     if @project!=@account.recent_project
       @account.recent_project=@project
       @account.save!
     end
+    
     # get the view options from their cookie
     @view_options=view_options_from_cookie(cookies[:breadcrumbs])   
     

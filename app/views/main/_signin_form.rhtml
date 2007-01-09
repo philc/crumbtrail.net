@@ -1,34 +1,38 @@
 <div id="signin-box">
-    <div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">
-      <div class="c">
-      <% if !@account %>
-      <h1>Sign in</h1>
-      <p>
-	<div class="left_form">
-      <form action="/" method="post">
-       <div class="text-form">
-        <%=show_form_error(@login_error)%>
-        E-mail
-        <input type="text" name="email" id="email" class="field" value="<%=@email%>"/>
-        Password
-        <input type="password" name="password" id="password" class="field"/>
-        </div>
-        <input type="submit" class="submit" value="Sign in"/>
-		<% if defined? show_signup_link && show_signup_link %>
-			<p>Don't have an account?<br/><a href="/signup">Sign up for one in seconds &raquo;</a></p>
-		<% end %>
-      </form>
-      
-      <% else %>
-       <h1>Welcome back</h1>
-       <a href="/project/recent">Show me my stats</a>
-       
-       
-      <% end %>
-</div>
-      </p>
-      </div></div><div class="ft">
-    <div class="c"></div></div></div>     
+	<div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">
+		<div class="c">
+			<% if !@account %>
+			<h1>Sign in</h1>
+			<p>
+				<div class="left_form">
+					<form action="" method="post">
+						<div class="text-form">
+							<%=show_form_error(@login_error)%>
+							E-mail
+							<input type="text" name="email" id="email" class="field" value="<%=@email%>"/>
+							Password
+							<input type="password" name="password" id="password" class="field"/>
+						</div>
+
+						<input type="submit" class="submit" value="Sign in"/>
+						<% if (defined? show_signup_link) && show_signup_link %>
+						<p>Don't have an account?<br/><a href="/signup">Sign up for one in seconds &raquo;</a></p>
+						<% end %>
+
+					</form>
+					</div>
+					<% else %>
+					<h1>Welcome back</h1>
+					<a href="/project/recent">Show me my stats</a>
+
+
+					<% end %>
+	
+			</p>
+		</div></div><div class="ft">
+			<div class="c"></div>
+		</div>
+	</div>     
 </div>
 
 <%if !@account%>

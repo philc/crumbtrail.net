@@ -49,7 +49,24 @@ class MainController < ApplicationController
       end
     end       
   end
-  
+
+  def signin
+    # If they get to this page and are already logged in (like in another frame),
+    # continue their redirect. If there's none, send them to their project page
+    redirect = params[:r]
+    if (redirect.nil? || redirect.empty? || redirect =~ /signin/i)
+      redirect="/project/recent"
+    end
+    if (@account)
+      redirect_to redirect
+    end
+
+    if (request.post?)
+      @email=params[:email]
+      @login_error=login(@email,params[:password], redirect)
+    end
+  end
+
   def signout
     logout()
     redirect_to "/"

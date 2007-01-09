@@ -10,7 +10,8 @@ class ApplicationController < ActionController::Base
   
   protected
   
-  def login(username,password)
+  def login(username,password, redirect="/project/recent")
+    
     result=Account.authenticate(username,password)
     
     if (result.class==Account)
@@ -18,10 +19,18 @@ class ApplicationController < ActionController::Base
       cookies[@@login_cookie] = 
         {:value=>Session.create_for(result).token, :expires=>Session.expiration_time}
     
-      redirect_to :controller=>"project"
+      #redirect_to :controller=>"project"
+      redirect_to redirect
     else
       # It's an error message
       return result
+    end
+  end
+  
+  def authorize()
+    if @account.nil?
+     redirect_to "/signin/?r=" + request.request_uri
+      # redirect_to "/signin/"
     end
   end
   
