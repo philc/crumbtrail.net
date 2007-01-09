@@ -8,7 +8,7 @@ require "app/models/server.rb"
 def establish_connection()
   f=YAML::load(File.open('config/database.yml'))
   args={}
-  env="development"
+  env=ENV['RAILS_ENV'] || 'development'
   f[env].map{ |k,v| args[k.intern]=v}
 
   ActiveRecord::Base.establish_connection(args)

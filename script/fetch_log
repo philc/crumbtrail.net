@@ -10,8 +10,6 @@
 # and download it
 
 
-require "yaml"
-
 host="crumbtrail.net"
 
 log_path = "/var/log/apache2/stats.crumbtrail/access.log"

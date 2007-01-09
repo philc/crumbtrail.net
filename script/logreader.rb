@@ -92,8 +92,8 @@ class ApacheLogReader
   def self.establish_connection()
     f=YAML::load(File.open('config/database.yml'))
     args={}
-
-    f["development"].map{ |k,v| args[k.intern]=v}
+    env=ENV['RAILS_ENV'] || 'development'
+    f[env].map{ |k,v| args[k.intern]=v}
 
     ActiveRecord::Base.establish_connection(args)
   end
