@@ -12,7 +12,11 @@ module ProjectHelper
   end
   # Creates a link, which will be disabled if the account is a demo account
   def demo_link(href,title,onclick="")
-    return (@account.demo?) ? title : "<a href=\"#{href}\" onclick=\"#{onclick}\">#{title}</a>"
-    
+    return (@account.demo?) ? title : "<a href=\"#{href}\" onclick=\"#{onclick}\">#{title}</a>"    
   end
+  
+  # These are the timezones we're supporting in the timezone drop-down dialog
+  
+ 
+  
 end

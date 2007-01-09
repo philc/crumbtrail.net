@@ -16,19 +16,22 @@ end
 
 def add
   puts "Creating accounts and projects..."
+  
+  z=Zone.find_by_identifier('US/Eastern')
+  
   mikequinn = Account.create(:username   => "mikequinn",
                              :password   => "pass1",
                              :firstname  => "Michael",
                              :lastname   => "Quinn",
                              :country_id => 1,
-                             :zone_id   => 1) 
+                             :zone=>z) 
                              
   test  = Account.create(:username => "a@b.c", 
     :password => "password",
     :firstname => "",  
     :lastname=>"",
     :country_id=>1,
-    :zone_id=>1
+    :zone=>z
   )
                             
   demo = Account.create(:username   => "demo",
@@ -43,19 +46,19 @@ def add
   proj = Project.new(:account => demo,
                      :title => "Ninja Words",
                      :url => "ninjawords.com/",
-                     :zone_id => demo.zone_id)
+                     :zone => demo.zone)
   proj.id = 1050
   proj.save
   
-  puts "Creating Time zone info..."
-  
-  est = Zone.new(:identifier => 'US/Eastern')
-  est.id = 1
-  est.save
-  
-  pac = Zone.new(:identifier => 'US/Pacific')
-  pac.id = 2
-  pac.save
+  # puts "Creating Time zone info..."
+  # 
+  # est = Zone.new(:identifier => 'US/Eastern')
+  # est.id = 1
+  # est.save
+  # 
+  # pac = Zone.new(:identifier => 'US/Pacific')
+  # pac.id = 2
+  # pac.save
   
   server = Server.new(:zone_id => 1)
   server.id = 1

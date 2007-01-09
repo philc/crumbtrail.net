@@ -369,8 +369,8 @@ TableDisplay.prototype={
     var percent=this.columnPercent(p1,dataMax);
     var percent2=this.columnPercent(p2,dataMax);
     
-    var cell1 = this.graphCell(p1,percent);  
-    var cell2 = this.graphCell(p2,percent2);  
+    var cell1 = this.graphCell(DisplayHelper::comma(p1),percent);  
+    var cell2 = this.graphCell(DisplayHelper::comma(p2),percent2);  
     
     var classString = trClassString ? trClassString  : this.classString(i);
     return this.tr( this.td(dateString,"f") +cell1 + cell2, classString);  
@@ -393,7 +393,7 @@ TableDisplay.Methods={
     var cell1 = this.td(html, "f");
     var cell2 = this.td( isDate ? 
       // might be -1
-      DisplayHelper.timeAgo(data[i*3+2]) : data[i*3+2]
+      DisplayHelper.timeAgo(data[i*3+2]) : DisplayHelper::comma(data[i*3+2]);
      );
     return this.tr(cell1 + cell2, this.classString(i));
   },
@@ -426,7 +426,7 @@ TableDisplay.Methods={
     //var html = linkCaption.link("http://"+url);
     var html = terms.link("http://"+url) + '<span class="to">To&nbsp;'+toCaption.link("http://"+to)+'</a></span>';
     var cell1=this.td(html,"f");
-    var cell2 = isDate ? DisplayHelper.timeAgo(data[i*4+3]) : data[i*4+3];
+    var cell2 = isDate ? DisplayHelper.timeAgo(data[i*4+3]) : DisplayHelper::comma(data[i*4+3]);
     cell2=this.td(cell2);
     return this.tr(cell1+cell2, this.classString(i));
   },
@@ -436,7 +436,7 @@ TableDisplay.Methods={
     //var html = linkCaption.link("http://"+url);
     var html = linkCaption.link("http://"+url);
     var cell1=this.td(html,"f");
-    var cell2 = isDate ? DisplayHelper.timeAgo(data[i*2+1]) : data[i*2+1];
+    var cell2 = isDate ? DisplayHelper.timeAgo(data[i*2+1]) : DisplayHelper::comma(data[i*2+1]);
     cell2=this.td(cell2);
     return this.tr(cell1+cell2, this.classString(i));
   },
@@ -638,6 +638,18 @@ DisplayHelper.Methods={
         return mod.slice(0,i)+"..";
     }
     return mod+"..";
+  },
+ comma: function(number) {
+	str = new String(number);
+	var val = new String();
+	var num = str.length % 3;
+	if (num == 0) { num = 3; }
+	while (str.length > 0) {
+		val += str.substring (0, num) + ",";
+		str = str.substring (num);
+		num = 3;
+	}
+	return val.substring (0, val.length - 1);
   },
   dialog: function(title,content){
     return '<div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">'+

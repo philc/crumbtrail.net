@@ -55,6 +55,7 @@ class CreateAccountTables < ActiveRecord::Migration
     # todo: load in timezone identifiers
     create_table :zones do |t|
       t.column :identifier, :string, :null => false
+      t.column :offset, :float, :null=>false
     end
   end
 

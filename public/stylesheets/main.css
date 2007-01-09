@@ -24,7 +24,7 @@ a{
 a:hover{
   color:#021a41;  
 }
-input{
+input,select{
   padding:2px;
 }
 table,img{ border:0;}

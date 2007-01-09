@@ -17,7 +17,7 @@ class MainController < ApplicationController
     redirect_to "/project/recent" if @account
     
     @title="Sign up"
-    
+    @zones = Zone.all
     if request.post?
       email=params[:email]
       @email_error=MainHelper::validate_email(email)

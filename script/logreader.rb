@@ -180,7 +180,7 @@ class ApacheLogReader
       end
     end
   ensure
-    file.close()
+    file.close() unless file.nil?
   end
   
   #------------------------------------------------------------------------------

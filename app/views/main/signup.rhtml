@@ -1,4 +1,5 @@
 <% content_for (:head) do %>
+<%= javascript_include_tag 'timezone' %>
 <script type="text/javascript">
 // function validate(){
 //   if ($("password").vale!=
@@ -40,8 +41,20 @@ your stats, you'll need to re-enable it in your web browser.
         <input type="password" name="password" id="password" size="22"/>
         Confirm your password
         <input type="password" name="password_confirm" id="password_confirm" size="22"/>
+		<p>
+		Select your time zone<br/>
+
+        <select id="timezone" name="timezone">
+		<% @zones.each do |t|%>
+		<option value="<%= t.identifier %>"><%=MainHelper.tz_offset(t.offset)%> <%= t.identifier%></option>
+		<%end%>
+		</select>
+		</p>
         </div>
-      
+		<script type="text/javascript">
+		set_select('timezone',get_tz_name());
+		</script>
+
         <input type="submit" class="submit" value="Sign up" class="submit">
         </div>        
       </div>  
