@@ -18,6 +18,7 @@ class MainController < ApplicationController
     
     @title="Sign up"
     @zones = Zone.all
+    
     if request.post?
       email=params[:email]
       @email_error=MainHelper::validate_email(email)
@@ -27,8 +28,7 @@ class MainController < ApplicationController
         a=Account.find_by_username(email)        
         @duplicate_error= !a.nil?
       end
-      
-      
+            
       pw1=params[:password]
       pw2=params[:password_confirm]
       
@@ -40,8 +40,11 @@ class MainController < ApplicationController
           @password_error="Your passwords don't match"
       end
       
+      timezone=Zone.find_by_identifier(params[:timezone])
+      return if timezone.nil?
+      
       unless (@password_error || @email_error || @duplicate_error)      
-        create_account(email,pw1)
+        create_account(email,pw1,timezone)
         redirect_to :controller=>"project", :action=>"new"
       end
     end       
@@ -54,13 +57,13 @@ class MainController < ApplicationController
   
   private
   
-  def create_account(username, password)
+  def create_account(username, password, timezone)
      a=Account.new
      a.username=username
      a.password=password
      # TODO make this based on the client
      a.country_id=1
-     a.zone_id=1
+     a.zone=timezone
      a.save!
      cookies[@@login_cookie] = 
           {:value=>Session.create_for(a).token, :expires=>Session.expiration_time}
