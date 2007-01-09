@@ -10,14 +10,15 @@ class Project < ActiveRecord::Base
   serialize  :collapsing_refs
 
   def process_request(request)
-
+  
     # Why does this need to be locked? I bet this is a huge perf hit
     locked do
-
+    
       referer = request.referer
       page = request.page
-
-      if referer.url != '-' && referer.url != '/' && page.url != '-'
+      
+      if (!referer.nil? && !page.nil? && 
+          referer.url != '-' && referer.url != '/' && page.url != '-')
         search_terms = SearchTotal.analyze_search_url(request.referer.url)
         if !search_terms.nil?
           SearchTotal.increment_search_string(request, search_terms)
@@ -212,7 +213,7 @@ class Project < ActiveRecord::Base
     ReferralRecent.add_new_referer(request)
   end
 
-  def increment_hit_count(request)
+  def increment_hit_count(request)    
     HitHourly.increment_hit(request)
     HitDaily.increment_hit(request)
     HitMonthly.increment_hit(request)
