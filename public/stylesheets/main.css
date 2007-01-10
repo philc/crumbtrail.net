@@ -182,7 +182,7 @@ table,img{ border:0;}
   font-weight:normal;
   /*margin-bottom:10px;*/
   margin-top:10px;
-margin-bottom:8px;
+	margin-bottom:8px;
 }
 .copy h2{
   font-size:1.2em;
@@ -295,10 +295,13 @@ a.linkbox:hover{
 	/*width:50%;*/
 /* width:12em; */
 }
+#signin-box .button_area{
+	text-align:left;
+}
 
 #signin-box h1{
-  /*margin-top:0px;*/
-  margin:0px;
+  margin-top:0px;
+/*  margin:0px;*/
 }
 #signin-box .field{
   width:13em;
