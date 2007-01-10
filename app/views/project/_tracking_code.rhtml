@@ -24,7 +24,7 @@
     <p>Here's the code for your project, <%= @project.title %>:</p>
     
     
-    <% jscode=render(:partial=>"javascript")
+    <% jscode=render(:partial=>"javascript", :object=>@project)
         jscode='&lt;script type="text/javascript"&gt;' + jscode + '&lt;/script&gt;'
     %>
    

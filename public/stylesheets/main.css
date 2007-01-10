@@ -221,6 +221,8 @@ a.linkbox{
   margin-right:5px;
   margin-left:5px;
   display:block;
+
+  float:left;
   border:1px solid #edd7ab;
   background-color:#fffae8;
   padding-left:4px;
