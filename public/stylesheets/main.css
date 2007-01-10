@@ -67,7 +67,7 @@ table,img{ border:0;}
 .dialog .ft .c, .dialog .hd .c { height:10px;  }
 .dialog .ft {  background:#fbeac8 url(/images/d/bl.gif) no-repeat 0px 0px;}
 .dialog .ft .c { background:transparent url(/images/d/br.gif) no-repeat right 0px;}
-.dialog .bd .c{  background-color:#fbeac8;}
+.dialog .bd .c{  background-color:#fbeac8; }
 
 #logo{
 	width:100px;
@@ -196,10 +196,10 @@ margin-bottom:8px;
   margin-left:40px;
 }
 .copy p{
-  /*padding-top:12px;*/
+/*  padding-top:12px;*/
   margin-top:12px;
   margin-bottom:8px;
-  /*padding-bottom:8px;*/
+/*  padding-bottom:8px;*/
 }
 
 /*
@@ -240,7 +240,7 @@ a.linkbox:hover{
 /* a form that's aligned on the left; it should be indented some*/
 .left_form{
   margin-left:3px;  
-  display:table;
+/*  display:table;*/
 }
 .centered_form{
   display:table;
@@ -250,7 +250,7 @@ a.linkbox:hover{
 .text-form input, .text-form textarea{
   border:1px solid #b89c65;
   display:block;  
-  margin-bottom:8px;
+/*  margin-bottom:8px;*/
 }
 .text-form input:focus{
   background-color:#fffae8;
