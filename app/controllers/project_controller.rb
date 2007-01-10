@@ -1,5 +1,5 @@
 class ProjectController < ApplicationController
-  
+  include ActionView::Helpers::NumberHelper
   before_filter :authorize, :except=>:index
   
   @@project_id=1050
@@ -147,7 +147,9 @@ class ProjectController < ApplicationController
     @date = JSDate.new(@project.time).to_json;
     
     build_glance_and_hits()
-    
+    @glance_today=@glance_today.map{ |e| number_with_delimiter(e)}
+    @glance_yesterday=@glance_yesterday.map{ |e| number_with_delimiter(e)}
+        
     build_referers() 
     
     build_pages()

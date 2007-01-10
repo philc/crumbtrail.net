@@ -777,7 +777,7 @@ LineGraph.prototype={
     Element.addClassName(text,"linegraph-dot-caption");
     text.style.display="none";
   
-    text.innerHTML=data+"";    
+    text.innerHTML=DisplayHelper.comma(data+"");    
     
     dot.appendChild(text);
     return dot
@@ -788,14 +788,14 @@ LineGraph.prototype={
   },
   showLabels: function(graphContainer){
     if (this.min>0){
-      var minLabel = this.yLabel(this.min);
+      var minLabel = this.yLabel(DisplayHelper.comma(this.min));
       minLabel.style.bottom=px(14);
       graphContainer.appendChild(minLabel);
     }
     
     // No need to show "0" as the max if there is are hits...
     if (this.max>0){
-      var maxLabel = this.yLabel(this.max);
+      var maxLabel = this.yLabel(DisplayHelper.comma(this.max));
       maxLabel.style.top=0;    
       graphContainer.appendChild(maxLabel);
     }

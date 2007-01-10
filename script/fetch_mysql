@@ -40,3 +40,4 @@ puts `ssh #{user}@#{host} "#{compress}"`
 puts "downloading db file from server"
 `mkdir ./script/db 2> /dev/null`
 puts `scp #{user}@#{host}:~/dbdump/#{db}.gz ./script/db/`
+`gunzip -f ./script/db/#{db}.gz`

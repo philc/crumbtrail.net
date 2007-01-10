@@ -452,10 +452,10 @@ float:right;
   height:24px;
   z-index:50;
   position:absolute;
-  background-image:url(/images/c/dot.gif);
+  background-image:url(/images/c/dot.png);
 }
 .linegraph-dot:hover{
-  background-image:url(/images/c/dotm.gif);
+  background-image:url(/images/c/dotm.png);
 }
 
 .linegraph-dot-up{

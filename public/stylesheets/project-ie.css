@@ -26,3 +26,11 @@
   background-image:none;
   filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/circle.png', sizingMethod='crop');
 }
+.linegraph-dot{
+  background-image:none;
+  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/dot.png', sizingMethod='crop');
+}
+.linegraph-dot:hover{
+  background-image:none;
+  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/dotm.png', sizingMethod='crop');
+}
