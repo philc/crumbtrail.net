@@ -28,6 +28,7 @@ class ApplicationController < ActionController::Base
   end
   
   def authorize()
+    puts "in authorize, :",@account
     if @account.nil?
      redirect_to "/signin/?r=" + request.request_uri
       # redirect_to "/signin/"

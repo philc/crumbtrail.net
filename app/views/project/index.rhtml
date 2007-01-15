@@ -2,132 +2,130 @@
 
 
 	<%= stylesheet_link_tag "project" %>
+	
 	<!--[if lt IE 7.]>
-		<%= stylesheet_link_tag "main-ie" %>
-		<%= stylesheet_link_tag "project-ie" %>
+	<%= stylesheet_link_tag "main-ie" %>
+	<%= stylesheet_link_tag "project-ie" %>
 	<![endif]-->
 
 
+	<%= javascript_include_tag "project" %> 
 
-		<%= javascript_include_tag "project" %> 
+	<script type="text/javascript">
+	page.activeSection = "<%= @view_options[:section]%>";
+	page.date=<%=@date%>;   
 
-		<script type="text/javascript">
-		page.activeSection = "<%= @view_options[:section]%>";
-		page.date=<%=@date%>;   
+	page.project=<%=@project.id%>;
 
-		page.project=<%=@project.id%>;
-
-		hitsDayData=[<%= @hits_day %>];
-		hitsWeekData=[<%= @hits_week %>];
-		hitsMonthData=[<%= @hits_month %>];
-		hitsYearData=[<%= @hits_year %>];
-
-
-		referersTotalData=[0,<%=@referers_more%>,<%= @referers_total -%>];
-
-		referersUniqueData=<%= @referers_unique -%>;   
-		referersRecentData=<%= @referers_recent -%>;
-
-		pagesPopularData=<%=@popular_pages%>;
-		pagesRecentData=<%=@recent_pages%>;
-
-		searchesRecentData=<%=@searches_recent%>
-		searchesTotalData=<%=@searches_total%>
-
-		osData=[<%= @os_data %>];
-		osLabels=[<%= @os_labels %>];
-		browserData=[<%= @browser_data %>];
-		browserLabels=[<%= @browser_labels %>];
+	hitsDayData=[<%= @hits_day %>];
+	hitsWeekData=[<%= @hits_week %>];
+	hitsMonthData=[<%= @hits_month %>];
+	hitsYearData=[<%= @hits_year %>];
 
 
-		</script>
+	referersTotalData=[0,<%=@referers_more%>,<%= @referers_total -%>];
+
+	referersUniqueData=<%= @referers_unique -%>;   
+	referersRecentData=<%= @referers_recent -%>;
+
+	pagesPopularData=<%=@popular_pages%>;
+	pagesRecentData=<%=@recent_pages%>;
+
+	searchesRecentData=<%=@searches_recent%>
+	searchesTotalData=<%=@searches_total%>
+
+	osData=[<%= @os_data %>];
+	osLabels=[<%= @os_labels %>];
+	browserData=[<%= @browser_data %>];
+	browserLabels=[<%= @browser_labels %>];
 
 
+	</script>
 
-
-		<% end %>
+<% end %>
 
 
 
+<div id="project-menu">Viewing stats for <span id="project-id"><%=@project.title%></span>. 
+	<%=demo_link("/project/setup/" + @project.id.to_s,"Setup","")%> | 
+	<span id="projects_popup_wrapper">
+		<div id="projects_popup" style="display:none"/>
+			<ul>
 
+				<%if !@account.demo? %>
+				<% @account.projects.each  do |p| %>    
+				<li><a href="/project/<%=p.id%>"><%=p.title%></a></li>
+				<% end %>
+				<%end%>
 
-		<div id="project-menu">Viewing stats for <span id="project-id"><%=@project.title%></span>. 
-			<%=demo_link("/project/setup/" + @project.id.to_s,"Setup","")%> | 
-			<span id="projects_popup_wrapper">
-				<div id="projects_popup" style="display:none"/>
-				<ul>
-
-					<%if !@account.demo? %>
-					<% @account.projects.each  do |p| %>    
-					<li><a href="/project/<%=p.id%>"><%=p.title%></a></li>
-					<% end %>
+				<li> 
+					<%if @account.demo? %>
+					<a href="#" onclick="return false;" class="create_new">Create a new project</a>
+					<% else %>
+					<a href="/project/new" class="create_new">Create a new project</a>
 					<%end%>
-					<li> 
-						<%if @account.demo? %>
-						<a href="#" onclick="return false;" class="create_new">Create a new project</a>
-						<% else %>
-						<a href="/project/new" class="create_new">Create a new project</a>
-						<%end%>
-					</li>
-				</ul>
-			</div>
-		</span>
-		<%=demo_link("#","View another project","Element.toggle($('projects_popup')); return false")%>
-	</div>
-	<% if flash[:notice] %>
-	<div class="notification"><%= flash[:notice] %></div>
-	<% end %>
-	<noscript>
-		<div class="warning">You don't have Javascript enabled. To view
-			your stats, you'll need to re-enable it in your web browser.
+				</li>
+			</ul>
 		</div>
-	</noscript>
+	</span>
+	<%=demo_link("#","View another project","Element.toggle($('projects_popup')); return false")%>
+</div>
 
 
-
-	<div id="menu">
-		<ul id="menu-links">
-			<%= render :partial=>"menu_entry", :locals=>{:title=>:glance,:d=>"At a glance"} %>
-			<%= render :partial=>"menu_entry", :locals=>{:title=>:hits,:d=>"Hits"} %>
-			<%= render :partial=>"menu_entry", :locals=>{:title=>:referers,:d=>"Referers"} %>
-			<%= render :partial=>"menu_entry", :locals=>{:title=>:pages,:d=>"Pages"} %>
-			<%= render :partial=>"menu_entry", :locals=>{:title=>:searches,:d=>"Searches"} %>
-			<%= render :partial=>"menu_entry", :locals=>{:title=>:details,:d=>"Details"} %>
-		</ul>
+<% if flash[:notice] %>
+<div class="notification"><%= flash[:notice] %></div>
+<% end %>
+<noscript>
+	<div class="warning">You don't have Javascript enabled. To view
+		your stats, you'll need to re-enable it in your web browser.
 	</div>
+</noscript>
 
-	<div id="content-right">
 
 
-		<div id="glance" class="section" <%=panel_style(:glance)-%> >
-			<img src="/images/h/glance.gif" class="section_title"/>        
-			<div id="glance-right">
-				<div id="hitsweek-linegraph" class="linegraph_container">
-				</div>
+<div id="menu">
+	<ul id="menu-links">
+		<%= render :partial=>"menu_entry", :locals=>{:title=>:glance,:d=>"At a glance"} %>
+		<%= render :partial=>"menu_entry", :locals=>{:title=>:hits,:d=>"Hits"} %>
+		<%= render :partial=>"menu_entry", :locals=>{:title=>:referers,:d=>"Referers"} %>
+		<%= render :partial=>"menu_entry", :locals=>{:title=>:pages,:d=>"Pages"} %>
+		<%= render :partial=>"menu_entry", :locals=>{:title=>:searches,:d=>"Searches"} %>
+		<%= render :partial=>"menu_entry", :locals=>{:title=>:details,:d=>"Details"} %>
+	</ul>
+</div>
+
+<div id="content-right">
+
+
+	<div id="glance" class="section" <%=panel_style(:glance)-%> >
+		<img src="/images/h/glance.gif" class="section_title"/>        
+		<div id="glance-right">
+			<div id="hitsweek-linegraph" class="linegraph_container">
 			</div>
-			<div id="glance-left">    
-				<div id ="summary_stats">
-					<table border=0><tr><td class="today">Hits today:</td>
-						<td><span class="number"><%=@glance_today[0]%></span></td>
-						<tr><td  class="padding"> </td>
-							<td class="unique padding">(<%=@glance_today[1]%> unique)</td>
-						</tr>
-						<tr><td class="yesterday">Hits yesterday:</td>
-							<td><%=@glance_yesterday[0]%></span><td>
-								<tr><td> </td><td><span class="unique">(<%=@glance_yesterday[1]%> unique)</td></tr>
+		</div>
+		<div id="glance-left">    
+			<div id ="summary_stats">
+				<table border=0><tr><td class="today">Hits today:</td>
+					<td><span class="number"><%=@glance_today[0]%></span></td>
+					<tr><td  class="padding"> </td>
+						<td class="unique padding">(<%=@glance_today[1]%> unique)</td>
+					</tr>
+					<tr><td class="yesterday">Hits yesterday:</td>
+						<td><%=@glance_yesterday[0]%></span><td>
+							<tr><td> </td><td><span class="unique">(<%=@glance_yesterday[1]%> unique)</td></tr>
 
-								</table>
-							</div>
+							</table>
 						</div>
-						<br clear="both"/>
-
-						<%= render :partial=>"panel", :locals=>
-						{:p=>:glance,:v=>:referers_today,:options=>{:force_visible=>"true"}} %>
-
-						<%= render :partial=>"panel", :locals=>
-						{:p=>:glance,:v=>:referers_week,:options=>{:force_visible=>"true"}} %>
-						<br clear="both"/>
 					</div>
+					<br clear="both"/>
+
+					<%= render :partial=>"panel", :locals=>
+					{:p=>:glance,:v=>:referers_today,:options=>{:force_visible=>"true"}} %>
+
+					<%= render :partial=>"panel", :locals=>
+					{:p=>:glance,:v=>:referers_week,:options=>{:force_visible=>"true"}} %>
+					<br clear="both"/>
+				</div>
 
 				<div id="hits" class="section" <%=panel_style(:hits)-%> >
 					<img src="/images/h/hits.gif" class="section_title"/>  
@@ -141,72 +139,72 @@
 
 					</div>
 
-						<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:today,:options=>{:c=>"date"}} %>
-						<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:week,:options=>{:c=>"date"}} %>
-						<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:month,:options=>{:c=>"date"}} %>
-						<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:year,:options=>{:c=>"date"}} %>
+					<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:today,:options=>{:c=>"date"}} %>
+					<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:week,:options=>{:c=>"date"}} %>
+					<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:month,:options=>{:c=>"date"}} %>
+					<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:year,:options=>{:c=>"date"}} %>
 
 
 
-						<br clear="both"/>
+					<br clear="both"/>
+				</div>
+
+				<div id="referers" class="section" <%=panel_style(:referers)-%> >
+					<img src="/images/h/referers.gif" class="section_title"/>  
+					<div class="panel_links">
+						<span class="navlink_show">Show:</span>
+						<%= render :partial=>"navlink", :locals=>{:s=>:referers,:v=>:recent,:d=>"Most recent"} %> | 
+						<%= render :partial=>"navlink", :locals=>{:s=>:referers,:v=>:unique,:d=>"Latest unique"} %> | 
+						<%= render :partial=>"navlink", :locals=>{:s=>:referers,:v=>:total,:d=>"Totals"} %>
 					</div>
 
-					<div id="referers" class="section" <%=panel_style(:referers)-%> >
-						<img src="/images/h/referers.gif" class="section_title"/>  
-						<div class="panel_links">
-							<span class="navlink_show">Show:</span>
-							<%= render :partial=>"navlink", :locals=>{:s=>:referers,:v=>:recent,:d=>"Most recent"} %> | 
-							<%= render :partial=>"navlink", :locals=>{:s=>:referers,:v=>:unique,:d=>"Latest unique"} %> | 
-							<%= render :partial=>"navlink", :locals=>{:s=>:referers,:v=>:total,:d=>"Totals"} %>
-						</div>
+					<%= render :partial=>"panel", :locals=>
+					{:p=>:referers,:v=>:recent,:options=>{:c=>"links"}} %>
+					<%= render :partial=>"panel", :locals=>
+					{:p=>:referers,:v=>:unique,:options=>{:c=>"links"}} %>
+					<%= render :partial=>"panel", :locals=>
+					{:p=>:referers,:v=>:total,:options=>{:c=>"links"}} %>
 
-						<%= render :partial=>"panel", :locals=>
-						{:p=>:referers,:v=>:recent,:options=>{:c=>"links"}} %>
-						<%= render :partial=>"panel", :locals=>
-						{:p=>:referers,:v=>:unique,:options=>{:c=>"links"}} %>
-						<%= render :partial=>"panel", :locals=>
-						{:p=>:referers,:v=>:total,:options=>{:c=>"links"}} %>
+					<br clear="both"/>
 
-						<br clear="both"/>
-						
-						<div class="options">
-							<a href="#" title="referer_options" 
-							onclick="return toggleAppear('referer_options');">Referer options</a>
-							<form action="/project/save_options" method="post">
-								<input type="hidden" name="pid" value="<%= @project.id %>" />
-								<input type="hidden" name="pageid" value="<%= @id %>"/>
-								<div id="referer_options" class="options_panel" style="display:none">
-									<h1>Condense referers</h1>
-									<p>
-										Treat all referers from this domain as a single referer. 
-										<b>This action is non-reversible.</b>
-										<a href="#" onclick="Element.toggle('condense_explanation'); return false;">Why?</a>
-									</p>
-									<p id="condense_explanation" style="display:none">
-										Condensing a referer will physically change the logs for your project, which
-										can't be undone. At any time you can stop condensing a referer,
-										but all past hits from the referer's domain will remain condensed.
-									</p>
-									<div class="text-form">
-										<div class="form_error" style="display:none" id="domain_validation">
-											<p>This is not a valid domain.</p>
-										</div>
-										<input type="text" name="domain" id="domain"/>
-										<div class="example">
-											e.g. digg.com, del.icio.us
-										</div>
-
+					<div class="options">
+						<a href="#" title="referer_options" 
+						onclick="return toggleAppear('referer_options');">Referer options</a>
+						<form action="/project/save_options" method="post">
+							<input type="hidden" name="pid" value="<%= @project.id %>" />
+							<input type="hidden" name="pageid" value="<%= @id %>"/>
+							<div id="referer_options" class="options_panel" style="display:none">
+								<h1>Condense referers</h1>
+								<p>
+									Treat all referers from this domain as a single referer. 
+									<b>This action is non-reversible.</b>
+									<a href="#" onclick="Element.toggle('condense_explanation'); return false;">Why?</a>
+								</p>
+								<p id="condense_explanation" style="display:none">
+									Condensing a referer will physically change the logs for your project, which
+									can't be undone. At any time you can stop condensing a referer,
+									but all past hits from the referer's domain will remain condensed.
+								</p>
+								<div class="text-form">
+									<div class="form_error" style="display:none" id="domain_validation">
+										<p>This is not a valid domain.</p>
 									</div>
-									<% if (!@project.collapsing_refs.nil? &&
-										!@project.collapsing_refs.empty?) %>
+									<input type="text" name="domain" id="domain"/>
+									<div class="example">
+										e.g. digg.com, del.icio.us, stumbleupon.com
+									</div>
+
+								</div>
+								<% if (!@project.collapsing_refs.nil? &&
+									!@project.collapsing_refs.empty?) %>
 									<h2>Currently condensing</h2>
 									<table id="currently_condensing">
-									<% @project.collapsing_refs.each do |r| %>
-									<% #TODO - truncate this referer %>
+										<% @project.collapsing_refs.each do |r| %>
+										<% #TODO - truncate this referer %>
 										<tr><td class="f"><%= r[0] %></td><td><a id="hey" href="">Stop condensing</a>
 											<input type="hidden" name="<%= r[0] %>" value="on"/>
-											</td></tr>
-									<% end %>
+										</td></tr>
+										<% end %>
 									</table>
 									<% end %>
 									<div class="submit">
@@ -259,7 +257,7 @@
 						<div class="chart"  id="browser_details"><div class="chart_frame"></div>        
 					</div>
 					<br/>
-					<div class="chart"  id="os_details"><div class="chart_frame"></div>        
+					<div class="chart"  id="os_details"><div class="chart_frame"></div>    
 				</div>
 
 				<br clear="both"/>
@@ -267,4 +265,6 @@
 
 
 		</div>
+
+
 

@@ -1,34 +1,5 @@
-// Dean Edwards/Matthias Miller/John Resig
 
 
-
-/* for Mozilla/Opera9 */
-if (document.addEventListener)   
-    document.addEventListener("DOMContentLoaded", init, false);
-
-/* for Internet Explorer */
-/*@cc_on @*/
-/*@if (@_win32)
-    document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
-    var script = document.getElementById("__ie_onload");
-    script.onreadystatechange = function() {
-        if (this.readyState == "complete") {
-            init(); // call the onload handler
-        }
-    };
-/*@end @*/
-
-/* for Safari/konq */
-if (/WebKit|KHTML/i.test(navigator.userAgent)) { // sniff
-    var _timer = setInterval(function() {
-        if (/loaded|complete/.test(document.readyState)) {
-            init(); // call the onload handler
-        }
-    }, 10);
-}
-
-/* for other browsers */
-window.onload = init;
 
 
 /*
@@ -174,15 +145,7 @@ Page.prototype = {
 
 function init(){  
 
-  // quit if this function has already been called  
-  if (arguments.callee.done) return;
-  
-  // flag this function so we don't do the same thing twice
-  arguments.callee.done = true;
-  
-  // kill the timer
-  if (_timer) clearInterval(_timer);
-  
+
  
   // delete this junk
   now=10; 
@@ -198,17 +161,20 @@ function init(){
   $A(document.getElementsByClassName("panel_link","content")).each(function (e){
     e.onclick=function(){ page.panelNav(this); return false;};
   });  
+
 	// set collapse links
 	Event.addBehavior({
 		'#currently_condensing a:click' : function(e){ 
 			input=this.nextElement();
 			input.value = input.value=="on" ? "off" : "on";
 			page.syncRefererPreferenceLink(this);
-			return false;}
+			return false;
+			}			
 	})
+		return;
 	// Sync all the referer links to their hidden form elements
 	$$("#currently_condensing a").each(function (e){page.syncRefererPreferenceLink(e);});
-	
+
 	Event.addBehavior({
 		'#domain:blur' : function(e){
 			//text=this.value;
@@ -1031,9 +997,10 @@ PieGraphDisplay.prototype={
     var labelBox=document.createElement("div");
     Element.addClassName(labelBox,"label_box");
     labelBox.style.left=px(this.size);
-    labelBox.innerHTML="<span class='title'>"+this.title+"</a>"
+    labelBox.innerHTML="<span class='title'>"+this.title+"</a>";
+
     var ul = document.createElement("ul");
-    ul;
+    //ul;
     for (var i=0; i<this.labels.length;i++){
       var div=document.createElement("li"); 
       div.innerHTML="<div class='color_box' style='background-color:" + 
@@ -1056,3 +1023,8 @@ PieGraphDisplay.prototype={
 
 
 page = new Page();
+
+Event.onReady(function(){
+	init();
+});
+

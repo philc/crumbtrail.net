@@ -2,6 +2,7 @@ class MainController < ApplicationController
   helper MainHelper
   def index
     #@account=signed_in?
+    @title="Breadcrumbs - Follow the trail"
     if (request.post?)
       @email=params[:email]
       
@@ -10,6 +11,8 @@ class MainController < ApplicationController
   end
   
   def signup
+    @title="Sign up - Breadcrumbs"
+    
     # You shouldn't be able to get to this page if you're logged in. If they
     # navigate here manually, forward them back to their projects
     
@@ -51,6 +54,7 @@ class MainController < ApplicationController
   end
 
   def signin
+    @title="Sign in - Breadcrumbs"
     # If they get to this page and are already logged in (like in another frame),
     # continue their redirect. If there's none, send them to their project page
     redirect = params[:r]

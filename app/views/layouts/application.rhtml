@@ -3,7 +3,8 @@
 <html>
 <head>
 <title>
-<%= @title ?  @title + " - Breadcrumbs" : "Breadcrumbs"%>
+<% @title ?  @title + " - Breadcrumbs" : "Breadcrumbs"%>
+<%= @title ?  @title : "Breadcrumbs"%>
 </title>
 
 <%= stylesheet_link_tag "main" %>

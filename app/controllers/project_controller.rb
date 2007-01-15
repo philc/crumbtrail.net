@@ -1,9 +1,7 @@
 class ProjectController < ApplicationController
   include ActionView::Helpers::NumberHelper
   before_filter :authorize, :except=>:index
-  
-  #@@project_id=1050
-  
+
   # These are the default view strings, in case they don't have a cookie
   # expressing what section they should be viewing
   @@default_view={
@@ -22,7 +20,7 @@ class ProjectController < ApplicationController
   # Number of entries to show in each table
   @@size=10
   def new
-    @title="Create a new project"
+    @title="Create a new project - Breadcrumbs"
     if (request.post?)
       @site_name=params[:site_name]
       @site_url=params[:site_url]
@@ -111,6 +109,7 @@ class ProjectController < ApplicationController
     # Ensure that they are logged in, unless we're viewing a demo
     if @id!="livedemo"
       authorize()
+      return if @account.nil?
     end
       
     if (@id=="recent")
@@ -141,7 +140,7 @@ class ProjectController < ApplicationController
     
     #@all_projects=@account.projects.reject{|p| p!=@project}
     
-    @title="Stats for " + @project.title.to_s
+    @title="Stats for " + @project.title.to_s + " - Breadcrumbs"
     
     # use the date in the view that we have on record for them.    
     @date = JSDate.new(@project.time).to_json;
