@@ -2,7 +2,7 @@ class ProjectController < ApplicationController
   include ActionView::Helpers::NumberHelper
   before_filter :authorize, :except=>:index
   
-  @@project_id=1050
+  #@@project_id=1050
   
   # These are the default view strings, in case they don't have a cookie
   # expressing what section they should be viewing
@@ -163,10 +163,19 @@ class ProjectController < ApplicationController
   #
   # fetches data used for pagination
   #
-  def data
-    project = Project.find(@@project_id)    
+  def pagedata
+
+    id=params[:project]
+    project = Project.find_by_id(id)
+
+    if (project.nil?)
+      render :nothing=>true
+      return
+    end
     
-       
+    # TODO: check for wrong account. Display a message with the option of logging out.
+    # if project.account!=@account       
+      
     page=params[:p].to_i
     page=0 if (page<-1)
     
@@ -185,7 +194,7 @@ class ProjectController < ApplicationController
     @more = @data.length>@@size
     @data=@data[0..-2] if @more
     
-    # Find out which page we're showing; the review won't know which page
+    # Find out which page we're showing; the view won't know which page
     # it's asking for in the case of when it requests the "last page"
     @page=page    
     

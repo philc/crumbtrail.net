@@ -525,10 +525,12 @@ Pagination.prototype={
   prev:function(){
     return this.makeRequest(this.current-1);
   },
-  makeRequest:function(page){
-    new Ajax.Request('/project/data/'+this.name, 
+  // TODO: needs a progress indicator
+  makeRequest:function(p){
+    new Ajax.Request('/project/pagedata/'+this.name, 
     {asynchronous:true, evalScripts:true, 
-      parameters:"p="+page,
+		// This is the page we want to show
+      parameters:"p="+p + "&project="+page.project,
       onComplete:this.show.bind(this)
     });
     return false;

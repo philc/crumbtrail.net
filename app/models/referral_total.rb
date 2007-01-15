@@ -22,21 +22,21 @@ class ReferralTotal < ActiveRecord::Base
   
   def self.get_recent_unique(project, limit)
     return find(:all,
-                :conditions => ["project_id", project.id],
+                :conditions => {:project_id=> project.id},
                 :order      => "first_visit DESC",
                 :limit      => limit)
   end
 
   def self.get_top_referers(project, limit, offset=0)
-    puts "offset",offset
+    puts "offset",offset, "id", project.id
     return find(:all,
-                :conditions => ["project_id", project.id],
+                :conditions => {:project_id=> project.id},
                 :order      => "count DESC",
                 :offset     => offset,
                 :limit      => limit)
   end
 
   def self.count_top_referers(project)
-    return count(:conditions=>["project_id",project.id])
+    return count(:conditions => {:project_id=> project.id})
   end
 end

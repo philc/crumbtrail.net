@@ -8,7 +8,7 @@ if ARGV.length <2
 else
 	table_type=ARGV[0]
 	ARGV[1..-1].each do |table|
-		statement = "alter table #{table} type=#{table_type};"
+		statement = "alter table #{table} engine=#{table_type};"
 		`sudo mysql -e "use achilles_development; #{statement}"`
 	end
 end

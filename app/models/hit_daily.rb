@@ -77,6 +77,7 @@ class HitDaily < ActiveRecord::Base
 
   def self.build_hit_array(project, first, last)
     rows = find(:all, 
+                # This <= comparison might be expensive if date a) is not indexed and/or b) it's not sorted
                 :conditions => ['project_id = ? AND date >= ? AND date <= ?', project.id, first, last],
                 :order => 'date ASC')
 

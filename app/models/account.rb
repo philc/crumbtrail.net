@@ -15,6 +15,7 @@ class Account < ActiveRecord::Base
     end
     return account    
   end
+  
   def recent_project
     rp=self.recent_project_id
     return nil if (rp.nil?)
@@ -27,6 +28,7 @@ class Account < ActiveRecord::Base
       
     return p
   end
+  
   def recent_project=(project)
     self.recent_project_id=project.id    
   end
@@ -45,7 +47,7 @@ class Account < ActiveRecord::Base
   
   # Account related methods
   def self.get_demo_account()
-    return find(:first, :conditions=>["role = ?","d"])
+    return find(:first, :conditions=>{:role =>"d"})
   end
   def demo?()
     return self.role=="d"

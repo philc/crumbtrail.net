@@ -68,7 +68,7 @@ class Project < ActiveRecord::Base
       return nil if domain.nil? || self.collapsing_refs.find { |ref| ref[0] == domain }
 
       #todo - make sure its not a search domain
-      \
+      
       # Find all the referers from the collapsing domain (including subdomains of the domain)
       collapsables = Referer.find(:all, :conditions => ['project_id = ? AND url REGEXP ?', id, "[A-Za-z0-9\.]*#{domain}/"])
 

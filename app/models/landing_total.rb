@@ -21,7 +21,7 @@ class LandingTotal < ActiveRecord::Base
 
   def self.get_most_popular(project, limit)
     return find(:all,
-                :conditions => ['project_id = ?', project.id],
+                :conditions => {:project_id=>project.id},
                 :limit => limit,
                 :order => "count DESC")
   end
