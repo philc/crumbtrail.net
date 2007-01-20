@@ -1,0 +1,20 @@
+//
+// Here's a documented version of what the JS is doing
+//
+
+function tracker(){
+p=<%=@project.id%>; var req = "http://stats.crumbtrail.net/stats.js";
+e=document.createElement("script");
+
+ref=''+document.referrer;r=(r.length<=0)?'':'r='+escape(ref)+'&';
+
+e.setAttribute("src", req + '?'+ref+'p='+p+'&u='+(document.cookie.indexOf(p)>=0?0:1)+'&c=' +
+ (new Date()).getTime()%9000);
+
+document.getElementsByTagName("head").item(0).appendChild(e);
+d=new Date(); d.setTime(d.getTime()+3600000);
+
+document.cookie='p'+'=1; path=/; expires=' + d.toGMTString() + ';'
+}
+
+tracker();
