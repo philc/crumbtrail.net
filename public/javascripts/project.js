@@ -1,7 +1,3 @@
-
-
-
-
 /*
  * Controlling the UI
  */
@@ -12,9 +8,7 @@ function UITimer(){
 }
 
 
-//function px(v) {  return v + "px";}
 function px(v) {  return Math.ceil(v) + "px";}
-// function px(v) {  return Math.floor(v) + "px";}
 
 function getNextElement(node){
 	if(node.nodeType==1) return node;
@@ -186,8 +180,6 @@ function init(){
 		}
 	})
 }
-
-//domainRegex=
 
 chartData=[3,4,2,3,5,6,3];
 chartData=[3,2,2,1];
@@ -472,6 +464,8 @@ Pagination.prototype={
     html+= this.buildLink("&#139",this.current>0,"","button", onclick+"prev();");
     html+= this.buildLink("&#155;",enableNext,"","button", onclick+"next();");
     html+= this.buildLink("&#187",enableNext,"","button",onclick+"last();");
+//	html+= '<div id="progress-'+this.current+'><img src="'
+	html+='<div id="pagination_progress" style="display:none"></div>';
     //html+='<a href="" onclick="return page.' + this.name + 'Pager.next();" class="inner2">&#155;</a>';
     //html+='<a href="" onclick="return page.' + this.name + 'Pager.next();" class="inner2">&#155;</a>';
 //     html+='<a href="">&#187;</a>';
@@ -497,11 +491,15 @@ Pagination.prototype={
     {asynchronous:true, evalScripts:true, 
 		// This is the page we want to show
       parameters:"p="+p + "&project="+page.project,
-      onComplete:this.show.bind(this)
+	  onLoading:function(){Element.show("pagination_progress");},
+      onComplete:function(r){Element.hide("pagination_progress");this.show(r);}.bind(this)
+
+/*      onComplete:this.show.bind(this)*/
     });
     return false;
   },
-  show: function(request, page){
+  show: function(request){
+	console.log("showing:",this);
     results=eval(request.responseText);
     var page = results[0];
     var more = results[1];

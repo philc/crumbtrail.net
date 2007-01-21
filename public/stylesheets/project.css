@@ -340,7 +340,8 @@ float:right;
 }
 .pagination_links{
   text-align:right;
-  margin-right:20px;
+  margin-right:50px;
+	position:relative;
 }
 .pagination_links span.page{
   font-size:.9em;
@@ -385,7 +386,16 @@ float:right;
   background-color:#efd39e;
   background-color:#f5d9a2;
 }
-
+/* of pagination request */
+#pagination_progress{
+	width:16px;
+	height:16px;
+	background-image:url(/images/progress.gif);
+	display:block;
+	position:absolute;
+	right:-30px;
+	top:5px;
+}
 
 /*
  * Line graphs
