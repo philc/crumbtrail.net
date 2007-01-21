@@ -1,6 +1,6 @@
 class ProjectController < ApplicationController
   include ActionView::Helpers::NumberHelper
-  before_filter :authorize, :except=>:index
+  before_filter :authorize, :except=>[:index,:pagedata]
 
   # These are the default view strings, in case they don't have a cookie
   # expressing what section they should be viewing
@@ -116,8 +116,8 @@ class ProjectController < ApplicationController
       @project = @account.recent_project
     elsif (@id=="livedemo")
       puts "demo account"
-      @account=Account.get_demo_account()
-      @project=@account.projects[0]
+      @account=Account.demo_account
+      @project = Project.demo_project
     else
       @project = Project.find_by_id(@id)      
     end

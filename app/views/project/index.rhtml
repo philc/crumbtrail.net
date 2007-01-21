@@ -207,9 +207,14 @@
 										<% end %>
 									</table>
 									<% end %>
+									<% if (@account.demo?)%>
 									<div class="submit">
-										<input type="submit" value="Save options">
+										<input type="submit" disabled value="Save options" >
+										<div><br/>(You cannot save preferences in the demo)</div>
 									</div>
+									<% else %>
+										<input type="submit" value="Save options" >
+									<% end %>
 								</div>
 							</form>
 						</div>

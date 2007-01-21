@@ -33,22 +33,32 @@ def add
     :country_id=>1,
     :zone=>z
   )
-                            
-  demo = Account.create(:username   => "demo",
+
+# This is the "real owner" of the ninjawords account                            
+  philc = Account.create(:username   => "philc",
                          :password   => "pass1",
-                         :firstname  => "Demo",
-                         :lastname   => "Account",
+                         :firstname  => "Phil",
+                         :lastname   => "Crosby",
                          :country_id => 1,
-                         :zone_id   => 1,
-                         :role=>"d")
+                         :zone_id   => z.id,
+                         :role=>"a")
                          
                          
-  proj = Project.new(:account => demo,
+  proj = Project.new(:account => philc,
                      :title => "Ninja Words",
                      :url => "ninjawords.com/",
-                     :zone => demo.zone)
+                     :zone => philc.zone)
   proj.id = 1050
   proj.save
+  
+  demo = Account.create(:username=>"demo",
+                    :password => "pass1",
+                    :firstname=>"Demo",
+                    :lastname=>"Account",
+                    :country_id=>1,
+                    :zone_id=>z.id,
+                    :role=>"d"
+                    )
   
   # puts "Creating Time zone info..."
   # 
@@ -60,9 +70,7 @@ def add
   # pac.id = 2
   # pac.save
   
-  server = Server.new(:zone_id => 1)
-  server.id = 1
-  server.save
+
   
   puts "done"
 end
@@ -70,7 +78,9 @@ end
 def drop
   puts "Deleting text accounts and projects..."
   Account.delete_all "username = 'mikequinn'"
+  Account.delete_all "username = 'a@b.c'"
   Account.delete_all "username = 'philc'"
+  Account.delete_all "username = 'demo'"
   Project.delete(1050)
   puts "done"
 end

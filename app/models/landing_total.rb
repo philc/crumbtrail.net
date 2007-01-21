@@ -25,4 +25,6 @@ class LandingTotal < ActiveRecord::Base
                 :limit => limit,
                 :order => "count DESC")
   end
+  
+
 end
