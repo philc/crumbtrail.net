@@ -13,7 +13,7 @@
 
 &lt;head&gt;
 &lt;title&gt;Acme Products&lt;/title&gt;
-<span class="paste">Paste your code anywhere in here</span>
+<span class="paste_here">Paste your code anywhere in here</span>
 &lt;/head&gt;
 
 &lt;body&gt;
@@ -21,15 +21,15 @@
 </pre>
     </p>   
     
-    <p>Here's the code for your project, <%= @project.title %>:</p>
+    <p><br/>Here's the code for your project, <%= @project.title %>:</p>
     
     
     <% jscode=render(:partial=>"javascript", :object=>@project)
-        jscode='&lt;script type="text/javascript"&gt;' + jscode + '&lt;/script&gt;'
+        jscode='&lt;script type="text/javascript"&gt;' + "\n" + jscode + '&lt;/script&gt;'
     %>
    
     
 
-<textarea  cols="70" rows="10" class="code_box" readonly="true"><%= jscode %></textarea>
+<textarea  cols="70" rows="15" class="code_box" readonly="true"><%= jscode %></textarea>
 
 

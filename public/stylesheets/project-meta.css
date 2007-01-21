@@ -1,7 +1,7 @@
 /* beef up the size of the link in comparison to the normal links */
 .dialog td a{
-	  padding: 2px 0px 3px 10px;
-/*	margin:2px;*/
+	padding: 2px 0px 3px 10px;
+	/*	margin:2px;*/
 }
 #create_new {
 	margin-top:20px;
@@ -13,3 +13,19 @@
 
 }
 
+/* "paste here" section in the project's code listing */
+.paste_here{
+	font-size:1.1em;
+	color:green;
+}
+
+.code_example{
+	border-top:2px solid #cccccc;
+	border-bottom:2px solid #cccccc;
+	background-color:#f5f5f5;
+}
+.code_box{
+/*	border:2px dashed #cccccc;*/
+		background-color:#f5f5f5;
+		padding:5px;
+}

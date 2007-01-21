@@ -123,6 +123,7 @@
 .section_title{
   /* image has a lot of whitespace on it, to account for lowercase letters*/
   margin-bottom:-2px; 
+  height:42px;
 }
 .side{
   /*width:48%;*/  

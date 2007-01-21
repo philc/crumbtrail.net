@@ -1,29 +1,11 @@
-
-function tracker(){
-
-p=<%=@project.id%>;
-
-// Url we're fetching
-var req = "http://stats.crumbtrail.net/stats.js";
-
-
-e=document.createElement("script");
-
-r=""+document.referrer;r=(r.length<=0)?"":'r='+escape(r)+'&';
-
-// Build the args part of the URL, including a "c=[random number]" to thwart IE's caching
-
-e.setAttribute("src", req + '?'+r+'p='+p+'&u='+(document.cookie.indexOf(p)>=0?0:1)+'&c=' +
+function bctracker(){
+var d,p,req,e,r,date; d=document; p=<%=@project.id%>; 
+req = "http://stats.crumbtrail.net/stats.js"; e=d.createElement("script"); 
+r = "" + d.referrer; r= (r.length<=0) ? "" : 'r=' + escape(r) + '&';
+e.setAttribute("src", req + '?'+r+'p='+p+'&u='+(d.cookie.indexOf(p)>=0?0:1)+'&c=' +
  (new Date()).getTime()%9000);
-
-document.getElementsByTagName("head").item(0).appendChild(e);
-
-// Create the cookie after the first request, so the first hit is logged as new
-
-// 1 hour later.
-d=new Date(); d.setTime(d.getTime()+3600000);
-
-document.cookie='p'+'=1; path=/; expires=' + d.toGMTString() + ';'
+d.getElementsByTagName("head")[0].appendChild(e);
+var date=new Date(); date.setTime(date.getTime()+3600000);
+d.cookie=p+'=1; path=/; expires=' + date.toGMTString() + ';'
 }
-
-tracker();
+bctracker();
