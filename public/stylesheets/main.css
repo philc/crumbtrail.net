@@ -60,14 +60,43 @@ table,img{ border:0;}
 	margin-bottom:10px;
 }
 
-.dialog .hd {  background:#fbeac8 url(/images/d/tl.gif) no-repeat 0px 0px;}
+/*.dialog .hd {  background:#fbeac8 url(/images/d/tl.gif) no-repeat 0px 0px;}
 .dialog .hd .c {  background:transparent url(/images/d/tr.gif) no-repeat right 0px;  }
 .dialog .bd { background:#fbeac8 none repeat-y 0px 0px; }
 .dialog .bd .c { background:#fbeac8 none repeat-y right 0px; }
 .dialog .ft .c, .dialog .hd .c { height:10px;  }
 .dialog .ft {  background:#fbeac8 url(/images/d/bl.gif) no-repeat 0px 0px;}
 .dialog .ft .c { background:transparent url(/images/d/br.gif) no-repeat right 0px;}
-.dialog .bd .c{  background-color:#fbeac8; }
+.dialog .bd .c{  background-color:#fbeac8; }*/
+
+b{font-weight:normal; display:block; }
+
+
+/*
+ * A regular sized dialog box
+ */
+.d .hd, .d .ft { position:relative;}
+.d .hd { background:#fbeac8 url(/images/d/tan.gif) no-repeat -10px -10px; 	}
+.d .hd .c {  background:transparent url(/images/d/tan.gif) no-repeat 0px -10px; }
+.d .bd { background:#fbeac8 none repeat-y 0px 0px; }
+.d .ft .c, .d .hd .c, .d .hd, .d .ft { height:10px; font-size:1px; }
+.d .ft .c, .d .hd .c { 	width:10px; position:absolute; right:-1px; }
+.d > .ft .c, .d > .hd .c { right:0px; }	/* correct -1 used for IE */
+.d .ft {  background:#fbeac8 url(/images/d/tan.gif) no-repeat -10px 0px;}
+.d .ft .c { background:transparent url(/images/d/tan.gif) no-repeat 0 0px;  }
+
+/*
+ * A regular sized dialog box
+ */
+.d2 .hd, .d2 .ft { position:relative;}
+.d2 .hd { background:#f2f2f2 url(/images/d/gray.gif) no-repeat -10px -10px; 	}
+.d2 .hd .c {  background:transparent url(/images/d/gray.gif) no-repeat 0px -10px; }
+.d2 .bd { background:#f2f2f2 none repeat-y 0px 0px; }
+.d2 .ft .c, .d2 .hd .c, .d2 .hd, .d2 .ft { height:10px; font-size:1px; }
+.d2 .ft .c, .d2 .hd .c { width:10px; position:absolute; right:-1px; }
+.d2 > .ft .c, .d2 > .hd .c { right:0px; }	/* correct -1 used for IE */
+.d2 .ft {  background:#f2f2f2 url(/images/d/gray.gif) no-repeat -10px 0px;}
+.d2 .ft .c { background:transparent url(/images/d/gray.gif) no-repeat 0 0px;  }
 
 #logo{
 	width:100px;
@@ -308,7 +337,7 @@ a.linkbox:hover{
 #signin-box .field{
   width:13em;
 }
-#signin-box .dialog .bd .c{
+#signin-box .d .bd .c{
   padding: 2px 8px 0 8px;
   /*padding-left:5px;padding-right:5px;*/
 }

@@ -613,9 +613,9 @@ DisplayHelper.Methods={
 	return val.substring (0, val.length - 1);
   },
   dialog: function(title,content){
-    return '<div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">'+
-      '<div class="c"><h1 class="title">' + title + '</h1>'+content + '</div></div><div class="ft">' + 
-      '<div class="c"></div></div></div>';
+    return '<b class="d"><b class="hd"><b class="c"></b></b><b class="bd">'+
+      '<b class="c"><h1 class="title">' + title + '</h1>'+content + '</b></b><b class="ft">' + 
+      '<b class="c"></b></b></b>';
   }
 }
 Object.extend(DisplayHelper,DisplayHelper.Methods);
