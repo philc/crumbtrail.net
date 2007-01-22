@@ -1,0 +1,57 @@
+<div class="options">
+	<a href="#" title="referer_options" 
+	onclick="return toggleAppear('referer_options');">Referer options</a>
+
+	<b class="d2 options_panel" id="referer_options" style="display:none"><b class="hd"><b class="c"></b></b>
+	<b class="bd"><b class="c">
+		<form action="/project/save_options" method="post">
+			<input type="hidden" name="pid" value="<%= @project.id %>" />
+			<input type="hidden" name="pageid" value="<%= @id %>"/>
+
+			<h1>Condense referers</h1>
+			<p>
+				Treat all referers from this domain as a single referer. 
+				<strong>This action is non-reversible.</strong>
+				<a href="#" onclick="Element.toggle('condense_explanation'); return false;">Why?</a>
+			</p>
+			<p id="condense_explanation" style="display:none">
+				Condensing a referer will physically change the logs for your project, which
+				can't be undone. At any time you can stop condensing a referer,
+				but all past hits from the referer's domain will remain condensed.
+			</p>
+			<div class="text-form">
+				<div class="form_error" style="display:none" id="domain_validation">
+					<p>This is not a valid domain.</p>
+				</div>
+				<input type="text" name="domain" id="domain"/>
+				<div class="example">
+					e.g. digg.com, del.icio.us, stumbleupon.com
+				</div>
+
+			</div>
+			<% if (!@project.collapsing_refs.nil? &&
+				!@project.collapsing_refs.empty?) %>
+				<h2>Currently condensing</h2>
+				<table id="currently_condensing">
+					<% @project.collapsing_refs.each do |r| %>
+					<% #TODO - truncate this referer %>
+					<tr><td class="f"><%= r[0] %></td><td><a id="hey" href="">Stop condensing</a>
+						<input type="hidden" name="<%= r[0] %>" value="on"/>
+					</td></tr>
+					<% end %>
+				</table>
+				<% end %>
+				<% if (@account.demo?)%>
+				<div class="submit">
+					<input type="submit" disabled value="Save options" >
+					<div><br/>(You cannot save preferences in the demo)</div>
+				</div>
+				<% else %>
+				<input type="submit" value="Save options" >
+				<% end %>
+
+			</form>
+		</b></b>
+		<b class="ft"><b class="c"></b></b>
+	</b>
+</div>
