@@ -13,7 +13,9 @@ class ProjectController < ApplicationController
   }
   
   # Show all the projects the user has
-  def all    
+  def all   
+    @title="Projects for #{@account.username} - Breadcrumbs"
+
     @projects=@account.projects
   end
   
@@ -65,6 +67,7 @@ class ProjectController < ApplicationController
   # This is part of the signup process which shows them the code they need
   def code    
     @project=Project.find_by_id(params[:id])
+    @title="Code for project #{@project.title} - Breadcrumbs"
     # @project=nil
   end
   

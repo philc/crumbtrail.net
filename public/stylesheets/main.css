@@ -380,25 +380,3 @@ a.linkbox:hover{
   width:200px;
 }
 
-/*
- * Code page
- */
-
-/* right side of the code form */
-.code_right{
-  float:right;
-  width:13em;
-  margin-left:15px;
-  background-color:#fffae8;
-  padding-left:10px;
-  padding-right:5px;
-}
-textarea.code_box{
-  background-color:#F6F6F6;
-}
-
-/*
- * "All projects" page
- */
-
-

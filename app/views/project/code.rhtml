@@ -1,3 +1,7 @@
+<% content_for (:head) do %>
+	<%= stylesheet_link_tag "project-meta" %>
+<% end %>
+
 <% 
 if @project.nil?
 	return "You're trying to view code for a project that doesn't exist, or for a project you don't own."

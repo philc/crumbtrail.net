@@ -18,7 +18,6 @@ e=d.createElement("script");
 r=""+d.referrer;r=(r.length<=0)?"":'r='+escape(r)+'&';
 
 // Build the args part of the URL, including a "c=[random number]" to thwart IE's caching
-
 e.setAttribute("src", req + '?'+r+'p='+p+'&u='+(d.cookie.indexOf(p)>=0?0:1)+'&c=' +
  (new Date()).getTime()%9000);
 
