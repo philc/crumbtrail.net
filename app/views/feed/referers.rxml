@@ -1,19 +1,40 @@
 xml.instruct!
 xml.rss "version" => "2.0", "xmlns:dc" =>"http://purl.org/dc/elements/1.1/" do
   xml.channel do
-    xml.title "#{@project.title} recent unique referrals - Breadcrumbs"
+    if (params[:option]=="unique")
+      
+      xml.title "#{@project.title} recent unique referrals - Breadcrumbs"
 
-    @refs.each do |ref|
-      xml.item do
-        url = ref.referer.url
-        time = ref.first_visit.strftime("%I:%M%p on %a %b %d")
-        # This should show "url - 20 minutes ago"
-        xml.title url + " #{time}"
-        xml.link url
-        # This should show "url - 20 minutes ago"
-        xml.description "<a href='#{url}'>#{url}</a><br/>#{time}"
-        xml.guid url
+      @refs.each do |ref|
+        xml.item do
+          url = ref.referer.url
+          time = ref.first_visit.strftime("%I:%M%p on %a %b %d")
+
+          xml.title truncate(url,50)  + " #{time}"
+          xml.link url
+          xml.pubDate CGI.rfc1123_date(ref.first_visit)        
+          xml.description "<a href='http://#{url}'>#{url}</a><br/>#{time}"
+          xml.guid url
+        end
       end
+      
+    else
+      
+       xml.title "#{@project.title} recent referrals - Breadcrumbs"
+     
+        @refs.each do |ref|
+          xml.item do
+            url = ref.referer.url
+            time = ref.visit_time.strftime("%I:%M%p on %a %b %d")
+     
+            xml.title truncate(url,50)  + " #{time}"
+            xml.link url
+            xml.pubDate CGI.rfc1123_date(ref.visit_time)        
+            xml.description "<a href='http://#{url}'>#{url}</a><br/>#{time}"
+            xml.guid url
+          end
+        end
+      
     end
   end
 end

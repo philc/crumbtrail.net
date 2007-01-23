@@ -29,6 +29,9 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/project/code', :controller=>'project', :action=>"code"
   map.connect '/project/:id', :controller=>'project', :action=>"index"
   # Install the default route as the lowest priority.
+  
+  map.connect '/feed/:id/:action/:option', :controller=>'feed'  
+  map.connect '/feed/:id/:action/', :controller=>'feed'
   map.connect ':controller/:action/:id'
   
   

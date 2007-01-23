@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   # Don't filter anything to the production logs that matches "password"
   filter_parameter_logging "password"
   before_filter :signed_in?
- 
+  session :off
   
   @@login_cookie=:login_token
   
