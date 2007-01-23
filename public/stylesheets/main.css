@@ -90,7 +90,7 @@ b{font-weight:normal; display:block; }
 .d .ft .c { background:transparent url(/images/d/tan.gif) no-repeat 0 0px;  }
 
 /*
- * A regular sized dialog box
+ * A regular sized dialog box, gray
  */
 .d2 .hd, .d2 .ft { position:relative;}
 .d2 .hd { background:#f2f2f2 url(/images/d/gray.gif) no-repeat -10px -10px; 	}
@@ -101,6 +101,20 @@ b{font-weight:normal; display:block; }
 .d2 > .ft .c, .d2 > .hd .c { right:0px; }	/* correct -1 used for IE */
 .d2 .ft {  background:#f2f2f2 url(/images/d/gray.gif) no-repeat -10px 0px;}
 .d2 .ft .c { background:transparent url(/images/d/gray.gif) no-repeat 0 0px;  }
+
+/*
+ * Small dialog, used for the menu
+ */
+.ds .hd, .ds .ft { position:relative;}
+.ds .hd { background:#fbeac8 url(/images/d/tan-small.gif) no-repeat -5px -5px; 	}
+.ds .hd .c {  background:transparent url(/images/d/tan-small.gif) no-repeat 0px -5px; }
+.ds .bd { background:#fbeac8 none repeat-y 0px 0px; }
+.ds .ft .c, .ds .hd .c, .ds .hd, .ds .ft { height:5px; font-size:1px; }
+.ds .ft .c, .ds .hd .c { 	width:5px; position:absolute; right:-1px; }
+.ds > .ft .c, .ds > .hd .c { right:0px; }	/* correct -1 used for IE */
+.ds .ft {  background:#fbeac8 url(/images/d/tan-small.gif) no-repeat -5px 0px;}
+.ds .ft .c { background:transparent url(/images/d/tan-small.gif) no-repeat 0 0px;  }
+
 
 #logo{
 	width:100px;
@@ -175,20 +189,10 @@ b{font-weight:normal; display:block; }
   margin-right:0px;
   border-right:0;
 }
-.small-dialog  .hd {  background:#fbeac8 url(/images/d/menutl.gif) no-repeat 0px 0px; }
-.small-dialog  .hd .c {  background:transparent url(/images/d/menutr.gif) no-repeat right 0px; }
-.small-dialog  .bd { background:#fbeac8 none repeat-y 0px 0px;}
-.small-dialog  .bd .c { background:#fbeac8 none repeat-y right 0px; }
-.small-dialog  .ft .c, .small-dialog .hd .c { height:5px; font-size:1px;
-
- }
-.small-dialog  .ft {   background:#fbeac8 url(/images/d/menubl.gif) no-repeat 0px 0px;}
-.small-dialog  .ft .c {background:transparent url(/images/d/menubr.gif) no-repeat right 0px;
-
-
-}
-.small-dialog  .bd .c{  background-color:transparent; padding-left:6px; padding-right:6px;
-
+/* Give the header menu dialog some padding on the inside, to accomodate the rollovers */
+#header .ds .bd .c{
+	padding-left:6px;
+	padding-right:6px;
 }
 
 /* Page level notification messages*/
