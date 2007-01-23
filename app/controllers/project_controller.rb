@@ -73,6 +73,7 @@ class ProjectController < ApplicationController
   
   def setup
     @project=Project.find_by_id(params[:id])
+    @title="#{@project.title} setup - Breadcrumbs"
 
     if (!request.post?)
       # First time, fill out the form from the project
