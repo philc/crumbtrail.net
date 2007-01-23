@@ -52,12 +52,16 @@ table,img{ border:0;}
   margin-top:20px;
   padding-left:10em;  
 }
-#footer{
+#footer, #footer-project{
 /*  margin-top:20px;*/
   padding-top:20px;
   clear:both;
   text-align:center;
 	margin-bottom:10px;
+}
+/* The project page has its own footer that's "offset" from the center.*/
+#footer-project{
+	margin-left:10em;
 }
 
 /*.dialog .hd {  background:#fbeac8 url(/images/d/tl.gif) no-repeat 0px 0px;}

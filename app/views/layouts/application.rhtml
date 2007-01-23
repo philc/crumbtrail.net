@@ -58,8 +58,10 @@
   <%= yield :layout %>
   
   </div>
+
   
-  <div id="footer">
+  <% #if this is the project page, show the offset footer %>
+  <div id="footer<%=@title.starts_with?("Stats") ? "-project" : ""%>">
       <span id="copyright">&copy; 2007 Breadcrumbs</span>
   </div>
 
