@@ -46,3 +46,11 @@
 textarea.code_box{
   background-color:#F6F6F6;
 }
+
+/* View all page */
+.view_all td{
+	background-color:#fbeac8;
+}
+.view_all tr.a td{
+	  background-color:#fffae8;
+}
