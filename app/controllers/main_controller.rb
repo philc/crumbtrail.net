@@ -12,14 +12,13 @@ class MainController < ApplicationController
   
   def signup
     @title="Sign up - Breadcrumbs"
-    
+
     # You shouldn't be able to get to this page if you're logged in. If they
     # navigate here manually, forward them back to their projects
     
     
     redirect_to "/project/recent" if @account
     
-    @title="Sign up"
     @zones = Zone.all
     
     if request.post?

@@ -10,7 +10,11 @@ your stats, you'll need to re-enable it in your web browser.
 </div>
 </noscript>
 
-<% return "<br/>We're in private beta at the moment, so we're not accepting new sign ups just yet. Check back in one week - thanks!" %>
+<%
+   unless request.request_uri =~ /privatesignup/
+ 	return "<br/>We're in private beta at the moment, so we're not accepting new sign ups just yet. Check back in one week - thanks!" 
+end
+%>
 
 <h1>Sign up</h1>
 
@@ -58,12 +62,34 @@ your stats, you'll need to re-enable it in your web browser.
       
       <div id="signup-cost">
       <h2>Does it cost anything?</h2>
-        <p><b>No way</b>, not if you get under 6,000 hits a day &mdash;
-        you can use it for free, forever. If you get a ton of
-        traffic or need more features, we hope you'll try our pro version
-        (we're still building it).
+        <p>
+		Not if you get under 2,500 hits a day &#8211; you can use it free, forever.
+		If you get a ton of traffic or need more features, we hope you'll try one of our <strong>Crumbcake</strong> versions
+        (we're still building them).
         </p>
-        
+		<table>
+			<tr class="f">
+				<td class="f"></td>
+				<td>Free</td>
+				<td>
+					<span class="price">$5</span>/month<br/>
+					Wholesome
+				</td>
+				<td><span class="price">$9</span>/month<br/>
+					Tasty
+				</td>
+				<td><span class="price">$18</span>/month<br/>
+					Delicious
+				</td>
+			</tr>
+			<tr>
+				<td class="f" style="white-space:nowrap">Hits per day</td><td>2,500</td><td>10,000</td><td>25,000</td><td>100,000</td>
+			</tr>
+			<tr class="alt">
+				<td class="f">Live update, geo-stats, spreadsheet export</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td>
+			</tr>
+		</table>
+        <br/>
         <div id="letmeknow">
         <input type="checkbox" name="interested"/>
         <div>Let me know when you finish building the pro version</div>

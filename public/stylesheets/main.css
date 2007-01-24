@@ -358,14 +358,14 @@ a.linkbox:hover{
  */
 #signup-cost{
   float:right;
-  width:60%;
+/*  margin-left:30px;*/
+  width:58%;
 }
 
 #signup-cost #letmeknow{
   background-color:#e4eaf4;
   margin-top:5px;
-  padding-left:3px;
-  
+  padding-left:3px;  
 }
 #letmeknow input{
   /*vertical-align:0%;*/
@@ -379,8 +379,31 @@ a.linkbox:hover{
   /*width:200px;*/
   float:left;  
 }
-
 #signup_form .form_error{
   width:200px;
 }
-
+#signup-cost table{
+	text-align:center;
+}
+#signup-cost td{
+	padding:5px;
+}
+#signup-cost td.f{
+  background-color:#F2F2F2;
+  background-color:#607EAB;
+  background-color:#e4eaf4;
+  background-color:#d4dae4;
+  text-align:left;
+/*	white-space:nowrap;*/
+}
+#signup-cost tr.f{
+	background-color:#fbeac8;
+	
+}
+#signup-cost tr.alt{
+	  background-color:#fffae8;
+}
+.price{
+	font-size:130%;
+/*	font-weight:bold;*/
+}
