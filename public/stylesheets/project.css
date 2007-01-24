@@ -111,6 +111,7 @@
   margin-top:10px;
   margin-bottom:10px;
 }
+
 /*
  * Section navigation/layout
  */
@@ -120,11 +121,20 @@
   margin-right:20px;
 }
 
-.section_title{
+h2.section_title{
   /* image has a lot of whitespace on it, to account for lowercase letters*/
   margin-bottom:-2px; 
   height:42px;
+  background-repeat:no-repeat;
+	text-indent:-9999px;
 }
+#glance_title{background: white url(/images/h/headers.gif) no-repeat 0 0;}
+#hits_title{background: white url(/images/h/headers.gif) no-repeat 0 -42px;}
+#referers_title{background: white url(/images/h/headers.gif) no-repeat 0 -84px;}
+#pages_title{background: white url(/images/h/headers.gif) no-repeat 0 -126px;}
+#searches_title{background: white url(/images/h/headers.gif) no-repeat 0 -168px;}
+#details_title{background: white url(/images/h/headers.gif) no-repeat 0 -212px;}
+
 .side{
   /*width:48%;*/  
 }
