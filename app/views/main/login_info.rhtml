@@ -1,0 +1,72 @@
+<% content_for (:head) do %>
+	<%= javascript_include_tag 'timezone' %>
+
+<% end %>
+<div class="copy">
+
+	<noscript>
+		<div class="warning">You don't have Javascript enabled. To view
+			your stats, you'll need to re-enable it in your web browser.
+		</div>
+	</noscript>
+
+  <div class="centered_form">
+	<%
+	unless request.request_uri =~ /privatesignup/
+		return "<br/>We're in private beta at the moment, so we're not accepting new sign ups just yet. Check back in one week - thanks!" 
+	end
+	%>
+
+	<h1>Sign up</h1>
+
+
+
+	<div id="signup_form" clas="left_form">
+
+		<form action="" method="post">
+
+			<div id="signup-fields">
+				<div class="text-form">
+					E-mail
+					<%= show_form_error(@email_error)%>
+					<% if @duplicate_error %>
+					<div class="form_error">
+						We already have an account using that email. Forgotten your password?<br/>
+						<a href="mailto:mikejquinn@gmail.com?subject=[reset password for <%= params[:email] %>]">
+							We can reset it and can email it to you</a>.
+
+					</div>
+					<%end%>
+					<input type="text" name="email" id="email" size="22"
+					value="<%=params[:email]%>" />
+
+					Password
+					<%= show_form_error(@password_error) if !@duplicate_error %>
+					<input type="password" name="password" id="password" size="22"/>
+					Confirm your password
+					<input type="password" name="password_confirm" id="password_confirm" size="22"/>
+					<p>
+						Select your time zone<br/>
+
+						<select id="timezone" name="timezone">
+							<% @zones.each do |t|%>
+							<option value="<%= t.identifier %>"><%=MainHelper.tz_offset(t.offset)%> <%= t.identifier%></option>
+							<%end%>
+						</select>
+					</p>
+				</div>
+
+				<script type="text/javascript">
+				set_select('timezone',<%= params[:timezone].nil? ? "get_tz_name()" : "\"#{params[:timezone]}\"" %>);
+				</script>
+
+				<input type="submit" class="submit" value="Sign up" class="submit">
+			</div>        
+		</div>
+	</form>
+	
+	<script type="text/javascript">
+	  $("email").focus();
+	</script>
+</div>
+</div>

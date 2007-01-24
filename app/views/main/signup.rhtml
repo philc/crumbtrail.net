@@ -16,70 +16,34 @@ your stats, you'll need to re-enable it in your web browser.
 end
 %>
 
-<h1>Sign up</h1>
 
-<div id="signup_form" clas="left_form">
-
-  <form action="/signup" method="post">
-
-      <div id="signup-fields">
-       <div class="text-form">
-        E-mail
-        <%= show_form_error(@email_error)%>
-        <% if @duplicate_error %>
-          <div class="form_error">
-          We already have an account using that email. Forgotten your password?<br/>
-          <a href="">We can reset it and can email it to you</a>.
-          
-          </div>
-        <%end%>
-        <input type="text" name="email" id="email" size="22"
-          value="<%=params[:email]%>" />
-        
-        Password
-        <%= show_form_error(@password_error) if !@duplicate_error %>
-        <input type="password" name="password" id="password" size="22"/>
-        Confirm your password
-        <input type="password" name="password_confirm" id="password_confirm" size="22"/>
-		<p>
-		Select your time zone<br/>
-
-        <select id="timezone" name="timezone">
-		<% @zones.each do |t|%>
-		<option value="<%= t.identifier %>"><%=MainHelper.tz_offset(t.offset)%> <%= t.identifier%></option>
-		<%end%>
-		</select>
-		</p>
-        </div>
-
-		<script type="text/javascript">
-		set_select('timezone',<%= params[:timezone].nil? ? "get_tz_name()" : "\"#{params[:timezone]}\"" %>);
-		</script>
-
-        <input type="submit" class="submit" value="Sign up" class="submit">
-        </div>        
-      </div>  
-      
+<h1>Choose a plan</h1>
+    
       <div id="signup-cost">
-      <h2>Does it cost anything?</h2>
+      <!-- <h2>Does it cost anything?</h2>
         <p>
-		Not if you get under 2,500 hits a day &#8211; you can use it free, forever.
+		<strong>No</strong>, not if you get under 2,500 hits a day &#8211; you can use it free, forever.
 		If you get a ton of traffic or need more features, we hope you'll try one of our <strong>Crumbcake</strong> versions
         (we're still building them).
-        </p>
+        </p> -->
 		<table>
 			<tr class="f">
 				<td class="f"></td>
-				<td>Free</td>
+				<td><br/><span class="free_plan">Free</span>
+					<a class="linkbox" href="./free">Signup</a>
+					</td>
 				<td>
 					<span class="price">$5</span>/month<br/>
 					Wholesome
+					<a class="linkbox linkbox_disabled">Signup</a>
 				</td>
 				<td><span class="price">$9</span>/month<br/>
 					Tasty
+										<a class="linkbox linkbox_disabled">Signup</a>
 				</td>
 				<td><span class="price">$18</span>/month<br/>
 					Delicious
+										<a class="linkbox linkbox_disabled">Signup</a>
 				</td>
 			</tr>
 			<tr>
@@ -90,18 +54,19 @@ end
 			</tr>
 		</table>
         <br/>
+		Even if you get a lot of traffic, try out the free plan to start with.
         <div id="letmeknow">
-        <input type="checkbox" name="interested"/>
-        <div>Let me know when you finish building the pro version</div>
+        <!-- <input type="checkbox" name="interested"/>
+        <div>Let me know when you finish building the pro version</div> -->
         </div>
         
       </div>
       
   </form>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
   $("email").focus();
-</script>
+</script> -->
 
 
 <br clear="both"/>

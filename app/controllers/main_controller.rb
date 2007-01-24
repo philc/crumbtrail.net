@@ -14,42 +14,50 @@ class MainController < ApplicationController
     @title="Sign up - Breadcrumbs"
 
     # You shouldn't be able to get to this page if you're logged in. If they
-    # navigate here manually, forward them back to their projects
+    # navigate here manually, forward them back to their projects    
     
-    
-    redirect_to "/project/recent" if @account
+    if @account
+      redirect_to "/project/recent" 
+      return
+    end
     
     @zones = Zone.all
     
-    if request.post?
-      email=params[:email]
-      @email_error=MainHelper::validate_email(email)
+    if (! params[:type].nil?)    
+      if request.post?
+        email=params[:email]
+        @email_error=MainHelper::validate_email(email)
       
-      # Check for duplicates
-      if (!@email_error)
-        a=Account.find_by_username(email)        
-        @duplicate_error= !a.nil?
-      end
+        # Check for duplicates
+        if (!@email_error)
+          a=Account.find_by_username(email)        
+          @duplicate_error= !a.nil?
+        end
             
-      pw1=params[:password]
-      pw2=params[:password_confirm]
+        pw1=params[:password]
+        pw2=params[:password_confirm]
       
-      @password_error=MainHelper::validate_password(pw1)
+        @password_error=MainHelper::validate_password(pw1)
       
-      # No need to show that they made a typo in their
-      # password if we're already showing an email or pw error
-      if (pw1!=pw2 && @email_error.nil? && @password_error.nil?)
-          @password_error="Your passwords don't match"
-      end
+        # No need to show that they made a typo in their
+        # password if we're already showing an email or pw error
+        if (pw1!=pw2 && @email_error.nil? && @password_error.nil?)
+            @password_error="Your passwords don't match"
+        end
       
-      timezone=Zone.find_by_identifier(params[:timezone])
-      return if timezone.nil?
+        timezone=Zone.find_by_identifier(params[:timezone])
+        return if timezone.nil?
       
-      unless (@password_error || @email_error || @duplicate_error)      
-        create_account(email,pw1,timezone)
-        redirect_to :controller=>"project", :action=>"new"
-      end
-    end       
+        unless (@password_error || @email_error || @duplicate_error)      
+          # TODO: for now we're just ignoring what type of account
+          # they've chosen, and every account is made to be free.
+          create_account(email,pw1,timezone)
+          redirect_to :controller=>"project", :action=>"new"
+          return
+        end
+      end     
+      render :action=>"login_info"
+    end 
   end
 
   def signin
@@ -62,6 +70,7 @@ class MainController < ApplicationController
     end
     if (@account)
       redirect_to redirect
+      return
     end
 
     if (request.post?)

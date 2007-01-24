@@ -14,7 +14,7 @@ module MainHelper
     # should contain one ampersand
     if email.scan(/@/).size != 1
 #       return "This doesn't look like a valid email address"
-      return @@email_error+"adf"
+      return @@email_error
     end
     
     # Make sure it's the correct form, e.g. at least satisfies a@b.c

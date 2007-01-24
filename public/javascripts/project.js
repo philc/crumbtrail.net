@@ -476,7 +476,6 @@ Pagination.prototype={
   prev:function(){
     return this.makeRequest(this.current-1);
   },
-  // TODO: needs a progress indicator
   makeRequest:function(p){
     new Ajax.Request('/project/pagedata/'+this.name, 
     {asynchronous:true, evalScripts:true, 
@@ -488,7 +487,6 @@ Pagination.prototype={
     return false;
   },
   show: function(request){
-	console.log("showing:",this);
     results=eval(request.responseText);
     var page = results[0];
     var more = results[1];

@@ -283,8 +283,10 @@ a.linkbox:hover{
 }
 .centered_form{
   display:table;
-  margin-left:auto;
-  margin-right:auto;
+  margin: 0 auto;
+}
+.centered_form h1{
+	margin-left:-3px;
 }
 .text-form input, .text-form textarea{
   border:1px solid #b89c65;
@@ -357,9 +359,9 @@ a.linkbox:hover{
  * Sign up
  */
 #signup-cost{
-  float:right;
+/*  float:right;*/
 /*  margin-left:30px;*/
-  width:58%;
+/*  width:58%;*/
 }
 
 #signup-cost #letmeknow{
@@ -382,11 +384,20 @@ a.linkbox:hover{
 #signup_form .form_error{
   width:200px;
 }
+/* make these link boxes a bit more clicakble...*/
+#signup-cost a.linkbox{
+/*	border:1px solid blue;*/
+	float:none;
+	padding:5px;
+	border-width:2px;
+/*	margin:0;*/
+}
 #signup-cost table{
 	text-align:center;
 }
 #signup-cost td{
 	padding:5px;
+	width:19%;
 }
 #signup-cost td.f{
   background-color:#F2F2F2;
@@ -403,7 +414,22 @@ a.linkbox:hover{
 #signup-cost tr.alt{
 	  background-color:#fffae8;
 }
-.price{
+.price, .free_plan{
 	font-size:130%;
 /*	font-weight:bold;*/
+}
+
+/* this should be applied after all other styles */
+a.linkbox_disabled{
+	border-color:#cccccc;
+	background-color:#f2f2f2;
+	text-decoration:none;
+	color:#cccccc;
+	color:#888888;
+	
+}
+a.linkbox_disabled:hover{
+	border-color:#cccccc;
+	background-color:#f2f2f2;
+	color:#888888;
 }

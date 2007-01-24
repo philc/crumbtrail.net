@@ -12,7 +12,7 @@ class CreateAccountTables < ActiveRecord::Migration
       # account type:
         # d=demo
         # p1=paid level 1, p2 etc.
-        # f=free
+        # f=free        
       t.column :role, :string, :limit=>2, :default=>"f", :null=>false
       # recently viewed project
       t.column :recent_project_id, :int
