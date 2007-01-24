@@ -7,7 +7,7 @@ class CreateAccountTables < ActiveRecord::Migration
       t.column :firstname, :string, :null => false
       t.column :lastname, :string, :null => false
       t.column :country_id, :integer, :null => false
-
+      t.column :access_key, :string
       t.column :zone_id, :integer, :limit => 45, :null => false
       # account type:
         # d=demo
