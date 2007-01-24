@@ -5,6 +5,10 @@ class Account < ActiveRecord::Base
   has_many :sessions
   belongs_to :country
   belongs_to :zone
+ 
+  def before_create
+    self.access_key ||= Digest::SHA1.hexdigest(self.username + self.password + rand(500).to_s)
+  end    
   
   def self.authenticate(username,password)
     account=self.find_by_username(username)

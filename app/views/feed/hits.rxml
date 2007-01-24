@@ -1,0 +1,29 @@
+
+xml.instruct!
+xml.rss "version" => "2.0", "xmlns:dc" =>"http://purl.org/dc/elements/1.1/" do
+  xml.channel do
+    if (!@project.nil?)
+      xml.title "#{@project.title} hits by the hour - Breadcrumbs"
+      # TODO: should I ommit the current hour, because its data keeps changing?
+      # e.g. @hits[1..-1] ?
+      @hits.each_with_index do |hit,i|
+        xml.item do
+
+          #url = ref.referer.url
+          #time = ref.first_visit.strftime("%I:%M%p on %a %b %d")
+          time = i.hours.ago
+          # Round off to the hour
+          time = time - time.min*60 - time.sec
+          display = time.strftime("%a %I:00 %p") + " #{hit[0]}, #{hit[1]}"
+
+          xml.title   "#{display}"
+          xml.link "http://crumbtrail.net/project/#{@project.id}"
+          xml.pubDate CGI.rfc1123_date(time)        
+
+          xml.description "#{display}"
+          xml.guid time
+        end
+      end
+    end
+  end
+end

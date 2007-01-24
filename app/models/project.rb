@@ -6,13 +6,16 @@ class Project < ActiveRecord::Base
   has_one    :row_tracker
   has_one    :recent_project, :class_name => "Project"
 
+  # An array of collapsed referers. Contains entries of ["referer string", "row_id"]
+  serialize  :collapsing_refs
+  
+  
   def self.demo_project()
     # Show the ninjawords account. Can change this to another project at any time.
     return Project.find(1050)
   end
   
-  # An array of collapsed referers. Contains entries of ["referer string", "row_id"]
-  serialize  :collapsing_refs
+
 
   def process_request(request)
   

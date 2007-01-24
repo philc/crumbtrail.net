@@ -106,15 +106,6 @@ Page.prototype = {
     this.preferences.update(this.activeSection,panel);
   },
   removeClassFromElements: function(c,start){
-//     if ($)
-//     if (document.getElementsByClassName){
-//       //console.log(document.getElementsByClassName);
-//       console.log("getElementsByClassName exists");
-//     }else{
-//       if (Element)
-//         console.log("Element exists");
-//       console.log("getElementsByClassName does not exist");
-//       }
     var elements=document.getElementsByClassName(c,start);
     if (elements!=null){
       elements.each(
@@ -138,12 +129,7 @@ Page.prototype = {
 
 
 function init(){  
-
-
  
-  // delete this junk
-  now=10; 
-  
   populatePage();
   
   // set menu links
@@ -188,7 +174,7 @@ function populatePage(){
 
   // hits section
   TableDisplay.showTable("hits_today",hitsDayData,TableDisplay.hitsToday,2,
-    "Hits today", ["","Hits","Unique"]);
+    "Hits today", ["","Hits","Unique"],"Hourly hits RSS feed", "/hits");
   TableDisplay.showTable("hits_week",hitsWeekData,TableDisplay.hitsWeek,2,
     "Hits this week", ["","Hits","Unique"]);
   TableDisplay.showTable("hits_month",hitsMonthData,TableDisplay.hitsMonth,2,
@@ -197,14 +183,10 @@ function populatePage(){
     "Hits this year", ["","Hits","Unique"]);
   
   // referer section
-//   TableDisplay.showTable("referers_total",referersTotalData,TableDisplay.refererRow,3,
-//     "Top referrals", ["Referer","Total hits"], true);
-//   referersPager = new Pagination(0,0);
    page.totalReferersPager.displayProperties("referers_total",referersTotalData,
     TableDisplay.refererRow,3,"Popular referers", ["","Total hits"]);
    page.totalReferersPager.showTable();
-  
-    
+
   TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
     "Unique referrals", ["","First visited"]);
     
@@ -398,10 +380,21 @@ TableDisplay.Methods={
     cell2=this.td(cell2);
     return this.tr(cell1+cell2, this.classString(i));
   },
-  showTable: function(htmlID, data, cellFunction, dataStep, title, headerNames){
-      var display = new TableDisplay(data,cellFunction,dataStep,title,headerNames);
-      $(htmlID).innerHTML=DisplayHelper.dialog(title,display.buildTable());
-  },  
+showTable: function(htmlID, data, cellFunction, dataStep, title, headerNames, feedTitle, feedUrl){
+	var display = new TableDisplay(data,cellFunction,dataStep,title,headerNames);
+	var		html = display.buildTable() + (feedTitle ? this.feedLink(feedTitle,feedUrl) : "");
+	/*      $(htmlID).innerHTML=DisplayHelper.dialog(title,display.buildTable());*/
+	$(htmlID).innerHTML=DisplayHelper.dialog(title,html);
+	//123
+
+//	DisplayHelper.dialog(this.title,display.buildTable() + 
+/*	this.buildNavMenu(more));*/
+},  
+feedLink: function(feedTitle, feedUrl)
+{
+	return '<a class="feed" href="/feed/' + page.project +  feedUrl + '" title="' + feedTitle + 
+	'"><img src="/images/feed.gif"></img></a>';
+},
   hitsYear:function(i,data,dataMax){
 /*    var month=DisplayHelper.showMonth((new Date()).getMonth()-i);*/
 	var month = DisplayHelper.showMonthAndYear((new Date()).getMonth()-i);
@@ -613,8 +606,10 @@ DisplayHelper.Methods={
 	return val.substring (0, val.length - 1);
   },
   dialog: function(title,content){
+	var feed='<a class="feed" href="/feed/' + page.project +  "/referer" + '" title="' + "feedTitle" + 
+	'"><img src="/images/feed.gif"></img></a>';
     return '<b class="d"><b class="hd"><b class="c"></b></b><b class="bd">'+
-      '<b class="c"><h1 class="title">' + title + '</h1>'+content + '</b></b><b class="ft">' + 
+      '<b class="c">' + feed + '<h1 class="title">' + title + '</h1>'+content + '</b></b><b class="ft">' + 
       '<b class="c"></b></b></b>';
   }
 }

@@ -82,10 +82,14 @@ class MainController < ApplicationController
      a=Account.new
      a.username=username
      a.password=password
+     # a.access_key=MD5.hexdigest(username + password + rand(500).to_s)
      # TODO make this based on the client
      a.country_id=1
      a.zone=timezone
      a.save!
+    # a=Account.setup(username,password,timezone)
+    # a.country_id=1
+    # a.save!
      cookies[@@login_cookie] = 
           {:value=>Session.create_for(a).token, :expires=>Session.expiration_time}
   end
