@@ -12,7 +12,10 @@ class Project < ActiveRecord::Base
   
   def self.demo_project()
     # Show the ninjawords account. Can change this to another project at any time.
-    return Project.find(1050)
+    return Project.find(demo_project_id)
+  end
+  def self.demo_project_id()
+    return 1050
   end
   
 

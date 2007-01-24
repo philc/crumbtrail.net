@@ -188,10 +188,10 @@ function populatePage(){
    page.totalReferersPager.showTable();
 
   TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
-    "Unique referrals", ["","First visited"]);
+    "Unique referrals", ["","First visited"],"Unique referers RSS feed","/referers/unique");
     
   TableDisplay.showTable("referers_recent",referersRecentData,TableDisplay.refererRowWithDate,3,
-    "Recent referers", ["","Visited"] );
+    "Recent referers", ["","Visited"], "Recent referers RSS feed","/referers/recent");
 
   // pages section
   TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRecentRow,3,
@@ -383,8 +383,9 @@ TableDisplay.Methods={
 showTable: function(htmlID, data, cellFunction, dataStep, title, headerNames, feedTitle, feedUrl){
 	var display = new TableDisplay(data,cellFunction,dataStep,title,headerNames);
 	var		html = display.buildTable() + (feedTitle ? this.feedLink(feedTitle,feedUrl) : "");
+		var		html = display.buildTable();
 	/*      $(htmlID).innerHTML=DisplayHelper.dialog(title,display.buildTable());*/
-	$(htmlID).innerHTML=DisplayHelper.dialog(title,html);
+	$(htmlID).innerHTML=DisplayHelper.dialog(title,html,feedTitle,feedUrl);
 	//123
 
 //	DisplayHelper.dialog(this.title,display.buildTable() + 
@@ -605,9 +606,11 @@ DisplayHelper.Methods={
 	}
 	return val.substring (0, val.length - 1);
   },
-  dialog: function(title,content){
-	var feed='<a class="feed" href="/feed/' + page.project +  "/referer" + '" title="' + "feedTitle" + 
-	'"><img src="/images/feed.gif"></img></a>';
+  dialog: function(title,content, feedTitle, feedUrl){
+	var feed= !feedTitle ? "" :
+		'<a class="feed" href="/feed/' + page.project +  feedUrl + '?k=' + page.key + '" title="' + feedTitle + 
+		'"><img src="/images/feed.gif"></img></a>';
+	
     return '<b class="d"><b class="hd"><b class="c"></b></b><b class="bd">'+
       '<b class="c">' + feed + '<h1 class="title">' + title + '</h1>'+content + '</b></b><b class="ft">' + 
       '<b class="c"></b></b></b>';
