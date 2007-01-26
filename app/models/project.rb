@@ -3,7 +3,6 @@ class Project < ActiveRecord::Base
   belongs_to :zone
   has_many   :referers
   has_many   :referral_totals
-  has_one    :row_tracker
   has_one    :recent_project, :class_name => "Project"
 
   # An array of collapsed referers. Contains entries of ["referer string", "row_id"]
@@ -27,14 +26,17 @@ class Project < ActiveRecord::Base
     
       referer = request.referer
       page = request.page
+      request.type = :direct
       
       if (!referer.nil? && !page.nil? && 
           referer.url != '-' && referer.url != '/' && page.url != '-')
         search_terms = SearchTotal.analyze_search_url(request.referer.url)
         if !search_terms.nil?
+          request.type = :search
           SearchTotal.increment_search_string(request, search_terms)
           SearchRecent.add_new_search(request, search_terms)
         else
+          request.type = :referer
           increment_referer(request)
         end
 
@@ -190,6 +192,19 @@ class Project < ActiveRecord::Base
       return HitMonthly.get_hits(self)
     end
   end
+  
+  def hit_types(period)
+    hits = nil
+    if period == :today
+      hits = HitHourly.get_hit_sources(self)
+    elsif period == :total
+      hits = {}
+      hits[:referer] = self.referer_hits
+      hits[:search] = self.search_hits
+      hits[:direct] = self.direct_hits
+    end
+    return hits
+  end
 
   # =Landings
   #------------------------------------------------------------------------------
@@ -224,13 +239,16 @@ class Project < ActiveRecord::Base
     ReferralRecent.add_new_referer(request)
   end
 
-  def increment_hit_count(request)    
+  def increment_hit_count(request)
     HitHourly.increment_hit(request)
     HitDaily.increment_hit(request)
     HitMonthly.increment_hit(request)
     self.first_hit = request.time if self.first_hit.nil?
     self.total_hits += 1
     self.unique_hits += 1 if request.unique
+    
+    type_count = self.send((request.type.to_s + '_hits').to_sym)
+    self.send((request.type.to_s + '_hits=').to_sym, type_count + 1)
   end
 
   def increment_page_landing(request)

@@ -5,6 +5,9 @@ class CreateHitTables < ActiveRecord::Migration
       t.column :hour, :integer, :null => false
       t.column :total, :integer, :default => 0
       t.column :unique, :integer, :default => 0
+      t.column :search, :integer, :default => 0
+      t.column :direct, :integer, :default => 0
+      t.column :referer, :integer, :default => 0
       t.column :last_update, :datetime, :null => false
     end
 

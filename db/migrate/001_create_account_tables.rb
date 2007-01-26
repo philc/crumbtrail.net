@@ -40,6 +40,9 @@ class CreateAccountTables < ActiveRecord::Migration
       t.column :searches_row, :integer, :default => 0
       t.column :total_hits, :integer, :default => 0
       t.column :unique_hits, :integer, :default => 0
+      t.column :direct_hits, :integer, :default => 0
+      t.column :search_hits, :integer, :default => 0
+      t.column :referer_hits, :integer, :default => 0
       t.column :first_hit, :date
       t.column :collapsing_refs, :text
     end

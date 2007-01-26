@@ -37,6 +37,8 @@ class ApacheRequest
   attr_reader   :unique
   attr_reader   :browser
   attr_reader   :os
+  attr_reader   :type
+  attr_writer   :type
   
   def initialize(project, ip, time, page_url, referer_url, unique, browser, os)
     @project = project
@@ -174,6 +176,7 @@ class ApacheLogReader
         raise e if e.class==Interrupt
         f=File.new @@error_file, 'a'
         err="#{count} : #{e}\n for this line: #{line}"
+        err += "\nBacktrace\n#{e.backtrace}"
         f.puts err
         puts err
         f.close()
@@ -289,7 +292,7 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
   
   def self.parse_referer(query)
-    query.match(/[&\?]r=([A-Za-z0-9\/:+%\.]+)/)
+    query.match(/[&\?]r=([A-Za-z0-9\/:+%\.-]+)/)
     return $1 || '/'
   end
 
