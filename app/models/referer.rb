@@ -51,7 +51,6 @@ class Referer < ActiveRecord::Base
     today = Date.parse(project.time.to_s)
     referers = {}
 
-    puts "Today is: " + today.to_s
     referers[:today] = find(:all,
                             :conditions => ['project_id = ? AND first_visit is not NULL AND recent_visit = ?', project.id, today],
                             :order      => "today_count DESC",
@@ -72,6 +71,7 @@ class Referer < ActiveRecord::Base
     today = Date.parse(time.to_s)
     last_week = today - 7
 
+    self.daily_hit_counts[today.to_s] = 0 if self.daily_hit_counts[today.to_s].nil?
     self.daily_hit_counts[today.to_s] += 1
     self.today_count = self.daily_hit_counts[today.to_s]
 
