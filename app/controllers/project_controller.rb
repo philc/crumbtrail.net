@@ -202,7 +202,7 @@ class ProjectController < ApplicationController
     @page=page    
     
     @data=@data.map{|r| 
-      [r.referer.url,r.page.url,r.count]}.flatten.to_json
+      [r.url,r.page.url,r.count]}.flatten.to_json
     render :layout=>false
   end
   

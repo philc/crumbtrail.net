@@ -7,7 +7,11 @@ class CreateReferralTables < ActiveRecord::Migration
       t.column :url, :string, :null => false
       t.column :page_id, :integer
       t.column :first_visit, :datetime
+      t.column :recent_visit, :date
       t.column :count, :integer, :default => 0
+      t.column :daily_hit_counts, :text
+      t.column :seven_days_count, :integer, :default => 0
+      t.column :today_count, :integer, :default => 0
     end
 
     add_index :referers, [:project_id, :url_hash]

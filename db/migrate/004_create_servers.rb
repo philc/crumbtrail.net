@@ -6,7 +6,7 @@ class CreateServers < ActiveRecord::Migration
     end
     
     
-    server = Server.new(:zone_id => 1)
+    server = Server.new(:zone_id => 11)
     server.id = 1
     server.save
 

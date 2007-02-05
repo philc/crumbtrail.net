@@ -53,7 +53,7 @@ class Project < ActiveRecord::Base
 
   @@domain_regex = '^([A-Za-z0-9\.]+)'
 
-  def get_referer(url)
+  def get_referer(url, visit_time = nil)
     url.match(@@domain_regex)
     domain = $1
 
@@ -65,7 +65,7 @@ class Project < ActiveRecord::Base
     if !ref_id.nil?
       return Referer.find_by_id(ref_id)
     else
-      return Referer.get_referer(self, url)
+      return Referer.get_referer(self, url, visit_time)
     end
 
   end
@@ -158,7 +158,11 @@ class Project < ActiveRecord::Base
   end
 
   def count_top_referers()
-    return ReferralTotal.count_top_referers(self)
+    return Referer.count_top_referers(self)
+  end
+
+  def at_a_glance(limit = 3)
+    return Referer.at_a_glance(self, limit)
   end
 
   # =Searches
