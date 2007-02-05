@@ -2,6 +2,7 @@ class Project < ActiveRecord::Base
   belongs_to :account
   belongs_to :zone
   has_many   :referers
+  has_many   :pages
   has_many   :referral_totals
   has_one    :recent_project, :class_name => "Project"
 
@@ -30,10 +31,10 @@ class Project < ActiveRecord::Base
       
       if (!referer.nil? && !page.nil? && 
           referer.url != '-' && referer.url != '/' && page.url != '-')
-        search_terms = SearchTotal.analyze_search_url(request.referer.url)
+        search_terms = Search.analyze_search_url(request.referer.url)
         if !search_terms.nil?
           request.type = :search
-          SearchTotal.increment_search_string(request, search_terms)
+          Search.increment_search_string(request, search_terms)
           SearchRecent.add_new_search(request, search_terms)
         else
           request.type = :referer
@@ -58,17 +59,21 @@ class Project < ActiveRecord::Base
 
     return nil if domain.nil?
 
-    self.collapsing_refs = [] if self.collapsing_refs.nil?
+    self.collapsing_refs = {} if self.collapsing_refs.nil?
 
-    referer = self.collapsing_refs.find { |ref| ref[0] == domain }
-    if !referer.nil?
-      return Referer.find_by_id(referer[1].to_i)
+    ref_id = self.collapsing_refs[domain]
+    if !ref_id.nil?
+      return Referer.find_by_id(ref_id)
     else
       return Referer.get_referer(self, url)
     end
 
   end
 
+  def get_page(url)
+    return Page.get_page(self, url)
+  end
+  
   def collapse_referer(url)
     url.match(@@domain_regex)
     domain = $1
@@ -143,13 +148,13 @@ class Project < ActiveRecord::Base
   # Returns an array of TotalReferrals
   #  limit - the number of referers you want returned
   def recent_unique_referers(limit)
-    return ReferralTotal.get_recent_unique(self, limit)
+    return Referer.get_recent_unique(self, limit)
   end
 
   # Returns an array of TotalReferrals
   #  limit - the number of referers you want returned
   def top_referers(limit, offset=0)
-    return ReferralTotal.get_top_referers(self, limit, offset)
+    return Referer.get_top_referers(self, limit, offset)
   end
 
   def count_top_referers()
@@ -160,11 +165,11 @@ class Project < ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   def top_searches(limit, offset=0)
-    return SearchTotal.get_top_searches(self, limit, offset)
+    return Search.get_top_searches(self, limit, offset)
   end
 
   def count_top_searches()
-    return SearchTotal.count_top_searches(self)
+    return Search.count_top_searches(self)
   end
 
   def recent_searches()
@@ -235,7 +240,7 @@ class Project < ActiveRecord::Base
   private
 
   def increment_referer(request)
-    ReferralTotal.increment(request)
+    request.referer.increment(request.page, request.time)
     ReferralRecent.add_new_referer(request)
   end
 
@@ -277,11 +282,10 @@ class Project < ActiveRecord::Base
   # =Locking
   #------------------------------------------------------------------------------
 
-  @@tables = %w{ search_totals search_recents
+  @@tables = %w{ searches search_recents
     landing_totals landing_recents
-    referral_totals referral_recents
-    hit_hourlies hit_dailies hit_monthlies
-  referers }
+    referers pages referral_recents
+    hit_hourlies hit_dailies hit_monthlies}
   @@sql_lock = nil
 
   def locked()

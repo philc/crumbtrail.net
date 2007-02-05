@@ -1,17 +1,19 @@
 require 'cgi'
 
-class SearchTotal < ActiveRecord::Base
+class Search < ActiveRecord::Base
   belongs_to :project
   belongs_to :referer
-  belongs_to :page
 
   @@google = Regexp.compile('^google.*\/search.*[&\?]q=([A-Za-z0-9\+\. %]+)&?')
   def self.increment_search_string(request, words)
     project = request.project
 
     row = find_by_search_string(project, words)
-    row = new(:project => project, :referer => request.referer, :page => request.page, :search_words => words, :search_words_hash => words.hash) if row.nil?
-
+    row = new(:project => project, :referer => request.referer, :search_words => words, :search_words_hash => words.hash) if row.nil?
+    
+    request.referer.page = request.page
+    request.referer.save
+    
     row.count += 1
     row.save
   end

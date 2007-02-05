@@ -1,8 +1,9 @@
 class Page < ActiveRecord::Base
-  has_many :total_referrals
+  belongs_to :project
+  has_many   :referers
 
-  def self.find_by_url(url)
-    pages = find(:all, :conditions => ['url_hash = ?', url.hash])
+  def self.find_by_url(project, url)
+    pages = find_all_by_project_id_and_url_hash(project.id, url.hash)
     for id in pages
       return id if id.url = url
     end
@@ -10,9 +11,9 @@ class Page < ActiveRecord::Base
     return nil
   end
 
-  def self.get_page(url)
-    page = find_by_url(url)
-    page = create(:url_hash => url.hash, :url => url) if page.nil?
+  def self.get_page(project, url)
+    page = find_by_url(project, url)
+    page = create(:project => project, :url_hash => url.hash, :url => url) if page.nil?
     return page
   end
 end

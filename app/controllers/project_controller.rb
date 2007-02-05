@@ -284,7 +284,7 @@ class ProjectController < ApplicationController
       [s.search_words,s.referer.url,s.page.url,JSDate.new(s.visit_time)]
       }.flatten.to_json
     @searches_total=@project.top_searches(@@size).map{|s|
-      [s.search_words,s.referer.url,s.page.url,s.count]
+      [s.search_words,s.referer.url,s.referer.page.url,s.count]
     }.flatten.to_json
   end
   def build_pages()
@@ -314,10 +314,10 @@ class ProjectController < ApplicationController
     @referers_total = @referers_total[0..-2] if @referers_more    
     
     @referers_total=@referers_total.map{|r|
-      [r.referer.url,r.page.url,r.count]}.flatten.to_json
+      [r.url,r.page.url,r.count]}.flatten.to_json
     
     @referers_unique = @project.recent_unique_referers(@@size).map {|r|
-      [r.referer.url,r.page.url,JSDate.new(r.first_visit)]
+      [r.url,r.page.url,JSDate.new(r.first_visit)]
     }.flatten.to_json
 
     @referers_recent = @project.recent_referers().map{|r|
