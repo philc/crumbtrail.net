@@ -18,6 +18,9 @@
 	page.project=<%=@project.id%>;
 	page.key="<%= @account.access_key %>";
 
+    glanceReferersTodayData=[<%= @glance_referers_today %>];
+    glanceReferersWeekData=[<%= @glance_referers_week %>];
+
 	hitsDayData=[<%= @hits_day %>];
 	hitsWeekData=[<%= @hits_week %>];
 	hitsMonthData=[<%= @hits_month %>];

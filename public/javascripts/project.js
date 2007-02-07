@@ -117,13 +117,13 @@ Page.prototype = {
   imageForQuadrant: function (i,q){
     return "/images/c/line" + i + "" + q + ".png"
   },
-	// Ensures that the link's caption matches the input field value.
-	// They can get out of sync if you do a soft reload
-	syncRefererPreferenceLink: function(link){
-		input=link.nextElement();
-		link.firstChild.nodeValue = input.value=="on" ? 
-			"Stop condensing" : "Undo";
-	}
+  // Ensures that the link's caption matches the input field value.
+  // They can get out of sync if you do a soft reload
+  syncRefererPreferenceLink: function(link){
+      input=link.nextElement();
+      link.firstChild.nodeValue = input.value=="on" ? 
+          "Stop condensing" : "Undo";
+  }
 };
 
 

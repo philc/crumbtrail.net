@@ -302,6 +302,14 @@ class ProjectController < ApplicationController
     @glance_today=week_data[0]    
     @glance_yesterday=week_data[1]
     
+    @glance=@project.at_a_glance()
+    @glance_referers_today=@glance[:today].map{|r|
+      [r.url,r.page.url,r.count]
+    }.flatten.to_json
+    @glance_referers_week=@glance[:week].map{|r|
+      [r.url,r.page.url,r.count]
+    }.flatten.to_json
+    
     @hits_day=@project.hits(:day).join(",")
     @hits_week=@project.hits(:week).join(",")  
     @hits_month=@project.hits(:month).join(",")
