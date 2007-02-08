@@ -201,9 +201,9 @@ function populatePage(){
   
     
   // glance section
-  TableDisplay.showTable("glance_referers_today",[],TableDisplay.refererRow,2,
+  TableDisplay.showTable("glance_referers_today",glanceReferersTodayData,TableDisplay.refererRow,3,
     "", ["Top referers today","Hits"]);
-  TableDisplay.showTable("glance_referers_week",[],TableDisplay.refererRow,2,
+  TableDisplay.showTable("glance_referers_week",glanceReferersWeekData,TableDisplay.refererRow,3,
     "", ["Top referers this week","Hits"]);
   
   TableDisplay.showTable("searches_recent",searchesRecentData,TableDisplay.searchesRowWithDate,4,
