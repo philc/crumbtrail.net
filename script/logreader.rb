@@ -67,8 +67,11 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
-    @referer = @project.get_referer(@referer_url, @time)
-    @page = @project.get_page(@page_url)
+    if (@page_url != '-' && @referer_url != '-' && @referer_url != '/')
+      @page = @project.get_page(@page_url)
+      @referer = @project.get_referer(@referer_url, @time) if !@page.nil?      
+    end
+     
     # We should process this at least to record the hit,
     # even if the referer is nil
     #@project.process_request(self) if !@referer.nil? && !@page.nil?

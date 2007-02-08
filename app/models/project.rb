@@ -29,9 +29,8 @@ class Project < ActiveRecord::Base
       page = request.page
       request.type = :direct
       
-      if (!referer.nil? && !page.nil? && 
-          referer.url != '-' && referer.url != '/' && page.url != '-')
-        search_terms = Search.analyze_search_url(request.referer.url)
+      if (!referer.nil? && !page.nil?)
+        search_terms = Search.analyze_search_url(referer.url)
         if !search_terms.nil?
           request.type = :search
           Search.increment_search_string(request, search_terms)
