@@ -143,7 +143,7 @@ class ApacheLogReader
 
 
   def self.tail_log(logfile, resume=false)
-    puts "Parsing log file: " + logfile
+    puts "Parsing log file: " + logfile.to_s
     file = File.new(logfile, "r")
 
     #
@@ -361,6 +361,7 @@ def log_to_process()
 
   return "./script/testlogs/#{logfile}" if (FileTest.exists?("./script/testlogs/#{logfile}"))
   return "./script/log/#{logfile}" if (FileTest.exists?("./script/log/#{logfile}"))
+  raise "Log file "#{logfile}" could not be found. It doesn't exist!"
 end
 
 def check_logger_setup()

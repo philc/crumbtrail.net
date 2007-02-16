@@ -20,6 +20,10 @@ if (name.nil?)
   exit
 end
 
+# Strip out ".log" from the name, so they can enter either "big.log" or just "big"
+period = name.index('.')
+name=name[0..period-1] if period 
+
 lines = ARGV[1]
 
 # Decide whether to cat the file, or to use tail
