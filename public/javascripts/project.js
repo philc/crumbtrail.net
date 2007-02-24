@@ -19,7 +19,6 @@ function getNextElement(node){
 var Preferences = Class.create();
 Preferences.prototype = {
   initialize:function(){    
-    //this.sections=["glance","hits","referers","pages","searches","details","section"];
     this.sections=["hits","referers","pages","searches", "section"];
     this.defaults=["today","recent","recent","recent","glance"];
     this.re=/breadcrumbs=([^;]+)/
@@ -109,7 +108,6 @@ Page.prototype = {
     var elements=document.getElementsByClassName(c,start);
     if (elements!=null){
       elements.each(
-        //function(e){e.className=e.className.replace(c,"");}) 
         function(e){Element.removeClassName(e,c)})
     }      
   },
