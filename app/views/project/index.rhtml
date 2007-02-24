@@ -10,13 +10,14 @@
 
 
 	<%= javascript_include_tag "project" %> 
+	<%= javascript_include_tag "dombuilder" %> 
 
 	<script type="text/javascript">
-	page.activeSection = "<%= @view_options[:section]%>";
-	page.date=<%=@date%>;   
+	Page.activeSection = "<%= @view_options[:section]%>";
+	Page.date=<%=@date%>;   
 
-	page.project=<%=@project.id%>;
-	page.key="<%= @account.access_key %>";
+	Page.project=<%=@project.id%>;
+	Page.key="<%= @account.access_key %>";
 
     glanceReferersTodayData=<%= @glance_referers_today %>;
     glanceReferersWeekData=<%= @glance_referers_week %>;
@@ -72,7 +73,7 @@
 			</ul>
 		</div>
 	</span>
-	<%=demo_link("#","View another project","Element.toggle($('projects_popup')); return false")%>
+	<%=demo_link("#","View another project","$('projects_popup').toggle(); return false")%>
 </div>
 
 
@@ -199,7 +200,6 @@
 
 	<div id="searches" class="section" <%=panel_style(:searches)-%> >
 		<h2 class="section_title" id="searches_title">Searches</h2> 
-		<br clear="both"/>
 		<div class="panel_links">
 			<span class="navlink_show">Show:</span>
 			<%= render :partial=>"navlink", :locals=>{:s=>:searches,:v=>:recent,:d=>"Recent"} %> | 

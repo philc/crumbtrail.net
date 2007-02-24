@@ -16,8 +16,7 @@ function getNextElement(node){
 	return null;
 }
 
-var Preferences = Class.create();
-Preferences.prototype = {
+var Preferences = new Class({
   initialize:function(){    
     this.sections=["hits","referers","pages","searches", "section"];
     this.defaults=["today","recent","recent","recent","glance"];
@@ -36,80 +35,93 @@ Preferences.prototype = {
     else
       cookie=this.defaultCookie();
     // Make into an associative array
-    return ("?"+cookie.gsub(',','&')).toQueryParams();    
+    return ("?"+cookie.replace(/,/g,'&')).toQueryParams();    
   },
   update: function(n,v){
     cookie=this.parseCookie();
     cookie[n]=v;
-    // Rails can't parse the ampersands in the cookie..
-    this.setCookie("breadcrumbs",$H(cookie).toQueryString().gsub('&',','));    
+    // Rails can't parse the ampersands in the cookie... strange...
+	this.setCookie("breadcrumbs",Object.toQueryString(cookie).replace(/&/g,','));    
   },
   setCookie: function(name,value){
     // 1 hour * 24 * days
     d=new Date(); d.setTime(d.getTime()+3600000*24*28);
-//     alert("Setting cookie: " +name+"="+value+'; expires=' + d.toGMTString() + ';'); 
     document.cookie=name+"="+value+'; expires=' + d.toGMTString() + ';'
   }
-}
+});
 
 
-var Page = Class.create();
-Page.prototype = {
-  initialize:function(){
-    this.colors=["#a4d898","#fdde88","#ff9e61","#d75b5c","#7285b7","#98d5d8","#989cd8","#d8bb98"];
-   
-    var StringMethods={
-      firstUpCase:function(){ return this[0].toUpperCase() + this.slice(1,this.length);}
-    };
-    Object.extend(String.prototype,StringMethods);
-  
-    var ArrayMethods={ 
-      sum:function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; },
-      max:function(){var m=0; for (var i=0; i<this.length; i++) if (this[i] > m) m=this[i]; return m},
-      min:function(){var m=Number.MAX_VALUE; for (var i=0; i<this.length; i++) if (this[i] < m) m=this[i]; return m}
-    };
-    Object.extend(Array.prototype,ArrayMethods);
-    
-    this.preferences=new Preferences();  
-        
+var Page = {
+  setup:function(){
+    this.colors=["#a4d898","#fdde88","#ff9e61","#d75b5c","#7285b7","#98d5d8","#989cd8","#d8bb98"];    
+	
+    this.preferences=new Preferences();        
+
     // Build the paginator objects
     this.totalReferersPager=new Pagination("totalReferers",20);
+
+	populatePage();
+
+	  // set menu links
+	  $A($('menu-links').getElementsByTagName("LI")).each(function(e){
+	    l=e.getElementsByTagName("A")[0];
+	    l.onclick=function(){ Page.menuNav(this); return false;};
+	  });
+	  // set panel links
+	  $A(document.getElementsByClassName("panel_link","content")).each(function (e){
+	    e.onclick=function(){ Page.panelNav(this); return false;};
+	  });  
+
+		// set collapse links
+	/*	Event.addBehavior({
+			'#currently_condensing a:click' : function(e){ 
+				input=this.nextElement();
+				input.value = input.value=="on" ? "off" : "on";
+				Page.syncRefererPreferenceLink(this);
+				return false;*/
+
+					// Sync all the referer links to their hidden form elements
+				/*	$$("#currently_condensing a").each(function (e){Page.syncRefererPreferenceLink(e);});
+
+					Event.addBehavior({
+						'#domain:blur' : function(e){
+							//text=this.value;
+							if (this.value != "" && !this.value.match(/^[\w]+[\.][\w\.]+[\w]+\/?$/))
+								//Element.show("domain_validation");
+								Effect.Appear("domain_validation", {duration:.5})
+							else
+								Effect.Fade("domain_validation",{duration:.5});
+						}
+					})*/
   },
   // Switch section
   menuNav: function(e){
     var section=e.title;
     
-    this.removeClassFromElements("active","menu");
-    
-    Element.addClassName(e,"active");
-    
-    Element.hide(this.activeSection);
-    this.activeSection=section;        
-    Element.show(section);
-    //Effect.Appear(section,{duration:.25});  // this looks lilke trash in IE
-    
-    this.preferences.update("section",section);
-    
+	$$('#menu .active').forEach(function(e){e.removeClass('active');})
+	
+    e.addClass("active");
 
+	if (this.activeSection)
+		$(this.activeSection).hide();
+    this.activeSection=section;
+
+	$(section).show();   
+    this.preferences.update("section",section);
   },
   // Navigate within a section
   panelNav: function(linkElement){
-    var panel=linkElement.title;
-    document.getElementsByClassName("panel",this.activeSection).each(
-      function(e){Element.hide(e)});
+	// Not using the mootools CSS selector $$ here because it's slow as crap
+    var panel=linkElement.title;	
+	var section = $(this.activeSection);
+	section.childrenOfClass('panel').forEach( function(e){e.hide();} );
+	
     // Remove highlighting on the other link, highlight the new link    
-    this.removeClassFromElements('panel_link_active',this.activeSection);
-    Element.addClassName(linkElement," panel_link_active");
+	section.childrenOfClass('panel_links')[0].childrenOfClass('panel_link_active').forEach(function(e){e.removeClass('panel_link_active');})
+    $(linkElement).addClass("panel_link_active");
     // Show e.g. "referers_current" panel
-    Element.show(this.activeSection+"_"+panel);
+    $(this.activeSection+"_"+panel).show();
     this.preferences.update(this.activeSection,panel);
-  },
-  removeClassFromElements: function(c,start){
-    var elements=document.getElementsByClassName(c,start);
-    if (elements!=null){
-      elements.each(
-        function(e){Element.removeClassName(e,c)})
-    }      
   },
   // Returns the image file used for a quadrant. i is the color (0-5ish)
   imageForQuadrant: function (i,q){
@@ -124,50 +136,6 @@ Page.prototype = {
   }
 };
 
-
-
-function init(){  
- 
-  populatePage();
-  
-  // set menu links
-  $A($('menu-links').getElementsByTagName("LI")).each(function(e){
-    l=e.getElementsByTagName("A")[0];
-    l.onclick=function(){ page.menuNav(this); return false;};
-  });
-  // set panel links
-  $A(document.getElementsByClassName("panel_link","content")).each(function (e){
-    e.onclick=function(){ page.panelNav(this); return false;};
-  });  
-
-	// set collapse links
-	Event.addBehavior({
-		'#currently_condensing a:click' : function(e){ 
-			input=this.nextElement();
-			input.value = input.value=="on" ? "off" : "on";
-			page.syncRefererPreferenceLink(this);
-			return false;
-			}			
-	})
-		return;
-	// Sync all the referer links to their hidden form elements
-	$$("#currently_condensing a").each(function (e){page.syncRefererPreferenceLink(e);});
-
-	Event.addBehavior({
-		'#domain:blur' : function(e){
-			//text=this.value;
-			if (this.value != "" && !this.value.match(/^[\w]+[\.][\w\.]+[\w]+\/?$/))
-				//Element.show("domain_validation");
-				Effect.Appear("domain_validation", {duration:.5})
-			else
-				Effect.Fade("domain_validation",{duration:.5});
-		}
-	})
-}
-
-chartData=[3,4,2,3,5,6,3];
-chartData=[3,2,2,1];
-
 function populatePage(){
 
   // hits section
@@ -181,9 +149,9 @@ function populatePage(){
     "Hits this year", ["","Hits","Unique"]);
   
   // referer section
-   page.totalReferersPager.displayProperties("referers_total",referersTotalData,
+   Page.totalReferersPager.displayProperties("referers_total",referersTotalData,
     TableDisplay.refererRow,3,"Popular referers", ["","Total hits"]);
-   page.totalReferersPager.showTable();
+   Page.totalReferersPager.showTable();
 
   TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
     "Unique referrals", ["","First visited"],"Unique referers RSS feed","/referers/unique");
@@ -231,9 +199,7 @@ function populatePage(){
 /*
  * Table display
  */
-TableDisplay=Class.create();
-
-TableDisplay.prototype={
+TableDisplay=new Class({
   initialize: function(data, cellFunc, step, title,headerNames, minRows){  
     this.title=title;    
     this.headerNames=headerNames;
@@ -243,51 +209,34 @@ TableDisplay.prototype={
     this.minRows=minRows ? minRows : data.length/step;
   },
   buildTable: function(){
-    var html="<table>"+this.tableHeader();
     var dataMax=this.data.max();
-    //for (i=0;i<this.data.length/this.step;i++)
-    for (i=0;i<this.minRows;i++)
-    {
-      html+=this.cellFunc(i,this.data,dataMax);
-    }
-//     Number(5).times(function(){
-//       html+="<tr><td> </td><td></td></tr>";
-//     });
-    html+="</table>" + '<div class="table-footer-cap"></div>';
-//     return this.dialog(this.title,html)
-    return html;
+
+    var cells='';
+	for (i=0;i<this.minRows;i++)
+      cells+=this.cellFunc(i,this.data,dataMax);
+	
+	return db.table(this.tableHeader(),cells) + db.div({cls:'table-footer-cap'});
   },
-  //   dialog: function(t,content){
-//     return '<div class="dialog"><div class="hd"><div class="c"></div></div><div class="bd">'+
-//       '<div class="c"><h1 class="title">' + t + '</h1>'+content + '</div></div><div class="ft">' + 
-//       '<div class="c"></div></div></div>';
-//   },
   tableHeader: function(){
-    if (this.headerNames==null)
-      return "" 
-    var html='<tr class="header">'
+    if (this.headerNames==null)  return "" 
+
+    var html='';
     for (i=0;i<this.headerNames.length;i++)
       html += (i==0 ? "<th class='f'>" : "<th>") + this.headerNames[i] + "</th>";
-    html+"</tr>"
-    return html;
+
+	return db.tr({cls:'header'}, html);
   },
   // Create a cell that has a graph in it
-  graphCell: function(text, percent){
-    var style="style=\"width:" + percent + "%\"";
-    var cellData="<div ><div " + style + "></div>"+
-    "</div><span>" + text + "</span>";
-    return this.td(cellData,"graph-cell");
+  graphCell: function(text, percent){	
+	return db.td(
+		{cls:'graph-cell'},
+		db.div(
+			db.div({style: 'width:'+percent+'%'})
+		),
+		db.span(text)
+	);
   },
-  td: function(data, c, style){
-    return "<td " + 
-      (c ? 'class="' + c+'" ' : "") +
-      (style ? 'style="' + style +'" ' : "") + 
-      ">" + data + "</td>";
-  },
-  tr: function(data,c){
-    return "<tr " + 
-    (c ? 'class="' + c+'" ' : "") + ">" + data + "</tr>";
-  },
+
   columnPercent: function(data, max){
 	if (max==0) return 0;
     // 80 means only allow graphs in the background to grow to 80% of the td width
@@ -307,14 +256,17 @@ TableDisplay.prototype={
     var percent=this.columnPercent(p1,dataMax);
     var percent2=this.columnPercent(p2,dataMax);
     
-    var cell1 = this.graphCell(DisplayHelper.comma(p1),percent);  
-    var cell2 = this.graphCell(DisplayHelper.comma(p2),percent2);  
-    
     var classString = trClassString ? trClassString  : this.classString(i);
-    return this.tr( this.td(dateString,"f") +cell1 + cell2, classString);  
-  }
 
-};
+	return db.tr(
+		{cls:classString},
+		db.td({cls:'f'}, dateString),
+		this.graphCell(DisplayHelper.comma(p1),percent),
+		this.graphCell(DisplayHelper.comma(p2),percent2)
+	);
+  }
+});
+
 
 TableDisplay.Methods={
   refererRowWithDate: function(i,data,dataMax){
@@ -327,30 +279,41 @@ TableDisplay.Methods={
     var landedOn=unescape(data[i*3+1]);
     var linkCaption = DisplayHelper.truncateRight(url,DisplayHelper.truncateBig);
     var landedOnCaption = DisplayHelper.truncateLeft(landedOn,DisplayHelper.truncateSmall);
-    var html = linkCaption.link("http://"+url) + '<span class="to">To&nbsp;'+landedOnCaption.link("http://"+landedOn)+'</a></span>';
-    var cell1 = this.td(html, "f");
-    var cell2 = this.td( isDate ? 
-      // might be -1
-      DisplayHelper.timeAgo(data[i*3+2]) : DisplayHelper.comma(data[i*3+2])
-     );
-    return this.tr(cell1 + cell2, this.classString(i));
+
+	return TableDisplay.tableRow(
+		linkCaption.link("http://"+url) + db.span({cls:'to'},'To&nbsp;'+landedOnCaption.link("http://"+landedOn)),
+		isDate ? DisplayHelper.timeAgo(data[i*3+2]) : DisplayHelper.comma(data[i*3+2])
+	);	
   },
   pagesRowWithDate: function(i,data,dataMax){
     f=TableDisplay.pagesRow.bind(this);
     return f(i,data,dataMax,true);
   },
-  pagesRecentRow:function(i,data,dataMax){
-    var url = unescape(data[i*3]);
-    var referer = unescape(data[i*3+1]);
-    var time = data[i*3+2];
-    var refererCaption = DisplayHelper.truncateRight(referer,DisplayHelper.truncateSmall);
-    var linkCaption = DisplayHelper.truncateLeft(url,DisplayHelper.truncateBig);
-    var tdHtml = linkCaption.link("http://"+url) + '<span class="to">From&nbsp;'+refererCaption.link("http://"+referer)+'</a></span>';
-    var cell1=this.td(tdHtml,"f");
-    var cell2 = this.td(DisplayHelper.timeAgo(time));
-    
-    return this.tr(cell1+cell2, this.classString(i));
-  },
+pagesRecentRow:function(i,data,dataMax){
+	var url = unescape(data[i*3]);
+	var referer = unescape(data[i*3+1]);
+	var time = data[i*3+2];
+	var refererCaption = DisplayHelper.truncateRight(referer,DisplayHelper.truncateSmall);
+	var linkCaption = DisplayHelper.truncateLeft(url,DisplayHelper.truncateBig);
+
+	return TableDisplay.tableRow(
+		linkCaption.link("http://"+url) +  db.span({cls:'to'},'From&nbsp;'+refererCaption.link("http://"+referer)),
+		DisplayHelper.timeAgo(time)
+	);
+},
+  tableRow:function(cell1,cell2){
+	return	db.tr(
+		{cls:this.classString(i)},
+		db.td({cls:'f'}, cell1),
+		db.td(cell2)		
+	);
+ },
+ classString: function(i, func){
+   var c=(i%2==0 ? "a" : "");  // alt row
+   if (func!=null)
+     c+=func(i);
+   return c;
+ },
   searchesRowWithDate:function(i,data,dataMax,isDate){
     f=TableDisplay.searchesRow.bind(this);
     return f(i,data,dataMax,true);
@@ -360,18 +323,24 @@ TableDisplay.Methods={
     var url = unescape(data[i*4+1]);
     var to = unescape(data[i*4+2]);
     var toCaption = DisplayHelper.truncateRight(to,DisplayHelper.truncateSmall);
-    //var linkCaption = DisplayHelper.truncateLeft(unescape(url),45);
-    //var html = linkCaption.link("http://"+url);
-    var html = terms.link("http://"+url) + '<span class="to">To&nbsp;'+toCaption.link("http://"+to)+'</a></span>';
-    var cell1=this.td(html,"f");
-    var cell2 = isDate ? DisplayHelper.timeAgo(data[i*4+3]) : DisplayHelper.comma(data[i*4+3]);
-    cell2=this.td(cell2);
-    return this.tr(cell1+cell2, this.classString(i));
+
+	return TableDisplay.tableRow(
+		terms.link("http://"+url) + db.span({cls:'to'},'To&nbsp;'+toCaption.link("http://"+to)),
+		isDate ? DisplayHelper.timeAgo(data[i*4+3]) : DisplayHelper.comma(data[i*4+3])
+	);
+
   },
   pagesRow:function(i,data,dataMax, isDate){
     var url = unescape(data[i*2]);
     var linkCaption = DisplayHelper.truncateLeft(url,DisplayHelper.truncateBig);
     //var html = linkCaption.link("http://"+url);
+
+	return TableDisplay.tableRow(
+		linkCaption.link("http://"+url),
+		isDate ? DisplayHelper.timeAgo(data[i*2+1]) : DisplayHelper.comma(data[i*2+1])
+	);
+	
+	
     var html = linkCaption.link("http://"+url);
     var cell1=this.td(html,"f");
     var cell2 = isDate ? DisplayHelper.timeAgo(data[i*2+1]) : DisplayHelper.comma(data[i*2+1]);
@@ -380,19 +349,20 @@ TableDisplay.Methods={
   },
 showTable: function(htmlID, data, cellFunction, dataStep, title, headerNames, feedTitle, feedUrl){
 	var display = new TableDisplay(data,cellFunction,dataStep,title,headerNames);
-	var		html = display.buildTable() + (feedTitle ? this.feedLink(feedTitle,feedUrl) : "");
-		var		html = display.buildTable();
+	//var	html = display.buildTable() + (feedTitle ? this.feedLink(feedTitle,feedUrl) : "");
+	var	html = display.buildTable();
 	/*      $(htmlID).innerHTML=DisplayHelper.dialog(title,display.buildTable());*/
 	$(htmlID).innerHTML=DisplayHelper.dialog(title,html,feedTitle,feedUrl);
-	//123
 
 //	DisplayHelper.dialog(this.title,display.buildTable() + 
 /*	this.buildNavMenu(more));*/
 },  
 feedLink: function(feedTitle, feedUrl)
 {
-	return '<a class="feed" href="/feed/' + page.project +  feedUrl + '" title="' + feedTitle + 
-	'"><img src="/images/feed.gif"></img></a>';
+	return db.a(
+		{cls:'feed', href:'/feed/' + Page.project + feedUrl, title:feedTitle},
+		db.img({src:'/images/feed.gif'})
+	);
 },
   hitsYear:function(i,data,dataMax){
 /*    var month=DisplayHelper.showMonth((new Date()).getMonth()-i);*/
@@ -408,16 +378,14 @@ feedLink: function(feedTitle, feedUrl)
     return this.hitsRow(i,data,dataMax,day);
   },
   hitsToday: function(i,data, dataMax){
-    var classString=this.classString(i, function(i){return (page.date.getHours()-i < 0 ? " old" : "")});
-    var day=DisplayHelper.showHour(page.date.getHours()-i);
+    var classString=this.classString(i, function(i){return (Page.date.getHours()-i < 0 ? " old" : "")});
+    var day=DisplayHelper.showHour(Page.date.getHours()-i);
     return this.hitsRow(i,data,dataMax,day,classString);
   }
 };
 Object.extend(TableDisplay,TableDisplay.Methods);
 
-Pagination=Class.create();
-
-Pagination.prototype={
+Pagination=new Class({
   initialize: function(name, totalPages){
     this.name=name;
     this.total=0;  
@@ -458,7 +426,10 @@ Pagination.prototype={
     html+= this.buildLink("&#187",enableNext,"","button",onclick+"last();");
 	html+='<div id="pagination_progress" style="display:none"></div>';
 
-    var page='<span class="page">Page '+(this.current+1)+'</span>';
+/*    var page='<span class="page">Page '+(this.current+1)+'</span>';*/
+
+	var page = db.span({cls:'page'},"Page " + (this.current+1));
+
     return '<div class="pagination_links">'+page+'<span class="buttons">' + html + '</span></div>';
   },
   first:function(){
@@ -478,9 +449,9 @@ Pagination.prototype={
     new Ajax.Request('/project/pagedata/'+this.name, 
     {asynchronous:true, evalScripts:true, 
 	// This is the page we want to show
-      parameters:"p="+p + "&project="+page.project,
-	  onLoading:function(){Element.show("pagination_progress");},
-      onComplete:function(r){Element.hide("pagination_progress");this.show(r);}.bind(this)
+      parameters:"p="+p + "&project="+Page.project,
+	  onLoading:function(){$("pagination_progress").show();},
+      onComplete:function(r){$("pagination_progress").hide();this.show(r);}.bind(this)
     });
     return false;
   },
@@ -500,18 +471,12 @@ Pagination.prototype={
     return '<a href="' + href + '"' + (onclickFunc? ' onclick="' + onclickFunc + '" ':'') + 
     (cls ? 'class="' + cls + '" ':'') + '>'+caption+'</a>';
   }
-};
-// pagination=new Pagination();
-Pagination.Methods={
-  
-}
-Object.extend(Pagination,Pagination.Methods);
-
+});
 
 /*
  * Generic display methods
  */
-DisplayHelper = Class.create();
+DisplayHelper = new Class();
 DisplayHelper.Methods={
   // Truncatation value for big and small text
   truncateBig:40,
@@ -564,7 +529,7 @@ DisplayHelper.Methods={
   },
   showMonthAndYear:function(i){
 	// date returns year since 1900
-	var year = ''+(page.date.getYear()-(i<0? 101 : 100));
+	var year = ''+(Page.date.getYear()-(i<0? 101 : 100));
 	if (year.length==1)
 		year='0'+year;
 	return this.showMonth(i) + " '" + year;
@@ -604,7 +569,7 @@ DisplayHelper.Methods={
   },
   dialog: function(title,content, feedTitle, feedUrl){
 	var feed= !feedTitle ? "" :
-		'<a class="feed" href="/feed/' + page.project +  feedUrl + '?k=' + page.key + '" title="' + feedTitle + 
+		'<a class="feed" href="/feed/' + Page.project +  feedUrl + '?k=' + Page.key + '" title="' + feedTitle + 
 		'"><img src="/images/feed.gif"></img></a>';
 	
     return '<b class="d"><b class="hd"><b class="c"></b></b><b class="bd">'+
@@ -619,11 +584,9 @@ Object.extend(DisplayHelper,DisplayHelper.Methods);
  * Line graph drawing
  */
 
-LineGraph=Class.create();
-LineGraph.prototype={
+LineGraph=new Class({
   initialize: function(id,data, width, height, labels, style){
     this.element=$(id);    
-    //this.size=120;
     this.width=width;
     this.height=height;
     this.max = data.max();
@@ -648,8 +611,8 @@ LineGraph.prototype={
   
   drawGraph: function(){  
     // Graph container
-    var g=document.createElement("div");
-    Element.addClassName(g,"linegraph");
+    var g=$(document.createElement("div"));
+    g.addClass("linegraph");
     var imgs=[]
     var hwidth=this.width/(this.data.length-1);
   
@@ -663,9 +626,9 @@ LineGraph.prototype={
     // (the intersection with the Y axis)
     
     for (i=1;i<this.data.length; i++){
-      var div=document.createElement("div");
-      Element.addClassName(div,"color");
-      div.style.backgroundColor=page.colors[this.lineColor];
+      var div=$(document.createElement("div"));
+      div.addClass("color");
+      div.style.backgroundColor=Page.colors[this.lineColor];
       div.id=i+"";
       var img=document.createElement("img");    
       
@@ -675,7 +638,7 @@ LineGraph.prototype={
       var u=prevHeight<=this.data[i] ? 1 : -1;     
       
       //img.src=(u==1 ? "/images/c/line13.png" : "/images/c/line10.png");    
-      //img.src=(u==1 ? page.imageForQuadrant(this.lineColor,3) : page.imageForQuadrant(this.lineColor,0));
+      //img.src=(u==1 ? Page.imageForQuadrant(this.lineColor,3) : Page.imageForQuadrant(this.lineColor,0));
       
       img.src=this.lineGraphImage(this.style,u);
       img.className="line";
@@ -714,22 +677,22 @@ LineGraph.prototype={
   },  
   // if the line is pointing up, we need to move the dot upward somewhat
   dataPointDot: function(data,x,y, pointingUp){
-    var dot=document.createElement("div");
-    Element.addClassName(dot,"linegraph-dot");
+    var dot=$(document.createElement("div"));
+    dot.addClass("linegraph-dot");
     if (pointingUp)
-      Element.addClassName(dot,"linegraph-dot-up");
+      dot.addClass("linegraph-dot-up");
     //dot.className="linegraph-dot" + (pointingUp ? "" : " linegraph-dot-up");
     dot.style.left=px(x);
 
-    dot.onmouseover=function(){Element.show(this.firstChild);};
-    dot.onmouseout=function(){Element.hide(this.firstChild);};
+    dot.onmouseover=function(){$(this.firstChild).show();};
+    dot.onmouseout=function(){$(this.firstChild).hide();};
     //dot.style.top=u==1 ? img.style.top : px(ourTop+(h*u)-7);
     
     //dot.style.bottom=px(this.data[i]);
     dot.style.top=px(y);
     
-    text = document.createElement("div");
-    Element.addClassName(text,"linegraph-dot-caption");
+    text = $(document.createElement("div"));
+    text.addClass("linegraph-dot-caption");
     text.style.display="none";
   
     text.innerHTML=DisplayHelper.comma(data+"");    
@@ -760,7 +723,7 @@ LineGraph.prototype={
       for (var i = this.data.length-1;i>=0;i--){
         var t="";
         if (this.labels=="week")
-          //t=DisplayHelper.showDay(i-page.date.getHours()-1,false);
+          //t=DisplayHelper.showDay(i-Page.date.getHours()-1,false);
           //t=DisplayHelper.showDay(i);
           t=day=DisplayHelper.showDay((new Date()).getDay()+i+1)
         var l=this.xLabel(t.slice(0,2));
@@ -772,22 +735,23 @@ LineGraph.prototype={
     //graphContainer.appendChild(this.graphLabel("number",0,0));
   },
   xLabel: function(text){
-    var div=document.createElement("div");
-    Element.addClassName(div,"line-x-label");
+    var div=$(document.createElement("div"));
+    div.addClass("line-x-label");
     div.innerHTML=text;
 //     div.style.top="100%";
 //     div.style.bottom=y;   
     return div;
   },
   yLabel: function(text){
-    var div=document.createElement("div");
-    Element.addClassName(div,"line-y-label");
+    var div=$(document.createElement("div"));
+    div.addClass("line-y-label");
     div.innerHTML=text;
 //     div.style.right="100%";
 //     div.style.bottom=y;   
     return div;
   }
-};
+});
+
 LineGraph.Methods={
 // relativize
   relativize:function(data, height, max, optionalMin){  
@@ -814,8 +778,7 @@ Object.extend(LineGraph,LineGraph.Methods);
  * Pie chart graphing
  */
 
-PieGraphDisplay = Class.create();
-PieGraphDisplay.prototype={
+PieGraphDisplay = new Class({
   initialize: function(id,title,data,labels){
     this.element=$(id);
     this.size=150;
@@ -840,7 +803,7 @@ PieGraphDisplay.prototype={
     for (var i=0;i<this.data.length-1;i++){
       this.graphQuadrant(i,this.data,placeholder);
     }
-    placeholder.style.backgroundColor=page.colors[this.data.length-1];
+    placeholder.style.backgroundColor=Page.colors[this.data.length-1];
     
     this.drawTextLabels(placeholder);
     this.element.appendChild(placeholder);
@@ -879,10 +842,10 @@ PieGraphDisplay.prototype={
     } 
   
   // Add a div here. IE uses the div, while everyone else uses the img.
-    var div=document.createElement("div");
-    var img=document.createElement("img");
-    Element.addClassName(img,"chart_image ");
-    Element.addClassName(div,"chart_image chart_image_div");
+    var div=$(document.createElement("div"));
+    var img=$(document.createElement("img"));
+    img.addClass("chart_image ");
+    div.addClass("chart_image chart_image_div");
     img.style.width=div.style.width=px(w);
     img.style.height=div.style.height=px(h);
     //img.style.zIndex=div.style.zIndex=="1";
@@ -894,14 +857,14 @@ PieGraphDisplay.prototype={
     img.style.top=div.style.top=this.qsize-o2*h + "px";  
   
   
-    img.src=page.imageForQuadrant(i,q);    
+    img.src=Page.imageForQuadrant(i,q);    
     // for IE
     div.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"
-      + page.imageForQuadrant(i,q) + "', sizingMethod='scale')";
+      + Page.imageForQuadrant(i,q) + "', sizingMethod='scale')";
 
     img.style.zIndex=div.style.zIndex=data.length*2-i*2+"";    
     
-    this.drawFillerBoxes(placeholder,page.colors[i],q,this.data.length*2-i*2-1,w,h);
+    this.drawFillerBoxes(placeholder,Page.colors[i],q,this.data.length*2-i*2-1,w,h);
     
     
     
@@ -928,9 +891,9 @@ PieGraphDisplay.prototype={
   // Puts a square in the given quadrant, next to the angle image that has a width & height of w & h
   drawFillerBox: function(color, q, level,w,h,block){  
     
-    var div=document.createElement("div");
+    var div=$(document.createElement("div"));
     div.style.backgroundColor=color;
-    Element.addClassName(div,"chart_filler");
+    div.addClass("chart_filler");
     div.style.zIndex=level+"";
     
     // div dimentions
@@ -980,20 +943,21 @@ PieGraphDisplay.prototype={
   
     return div;
   },
-  drawTextLabels: function(placeholder){
-    var labelBox=document.createElement("div");
-    Element.addClassName(labelBox,"label_box");
+
+drawTextLabels: function(placeholder){
+    var labelBox=$(document.createElement("div"));
+    labelBox.addClass("label_box");
     labelBox.style.left=px(this.size);
-    labelBox.innerHTML="<span class='title'>"+this.title+"</a>";
+	labelBox.innerHTML=db.span({cls:'title'},this.title);
 
     var ul = document.createElement("ul");
-    //ul;
     for (var i=0; i<this.labels.length;i++){
-      var div=document.createElement("li"); 
-      div.innerHTML="<div class='color_box' style='background-color:" + 
-      page.colors[i] + "'></div>" + 
-      "<span class='caption'>" + this.labels[i] + "</span>";
-      Element.addClassName(div,"label");
+      var div=$(document.createElement("li"));   
+		div.innerHTML= 
+			db.div( {cls:'color_box', style:"background-color:" + Page.colors[i]}) + 
+			db.span({cls:'caption'},this.labels[i]);
+
+      div.addClass("label");
       ul.appendChild(div);      
     }
     labelBox.appendChild(ul);
@@ -1006,12 +970,8 @@ PieGraphDisplay.prototype={
       s+=array[j];
     return s;
   }
-}
-
-
-page = new Page();
-
-Event.onReady(function(){
-	init();
 });
+
+window.addEvent('domready',Page.setup.bind(Page));
+
 
