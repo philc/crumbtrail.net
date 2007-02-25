@@ -13,31 +13,36 @@
 	<%= javascript_include_tag "dombuilder" %> 
 
 	<script type="text/javascript">
+	data=[];
 	Page.activeSection = "<%= @view_options[:section]%>";
 	Page.date=<%=@date%>;   
 
 	Page.project=<%=@project.id%>;
 	Page.key="<%= @account.access_key %>";
+	data=[];
+	
+    data.glance_referers_today=<%= @glance_referers_today %>;
+    data.glance_referers_week=<%= @glance_referers_week %>;
 
-    glanceReferersTodayData=<%= @glance_referers_today %>;
-    glanceReferersWeekData=<%= @glance_referers_week %>;
-
-	hitsDayData=[<%= @hits_day %>];
-	hitsWeekData=[<%= @hits_week %>];
-	hitsMonthData=[<%= @hits_month %>];
-	hitsYearData=[<%= @hits_year %>];
+	//hitsDayData=[<%= @hits_day %>];
+	data.hits_today=[<%= @hits_day %>];
+	data.hits_week=[<%= @hits_week %>];
+	data.hits_month=[<%= @hits_month %>];
+	data.hits_year=[<%= @hits_year %>];
 
 
-	referersTotalData=[0,<%=@referers_more%>,<%= @referers_total -%>];
+	data.referers_total=[0,<%=@referers_more%>,<%= @referers_total -%>];
+	//referersTotalData=[0,<%=@referers_more%>,<%= @referers_total -%>];
+	
 
-	referersUniqueData=<%= @referers_unique -%>;   
-	referersRecentData=<%= @referers_recent -%>;
+	data.referers_unique=<%= @referers_unique -%>;   
+	data.referers_recent=<%= @referers_recent -%>;
 
-	pagesPopularData=<%=@popular_pages%>;
-	pagesRecentData=<%=@recent_pages%>;
+	data.pages_popular=<%=@popular_pages%>;
+	data.pages_recent=<%=@recent_pages%>;
 
-	searchesRecentData=<%=@searches_recent%>
-	searchesTotalData=<%=@searches_total%>
+	data.searches_recent=<%=@searches_recent%>
+	data.searches_totals=<%=@searches_total%>
 
 	osData=[<%= @os_data %>];
 	osLabels=[<%= @os_labels %>];

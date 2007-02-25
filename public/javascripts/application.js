@@ -2,11 +2,37 @@
  * utility extensions
  */
 String.prototype.firstUpCase = Array.prototype.firstUpCase || function(){ return this[0].toUpperCase() + this.slice(1,this.length);}
-	
+String.prototype.toDisplayString = Array.prototype.toDisplayString || function(){ return this.firstUpCase().replace(/_/g,' '); }
+
+/* This is different than the mootools camcelcase function. This changes hits_week => hitsWeek */
+String.prototype.toCamelCase = Array.prototype.toCamelCase || function(){ 
+	n=[];
+	for (var i=0;i<this.length;i++){
+		if (this[i]=='_'){
+			n.push(this[i+1].toUpperCase());
+			i++;
+		}else
+			n.push(this[i]);			
+	}
+	return n.join('');		
+}
+
 Array.prototype.sum=Array.prototype.sum ||  function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; }
 Array.prototype.max=Array.prototype.max || 	function(){var m=0; for (var i=0; i<this.length; i++) if (this[i] > m) m=this[i]; return m}
 Array.prototype.min=Array.prototype.min || 
 	function(){var m=Number.MAX_VALUE; for (var i=0; i<this.length; i++) if (this[i] < m) m=this[i]; return m}
+
+/*
+ * Breadcrumbs master object
+ */
+BC={};
+/* makes each key in the associative array options a member of obj */
+BC.apply=function(obj,options){
+	for (var key in options)
+		obj[key]=options[key];
+}
+
+
 
 /* 
  * extensions to mootools
@@ -118,7 +144,6 @@ function toggleAppear(element){
 function toggleAppear(element){
 	element=$(element);
 	if (element.style && element.getStyle('display')=='none'){
-		console.log('making appear');
 		element.style.opacity=0;
 		element.style.display='';
 		element.effect('opacity',{duration: 750}).start(0,1);
