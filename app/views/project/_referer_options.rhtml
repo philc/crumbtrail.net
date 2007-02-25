@@ -8,7 +8,7 @@
 			<input type="hidden" name="pid" value="<%= @project.id %>" />
 			<input type="hidden" name="pageid" value="<%= @id %>"/>
 
-			<h1>Condense referers</h1>
+			<h2>Condense referers</h2>
 			<p>
 				Treat all referers from this domain as a single referer. 
 				<strong>This action is non-reversible.</strong>
@@ -31,7 +31,7 @@
 			</div>
 			<% if (!@project.collapsing_refs.nil? &&
 				!@project.collapsing_refs.empty?) %>
-				<h2>Currently condensing</h2>
+				<h3>Currently condensing</h3>
 				<table id="currently_condensing">
 					<% @project.collapsing_refs.each do |r| %>
 					<% #TODO - truncate this referer %>

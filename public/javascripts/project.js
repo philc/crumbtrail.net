@@ -61,69 +61,28 @@ var Page = {
 	},
 
 	populate:function(){
-
-		// hits section
-		/*		TableDisplay.showTable("hits_today",hitsDayData,TableDisplay.hitsToday,2,*/
-		/*		"Hits today", ["","Hits","Unique"],"Hourly hits RSS feed", "/hits");*/
-
-
-
-		// hits section
-		/*		TableDisplay.showTable("hits_today",hitsDayData,TableDisplay.hitsToday,2,
-		"Hits today", ["","Hits","Unique"],"Hourly hits RSS feed", "/hits");
-		TableDisplay.showTable("hits_week",hitsWeekData,TableDisplay.hitsWeek,2,
-		"Hits this week", ["","Hits","Unique"]);
-		TableDisplay.showTable("hits_month",hitsMonthData,TableDisplay.hitsMonth,2,
-		"Hits this month", ["","Hits","Unique"]);
-		TableDisplay.showTable("hits_year",hitsYearData,TableDisplay.hitsYear,2,
-		"Hits this year", ["","Hits","Unique"]);
-
-		// referer section
-		Page.totalReferersPager.displayProperties("referers_total",referersTotalData,
-		TableDisplay.refererRow,3,"Popular referers", ["","Total hits"]);
-		Page.totalReferersPager.showTable();
-
-		TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
-		"Unique referrals", ["","First visited"],"Unique referers RSS feed","/referers/unique");
-
-		TableDisplay.showTable("referers_recent",referersRecentData,TableDisplay.refererRowWithDate,3,
-		"Recent referers", ["","Visited"], "Recent referers RSS feed","/referers/recent");
-
-		// pages section
-		TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRecentRow,3,
-		"Recent pages", ["","Accessed"]);
-		TableDisplay.showTable("pages_popular",pagesPopularData,TableDisplay.pagesRow,2,
-		"Popular pages", ["","Hits"]);
-
-
-		// glance section
-		TableDisplay.showTable("glance_referers_today",glanceReferersTodayData,TableDisplay.refererRow,3,
-		"", ["Top referers today","Hits"]);
-		TableDisplay.showTable("glance_referers_week",glanceReferersWeekData,TableDisplay.refererRow,3,
-		"", ["Top referers this week","Hits"]);
-
-		TableDisplay.showTable("searches_recent",searchesRecentData,TableDisplay.searchesRowWithDate,4,
-		"Recent searches", ["Keywords","Visited"]);
-		TableDisplay.showTable("searches_totals",searchesTotalData,TableDisplay.searchesRow,4,
-		"Popular searches", ["Keywords","Hits"]);*/
-
 		/*
 		 * At a glance
 		 */
-		TableDisplay.showTable({
+		var panel1 = TableDisplay.showTableWithoutDialog({
 			htmlID:'glance_referers_today',
 			title:'',
 			step:3,
 			rowDisplay:TableDisplay.refererRow,
-			headers:["Top referers today","Hits"]
+			headers:["","Hits"]
 		});
-		TableDisplay.showTable({
+		var panel2 = TableDisplay.showTableWithoutDialog({
 			htmlID:'glance_referers_week',
 			title:'',
 			step:3,
 			rowDisplay:TableDisplay.refererRow,
-			headers:["Top referers this week","Hits"]
+			headers:["","Hits"]
 		});
+		
+		$('glance_referers_today').innerHTML=DisplayHelper.dialog(
+			panel1+'<br/>'+'<h2 class="title">Top referers this week</h2>'+panel2,
+			{title:'Top referers today'});
+		
 
 		/*
 		 * Hits
@@ -361,16 +320,6 @@ TableDisplay=new Class({
 });
 
 
-/*
-* Methods for rendering table rows
-*/
-var RowDisplay={
-	hitsToday: function(i,data, dataMax){
-		var classString=this.classString(i, function(i){return (Page.date.getHours()-i < 0 ? " old" : "")});
-		var day=DisplayHelper.showHour(Page.date.getHours()-i);
-		return this.hitsRow(i,data,dataMax,day,classString);
-	}
-}
 
 
 TableDisplay.Methods={
@@ -451,11 +400,13 @@ TableDisplay.Methods={
 		cell2=this.td(cell2);
 		return this.tr(cell1+cell2, this.classString(i));
 	},
-	showTable:function(options){
+	// Shows a table, but doesn't wrap it in a dialog
+	showTableWithoutDialog:function(options){
 		var display = new TableDisplay(options);
-		var	html = display.buildTable();	
-
-
+		return display.buildTable();		
+	},
+	showTable:function(options){
+		var html = this.showTableWithoutDialog(options);
 		$(options.htmlID).innerHTML=DisplayHelper.dialog(html,options);
 	},  
 
@@ -662,6 +613,7 @@ DisplayHelper.Methods={
 	},
 	dialog:function(contents, opt){
 		var feed="";
+		opt=opt || {};
 		if (opt.feedTitle)
 		feed=db.a(
 			{
@@ -676,7 +628,7 @@ DisplayHelper.Methods={
 		var title = $pick(opt.title, opt.htmlID ? opt.htmlID.toDisplayString() : "" );
 
 		return '<b class="d"><b class="hd"><b class="c"></b></b><b class="bd">'+
-		'<b class="c">' + feed + '<h1 class="title">' + title + '</h1>'+contents + '</b></b><b class="ft">' + 
+		'<b class="c">' + feed + '<h2 class="title">' + title + '</h2>'+contents + '</b></b><b class="ft">' + 
 		'<b class="c"></b></b></b>';
 	}
 }

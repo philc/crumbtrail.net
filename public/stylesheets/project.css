@@ -233,7 +233,7 @@ float:right;
 }
 
 /* the title of tables */
-.d h1.title{
+.d h2.title{
   font-size:1.2em;
   font-weight:normal;
   margin-left:5px;
@@ -615,13 +615,13 @@ img{
 	font-size:0.8em;
 	margin-bottom:10px;
 	}
-.options_panel h1{
+.options_panel h2{
 	font-size:1.4em;
   font-weight:normal;
 	padding-bottom:8px;
 /*  margin-top:10px*/
 }
-.options_panel h2{
+.options_panel h3{
 	font-size:1.2em;
 	font-weight:normal;
 	padding-top:8px;
