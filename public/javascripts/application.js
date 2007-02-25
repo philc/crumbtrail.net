@@ -85,7 +85,7 @@ DomBuilder=new function(){
 		for (var i=0;i<args.length;i++)
 		{
 			var arg=args[i];
-			if (typeof arg == 'string')
+			if (typeof arg == 'string' || typeof arg=='number')
 				contents+=arg;
 			else
 				att=this.keyValues(arg);

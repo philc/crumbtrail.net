@@ -1,20 +1,5 @@
-/*
- * Controlling the UI
- */
-
-function UITimer(){
-  this.timer=null;
-  this.timeout=2000;
-}
-
 
 function px(v) {  return Math.ceil(v) + "px";}
-
-function getNextElement(node){
-	if(node.nodeType==1) return node;
-	if (node.nextSibling) return getNextElement(next.nextSibling);
-	return null;
-}
 
 var Preferences = new Class({
   initialize:function(){    
@@ -27,7 +12,6 @@ var Preferences = new Class({
     return this.sections.collect(initDefaults).join('&');
   },
   parseCookie:function(){
-//     alert("parsing this cookie:" + document.cookie);
     var m = this.re.exec(document.cookie);
     
     if (m && m.length>0)
@@ -60,7 +44,7 @@ var Page = {
     // Build the paginator objects
     this.totalReferersPager=new Pagination("totalReferers",20);
 
-	populatePage();
+	this.populate();
 
 	  // set menu links
 	  $A($('menu-links').getElementsByTagName("LI")).each(function(e){
@@ -70,7 +54,7 @@ var Page = {
 	  // set panel links
 	  $A(document.getElementsByClassName("panel_link","content")).each(function (e){
 	    e.onclick=function(){ Page.panelNav(this); return false;};
-	  });  
+	  });
 
 		// set collapse links
 	/*	Event.addBehavior({
@@ -94,6 +78,64 @@ var Page = {
 						}
 					})*/
   },
+
+  populate:function(){
+
+  // hits section
+  TableDisplay.showTable("hits_today",hitsDayData,TableDisplay.hitsToday,2,
+    "Hits today", ["","Hits","Unique"],"Hourly hits RSS feed", "/hits");
+  TableDisplay.showTable("hits_week",hitsWeekData,TableDisplay.hitsWeek,2,
+    "Hits this week", ["","Hits","Unique"]);
+  TableDisplay.showTable("hits_month",hitsMonthData,TableDisplay.hitsMonth,2,
+    "Hits this month", ["","Hits","Unique"]);
+  TableDisplay.showTable("hits_year",hitsYearData,TableDisplay.hitsYear,2,
+    "Hits this year", ["","Hits","Unique"]);
+
+  // referer section
+   Page.totalReferersPager.displayProperties("referers_total",referersTotalData,
+    TableDisplay.refererRow,3,"Popular referers", ["","Total hits"]);
+   Page.totalReferersPager.showTable();
+
+  TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
+    "Unique referrals", ["","First visited"],"Unique referers RSS feed","/referers/unique");
+
+  TableDisplay.showTable("referers_recent",referersRecentData,TableDisplay.refererRowWithDate,3,
+    "Recent referers", ["","Visited"], "Recent referers RSS feed","/referers/recent");
+
+  // pages section
+  TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRecentRow,3,
+    "Recent pages", ["","Accessed"]);
+  TableDisplay.showTable("pages_popular",pagesPopularData,TableDisplay.pagesRow,2,
+    "Popular pages", ["","Hits"]);
+
+
+  // glance section
+  TableDisplay.showTable("glance_referers_today",glanceReferersTodayData,TableDisplay.refererRow,3,
+    "", ["Top referers today","Hits"]);
+  TableDisplay.showTable("glance_referers_week",glanceReferersWeekData,TableDisplay.refererRow,3,
+    "", ["Top referers this week","Hits"]);
+
+  TableDisplay.showTable("searches_recent",searchesRecentData,TableDisplay.searchesRowWithDate,4,
+    "Recent searches", ["Keywords","Visited"]);
+  TableDisplay.showTable("searches_totals",searchesTotalData,TableDisplay.searchesRow,4,
+    "Popular searches", ["Keywords","Hits"]);
+
+
+
+  // don't graph uniques on the line graph
+  var onlyHits = [];
+  for (var i=0;i<hitsWeekData.length;i+=2) onlyHits[i/2]=hitsWeekData[i];
+  lg=new LineGraph("hitsweek-linegraph",onlyHits, 200,110, "week",1);
+  lg.drawGraph();  
+
+  // visitor details graphs
+  pg = new PieGraphDisplay("browser_details","Web browsers", browserData,browserLabels);
+  pg.drawChart();  
+  pg = new PieGraphDisplay("os_details","Operating systems", osData,
+  osLabels);
+  pg.drawChart();  
+
+	},
   // Switch section
   menuNav: function(e){
     var section=e.title;
@@ -136,63 +178,7 @@ var Page = {
   }
 };
 
-function populatePage(){
 
-  // hits section
-  TableDisplay.showTable("hits_today",hitsDayData,TableDisplay.hitsToday,2,
-    "Hits today", ["","Hits","Unique"],"Hourly hits RSS feed", "/hits");
-  TableDisplay.showTable("hits_week",hitsWeekData,TableDisplay.hitsWeek,2,
-    "Hits this week", ["","Hits","Unique"]);
-  TableDisplay.showTable("hits_month",hitsMonthData,TableDisplay.hitsMonth,2,
-    "Hits this month", ["","Hits","Unique"]);
-  TableDisplay.showTable("hits_year",hitsYearData,TableDisplay.hitsYear,2,
-    "Hits this year", ["","Hits","Unique"]);
-  
-  // referer section
-   Page.totalReferersPager.displayProperties("referers_total",referersTotalData,
-    TableDisplay.refererRow,3,"Popular referers", ["","Total hits"]);
-   Page.totalReferersPager.showTable();
-
-  TableDisplay.showTable("referers_unique",referersUniqueData,TableDisplay.refererRowWithDate,3,
-    "Unique referrals", ["","First visited"],"Unique referers RSS feed","/referers/unique");
-    
-  TableDisplay.showTable("referers_recent",referersRecentData,TableDisplay.refererRowWithDate,3,
-    "Recent referers", ["","Visited"], "Recent referers RSS feed","/referers/recent");
-
-  // pages section
-  TableDisplay.showTable("pages_recent",pagesRecentData,TableDisplay.pagesRecentRow,3,
-    "Recent pages", ["","Accessed"]);
-  TableDisplay.showTable("pages_popular",pagesPopularData,TableDisplay.pagesRow,2,
-    "Popular pages", ["","Hits"]);
-  
-    
-  // glance section
-  TableDisplay.showTable("glance_referers_today",glanceReferersTodayData,TableDisplay.refererRow,3,
-    "", ["Top referers today","Hits"]);
-  TableDisplay.showTable("glance_referers_week",glanceReferersWeekData,TableDisplay.refererRow,3,
-    "", ["Top referers this week","Hits"]);
-  
-  TableDisplay.showTable("searches_recent",searchesRecentData,TableDisplay.searchesRowWithDate,4,
-    "Recent searches", ["Keywords","Visited"]);
-  TableDisplay.showTable("searches_totals",searchesTotalData,TableDisplay.searchesRow,4,
-    "Popular searches", ["Keywords","Hits"]);
-    
-  
-  
-  // don't graph uniques on the line graph
-  var onlyHits = [];
-  for (var i=0;i<hitsWeekData.length;i+=2) onlyHits[i/2]=hitsWeekData[i];
-  lg=new LineGraph("hitsweek-linegraph",onlyHits, 200,110, "week",1);
-  lg.drawGraph();  
-
-  // visitor details graphs
-  pg = new PieGraphDisplay("browser_details","Web browsers", browserData,browserLabels);
-  pg.drawChart();  
-  pg = new PieGraphDisplay("os_details","Operating systems", osData,
-  osLabels);
-  pg.drawChart();  
-  
-};
 
 
 
@@ -333,13 +319,11 @@ pagesRecentRow:function(i,data,dataMax){
   pagesRow:function(i,data,dataMax, isDate){
     var url = unescape(data[i*2]);
     var linkCaption = DisplayHelper.truncateLeft(url,DisplayHelper.truncateBig);
-    //var html = linkCaption.link("http://"+url);
 
 	return TableDisplay.tableRow(
 		linkCaption.link("http://"+url),
 		isDate ? DisplayHelper.timeAgo(data[i*2+1]) : DisplayHelper.comma(data[i*2+1])
-	);
-	
+	);	
 	
     var html = linkCaption.link("http://"+url);
     var cell1=this.td(html,"f");
@@ -365,7 +349,6 @@ feedLink: function(feedTitle, feedUrl)
 	);
 },
   hitsYear:function(i,data,dataMax){
-/*    var month=DisplayHelper.showMonth((new Date()).getMonth()-i);*/
 	var month = DisplayHelper.showMonthAndYear((new Date()).getMonth()-i);
     return this.hitsRow(i,data,dataMax,month);
   },
@@ -784,11 +767,22 @@ PieGraphDisplay = new Class({
     this.size=150;
     this.qsize=this.size/2;
     this.data=[];
+	this.percents=[];
     this.title=title;
     this.labels=labels;
-        
+       
     // relativize data
-    var total=data.sum();    
+    var total=data.sum();
+
+	// Make the data in percents, for the labels
+	for (var i=0;i<data.length;i++){
+		// Round to one decimal place, where the percents are <1
+		this.percents[i]=Math.floor(data[i]/total*1000)/10;
+		// Truncate the decimals off of percents greater than 1
+		if (this.percents[i]>1)
+			this.percents[i]=Math.floor(this.percents[i]);
+	}
+	// Make the data as degrees of a 360 circle, for the graph drawing
     for (var i=0;i<data.length;i++)
            this.data[i]=Math.floor((data[i]/total)*360);
 
@@ -955,7 +949,11 @@ drawTextLabels: function(placeholder){
       var div=$(document.createElement("li"));   
 		div.innerHTML= 
 			db.div( {cls:'color_box', style:"background-color:" + Page.colors[i]}) + 
-			db.span({cls:'caption'},this.labels[i]);
+			db.span(
+				{cls:'caption'},
+				this.labels[i], 
+				db.span({cls:'percent'},this.percents[i] + "%")
+			);
 
       div.addClass("label");
       ul.appendChild(div);      

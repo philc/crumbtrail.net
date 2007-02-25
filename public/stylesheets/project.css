@@ -550,7 +550,10 @@ img{
   padding-left:1.2em;
   position:static;
   display:block;
-/*   border:1px solid blue; */
+}
+.chart .caption .percent{
+	padding-left:.8em;
+	color:gray;
 }
 .chart_frame{
   background-image:url(/images/c/circle.png);
