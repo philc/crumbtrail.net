@@ -1,0 +1,25 @@
+
+speed of inserts:
+http://dev.mysql.com/doc/refman/5.0/en/insert-speed.html
+
+
+line graph squiggle
+
+is project/page data even using the project id?
+
+
+uesr details - no way to change your password
+
+
+Apache apparently resolves the client's hostname in its logs; how can that hurt or help our performance?
+"- All the usual stuff: don’t follow symlinks, don’t use .htaccess files, don’t resolve client hostnames (move the logs to another machine and batch it later), etc.."
+
+
+verify that index and pagedata own the id they're modifying
+
+
+
+collapse referers for the current db takes _minutes_
+
+
+I think recent_unique_referers isn't prefetching each referer's data
