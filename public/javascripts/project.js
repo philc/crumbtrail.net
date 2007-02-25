@@ -47,36 +47,37 @@ var Page = {
 	this.populate();
 
 	  // set menu links
-	  $A($('menu-links').getElementsByTagName("LI")).each(function(e){
-	    l=e.getElementsByTagName("A")[0];
-	    l.onclick=function(){ Page.menuNav(this); return false;};
-	  });
-	  // set panel links
-	  $A(document.getElementsByClassName("panel_link","content")).each(function (e){
-	    e.onclick=function(){ Page.panelNav(this); return false;};
-	  });
+	$A($('menu-links').getElementsByTagName("LI")).each(function(e){
+		l=e.getElementsByTagName("A")[0];
+		l.onclick=function(){ Page.menuNav(this); return false;};
+	});
+		  // set panel links
+		  $A(document.getElementsByClassName("panel_link","content")).each(function (e){
+		    e.onclick=function(){ Page.panelNav(this); return false;};
+		  });
+	
 
-		// set collapse links
-	/*	Event.addBehavior({
-			'#currently_condensing a:click' : function(e){ 
-				input=this.nextElement();
-				input.value = input.value=="on" ? "off" : "on";
-				Page.syncRefererPreferenceLink(this);
-				return false;*/
+			// set collapse links
+		/*	Event.addBehavior({
+				'#currently_condensing a:click' : function(e){ 
+					input=this.nextElement();
+					input.value = input.value=="on" ? "off" : "on";
+					Page.syncRefererPreferenceLink(this);
+					return false;*/
 
-					// Sync all the referer links to their hidden form elements
-				/*	$$("#currently_condensing a").each(function (e){Page.syncRefererPreferenceLink(e);});
+						// Sync all the referer links to their hidden form elements
+					/*	$$("#currently_condensing a").each(function (e){Page.syncRefererPreferenceLink(e);});
 
-					Event.addBehavior({
-						'#domain:blur' : function(e){
-							//text=this.value;
-							if (this.value != "" && !this.value.match(/^[\w]+[\.][\w\.]+[\w]+\/?$/))
-								//Element.show("domain_validation");
-								Effect.Appear("domain_validation", {duration:.5})
-							else
-								Effect.Fade("domain_validation",{duration:.5});
-						}
-					})*/
+						Event.addBehavior({
+							'#domain:blur' : function(e){
+								//text=this.value;
+								if (this.value != "" && !this.value.match(/^[\w]+[\.][\w\.]+[\w]+\/?$/))
+									//Element.show("domain_validation");
+									Effect.Appear("domain_validation", {duration:.5})
+								else
+									Effect.Fade("domain_validation",{duration:.5});
+							}
+						})*/
   },
 
   populate:function(){

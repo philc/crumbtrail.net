@@ -111,8 +111,24 @@ function toggleAppear(element){
 	element=$(element);
 	if (element.style && element.style.display=="none")
 		Effect.Appear(element);
-
 	else
 		Effect.Fade(element);		
 	return false;
 }
+function toggleAppear(element){
+	element=$(element);
+	if (element.style && element.getStyle('display')=='none'){
+		console.log('making appear');
+		element.style.opacity=0;
+		element.style.display='';
+		element.effect('opacity',{duration: 750}).start(0,1);
+	}else{
+		element.effect('opacity',{duration: 750}).start(1,0).chain(function(){element.style.display='none';});
+		/*element.style.opacity=0;
+		element.style.display='none';*/
+	}
+	return false;
+}
+
+
+
