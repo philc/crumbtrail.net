@@ -14,19 +14,16 @@ class HitDaily < ActiveRecord::Base
 
     row = find_by_project_id_and_row(project.id, project.hits_row)
     if row.nil?
-      row = create(:project => project, :date => request.time, :total => 1, :row => project.hits_row)
+      row = new(:project => project, :date => request.time, :total => 1, :row => project.hits_row)
       row.unique = 1 if request.unique
+      row.save
     elsif row.date == date
       row.total += 1
       row.unique += 1 if request.unique
       row.save
     elsif row.date < past
       row.total = 1
-      if request.unique
-        row.unique = 1
-      else
-        row.unique = 0
-      end 
+      row.unique = request.unique ? 1 : 0
       row.date = date
       row.save
     else

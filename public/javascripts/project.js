@@ -351,7 +351,7 @@ TableDisplay.Methods={
 		var linkCaption = DisplayHelper.truncateLeft(url,DisplayHelper.truncateBig);
 
 		return TableDisplay.tableRow(
-			linkCaption.link("http://"+url) +  db.span({cls:'to'},'From&nbsp;'+refererCaption.link("http://"+referer)),
+			linkCaption.link("http://"+url) +  db.span({cls:'to'},'From&nbsp;'+(referer != "null" ? refererCaption.link("http://"+referer) : "Direct")),
 			DisplayHelper.timeAgo(time)
 		);
 	},

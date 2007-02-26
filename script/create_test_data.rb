@@ -19,13 +19,20 @@ def add
   
   z=Zone.find_by_identifier('US/Eastern')
   
-  mikequinn = Account.create(:username   => "mikequinn",
-                             :password   => "pass1",
-                             :firstname  => "Michael",
-                             :lastname   => "Quinn",
-                             :country_id => 1,
-                             :zone=>z) 
-                             
+  mikeq = Account.new(:username   => "mikeq",
+                      :password   => "pass1",
+                      :firstname  => "Michael",
+                      :lastname   => "Quinn",
+                      :country_id => 1,
+                      :zone=>z) 
+  
+  proj = Project.new(:account => mikeq,
+                     :title => "Personal Site",
+                     :url => "mikequinn.org/",
+                     :zone => mikeq.zone)
+  proj.id = 1051
+  proj.save
+
   test  = Account.create(:username => "a@b.c", 
     :password => "password",
     :firstname => "",  
@@ -34,7 +41,7 @@ def add
     :zone=>z
   )
 
-# This is the "real owner" of the ninjawords account                            
+  # This is the "real owner" of the ninjawords account                            
   philc = Account.create(:username   => "philc",
                          :password   => "pass1",
                          :firstname  => "Phil",

@@ -241,10 +241,12 @@ class ProjectController < ApplicationController
     # delete it.
     # TODO: this would be much easier if collapsing_refs was a hash
     to_delete=[]
+    
     project.collapsing_refs.each_with_index do |r,i|
       url = r[0]
-      to_delete<<i if (params[url]=="off")        
+      to_delete << i if (params[url]=="off")        
     end
+    
     # puts "to_delete", to_delete
     # puts project.collapsing_refs
     to_delete.reverse.each { |i| project.collapsing_refs.delete_at(i)}
@@ -280,19 +282,19 @@ class ProjectController < ApplicationController
     return options
   end
   def build_searches()
-    @searches_recent=@project.recent_searches().map{|s|
-      [s.search_words,s.referer.url,s.page.url,JSDate.new(s.visit_time)]
-      }.flatten.to_json
     @searches_total=@project.top_searches(@@size).map{|s|
-      [s.search_words,s.referer.url,s.referer.page.url,s.count]
+      [s.search_words,s.url,s.target.url,s.count]
     }.flatten.to_json
+    @searches_recent=@project.recent_searches().map{|s|
+      [s.search.search_words,s.search.url,s.page.url,JSDate.new(s.visit_time)]
+      }.flatten.to_json
   end
   def build_pages()
       @popular_pages=@project.top_landings(@@size).map{|p|
-        [p.page.url,p.count]
+        [p.url,p.count]
       }.flatten.to_json
       @recent_pages=@project.recent_landings().map{|p|
-        [p.page.url,p.referer.url,JSDate.new(p.visit_time)]
+        [p.page.url,(p.source.nil? ? nil : p.source.url),JSDate.new(p.visit_time)]
       }.flatten.to_json
   end
   
@@ -307,7 +309,7 @@ class ProjectController < ApplicationController
       [r.url,r.page.url,r.count]
     }.flatten.to_json
     @glance_referers_week=@glance[:week].map{|r|
-      [r.url,r.page.url,r.count]
+      [r.url,r.target.url,r.count]
     }.flatten.to_json
     
     @hits_day=@project.hits(:day).join(",")
@@ -322,17 +324,17 @@ class ProjectController < ApplicationController
     @referers_total = @referers_total[0..-2] if @referers_more    
     
     @referers_total=@referers_total.map{|r|
-      [r.url,r.page.url,r.count]}.flatten.to_json
+      [r.url,r.target.url,r.count]}.flatten.to_json
     
-    @referers_unique = @project.recent_unique_referers(@@size).map {|r|
-      [r.url,r.page.url,JSDate.new(r.first_visit)]
-    }.flatten.to_json
-
     @referers_recent = @project.recent_referers().map{|r|
       [r.referer.url,r.page.url,JSDate.new(r.visit_time)]
     }.flatten.to_json
+
+    @referers_unique = @project.recent_unique_referers(@@size).map {|r|
+      [r.url,r.target.url,JSDate.new(r.first_visit)]
+    }.flatten.to_json
   end
-  
+    
   def build_details()
     # drop entries that are 0
     @browser_labels=[]

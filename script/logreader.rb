@@ -32,20 +32,19 @@ require_many("app/models")
 class ApacheRequest
   attr_reader   :project
   attr_reader   :time
-  attr_reader   :referer
-  attr_reader   :page
+  attr_reader   :source
+  attr_reader   :target
   attr_reader   :unique
   attr_reader   :browser
   attr_reader   :os
   attr_reader   :type
-  attr_writer   :type
   
-  def initialize(project, ip, time, page_url, referer_url, unique, browser, os)
+  def initialize(project, ip, time, page_url, source_url, unique, browser, os)
     @project = project
     @ip = ip
     @time = time
     @page_url = page_url
-    @referer_url = referer_url
+    @source_url = source_url
     @unique = unique
     @browser = browser
     @os = os
@@ -56,7 +55,7 @@ class ApacheRequest
   def print
     puts "Client IP: #{@ip}"
     puts "Time: #{@time.to_s}"
-    puts "Referer: #{@referer_url}"
+    puts "Source: #{@source_url}"
     puts "Project Id: #{@project_id}"
     puts "Monitored Page: #{@landing_url}"
     puts "Browser: #{@browser}"
@@ -67,15 +66,23 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
-    if (@page_url != '-' && @referer_url != '-' && @referer_url != '/')
-      @page = @project.get_page(@page_url)
-      @referer = @project.get_referer(@referer_url, @time) if !@page.nil?      
+    @target = @project.get_or_new_page(@page_url)
+    
+    if (!@source_url.nil? && @source_url != "/" && @source_url != "-")
+      @source = @project.get_or_create_search(@source_url, @target)
+      @source = @project.get_or_create_referer(@source_url, @target, @time) if @source.nil?
+      @source = @project.get_or_create_page(@source_url) if @source.nil?
     end
+
+    @target.origin = @source
+    @target.save
+
+    @type = :direct
+    @type = :referer if @source.class == Referer
+    @type = :search  if @source.class == Search
      
-    # We should process this at least to record the hit,
-    # even if the referer is nil
-    #@project.process_request(self) if !@referer.nil? && !@page.nil?
-    @project.process_request(self) 
+    @project.process_request(self)
+    
   end
 end
 
@@ -122,10 +129,6 @@ class ApacheLogReader
           os          = parse_os($5)
 
           strip_protocol(referer_url)
-          if !referer_url.match("^#{project.url}").nil?
-            referer_url = '/'
-          end
-
           strip_protocol(landing_url)
           #strip_server_url(project, landing_url)
 
@@ -295,8 +298,8 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
   
   def self.parse_referer(query)
-    query.match(/[&\?]r=([A-Za-z0-9\/:+%\.-]+)/)
-    return $1 || '/'
+    query.match(/[&\?]r=([A-Za-z0-9\/:+%\.-]+)/)    
+    return $1
   end
 
 #------------------------------------------------------------------------------

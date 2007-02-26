@@ -1,3 +1,5 @@
+require "app/models/source.rb"
+
 class Project < ActiveRecord::Base
   belongs_to :account
   belongs_to :zone
@@ -21,30 +23,19 @@ class Project < ActiveRecord::Base
 
 
   def process_request(request)
-  
-    # Why does this need to be locked? I bet this is a huge perf hit
     locked do
     
-      referer = request.referer
-      page = request.page
-      request.type = :direct
-      
-      if (!referer.nil? && !page.nil?)
-        search_terms = Search.analyze_search_url(referer.url)
-        if !search_terms.nil?
-          request.type = :search
-          Search.increment_search_string(request, search_terms)
-          SearchRecent.add_new_search(request, search_terms)
-        else
-          request.type = :referer
-          increment_referer(request)
-        end
-
-        increment_page_landing(request)
-        record_details(request)
+      case request.type
+        when :search
+          SearchRecent.add_new_search(request)
+        when :referer
+          ReferralRecent.add_new_referer(request)
       end
-
+      
+      increment_page_landing(request)
       increment_hit_count(request)
+      record_details(request)
+      
       save
 
     end
@@ -52,7 +43,7 @@ class Project < ActiveRecord::Base
 
   @@domain_regex = '^([A-Za-z0-9\.]+)'
 
-  def get_referer(url, visit_time = nil)
+  def get_or_create_referer(url, page, visit_time = nil)
     url.match(@@domain_regex)
     domain = $1
 
@@ -64,13 +55,21 @@ class Project < ActiveRecord::Base
     if !ref_id.nil?
       return Referer.find_by_id(ref_id)
     else
-      return Referer.get_referer(self, url, visit_time)
+      return Referer.get_or_create_referer(self, url, page, visit_time)
     end
 
   end
 
-  def get_page(url)
-    return Page.get_page(self, url)
+  def get_or_create_search(url, page)
+    return Search.get_or_create_search(self, url, page)
+  end
+  
+  def get_or_new_page(url)
+    return Page.get_or_new_page(self, url)
+  end
+  
+  def get_or_create_page(url)
+    return Page.get_or_create_page(self, url)
   end
   
   def collapse_referer(url)
@@ -218,7 +217,7 @@ class Project < ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   def top_landings(limit)
-    return LandingTotal.get_most_popular(self, limit)
+    return Page.get_most_popular(self, limit)
   end
 
   def recent_landings()
@@ -260,7 +259,6 @@ class Project < ActiveRecord::Base
   end
 
   def increment_page_landing(request)
-    LandingTotal.increment(request)
     LandingRecent.add_new_landing(request)
   end
 
@@ -285,9 +283,9 @@ class Project < ActiveRecord::Base
   # =Locking
   #------------------------------------------------------------------------------
 
-  @@tables = %w{ searches search_recents
-    landing_totals landing_recents
-    referers pages referral_recents
+  @@tables = %w{ 
+    sources
+    landing_recents referral_recents search_recents
     hit_hourlies hit_dailies hit_monthlies}
   @@sql_lock = nil
 
