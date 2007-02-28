@@ -38,7 +38,7 @@ class ApacheRequest
   attr_reader   :browser
   attr_reader   :os
   attr_reader   :type
-  
+    
   def initialize(project, ip, time, page_url, source_url, unique, browser, os)
     @project = project
     @ip = ip
@@ -67,22 +67,24 @@ class ApacheRequest
 
   def save
     @target = @project.get_or_new_page(@page_url)
-    
-    if (!@source_url.nil? && @source_url != "/" && @source_url != "-")
-      @source = @project.get_or_create_search(@source_url, @target)
-      @source = @project.get_or_create_referer(@source_url, @target, @time) if @source.nil?
-      @source = @project.get_or_create_page(@source_url) if @source.nil?
+        
+    if !@target.nil?
+      if (!@source_url.nil? && @source_url != "/" && @source_url != "-")
+        @source = @project.get_or_create_search(@source_url, @target)
+        @source = @project.get_or_create_referer(@source_url, @target, @time) if @source.nil?
+        @source = @project.get_or_create_page(@source_url) if @source.nil?
+      end
+  
+      @target.origin = @source
+      @target.save
     end
-
-    @target.origin = @source
-    @target.save
-
+    
     @type = :direct
     @type = :referer if @source.class == Referer
     @type = :search  if @source.class == Search
      
     @project.process_request(self)
-    
+
   end
 end
 

@@ -32,12 +32,11 @@ class Project < ActiveRecord::Base
           ReferralRecent.add_new_referer(request)
       end
       
-      increment_page_landing(request)
+      increment_page_landing(request) if !request.target.nil?
       increment_hit_count(request)
       record_details(request)
       
       save
-
     end
   end
 
