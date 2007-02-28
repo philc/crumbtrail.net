@@ -8,8 +8,8 @@ var Preferences = new Class({
 		this.re=/breadcrumbs=([^;]+)/
 	},
 	defaultCookie:function(){
-		var initDefaults = function(e,i){ return e + "=" + this.defaults[i];}.bind(this);
-		return this.sections.collect(initDefaults).join('&');
+		var defaults = this.sections.map(function(e){return e + "=" + this.defaults[i];}.bind(this));
+		return defaults.join('&');
 	},
 	parseCookie:function(){
 		var m = this.re.exec(document.cookie);
