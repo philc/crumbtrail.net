@@ -324,7 +324,7 @@ class ProjectController < ApplicationController
     @referers_total = @referers_total[0..-2] if @referers_more    
     
     @referers_total=@referers_total.map{|r|
-      [r.url,r.target.url,r.count]}.flatten.to_json
+      [r.url,r.target ? r.target.url : "-",r.count]}.flatten.to_json
     
     @referers_recent = @project.recent_referers().map{|r|
       [r.referer.url,r.page.url,JSDate.new(r.visit_time)]

@@ -55,15 +55,12 @@ var Page = {
 		$A(document.getElementsByClassName("panel_link","content")).each(function (e){
 			e.onclick=function(){ Page.panelNav(this); return false;};
 		});
-
-
-
 	},
 
 	populate:function(){
 		/*
-		 * At a glance
-		 */
+		* At a glance
+		*/
 		var panel1 = TableDisplay.showTableWithoutDialog({
 			htmlID:'glance_referers_today',
 			title:'',
@@ -78,15 +75,16 @@ var Page = {
 			rowDisplay:TableDisplay.refererRow,
 			headers:["","Hits"]
 		});
-		
+
 		$('glance_referers_today').innerHTML=DisplayHelper.dialog(
 			panel1+'<br/>'+'<h2 class="title">Top referers this week</h2>'+panel2,
-			{title:'Top referers today'});
-		
+			{title:'Top referers today'}
+		);
+
 
 		/*
-		 * Hits
-		 */
+		* Hits
+		*/
 		TableDisplay.showTable({
 			htmlID:'hits_today',
 			step:2,
@@ -115,10 +113,10 @@ var Page = {
 			step:2,
 			headers:["","Hits","Unique"]
 		});
-		
+
 		/*
-		 * Referers
-		 */
+		* Referers
+		*/
 		Page.totalReferersPager.showTable({
 			htmlID:'referers_total',
 			title:'Popular referers',
@@ -136,7 +134,7 @@ var Page = {
 			rowDisplay:TableDisplay.refererRowWithDate,
 			feedUrl:"/referers/unique"
 		});
-		
+
 		TableDisplay.showTable({
 			htmlID:'referers_recent',
 			title:'Recent referrals',
@@ -146,10 +144,10 @@ var Page = {
 			rowDisplay:TableDisplay.refererRowWithDate,
 			feedUrl:"/referers/recent"
 		});
-		
+
 		/*
-		 * Pages
-		 */
+		* Pages
+		*/
 		TableDisplay.showTable({
 			htmlID:'pages_recent',
 			title:'Recent pages',
@@ -163,10 +161,10 @@ var Page = {
 			rowDisplay:TableDisplay.pagesRow,
 			headers:["","Hits"]
 		});
-		
+
 		/*
-		 * Search
-		 */
+		* Search
+		*/
 		TableDisplay.showTable({
 			htmlID:'searches_recent',
 			title:'Recent searches',
@@ -183,8 +181,8 @@ var Page = {
 		});
 
 		/*
-		 * Details
-		 */
+		* Details
+		*/
 		// don't graph uniques on the line graph
 		var onlyHits = [];
 		for (var i=0;i<data['hits_week'].length;i+=2) onlyHits[i/2]=data['hits_week'][i];
@@ -339,10 +337,6 @@ TableDisplay.Methods={
 			isDate ? DisplayHelper.timeAgo(data[i*3+2]) : DisplayHelper.comma(data[i*3+2])
 		);	
 	},
-	/*pagesRowWithDate: function(i,data,dataMax){
-		f=TableDisplay.pagesRow.bind(this);
-		return f(i,data,dataMax,true);
-	},*/
 	pagesRecent:function(i,data,dataMax){
 		var url = unescape(data[i*3]);
 		var referer = unescape(data[i*3+1]);
@@ -638,7 +632,6 @@ Object.extend(DisplayHelper,DisplayHelper.Methods);
 /*
 * Line graph drawing
 */
-
 LineGraph=new Class({
 	initialize: function(id,data, width, height, labels, style){
 		this.element=$(id);    
@@ -658,7 +651,6 @@ LineGraph=new Class({
 		// non-relative data
 		this.originalData=reversed;
 		this.data=LineGraph.relativize(reversed,this.height,this.max,this.min);
-		//this.min=data.min();
 		// Pick a line color. Colors are defined in page.colors
 		this.lineColor=(style==0 ? 1 : 0);
 
@@ -692,9 +684,6 @@ LineGraph=new Class({
 			// Whether the line is pointing up. Up=1, down=-1
 			var u=prevHeight<=this.data[i] ? 1 : -1;     
 
-			//img.src=(u==1 ? "/images/c/line13.png" : "/images/c/line10.png");    
-			//img.src=(u==1 ? Page.imageForQuadrant(this.lineColor,3) : Page.imageForQuadrant(this.lineColor,0));
-
 			img.src=this.lineGraphImage(this.style,u);
 			img.className="line";
 
@@ -721,7 +710,6 @@ LineGraph=new Class({
 			img.style.left=(i-1)*hwidth+ "px";
 
 			// Add a dot for the datapoint to a curve.
-			//g.appendChild(this.dataPointDot(this.originalData[i],i*hwidth,this.height-this.data[i],u==1));
 			g.appendChild(this.dataPointDot(this.originalData[i],i*hwidth,this.height-this.data[i],u==1));
 
 			g.appendChild(img);
@@ -914,7 +902,7 @@ PieGraphDisplay = new Class({
 		div.addClass("chart_image chart_image_div");
 		img.style.width=div.style.width=px(w);
 		img.style.height=div.style.height=px(h);
-		//img.style.zIndex=div.style.zIndex=="1";
+
 		o1=(q==1||q==2) ? 0 : 1;
 		o2=(q==2||q==3) ? 0 : 1;
 
@@ -968,34 +956,24 @@ PieGraphDisplay = new Class({
 
 		dw = ((q==1 || q==3) ? w : qs-w );
 
-
-
 		if (q==0){
-			//      div.style.width=px(qsize-w);
 			dl=0; 
 			dh=qs;
 		}
 		if (q==1){
-			//     div.style.width=px(w);
 			dl=qs;
 			dh=qs-h;
 		}
 		if (q==2){
-			//     div.style.width=px(qsize-w);
 			dl=qs+w;
 			dt=qs;        
-			//dh=qs-h;
 			// If it's a 0 height, we should fill up the whole box.
 			dh= (h==0 ? qs: h);
 		}
 		if (q==3){
-			//     div.style.width=px(w);
 			dh=qs-h;
-
 			dt=qs+h;
-			//div.style.left=px(0);
 		}
-
 
 		div.style.left=px(dl);
 
