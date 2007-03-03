@@ -117,7 +117,18 @@
 		</div>
 		<div id="glance-left">    
 			<div id ="summary_stats">
-				<table border=0><tr>
+				<div class="block today">
+				<h3 class="">Hits today:</h3>
+				<div class="number"><%=@glance_today[0]%></div>
+				<div class="unique">(<%=@glance_today[1]%> unique)</div>
+				<br/>
+				</div>
+				<div class="block yesterday">
+				<h3>Yesterday</h3>
+				<div class="number"><%=@glance_yesterday[0]%></div>
+				<div class="unique">(<%=@glance_yesterday[1]%> unique)</div>
+				</div>
+				<!-- <table border=0><tr>
 					<td class="today">Hits today:</td>
 					<td><span class="number"><%=@glance_today[0]%></span></td>
 				</tr><tr>
@@ -129,9 +140,10 @@
 				</tr><tr>
 					<td> </td><td><span class="unique">(<%=@glance_yesterday[1]%> unique)</td>
 					</tr>
-
-				</table>
+				</table> -->
+				
 			</div>
+				<h4>Traffic sources for today</h4>
 				<table id="source_stats">
 				</table>
 		</div>

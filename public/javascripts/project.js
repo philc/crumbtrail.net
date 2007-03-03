@@ -82,10 +82,11 @@ var Page = {
 		);
 		
 		var contents="";
+		var alt=0;
 		for (var key in data.glance_sources){
 			contents+=db.tr(
-				db.td(key.firstUpCase()),
-				db.td(DisplayHelper.formatPercent(data.glance_sources[key]))
+				db.td({cls:"f"},key.firstUpCase()),
+				db.td({cls:'s ' + (alt++%2 ? '':'a')},DisplayHelper.formatPercent(data.glance_sources[key]))
 			);		
 		}
 		$('source_stats').innerHTML="<tbody>"+contents+"</tbody>";
