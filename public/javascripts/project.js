@@ -34,15 +34,21 @@ var Preferences = new Class({
 	}
 });
 
+/*
+ * Manages and executes keyboard shortcuts
+ */
 var KeyboardShortcuts={
 	keypress:function(ev){
 		// Don't listen to keystrokes for form fields
 		if (ev.target.tagName && (ev.target.tagName=="INPUT" || ev.target.tagName=="TEXTAREA"))
 			return;
-		// No modifiers needed
+			
+		// Don't process anything with modifiers
 		if (ev.ctrlKEY || ev.shiftKey || ev.altKey || ev.metaKey)
 			return;
+			
 		var section=null,panel=null;
+		
 		var key = String.fromCharCode(ev.charCode).toLowerCase();
 		switch(key){
 			case "s":
@@ -66,7 +72,6 @@ var KeyboardShortcuts={
 			Page.menuNav(section);
 		if (panel && panel.tagName=="A")		
 			Page.panelNav(panel);
-
 	},
 	previousSection:function(){
 		var section = Page.activeSection;
@@ -80,7 +85,10 @@ var KeyboardShortcuts={
 		// Grab the sibling list node's <a> element
 		return li.getNext() ? li.getNext().getFirst().title : null;
 	},
-	/* which can be "next" or "previous" */
+	/* 
+	Finds the next link on the current panel
+	 	which parameter can be "next" or "previous" 
+	*/
 	getPanelLink:function(which){
 		var section = $(Page.activeSection);
 		var links = section.childrenOfClass('panel_links')[0];		
@@ -97,8 +105,6 @@ var KeyboardShortcuts={
 	getBrother:function(node,what){
 		var el = node[what+'Sibling'];
 		while ($type(el) == 'whitespace' || $type(el)=='textnode') el = el[what+'Sibling'];
-		console.log($(el));
-		console.log($type($(el)));
 		if ($type($(el))=="element")
 			return $(el);
 	}
@@ -284,7 +290,6 @@ var Page = {
 	},
 	// Switch section
 	menuNav: function(arg){
-		console.log("menu nav",arg);
 		var section=$pick(arg.title,arg);
 		
 		$$('#menu .active').forEach(function(e){e.removeClass('active');});		
