@@ -150,9 +150,9 @@ class ProjectController < ApplicationController
     @date = JSDate.new(@project.time).to_json;
     
     build_glance_and_hits()
-    @glance_today=@glance_today.map{ |e| number_with_delimiter(e)}
-    @glance_yesterday=@glance_yesterday.map{ |e| number_with_delimiter(e)}
-        
+    @glance_today=@glance_today.map{ |e| number_with_delimiter(e) }
+    @glance_yesterday=@glance_yesterday.map{ |e| number_with_delimiter(e) }
+      
     build_referers() 
     
     build_pages()
@@ -296,7 +296,7 @@ class ProjectController < ApplicationController
       @recent_pages=@project.recent_landings().map{|p|
         [p.page.url,(p.source.nil? ? nil : p.source.url),JSDate.new(p.visit_time)]
       }.flatten.to_json
-  end
+  end  
   
   def build_glance_and_hits()
     week_data=@project.hits(:week)
@@ -312,6 +312,8 @@ class ProjectController < ApplicationController
       [r.url,r.target.url,r.count]
     }.flatten.to_json
     
+    @glance_sources=@project.hit_types_percents(:total).to_json()
+  
     @hits_day=@project.hits(:day).join(",")
     @hits_week=@project.hits(:week).join(",")  
     @hits_month=@project.hits(:month).join(",")

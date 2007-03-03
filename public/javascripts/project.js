@@ -8,7 +8,7 @@ var Preferences = new Class({
 		this.re=/breadcrumbs=([^;]+)/
 	},
 	defaultCookie:function(){
-		var defaults = this.sections.map(function(e){return e + "=" + this.defaults[i];}.bind(this));
+		var defaults = this.sections.map(function(e){return e + "=" + this.defaults[i];}.bind(this));		
 		return defaults.join('&');
 	},
 	parseCookie:function(){
@@ -80,6 +80,15 @@ var Page = {
 			panel1+'<br/>'+'<h2 class="title">Top referers this week</h2>'+panel2,
 			{title:'Top referers today'}
 		);
+		
+		var contents="";
+		for (var key in data.glance_sources){
+			contents+=db.tr(
+				db.td(key.firstUpCase()),
+				db.td(DisplayHelper.formatPercent(data.glance_sources[key]))
+			);		
+		}
+		$('source_stats').innerHTML="<tbody>"+contents+"</tbody>";
 
 
 		/*
@@ -525,6 +534,14 @@ DisplayHelper.Methods={
 	// Truncatation value for big and small text
 	truncateBig:40,
 	truncateSmall:45,
+
+	/*
+	 * Formats a floating point percentage into a string representation
+	 */
+	formatPercent:function(percent){
+		// Show a decimal place only if it's < 1%
+		return percent.toFixed( percent < 1 ? 1 : 0) + "%";				
+	},
 	timeAgo: function(date){
 		var diff=(new Date())-date;
 		var mins=Math.floor(diff/1000/60);
@@ -649,7 +666,7 @@ LineGraph=new Class({
 		var reversed = data.reverse();
 
 		// non-relative data
-		this.originalData=reversed;
+		this.originalData = reversed;
 		this.data=LineGraph.relativize(reversed,this.height,this.max,this.min);
 		// Pick a line color. Colors are defined in page.colors
 		this.lineColor=(style==0 ? 1 : 0);
@@ -833,15 +850,11 @@ PieGraphDisplay = new Class({
 
 		// relativize data
 		var total=data.sum();
-
+		
 		// Make the data in percents, for the labels
-		for (var i=0;i<data.length;i++){
-			// Round to one decimal place, where the percents are <1
-			this.percents[i]=Math.floor(data[i]/total*1000)/10;
-			// Truncate the decimals off of percents greater than 1
-			if (this.percents[i]>1)
-			this.percents[i]=Math.floor(this.percents[i]);
-		}
+		for (var i=0;i<data.length;i++)
+			this.percents[i]=data[i]/total*100;
+
 		// Make the data as degrees of a 360 circle, for the graph drawing
 		for (var i=0;i<data.length;i++)
 		this.data[i]=Math.floor((data[i]/total)*360);
@@ -1001,8 +1014,8 @@ PieGraphDisplay = new Class({
 			db.div( {cls:'color_box', style:"background-color:" + Page.colors[i]}) + 
 			db.span(
 				{cls:'caption'},
-				this.labels[i], 
-				db.span({cls:'percent'},this.percents[i] + "%")
+				this.labels[i],
+				db.span({cls:'percent'}, DisplayHelper.formatPercent(this.percents[i]))
 			);
 
 			div.addClass("label");

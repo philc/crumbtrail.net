@@ -13,17 +13,18 @@
 	<%= javascript_include_tag "dombuilder" %> 
 
 	<script type="text/javascript">
-	data=[];
+	data={};
 	Page.activeSection = "<%= @view_options[:section]%>";
 	Page.date=<%=@date%>;   
 
 	Page.project=<%=@project.id%>;
 	Page.key="<%= @account.access_key %>";
-	data=[];
-	
+		
     data.glance_referers_today=<%= @glance_referers_today %>;
     data.glance_referers_week=<%= @glance_referers_week %>;
 
+	data.glance_sources=<%= @glance_sources %>;
+	
 	//hitsDayData=[<%= @hits_day %>];
 	data.hits_today=[<%= @hits_day %>];
 	data.hits_week=[<%= @hits_week %>];
@@ -131,7 +132,10 @@
 
 				</table>
 			</div>
+				<table id="source_stats">
+				</table>
 		</div>
+
 		<br clear="both"/>
 
 		<%= render :partial=>"panel", :locals=>

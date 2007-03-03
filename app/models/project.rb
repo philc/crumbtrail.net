@@ -199,6 +199,9 @@ class Project < ActiveRecord::Base
     end
   end
   
+  #
+  # The source of your traffic - whether direct, from referers, or from search
+  #
   def hit_types(period)
     hits = nil
     if period == :today
@@ -209,6 +212,15 @@ class Project < ActiveRecord::Base
       hits[:search] = self.search_hits
       hits[:direct] = self.direct_hits
     end
+    return hits
+  end
+
+  def hit_types_percents(period)
+    hits = self.hit_types(period)
+    total = hits.values.sum()
+    return hits if total==0
+    
+    hits.each_key{|k| hits[k]=hits[k]*100.0/total }
     return hits
   end
 

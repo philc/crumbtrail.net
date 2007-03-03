@@ -548,11 +548,17 @@ img{
 }
 .chart .caption{
   padding-left:1.2em;
-  position:static;
+  /* be careful in the future about what captions you use. They must fall within this width-3 */
+  /* leave 3em on the end to cover the percents */
+  width:14.5em;
+  position:relative;
   display:block;
 }
 .chart .caption .percent{
-	padding-left:.8em;
+	width:3em;
+	text-align:right;
+	position:absolute;
+	right:0;
 	color:gray;
 }
 .chart_frame{
