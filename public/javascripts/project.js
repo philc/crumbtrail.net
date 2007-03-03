@@ -218,7 +218,7 @@ var Page = {
 		$(this.activeSection).hide();
 		this.activeSection=section;
 
-		$(section).show();   
+		$(section).show();		
 		this.preferences.update("section",section);
 	},
 	// Navigate within a section

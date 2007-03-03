@@ -135,7 +135,7 @@ h2.section_title{
 	text-indent:-9999px;
 }
 #glance_title{background: white url(/images/h/headers.gif) no-repeat 0 0;}
-#hits_title{background: white url(/images/h/headers.gif) no-repeat 0 -42px;}
+#pageviews_title{background: white url(/images/h/headers.gif) no-repeat 0 -42px;}
 #referers_title{background: white url(/images/h/headers.gif) no-repeat 0 -84px;}
 #pages_title{background: white url(/images/h/headers.gif) no-repeat 0 -126px;}
 #searches_title{background: white url(/images/h/headers.gif) no-repeat 0 -168px;}

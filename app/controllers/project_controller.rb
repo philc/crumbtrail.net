@@ -141,7 +141,7 @@ class ProjectController < ApplicationController
     
     # get the view options from their cookie
     @view_options=view_options_from_cookie(cookies[:breadcrumbs])   
-    puts "view options:",@view_options
+
     #@all_projects=@account.projects.reject{|p| p!=@project}
     
     @title="Stats for " + @project.title.to_s + " - Breadcrumbs"
@@ -182,7 +182,6 @@ class ProjectController < ApplicationController
     page=params[:p].to_i
     page=0 if (page<-1)
     
-    puts "page we got:",page
     
     # a parameter of -1 means find the last page
     if (page==-1)
@@ -231,7 +230,6 @@ class ProjectController < ApplicationController
   
   # Process a request to save the referer options. Involves collapsing referers
   def process_options
-    puts params
     project = Project.find_by_id(params[:pid])
     return "" if project.nil?
     # make sure they own this project
@@ -247,10 +245,7 @@ class ProjectController < ApplicationController
       to_delete << i if (params[url]=="off")        
     end
     
-    # puts "to_delete", to_delete
-    # puts project.collapsing_refs
     to_delete.reverse.each { |i| project.collapsing_refs.delete_at(i)}
-    # puts project.collapsing_refs
     project.save unless to_delete.empty?
 
     domain=params[:domain]
@@ -281,10 +276,9 @@ class ProjectController < ApplicationController
       if (part[0]=="section")
         options[part[0].to_sym]=part[1].to_sym if @@default_view.values.index(part[1].to_sym)
       elsif (part[1]!="undefined")
-              # If javascript sends us "undefined", then use the default
+        # If javascript sends us "undefined", then use the default
         options[part[0].to_sym]=part[1].to_sym
       end
-      
     end
     return options
   end
