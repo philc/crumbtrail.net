@@ -7,7 +7,6 @@ module ProjectHelper
     @view_options[:section] == id ? "class='active'" : nil
   end
   def visible(n,v)
-    puts "comparing",n,v,@view_options[n]==v
     return @view_options[n]==v
     
   end

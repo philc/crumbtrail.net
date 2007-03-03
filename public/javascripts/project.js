@@ -34,6 +34,76 @@ var Preferences = new Class({
 	}
 });
 
+var KeyboardShortcuts={
+	keypress:function(ev){
+		// Don't listen to keystrokes for form fields
+		if (ev.target.tagName && (ev.target.tagName=="INPUT" || ev.target.tagName=="TEXTAREA"))
+			return;
+		// No modifiers needed
+		if (ev.ctrlKEY || ev.shiftKey || ev.altKey || ev.metaKey)
+			return;
+		var section=null,panel=null;
+		var key = String.fromCharCode(ev.charCode).toLowerCase();
+		switch(key){
+			case "s":
+			case "j":
+				section = this.nextSection();
+			break;
+			case "w":
+			case "k":
+				section=this.previousSection();
+			break;
+			case "a":
+			case "u":
+				panel=this.getPanelLink('previous');
+			break;
+			case "d":
+			case "i":
+				panel=this.getPanelLink('next');
+			break;
+		}
+		if (section)
+			Page.menuNav(section);
+		if (panel && panel.tagName=="A")		
+			Page.panelNav(panel);
+
+	},
+	previousSection:function(){
+		var section = Page.activeSection;
+		var li = Page.getMenuLink(section).parentNode;
+		// Grab the sibling list node's <a> element
+		return li.getPrevious() ? li.getPrevious().getFirst().title : null;
+	},
+	nextSection:function(){
+		var section = Page.activeSection;
+		var li = Page.getMenuLink(section).parentNode;
+		// Grab the sibling list node's <a> element
+		return li.getNext() ? li.getNext().getFirst().title : null;
+	},
+	/* which can be "next" or "previous" */
+	getPanelLink:function(which){
+		var section = $(Page.activeSection);
+		var links = section.childrenOfClass('panel_links')[0];		
+		if (!links)
+			return;
+
+		var active = links.childrenOfClass('panel_link_active')[0];
+		return this.getBrother(active,which);
+	},
+	/* 
+	 * Mootool's element.getNext() returns false when it hits a text node. This keeps on going. 
+	 * 'what' can be next or previous.
+	*/
+	getBrother:function(node,what){
+		var el = node[what+'Sibling'];
+		while ($type(el) == 'whitespace' || $type(el)=='textnode') el = el[what+'Sibling'];
+		console.log($(el));
+		console.log($type($(el)));
+		if ($type($(el))=="element")
+			return $(el);
+	}
+}
+
 
 var Page = {
 	setup:function(){
@@ -55,8 +125,9 @@ var Page = {
 		$A(document.getElementsByClassName("panel_link","content")).each(function (e){
 			e.onclick=function(){ Page.panelNav(this); return false;};
 		});
+		
+		$(document).addEvent('keypress',KeyboardShortcuts.keypress.bindAsEventListener(KeyboardShortcuts));
 	},
-
 	populate:function(){
 		/*
 		* At a glance
@@ -206,13 +277,20 @@ var Page = {
 		pg.drawChart();  
 
 	},
+
+	// Gets the menu link for the given section, e.g. the <a> link for section "pageviews"
+	getMenuLink:function(section){
+		return $E('#menu a[title=' + section + ']');
+	},
 	// Switch section
-	menuNav: function(e){
-		var section=e.title;
-
-		$$('#menu .active').forEach(function(e){e.removeClass('active');})
-
-		e.addClass("active");
+	menuNav: function(arg){
+		console.log("menu nav",arg);
+		var section=$pick(arg.title,arg);
+		
+		$$('#menu .active').forEach(function(e){e.removeClass('active');});		
+		
+		var element = this.getMenuLink(section);
+		element.addClass("active");
 
 		if (this.activeSection)
 		$(this.activeSection).hide();
@@ -229,7 +307,9 @@ var Page = {
 		section.childrenOfClass('panel').forEach( function(e){e.hide();} );
 
 		// Remove highlighting on the other link, highlight the new link    
-		section.childrenOfClass('panel_links')[0].childrenOfClass('panel_link_active').forEach(function(e){e.removeClass('panel_link_active');})
+		section.childrenOfClass('panel_links')[0].childrenOfClass('panel_link_active').forEach(
+			function(e){e.removeClass('panel_link_active');}
+		);
 		$(linkElement).addClass("panel_link_active");
 		// Show e.g. "referers_current" panel
 		$(this.activeSection+"_"+panel).show();

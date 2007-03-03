@@ -9,8 +9,9 @@ class ProjectController < ApplicationController
     :pageviews=>:today,
     :referers=>:recent,
     :pages=>:recent,
-    :searches=>:recent
+    :searches=>:recent,
   }
+  @@valid_sections=[:glance,:pageviews,:referers,:pages,:searches,:details]
   
   # Show all the projects the user has
   def all   
@@ -274,7 +275,10 @@ class ProjectController < ApplicationController
       part=pair.split("=")
       # Ensure that "section" is a valid section in case we ever rename section names, like hits->pageviews
       if (part[0]=="section")
-        options[part[0].to_sym]=part[1].to_sym if @@default_view.values.index(part[1].to_sym)
+        puts "section", @@default_view.values
+        puts "looking for",part[1].to_sym
+        puts  @@default_view.values.index(part[1].to_sym)
+        options[part[0].to_sym]=part[1].to_sym unless @@valid_sections.index(part[1].to_sym).nil?
       elsif (part[1]!="undefined")
         # If javascript sends us "undefined", then use the default
         options[part[0].to_sym]=part[1].to_sym
