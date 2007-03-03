@@ -161,10 +161,17 @@ class Search < Source
 
   private
   
-  @@google = Regexp.compile('^google.*\/search.*[&\?]q=([A-Za-z0-9\+\. %]+)&?')
+  @@search_term = "([A-Za-z0-9\+\. %]+)"
+  @@google = Regexp.compile("^google\..*\/search.*[&\?]q=#{@@search_term}&?")
+  @@msn    = Regexp.compile("^search\.msn\..*/results\.aspx.*[&\?]q=#{@@search_term}&?")
+  @@live   = Regexp.compile("^search\.live\..*\/results\.aspx.*[&\?]q=#{@@search_term}&?")
+  @@yahoo  = Regexp.compile("search\.yahoo\..*/search.*[&\?]p=#{@@search_term}&?")
   def self.analyze_url(url)
     unesc_url = CGI.unescape(url)
-    if !@@google.match(unesc_url).nil?
+    if !@@google.match(unesc_url).nil? ||
+       !@@msn.match(unesc_url).nil? ||
+       !@@live.match(unesc_url).nil? ||
+       !@@yahoo.match(unesc_url).nil?
       words = CGI.unescape($1)
       return words.downcase
     else

@@ -15,9 +15,15 @@ host="crumbtrail.net"
 # If no env provided, assume production since we're copying from the server
 
 env = ARGV[0]
-env = "production" if env.nil?
-
+if (env =~ /production|development|testing/).nil?
+  env = "production"
+  i = 0
+else
+  i = 1
+end
+tables = ARGV[i, ARGV.length].join(' ')
 puts "using environment '#{env}'"
+puts "fetching tables '#{tables}'"
 
 # Parse credentials from env file
 f=YAML::load(File.open('config/database.yml'))
@@ -28,9 +34,13 @@ db = v["database"]
 user = v["username"]
 pass = v["password"]
 
+filename = "#{db}#{("-"+tables.delete(' ')) unless tables.nil?}"
+
+puts "downloading to file '#{filename}'"
+
 # build a string that tells mysql to compres a table
 compress="mkdir dbdump 2> /dev/null; " +
-  "mysqldump -u#{user} -p#{pass} #{db} | gzip -cf > dbdump/#{db}.gz"
+  "mysqldump -u#{user} -p#{pass} #{db} #{tables} | gzip -cf > dbdump/#{filename}.gz"
 
 
 puts "compressing database file on server"
@@ -39,5 +49,5 @@ puts `ssh #{user}@#{host} "#{compress}"`
 
 puts "downloading db file from server"
 `mkdir ./script/db 2> /dev/null`
-puts `scp #{user}@#{host}:~/dbdump/#{db}.gz ./script/db/`
-`gunzip -f ./script/db/#{db}.gz`
+puts `scp #{user}@#{host}:~/dbdump/#{filename}.gz ./script/db/`
+`gunzip -f ./script/db/#{filename}.gz`
