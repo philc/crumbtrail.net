@@ -10,7 +10,7 @@ class CreateReferralTables < ActiveRecord::Migration
       t.column :type, :string
  
       # Referer columns
-      t.column :first_visit, :datetime
+      t.column :first_visit, :timestamp
       t.column :recent_visit, :date
       t.column :daily_hit_counts, :text
       t.column :seven_days_count, :integer, :default => 0

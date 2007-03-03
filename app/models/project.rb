@@ -77,10 +77,9 @@ class Project < ActiveRecord::Base
 
     locked do
 
-
       # Return if the domain is already collapsed
-      self.collapsing_refs = [] if self.collapsing_refs.nil?
-      return nil if domain.nil? || self.collapsing_refs.find { |ref| ref[0] == domain }
+      self.collapsing_refs = {} if self.collapsing_refs.nil?
+      return nil if domain.nil? || !self.collapsing_refs[domain].nil?
 
       #todo - make sure its not a search domain
       
@@ -90,47 +89,49 @@ class Project < ActiveRecord::Base
       return nil if collapsables.length == 0
 
       # Create the record for the collapsed domain
-      domain_row = Referer.create(:project_id => id, :url_hash => domain.hash, :url => domain+'/')
+      d = Referer.new(:project_id => id, :url_hash => domain.hash, :url => domain+'/', :first_visit => Time.at(0))
 
       # Update the project to collapse this domain in the future
-      self.collapsing_refs << [domain, domain_row.id]
+      self.collapsing_refs[domain] = d.id
       self.save
 
-      # Collapse ReferralTotal
-      count = 0
-      first_visit = self.time
-      page_id = nil
-      collapsing_ref_totals = find_collapsable_records(collapsables, referral_totals)
-
-      return nil if collapsing_ref_totals.length == 0 # shouldn't happen, but just in case
-
-      collapsing_ref_totals.each do |ref|
-        count += ref.count
-        first_visit = ref.first_visit if ref.first_visit < first_visit
-        page_id = ref.page_id
+      ids = {}
+      collapsables.each do |ref|
+        ids[ref.id] = 1
+        puts "ID: #{ref.id.to_s}"
+        d.count += ref.count
+        if d.first_visit < ref.first_visit
+          d.target = ref.target
+          d.first_visit = ref.first_visit
+        end
+        
         ref.destroy
       end
 
-      ReferralTotal.create(:project_id => id,
-      :referer_id => domain_row.id,
-      :page_id => page_id,
-      :first_visit => first_visit,
-      :count => count)
-
-      # Redirect referer ID in remaining tables
-      change_tables = [LandingTotal, LandingRecent, ReferralRecent]
-      change_tables.each do |table|
-        table.find_all_by_project_id(id).each do |record|
-          if is_collapsable_record(collapsables, record)
-            record.referer_id = domain_row.id
-            record.save
-          end
+      d.save
+      
+      Page.find_all_by_project_id(id).each do |page|
+        if !ids[page.path_id].nil?
+          page.path_id = d.id
+          page.save
         end
       end
-
-      # Destroy the referer records
-      collapsables.each { |ref| ref.destroy }
-      return domain_row.id
+      
+      ReferralRecent.find_all_by_project_id(id).each do |r|
+        if !ids[r.referer_id].nil?
+          r.referer_id = d.id
+          r.save
+        end
+      end
+      
+      LandingRecent.find_all_by_project_id(id).each do |l|
+        if !ids[l.source_id].nil?
+          l.source_id = l.id
+          l.save
+        end
+      end
+      
+      return d.id
     end
   end
 
@@ -277,19 +278,6 @@ class Project < ActiveRecord::Base
     HitDetail.record_details(request)
   end
 
-  # =Collapsing
-  #------------------------------------------------------------------------------
-
-  def find_collapsable_records(collapsed_referers, rows)
-    return rows.select { |row| is_collapsable_record(collapsed_referers, row) }
-  end
-
-  def is_collapsable_record(collapsed_referers, row)
-    #todo - make a faster search
-    bool = collapsed_referers.find { |x| x.id == row.referer_id }
-    bool = bool ? true : false
-    return bool
-  end
 
   # =Locking
   #------------------------------------------------------------------------------

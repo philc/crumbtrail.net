@@ -8,7 +8,7 @@ class CreateHitTables < ActiveRecord::Migration
       t.column :search, :integer, :default => 0
       t.column :direct, :integer, :default => 0
       t.column :referer, :integer, :default => 0
-      t.column :last_update, :datetime, :null => false
+      t.column :last_update, :timestamp, :null => false
     end
 
     add_index :hit_hourlies, :project_id
