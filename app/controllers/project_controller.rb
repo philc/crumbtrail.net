@@ -277,7 +277,11 @@ class ProjectController < ApplicationController
     pairs=cookie.split(",")    
     pairs.each do |pair|
       part=pair.split("=")
-      options[part[0].to_sym]=part[1].to_sym
+      # If javascript sends us "undefined", then use the default
+      if (part[1]!="undefined")
+        options[part[0].to_sym]=part[1].to_sym
+      end
+      
     end
     return options
   end

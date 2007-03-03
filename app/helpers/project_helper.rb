@@ -4,11 +4,12 @@ module ProjectHelper
   end
   def menu_selected(id)
     #puts id,@preferences.panel
-    #@preferences.panel == id ? "class='active'" : nil
     @view_options[:section] == id ? "class='active'" : nil
   end
   def visible(n,v)
+
     return @view_options[n]==v
+    
   end
   # Creates a link, which will be disabled if the account is a demo account
   def demo_link(href,title,onclick="")
