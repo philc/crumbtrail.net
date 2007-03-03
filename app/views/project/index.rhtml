@@ -25,11 +25,11 @@
 
 	data.glance_sources=<%= @glance_sources %>;
 	
-	//hitsDayData=[<%= @hits_day %>];
-	data.hits_today=[<%= @hits_day %>];
-	data.hits_week=[<%= @hits_week %>];
-	data.hits_month=[<%= @hits_month %>];
-	data.hits_year=[<%= @hits_year %>];
+	data.pageviews={}
+	data.pageviews_today=[<%= @hits_day %>];
+	data.pageviews_week=[<%= @hits_week %>];
+	data.pageviews_month=[<%= @hits_month %>];
+	data.pageviews_year=[<%= @hits_year %>];
 
 
 	data.referers_total=[0,<%=@referers_more%>,<%= @referers_total -%>];
@@ -97,7 +97,7 @@
 <div id="menu">
 	<ul id="menu-links">
 		<%= render :partial=>"menu_entry", :locals=>{:title=>:glance,:d=>"At a glance"} %>
-		<%= render :partial=>"menu_entry", :locals=>{:title=>:hits,:d=>"Hits"} %>
+		<%= render :partial=>"menu_entry", :locals=>{:title=>:pageviews,:d=>"Pageviews"} %>
 		<%= render :partial=>"menu_entry", :locals=>{:title=>:referers,:d=>"Referers"} %>
 		<%= render :partial=>"menu_entry", :locals=>{:title=>:pages,:d=>"Pages"} %>
 		<%= render :partial=>"menu_entry", :locals=>{:title=>:searches,:d=>"Searches"} %>
@@ -112,7 +112,7 @@
 		<h2 class="section_title" id="glance_title">Glance</h2>
 		<!-- <img src="/images/h/glance.gif" class="section_title"/>         -->
 		<div id="glance-right">
-			<div id="hitsweek-linegraph" class="linegraph_container">
+			<div id="pageviewsWeek-linegraph" class="linegraph_container">
 			</div>
 		</div>
 		<div id="glance-left">    
@@ -158,22 +158,22 @@
 		<br clear="both"/>
 	</div>
 
-	<div id="hits" class="section" <%=panel_style(:hits)-%> >
-		<h2 class="section_title" id="hits_title">Hits</h2>  
+	<div id="pageviews" class="section" <%=panel_style(:pageviews)-%> >
+		<h2 class="section_title" id="pageviews_title">Pageviews</h2>  
 		<div class="panel_links">
 			Show: 
-			<%= render :partial=>"navlink", :locals=>{:s=>:hits,:v=>:today,:d=>"Today"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:hits,:v=>:week,:d=>"Week"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:hits,:v=>:month,:d=>"Month"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:hits,:v=>:year,:d=>"Year"} %> 
+			<%= render :partial=>"navlink", :locals=>{:s=>:pageviews,:v=>:today,:d=>"Today"} %> | 
+			<%= render :partial=>"navlink", :locals=>{:s=>:pageviews,:v=>:week,:d=>"Week"} %> | 
+			<%= render :partial=>"navlink", :locals=>{:s=>:pageviews,:v=>:month,:d=>"Month"} %> | 
+			<%= render :partial=>"navlink", :locals=>{:s=>:pageviews,:v=>:year,:d=>"Year"} %> 
 
 
 		</div>
 
-		<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:today,:options=>{:c=>"date"}} %>
-		<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:week,:options=>{:c=>"date"}} %>
-		<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:month,:options=>{:c=>"date"}} %>
-		<%= render :partial=>"panel", :locals=>{:p=>:hits,:v=>:year,:options=>{:c=>"date"}} %>
+		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:today,:options=>{:c=>"date"}} %>
+		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:week,:options=>{:c=>"date"}} %>
+		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:month,:options=>{:c=>"date"}} %>
+		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:year,:options=>{:c=>"date"}} %>
 
 
 

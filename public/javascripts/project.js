@@ -3,7 +3,7 @@ function px(v) {  return Math.ceil(v) + "px";}
 
 var Preferences = new Class({
 	initialize:function(){    
-		this.sections=["hits","referers","pages","searches", "section"];
+		this.sections=["pageviews","referers","pages","searches", "section"];
 		this.defaults=["today","recent","recent","recent","glance"];
 		this.re=/breadcrumbs=([^;]+)/
 	},
@@ -66,14 +66,14 @@ var Page = {
 			title:'',
 			step:3,
 			rowDisplay:TableDisplay.refererRow,
-			headers:["","Hits"]
+			headers:["","Pageviews"]
 		});
 		var panel2 = TableDisplay.showTableWithoutDialog({
 			htmlID:'glance_referers_week',
 			title:'',
 			step:3,
 			rowDisplay:TableDisplay.refererRow,
-			headers:["","Hits"]
+			headers:["","Pageviews"]
 		});
 
 		$('glance_referers_today').innerHTML=DisplayHelper.dialog(
@@ -93,35 +93,35 @@ var Page = {
 
 
 		/*
-		* Hits
+		* Pageviews
 		*/
 		TableDisplay.showTable({
-			htmlID:'hits_today',
+			htmlID:'pageviews_today',
 			step:2,
-			headers:["","Hits","Unique"],
-			feedTitle:"Hourly hits RSS feed",
-			feedUrl:"/hits"
+			headers:["","Pageviews","Unique"],
+			feedTitle:"Hourly pageviews RSS feed",
+			feedUrl:"/pageviews"
 		});
 
 		TableDisplay.showTable({
-			htmlID:'hits_week',
-			title:'Hits this week',
+			htmlID:'pageviews_week',
+			title:'Pageviews this week',
 			step:2,
-			headers:["","Hits","Unique"]
+			headers:["","Pageviews","Unique"]
 		});
 
 		TableDisplay.showTable({
-			htmlID:'hits_month',
-			title:'Hits this month',
+			htmlID:'pageviews_month',
+			title:'Pageviews this month',
 			step:2,
-			headers:["","Hits","Unique"]
+			headers:["","Pageviews","Unique"]
 		});
 
 		TableDisplay.showTable({
-			htmlID:'hits_year',
-			title:'Hits this year',
+			htmlID:'pageviews_year',
+			title:'Pageviews this year',
 			step:2,
-			headers:["","Hits","Unique"]
+			headers:["","Pageviews","Unique"]
 		});
 
 		/*
@@ -132,7 +132,7 @@ var Page = {
 			title:'Popular referers',
 			step:3,
 			rowDisplay:TableDisplay.refererRow,
-			headers:["","Total hits"]
+			headers:["","Total pageviews"]
 		});
 
 		TableDisplay.showTable({
@@ -169,7 +169,7 @@ var Page = {
 			title:'Popular pages',
 			step:2,
 			rowDisplay:TableDisplay.pagesRow,
-			headers:["","Hits"]
+			headers:["","Pageviews"]
 		});
 
 		/*
@@ -189,14 +189,13 @@ var Page = {
 			rowDisplay:TableDisplay.searchesRow,
 			headers:["Keywords","Visited"]
 		});
-
 		/*
 		* Details
 		*/
 		// don't graph uniques on the line graph
 		var onlyHits = [];
-		for (var i=0;i<data['hits_week'].length;i+=2) onlyHits[i/2]=data['hits_week'][i];
-		lg=new LineGraph("hitsweek-linegraph",onlyHits, 200, "week",1);
+		for (var i=0;i<data['pageviews_week'].length;i+=2) onlyHits[i/2]=data['pageviews_week'][i];
+		lg=new LineGraph("pageviewsWeek-linegraph",onlyHits, 200, "week",1);
 		lg.drawGraph();  
 
 		// visitor details graphs
@@ -308,7 +307,7 @@ TableDisplay=new Class({
 		c+=func(i);
 		return c;
 	},
-	hitsRow: function(i,data,dataMax, dateString, trClassString)
+	pageviewsRow: function(i,data,dataMax, dateString, trClassString)
 	{
 		// data points
 		var p1=data[i*2], p2=data[i*2+1]
@@ -421,22 +420,22 @@ TableDisplay.Methods={
 			db.img({src:'/images/feed.gif'})
 		);
 	},
-	hitsYear:function(i,data,dataMax){
+	pageviewsYear:function(i,data,dataMax){
 		var month = DisplayHelper.showMonthAndYear((new Date()).getMonth()-i);
-		return this.hitsRow(i,data,dataMax,month);
+		return this.pageviewsRow(i,data,dataMax,month);
 	},
-	hitsMonth:function(i,data,dataMax){
+	pageviewsMonth:function(i,data,dataMax){
 		var week=DisplayHelper.formatWeeksAgo(i);
-		return this.hitsRow(i,data,dataMax,week);
+		return this.pageviewsRow(i,data,dataMax,week);
 	},
-	hitsWeek: function(i,data, dataMax){
+	pageviewsWeek: function(i,data, dataMax){
 		var day=DisplayHelper.showDay((new Date()).getDay()-i);
-		return this.hitsRow(i,data,dataMax,day);
+		return this.pageviewsRow(i,data,dataMax,day);
 	},
-	hitsToday: function(i,data, dataMax){
+	pageviewsToday: function(i,data, dataMax){
 		var classString=this.classString(i, function(i){return (Page.date.getHours()-i < 0 ? " old" : "")});
 		var day=DisplayHelper.showHour(Page.date.getHours()-i);
-		return this.hitsRow(i,data,dataMax,day,classString);
+		return this.pageviewsRow(i,data,dataMax,day,classString);
 	}
 };
 Object.extend(TableDisplay,TableDisplay.Methods);
@@ -636,7 +635,7 @@ DisplayHelper.Methods={
 			db.img({src:'/images/feed.gif'})
 		);
 
-		// If there's no title provided, change the htmlID into a title, e.g. hits_today => Hits today
+		// If there's no title provided, change the htmlID into a title, e.g. pageviews_today => Pageviews today
 		var title = $pick(opt.title, opt.htmlID ? opt.htmlID.toDisplayString() : "" );
 
 		return '<b class="d"><b class="hd"><b class="c"></b></b><b class="bd">'+
@@ -772,7 +771,7 @@ LineGraph=new Class({
 			graphContainer.appendChild(minLabel);
 		}
 
-		// No need to show "0" as the max if there is are hits...
+		// No need to show "0" as the max if there is are pageviews...
 		if (this.max>0){
 			var maxLabel = this.yLabel(DisplayHelper.comma(this.max));
 			maxLabel.style.top=0;    

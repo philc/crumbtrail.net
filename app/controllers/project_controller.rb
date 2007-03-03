@@ -6,7 +6,7 @@ class ProjectController < ApplicationController
   # expressing what section they should be viewing
   @@default_view={
     :section=>:glance,
-    :hits=>:today,
+    :pageviews=>:today,
     :referers=>:recent,
     :pages=>:recent,
     :searches=>:recent
@@ -141,7 +141,7 @@ class ProjectController < ApplicationController
     
     # get the view options from their cookie
     @view_options=view_options_from_cookie(cookies[:breadcrumbs])   
-    
+    puts "view options:",@view_options
     #@all_projects=@account.projects.reject{|p| p!=@project}
     
     @title="Stats for " + @project.title.to_s + " - Breadcrumbs"
@@ -277,8 +277,11 @@ class ProjectController < ApplicationController
     pairs=cookie.split(",")    
     pairs.each do |pair|
       part=pair.split("=")
-      # If javascript sends us "undefined", then use the default
-      if (part[1]!="undefined")
+      # Ensure that "section" is a valid section in case we ever rename section names, like hits->pageviews
+      if (part[0]=="section")
+        options[part[0].to_sym]=part[1].to_sym if @@default_view.values.index(part[1].to_sym)
+      elsif (part[1]!="undefined")
+              # If javascript sends us "undefined", then use the default
         options[part[0].to_sym]=part[1].to_sym
       end
       

@@ -12,7 +12,7 @@ class FeedController < ApplicationController
     render :layout=>false
   end
 
-  def hits
+  def pageviews
 
     #    @project= Project.find_by_id(params[:id])
 
