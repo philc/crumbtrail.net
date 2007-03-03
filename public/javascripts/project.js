@@ -196,7 +196,7 @@ var Page = {
 		// don't graph uniques on the line graph
 		var onlyHits = [];
 		for (var i=0;i<data['hits_week'].length;i+=2) onlyHits[i/2]=data['hits_week'][i];
-		lg=new LineGraph("hitsweek-linegraph",onlyHits, 200,110, "week",1);
+		lg=new LineGraph("hitsweek-linegraph",onlyHits, 200, "week",1);
 		lg.drawGraph();  
 
 		// visitor details graphs
@@ -651,10 +651,10 @@ Object.extend(DisplayHelper,DisplayHelper.Methods);
 * Line graph drawing
 */
 LineGraph=new Class({
-	initialize: function(id,data, width, height, labels, style){
+	initialize: function(id,data, width, labels, style){
 		this.element=$(id);    
 		this.width=width;
-		this.height=height;
+		this.height=parseInt(this.element.getStyle('height'));
 		this.max = data.max();
 		this.min = data.min();
 		this.labels=labels;
