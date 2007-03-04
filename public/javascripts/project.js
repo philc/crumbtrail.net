@@ -133,6 +133,38 @@ var Page = {
 		});
 		
 		$(document).addEvent('keypress',KeyboardShortcuts.keypress.bindAsEventListener(KeyboardShortcuts));
+		
+		// referer options
+			// set collapse links
+			$$("#currently_condensing a").each(function(e){
+				e.onclick=function(e){
+						var input=$(this).getNext();
+						input.value = (input.value=="on" ? "off" : "on");
+						console.log(this);
+						Page.syncRefererPreferenceLink(this);
+						return false;
+				}
+			});
+			
+			/*.addEvent('click',function(e){
+				input=this.getNext();
+				input.value = input.value=="on" ? "off" : "on";
+				Page.syncRefererPreferenceLink(this);
+				return false;
+			});*/
+		/*	Event.addBehavior({
+				'#currently_condensing a:click' : function(e){ 
+					input=this.nextElement();
+					input.value = input.value=="on" ? "off" : "on";
+					page.syncRefererPreferenceLink(this);
+					return false;
+					}			
+			})
+			
+			-	// Sync all the referer links to their hidden form elements
+			-	$$("#currently_condensing a").each(function (e){page.syncRefererPreferenceLink(e);});
+			
+			*/
 	},
 	populate:function(){
 		/*
@@ -327,9 +359,8 @@ var Page = {
 	// Ensures that the link's caption matches the input field value.
 	// They can get out of sync if you do a soft reload
 	syncRefererPreferenceLink: function(link){
-		input=link.nextElement();
-		link.firstChild.nodeValue = input.value=="on" ? 
-		"Stop condensing" : "Undo";
+		input=$(link).getNext();
+		link.firstChild.nodeValue = input.value=="on" ? "Stop condensing" : "Undo";
 	}
 };
 

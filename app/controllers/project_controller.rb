@@ -236,19 +236,14 @@ class ProjectController < ApplicationController
     # make sure they own this project
     return "" if @account.nil? || project.account!=@account
 
-    # Loop through each domain we're collapsing; if they set it to "off" in the UI,
+    # Loop through each domain that we're currently collapsing; if the user set it to "off" in the UI,
     # delete it.
-    # TODO: this would be much easier if collapsing_refs was a hash
-    to_delete=[]
-    
-    project.collapsing_refs.each_with_index do |r,i|
-      url = r[0]
-      to_delete << i if (params[url]=="off")        
-    end
-    
-    to_delete.reverse.each { |i| project.collapsing_refs.delete_at(i)}
-    project.save unless to_delete.empty?
+    project.collapsing_refs.keys.each do |key|
+      project.collapsing_refs.delete(key) if (params[key]=="off")              
+    end    
+    project.save
 
+    # Process the new domain they want to collapse, if they provided one
     domain=params[:domain]
     domain.strip! unless domain.nil?
     # return "That is not a valid domain." if (domain.nil? || domain.empty?)
