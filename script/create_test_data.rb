@@ -19,10 +19,11 @@ def add
   
   z=Zone.find_by_identifier('US/Eastern')
   
-  mikeq = Account.new(:username   => "mikeq",
-                      :password   => "pass1",
-                      :firstname  => "Michael",
-                      :lastname   => "Quinn",
+  mikeq = Account.new(:username    => "mikeq",
+                      :password    => "pass1",
+                      :firstname   => "Michael",
+                      :lastname    => "Quinn",
+                      :last_access => Date.today,
                       :country_id => 1,
                       :zone=>z) 
   
@@ -37,6 +38,7 @@ def add
     :password => "password",
     :firstname => "",  
     :lastname=>"",
+    :last_access=>Date.today,
     :country_id=>1,
     :zone=>z
   )
@@ -46,6 +48,7 @@ def add
                          :password   => "pass1",
                          :firstname  => "Phil",
                          :lastname   => "Crosby",
+                         :last_access => Date.today,
                          :country_id => 1,
                          :zone_id   => z.id,
                          :role=>"a")
@@ -62,6 +65,7 @@ def add
                     :password => "pass1",
                     :firstname=>"Demo",
                     :lastname=>"Account",
+                    :last_access => (Date.today-3),
                     :country_id=>1,
                     :zone_id=>z.id,
                     :role=>"d"

@@ -14,10 +14,52 @@ class ProjectController < ApplicationController
   @@valid_sections=[:glance,:pageviews,:referers,:pages,:searches,:details]
   
   # Show all the projects the user has
-  def all   
+  def all
     @title="Projects for #{@account.username} - Breadcrumbs"
 
     @projects=@account.projects
+    @email=@account.username
+    
+    @style="display:none"
+    
+    if (request.post?)
+      email = params[:email]
+      
+      if (email != @email)
+        @email = email
+        @email_error = MainHelper::validate_email(email)
+        
+        if (!@email_error)
+          a=Account.find_by_username(email)        
+          @duplicate_error= "An account with that e-mail address already exists" if !a.nil?
+        end
+      end
+            
+      pw1=params[:password]
+      pw2=params[:password_confirm]
+    
+      @password_error=MainHelper::validate_password(pw1)
+    
+      # No need to show that they made a typo in their
+      # password if we're already showing an email or pw error
+      if (pw1!=pw2 && @email_error.nil? && @password_error.nil?)
+          @password_error="Your passwords don't match"
+      end
+      
+      @style="visible"
+      unless (@email_error || @duplicate_error || @password_error)
+        @style = "display:none"
+        
+        @account.username = email
+        @account.password = pw1
+                
+        if @account.save
+          @success_message = "Your account settings were successfully updated."
+        else
+          @success_message = "There was an error writing to the database."
+        end
+      end
+    end
   end
   
   # Number of entries to show in each table
@@ -306,13 +348,13 @@ class ProjectController < ApplicationController
     
     @glance=@project.at_a_glance()
     @glance_referers_today=@glance[:today].map{|r|
-      [r.url,r.target.url,r.count]
+      [r.url,r.target.url,r.today_count]
     }.flatten.to_json
     @glance_referers_week=@glance[:week].map{|r|
-      [r.url,r.target.url,r.count]
+      [r.url,r.target.url,r.seven_days_count]
     }.flatten.to_json
     
-    @glance_sources=@project.hit_types_percents(:total).to_json()
+    @glance_sources=@project.hit_types_percents(:today).to_json()
   
     @hits_day=@project.hits(:day).join(",")
     @hits_week=@project.hits(:week).join(",")  

@@ -94,6 +94,7 @@ class MainController < ApplicationController
      # TODO make this based on the client
      a.country_id=1
      a.zone=timezone
+     a.last_access=Date.today
      a.save!
     # a=Account.setup(username,password,timezone)
     # a.country_id=1

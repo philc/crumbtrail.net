@@ -17,6 +17,10 @@ class Account < ActiveRecord::Base
     if account.password!=encrypt(password)
       return "Incorrect login"
     end
+    
+    account.last_access=Date.today
+    account.save
+    
     return account    
   end
   
@@ -42,7 +46,6 @@ class Account < ActiveRecord::Base
    
     
     return (session.nil?) ? nil : session.account
-    
   end
   
   def password=(pass)

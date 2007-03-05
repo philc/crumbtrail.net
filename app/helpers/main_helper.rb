@@ -26,7 +26,7 @@ module MainHelper
   
   def self.validate_password(password)
     if !password.scan(/\s/).empty?
-      return "Passwords can't have spaces."
+      return "Passwords can't contain spaces"
     end
     if password.length<5
       return "Passwords should be at least 5 characters long"

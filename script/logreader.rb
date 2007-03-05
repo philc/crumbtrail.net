@@ -66,8 +66,14 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
+#     puts "[#{@project.id.to_s}] Saving Project:"
+#     puts "  Source url: #{@source_url}"
+#     puts "  Page url: #{@page_url}"
+    
     @target = @project.get_or_new_page(@page_url)
-        
+    
+    puts "TARGET IS NIL!" if @target.nil?
+    
     if !@target.nil?
       if (!@source_url.nil? && @source_url != "/" && @source_url != "-")
         @source = @project.get_or_create_search(@source_url, @target)
@@ -132,10 +138,9 @@ class ApacheLogReader
 
           strip_protocol(referer_url)
           strip_protocol(landing_url)
-          #strip_server_url(project, landing_url)
 
-           request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
-           request.save
+          request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
+          request.save
         end
 
       rescue ActiveRecord::RecordNotFound
@@ -291,22 +296,29 @@ class ApacheLogReader
     'Other' => 'b_other'
   }
   
+  
+  @@browser = Regexp.compile('.*(Firefox\/1.5|Firefox\/2\.0|MSIE 6.0|MSIE 5|MSIE 7.0|Safari).*')
   def self.parse_browser(user_agent)
-    user_agent.match(/.*(Firefox\/1.5|Firefox\/2\.0|MSIE 6.0|MSIE 5|MSIE 7.0|Safari).*/)
+    @@browser.match(user_agent)
     browser = $1 || "Other"
     return @@browser_hash[browser]
   end
 
 #------------------------------------------------------------------------------
   
+  @@referer = Regexp.compile('[&\?]r=([A-Za-z0-9\/:+%\.\-_]+)')
   def self.parse_referer(query)
-    query.match(/[&\?]r=([A-Za-z0-9\/:+%\.-]+)/)    
+    puts "----Before: #{query}"
+    @@referer.match(query)
+    puts "----After: #{$1}"
     return $1
   end
 
 #------------------------------------------------------------------------------
+  
+  @@unique = Regexp.compile('[&\?]u=([0-9])')
   def self.parse_unique(query)
-    query.match(/[&\?]u=([0-9])/)
+    @@unique.match(query)
     if !$1.nil?
       return $1.to_i == 1
     else
@@ -316,8 +328,9 @@ class ApacheLogReader
 
 #------------------------------------------------------------------------------
 
+  @@project = Regexp.compile('[&\?]p=([0-9]+)')
   def self.parse_project_id(query)
-    query.match(/[&\?]p=([0-9]+)/)
+    @@project.match(query)
     return $1 || "none"
   end
 
@@ -335,7 +348,7 @@ class ApacheLogReader
         url.slice!(0..3)
       end
 
-      if url =~ /^[A-Za-z0-9\.]+$/
+      if url =~ /^[A-Za-z0-9\.\-]+$/
         url << '/'
       end
     end

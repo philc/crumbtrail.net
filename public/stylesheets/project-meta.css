@@ -1,3 +1,26 @@
+.account_settings {
+  margin-top: 10em;
+  clear: both;
+}
+
+#edit_settings span {
+  margin-left: 10px;
+}
+
+#edit_settings input {
+  margin-bottom: 10px;
+}
+
+.update_status {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  padding: 3px 25px 3px 25px;
+  border: 1px solid;
+  width: 28em;
+  background-color: #F5D9A2
+}
+
 /* beef up the size of the link in comparison to the normal links */
 .dialog td a{
 	padding: 2px 0px 3px 10px;

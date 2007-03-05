@@ -20,6 +20,10 @@
 
 <% end %>
 
+<% if @success_message %>
+  <center><div class="update_status"> <%=@success_message%> </div></center>
+<% end %>
+    
 <div class="copy-content">
 <div class="copy">
 
@@ -36,30 +40,68 @@ You don't have any projects. <a href="/project/new/">Create one!</a>
 <% else %>
 
 <div class="view_all">
-<div class="d" style="WIDTH:80%">
-	<!-- <b class="d " id="" style="width:80%"><b class="hd"><b class="c"></b></b>
-	<b class="bd"><b class="c"> -->
-	<table>
-		<tr><th class='f' style="width:100%"></th><th>Hits today</th></tr>
-		<%@projects.each do |p|%>
-		<tr class=" <%= cycle("", "a")%>"> <td class='f'><a href="/project/<%=p.id%>"><%=p.title%><br/>
-			<span class="to"><%= p.url %></span></a>
-
-			<!-- <span class="to"><%=p.url%></span> -->
-
-		</td><td><%= p.hits(:week)[0][0] %></td></tr>
-		<%end%>
-	</table>
-	<div class="copy">
-
-		<a href="/project/new/" class="linkbox" id="create_new">Create a new project &raquo;</a>
-	</div>
-	<!-- </b></b>
-	<b class="ft"><b class="c"></b></b> -->
-<!-- </b> -->
-</div></div>
+  <div class="d" style="WIDTH:80%">
+      <!-- <b class="d " id="" style="width:80%"><b class="hd"><b class="c"></b></b>
+      <b class="bd"><b class="c"> -->
+      <table>
+          <tr><th class='f' style="width:100%"></th><th>Hits today</th></tr>
+          <%@projects.each do |p|%>
+          <tr class=" <%= cycle("", "a")%>"> <td class='f'><a href="/project/<%=p.id%>"><%=p.title%><br/>
+              <span class="to"><%= p.url %></span></a>
+  
+              <!-- <span class="to"><%=p.url%></span> -->
+  
+          </td><td><%= p.hits(:week)[0][0] %></td></tr>
+          <%end%>
+      </table>
+      <div class="copy">
+          <a href="/project/new/" class="linkbox" id="create_new">Create a new project &raquo;</a>
+      </div>
+      <!-- </b></b>
+      <b class="ft"><b class="c"></b></b> -->
+  <!-- </b> -->
+  </div>
+</div>
 <!-- </div> -->
 
 <% end %>
+</center>
+
+
+  
+<div class="options account_settings">
+<a onclick="return toggleAppear('edit_settings');" title="edit_settings" href="#">Edit account settings</a>
+<b class="d2 options_panel" id="edit_settings" style="<%=@style%>">
+  <b class="hd"><b class="c"></b></b>  
+  <b class="bd"><b class="c">
+    <h2>Edit account settings:</h2>
+    <form action="" method="post">
+        <div class="text-form">
+          
+          <span>
+            <%=show_form_error(@email_error)%>
+            <%=show_form_error(@duplicate_error)%>
+            E-mail
+          </span>
+          <input type="text" name="email" id="email" class="field" value="<%=@email%>"/>
+            
+          <span>
+            <%=show_form_error(@password_error)%>
+            New Password
+          </span>
+          <input type="password" name="password" id="password" class="field"/>
+            
+          <span>
+            Confirm New Password
+          </span>
+          <input type="password" name="password_confirm" id="password_confirm" class="field"/>
+            
+        </div>
+        <input type="submit" class="submit" value="Save changes"/>
+    </form>
+  </b></b>
+  <b class="ft"><b class="c"></b></b>
+</b>
+</div>
 
 </div>

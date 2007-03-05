@@ -24,6 +24,11 @@ class Project < ActiveRecord::Base
 
   def process_request(request)
     locked do
+#     
+#       puts "[#{id.to_s}] Processing request: "
+#       puts "  Type: #{request.type.to_s}"
+#       puts "  Source: #{request.source.url}" unless request.source.nil?
+#       puts "  Target: #{request.target.url}" unless request.target.nil?
     
       case request.type
         when :search
