@@ -566,16 +566,16 @@ Pagination=new Class({
 
 	showTable: function(options){
 		BC.apply(this,options);
-
-		if (options)
-		this.data=$pick(options.data, data[options.htmlID]);
+		
+		this.data=$pick(options.data,data[this.htmlID]);
 
 		var page=this.data[0];
 		this.current=page;
 		var more=this.data[1];
 
-		// Only the later part of the array is the actual display data
+		// Only the later part of the array is the actual display data		
 		options.data=this.data[2];
+		
 		var display = new TableDisplay(options);
 		$(this.htmlID).innerHTML=DisplayHelper.dialog(display.buildTable() + this.buildNavMenu(more),options);
 	},
@@ -621,20 +621,18 @@ Pagination=new Class({
 		return false;
 	},
 	handleResponse:function(response){
-		var results=eval(response.responseText);
-		this.data=results;
-		this.showTable();
+		var results = eval(response);
+	
+		this.showTable({
+			data:results,
+			htmlID:this.htmlID,
+			step:this.step,
+			rowDisplay:this.rowDisplay,
+			headers:this.headers,
+			title:this.title
+		});
 	},
-	show: function(request){
-		results=eval(request.responseText);
-		var page = results[0];
-		var more = results[1];
-		var data=results[2];
-		this.current=page;
-		var display = new TableDisplay(data,this.cellFunction,this.dataStep,this.title,this.headerNames);    
-		$(this.htmlID).innerHTML=DisplayHelper.dialog(this.title,display.buildTable() 
-		+ this.buildNavMenu(more));   
-	},
+
 	/* shows a link that can be enabled or disabled. Disabled links get rendered as a span */
 	buildLink: function(caption, enabled,href,cls,onclickFunc){
 		if (!enabled) return db.span({cls:cls},caption);
