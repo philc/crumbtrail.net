@@ -1,11 +1,16 @@
-
+/*
+ * Code for the 
+ * Some general gotchas:
+ * - (IE) If you want to add trs to a table using inner HTML, do it all with innerHTML, e.g. myNode.innerHTML="<table><tr>...</tr></table>"
+ *  
+ */
 function px(v) {  return Math.ceil(v) + "px";}
 
 var Preferences = new Class({
 	initialize:function(){    
 		this.sections=["pageviews","referers","pages","searches", "section"];
 		this.defaults=["today","recent","recent","recent","glance"];
-		this.re=/breadcrumbs=([^;]+)/
+		this.re=/breadcrumbs=([^;]+)/;
 	},
 	defaultCookie:function(){
 		var defaults = this.sections.map(function(e){return e + "=" + this.defaults[i];}.bind(this));		
@@ -15,7 +20,7 @@ var Preferences = new Class({
 		var m = this.re.exec(document.cookie);
 
 		if (m && m.length>0)
-		cookie=m[1]
+		cookie=m[1];
 		else
 		cookie=this.defaultCookie();
 		// Make into an associative array
@@ -30,7 +35,7 @@ var Preferences = new Class({
 	setCookie: function(name,value){
 		// 1 hour * 24 * days
 		d=new Date(); d.setTime(d.getTime()+3600000*24*28);
-		document.cookie=name+"="+value+'; expires=' + d.toGMTString() + ';'
+		document.cookie=name+"="+value+'; expires=' + d.toGMTString() + ';';
 	}
 });
 
@@ -39,17 +44,24 @@ var Preferences = new Class({
  */
 var KeyboardShortcuts={
 	keypress:function(ev){
+		// target in moz, "srcElement" in ie
+		var sender = $pick(ev.target,ev.srcElement);
+		
 		// Don't listen to keystrokes for form fields
-		if (ev.target.tagName && (ev.target.tagName=="INPUT" || ev.target.tagName=="TEXTAREA"))
+		if (sender.tagName && (sender.tagName=="INPUT" || sender.tagName=="TEXTAREA"))
 			return;
-			
+		
 		// Don't process anything with modifiers
 		if (ev.ctrlKEY || ev.shiftKey || ev.altKey || ev.metaKey)
 			return;
 			
 		var section=null,panel=null;
 		
-		var key = String.fromCharCode(ev.charCode).toLowerCase();
+		// Mozilla has something like charCode=105, keyCode=0 on the event, 
+		// while IE doesn't have a charCode property at all, but would have keyCode=105.
+		var c=$pick(ev.charCode,ev.keyCode);
+		
+		var key = String.fromCharCode(c).toLowerCase();
 		switch(key){
 			case "s":
 			case "j":
@@ -75,13 +87,13 @@ var KeyboardShortcuts={
 	},
 	previousSection:function(){
 		var section = Page.activeSection;
-		var li = Page.getMenuLink(section).parentNode;
+		var li = Page.getMenuLink(section).getParent();
 		// Grab the sibling list node's <a> element
 		return li.getPrevious() ? li.getPrevious().getFirst().title : null;
 	},
 	nextSection:function(){
 		var section = Page.activeSection;
-		var li = Page.getMenuLink(section).parentNode;
+		var li = Page.getMenuLink(section).getParent();
 		// Grab the sibling list node's <a> element
 		return li.getNext() ? li.getNext().getFirst().title : null;
 	},
@@ -108,7 +120,7 @@ var KeyboardShortcuts={
 		if ($type($(el))=="element")
 			return $(el);
 	}
-}
+};
 
 
 var Page = {
@@ -143,28 +155,8 @@ var Page = {
 						console.log(this);
 						Page.syncRefererPreferenceLink(this);
 						return false;
-				}
+				};
 			});
-			
-			/*.addEvent('click',function(e){
-				input=this.getNext();
-				input.value = input.value=="on" ? "off" : "on";
-				Page.syncRefererPreferenceLink(this);
-				return false;
-			});*/
-		/*	Event.addBehavior({
-				'#currently_condensing a:click' : function(e){ 
-					input=this.nextElement();
-					input.value = input.value=="on" ? "off" : "on";
-					page.syncRefererPreferenceLink(this);
-					return false;
-					}			
-			})
-			
-			-	// Sync all the referer links to their hidden form elements
-			-	$$("#currently_condensing a").each(function (e){page.syncRefererPreferenceLink(e);});
-			
-			*/
 	},
 	populate:function(){
 		/*
@@ -198,7 +190,8 @@ var Page = {
 				db.td({cls:'s ' + (alt++%2 ? '':'a')},DisplayHelper.formatPercent(data.glance_sources[key]))
 			);		
 		}
-		$('source_stats').innerHTML="<tbody>"+contents+"</tbody>";
+		//$('source_stats').innerHTML="<tbody>"+contents+"</tbody>";
+		$('source_stats').innerHTML="<table>"+contents+"</table>";
 
 
 		/*
@@ -354,7 +347,7 @@ var Page = {
 	},
 	// Returns the image file used for a quadrant. i is the color (0-5ish)
 	imageForQuadrant: function (i,q){
-		return "/images/c/line" + i + "" + q + ".png"
+		return "/images/c/line" + i + "" + q + ".png";
 	},
 	// Ensures that the link's caption matches the input field value.
 	// They can get out of sync if you do a soft reload
@@ -375,6 +368,7 @@ TableDisplay=new Class({
 
 		// If no rowDisplay was supplied, assume it's named after htmlID. e.g. 'searches_recent'=>TableDisplay.searchesRecent
 		this.rowDisplay=$pick(options.rowDisplay, TableDisplay[options.htmlID.toCamelCase()]);
+		this.rowDisplay.grape
 		/*this.title=title;    
 		this.headerNames=headerNames;
 		this.data=data;
@@ -393,7 +387,7 @@ TableDisplay=new Class({
 		return db.table(this.tableHeader(),rows) + db.div({cls:'table-footer-cap'});
 	},
 	tableHeader: function(){
-		if (this.headers==null)  return "" 
+		if (this.headers==null)  return "";
 
 		var html='';
 		for (i=0;i<this.headers.length;i++)
@@ -426,7 +420,7 @@ TableDisplay=new Class({
 	pageviewsRow: function(i,data,dataMax, dateString, trClassString)
 	{
 		// data points
-		var p1=data[i*2], p2=data[i*2+1]
+		var p1=data[i*2], p2=data[i*2+1];
 
 		var percent=this.columnPercent(p1,dataMax);
 		var percent2=this.columnPercent(p2,dataMax);
@@ -549,7 +543,11 @@ TableDisplay.Methods={
 		return this.pageviewsRow(i,data,dataMax,day);
 	},
 	pageviewsToday: function(i,data, dataMax){
-		var classString=this.classString(i, function(i){return (Page.date.getHours()-i < 0 ? " old" : "")});
+		var classString=this.classString(i, 
+			function(i){
+				return (Page.date.getHours()-i < 0 ? " old" : "");
+			}
+		);
 		var day=DisplayHelper.showHour(Page.date.getHours()-i);
 		return this.pageviewsRow(i,data,dataMax,day,classString);
 	}
@@ -756,7 +754,8 @@ DisplayHelper.Methods={
 		'<b class="c">' + feed + '<h2 class="title">' + title + '</h2>'+contents + '</b></b><b class="ft">' + 
 		'<b class="c"></b></b></b>';
 	}
-}
+};
+
 Object.extend(DisplayHelper,DisplayHelper.Methods);
 
 
@@ -767,7 +766,7 @@ LineGraph=new Class({
 	initialize: function(id,data, width, labels, style){
 		this.element=$(id);    
 		this.width=width;
-		this.height=parseInt(this.element.getStyle('height'));
+		this.height=parseInt(this.element.getStyle('height'),10);
 		this.max = data.max();
 		this.min = data.min();
 		this.labels=labels;
@@ -791,7 +790,7 @@ LineGraph=new Class({
 		// Graph container
 		var g=$(document.createElement("div"));
 		g.addClass("linegraph");
-		var imgs=[]
+		var imgs=[];
 		var hwidth=this.width/(this.data.length-1);
 
 		// Add the first "dot" on the graph
@@ -831,7 +830,7 @@ LineGraph=new Class({
 
 			img.style.height=px(h*u);
 
-			var ourTop = t-(u>0  ? h : 0)
+			var ourTop = t-(u>0  ? h : 0);
 
 			div.style.height=this.height-(h*u)-ourTop+"px";
 
@@ -872,11 +871,11 @@ LineGraph=new Class({
 		text.innerHTML=DisplayHelper.comma(data+"");    
 
 		dot.appendChild(text);
-		return dot
+		return dot;
 	},
 	lineGraphImage: function(i,u){
 		var d = (u==1 ? 0 : 1);
-		return "/images/c/linegraph" + i + "" + d + ".png"
+		return "/images/c/linegraph" + i + "" + d + ".png";
 	},
 	showLabels: function(graphContainer){
 		if (this.min>0){
@@ -899,7 +898,7 @@ LineGraph=new Class({
 				if (this.labels=="week")
 				//t=DisplayHelper.showDay(i-Page.date.getHours()-1,false);
 				//t=DisplayHelper.showDay(i);
-				t=day=DisplayHelper.showDay((new Date()).getDay()+i+1)
+				t=day=DisplayHelper.showDay((new Date()).getDay()+i+1);
 				var l=this.xLabel(t.slice(0,2));
 				l.style.left=px(hwidth*i);
 				graphContainer.appendChild(l);
@@ -944,7 +943,7 @@ LineGraph.Methods={
 		}
 		return relativeData;
 	}
-}
+};
 Object.extend(LineGraph,LineGraph.Methods);
 
 
@@ -976,7 +975,7 @@ PieGraphDisplay = new Class({
 	},
 
 	drawChart: function (){   
-		var placeholder=document.createElement("div")
+		var placeholder=document.createElement("div");
 		placeholder.style.position="absolute";
 		placeholder.style.width=px(this.size);
 		placeholder.style.height=px(this.size);

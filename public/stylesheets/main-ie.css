@@ -1,4 +1,22 @@
 
+body{
+	/* Amazing IE min-width max-width bastardization hack
+	http://www.gunlaug.no/contents/wd_additions_14.html
+	*/
+	/* IE needs bigger min-width margins or it implodes. Fun to see... */
+	width: 800px; /* fallback value, in the absence of JS */;
+/*	width:expression(((document.compatMode && 
+		document.compatMode=='CSS1Compat') ? 
+		document.documentElement.clientWidth : 
+		document.body.clientWidth) 
+		> 830 ? "800px" : 
+		(((document.compatMode && 
+			document.compatMode=='CSS1Compat') ? 
+			document.documentElement.clientWidth : 
+			document.body.clientWidth) < 720 ? "720px" : "auto")); */
+
+}
+
 #header-menu{
   /* Should be equal to whatever the table's right margin is*/ 
   /* this is 20 in firefox; 10 in IE. Not sure why.*/

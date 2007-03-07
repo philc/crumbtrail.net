@@ -55,31 +55,31 @@
 
 <% end %>
 
-
+<input type="text"></input>
 
 <div id="project-menu">Viewing stats for <span id="project-id"><%=@project.title%></span>. 
 	<%=demo_link("/project/setup/" + @project.id.to_s,"Setup","")%> | 
 	<span id="projects_popup_wrapper">
 		<div id="projects_popup" style="display:none"/>
-			<ul>
+		<ul>
 
-				<%if !@account.demo? %>
-				<% @account.projects.each  do |p| %>    
-				<li><a href="/project/<%=p.id%>"><%=p.title%></a></li>
-				<% end %>
+			<%if !@account.demo? %>
+			<% @account.projects.each  do |p| %>    
+			<li><a href="/project/<%=p.id%>"><%=p.title%></a></li>
+			<% end %>
+			<%end%>
+
+			<li> 
+				<%if @account.demo? %>
+				<a href="#" onclick="return false;" class="create_new">Create a new project</a>
+				<% else %>
+				<a href="/project/new" class="create_new">Create a new project</a>
 				<%end%>
-
-				<li> 
-					<%if @account.demo? %>
-					<a href="#" onclick="return false;" class="create_new">Create a new project</a>
-					<% else %>
-					<a href="/project/new" class="create_new">Create a new project</a>
-					<%end%>
-				</li>
-			</ul>
-		</div>
-	</span>
-	<%=demo_link("#","View another project","$('projects_popup').toggle(); return false")%>
+			</li>
+		</ul>
+	</div>
+</span>
+<%=demo_link("#","View another project","$('projects_popup').toggle(); return false")%>
 </div>
 
 
@@ -117,15 +117,15 @@
 		<div id="glance-left">    
 			<div id ="summary_stats">
 				<div class="block today">
-				<h3 class="">Pageviews today</h3>
-				<div class="number"><%=@glance_today[0]%></div>
-				<div class="unique">(<%=@glance_today[1]%> unique)</div>
-				<br/>
+					<h3 class="">Pageviews today</h3>
+					<div class="number"><%=@glance_today[0]%></div>
+					<div class="unique">(<%=@glance_today[1]%> unique)</div>
+					<br/>
 				</div>
 				<div class="block yesterday">
-				<h3>Yesterday</h3>
-				<div class="number"><%=@glance_yesterday[0]%></div>
-				<div class="unique">(<%=@glance_yesterday[1]%> unique)</div>
+					<h3>Yesterday</h3>
+					<div class="number"><%=@glance_yesterday[0]%></div>
+					<div class="unique">(<%=@glance_yesterday[1]%> unique)</div>
 				</div>
 				<!-- <table border=0><tr>
 					<td class="today">Hits today:</td>
@@ -140,11 +140,11 @@
 					<td> </td><td><span class="unique">(<%=@glance_yesterday[1]%> unique)</td>
 					</tr>
 				</table> -->
-				
+
 			</div>
-				<h4>Traffic sources for today</h4>
-				<table id="source_stats">
-				</table>
+			<h4>Traffic sources for today</h4>
+			<div id="source_stats">
+			</div>
 		</div>
 
 		<br clear="both"/>
@@ -244,7 +244,7 @@
 		<div class="chart"  id="os_details"><div class="chart_frame"></div>    
 	</div>
 
-<br clear="both"/>
+	<br clear="both"/>
 
 </div>
 

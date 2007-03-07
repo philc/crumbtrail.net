@@ -1,26 +1,27 @@
 /* 
  * utility extensions
  */
-String.prototype.firstUpCase = Array.prototype.firstUpCase || function(){ return this[0].toUpperCase() + this.slice(1,this.length);}
-String.prototype.toDisplayString = Array.prototype.toDisplayString || function(){ return this.firstUpCase().replace(/_/g,' '); }
+String.prototype.firstUpCase = Array.prototype.firstUpCase || function(){ return this.charAt(0).toUpperCase() + this.slice(1,this.length);};
+
+String.prototype.toDisplayString = Array.prototype.toDisplayString || function(){ return this.firstUpCase().replace(/_/g,' '); };
 
 /* This is different than the mootools camcelcase function. This changes hits_week => hitsWeek */
 String.prototype.toCamelCase = Array.prototype.toCamelCase || function(){ 
-	n=[];
+	var n=[];
 	for (var i=0;i<this.length;i++){
-		if (this[i]=='_'){
-			n.push(this[i+1].toUpperCase());
+		if (this.charAt(i)=='_'){
+			n.push(this.charAt(i+1).toUpperCase());
 			i++;
 		}else
-			n.push(this[i]);			
+			n.push(this.charAt(i));
 	}
-	return n.join('');		
-}
+	return n.join('');
+};
 
-Array.prototype.sum=Array.prototype.sum ||  function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; }
-Array.prototype.max=Array.prototype.max || 	function(){var m=0; for (var i=0; i<this.length; i++) if (this[i] > m) m=this[i]; return m}
+Array.prototype.sum=Array.prototype.sum ||  function(){var s=0; for (var i=0; i<this.length; i++) s+=this[i]; return s; };
+Array.prototype.max=Array.prototype.max || 	function(){var m=0; for (var i=0; i<this.length; i++) if (this[i] > m) m=this[i]; return m;};
 Array.prototype.min=Array.prototype.min || 
-	function(){var m=Number.MAX_VALUE; for (var i=0; i<this.length; i++) if (this[i] < m) m=this[i]; return m}
+	function(){var m=Number.MAX_VALUE; for (var i=0; i<this.length; i++) if (this[i] < m) m=this[i]; return m;};
 
 /*
  * Breadcrumbs master object
@@ -30,7 +31,7 @@ BC={};
 BC.apply=function(obj,options){
 	for (var key in options)
 		obj[key]=options[key];
-}
+};
 
 
 
@@ -96,12 +97,12 @@ DomBuilder=new function(){
 		var el,i=0;
 		while (el=els[i++]) this[el]=this.createFunc(el);			
 		
-	}
+	};
 	this.createFunc=function(tag){
 		return function(){
 			return this.create(tag,arguments);
-		}
-	}
+		};
+	};
 	this.create=function(tag,args){
 		//var args=arguments;
 		//var tag = 'div'
@@ -117,7 +118,7 @@ DomBuilder=new function(){
 				att=this.keyValues(arg);
 		}
 		return '<'+tag+att+'>'+contents+'</'+tag+'>';		
-	}
+	};
 	this.keyValues=function(args){
 		var str=[];
 		/*for (var k in args)
@@ -126,9 +127,9 @@ DomBuilder=new function(){
 		for (var k in args)
 			str.push((k=='cls' ? 'class' : k) + '="' + args[k] + '"');
 		return str.length==0 ? "" : ' ' + str.join(' ');
-	}
+	};
 	this.initialize();
-}
+};
 // shortcut
 db=DomBuilder;
 
