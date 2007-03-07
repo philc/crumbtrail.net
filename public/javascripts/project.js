@@ -368,13 +368,7 @@ TableDisplay=new Class({
 
 		// If no rowDisplay was supplied, assume it's named after htmlID. e.g. 'searches_recent'=>TableDisplay.searchesRecent
 		this.rowDisplay=$pick(options.rowDisplay, TableDisplay[options.htmlID.toCamelCase()]);
-		this.rowDisplay.grape
-		/*this.title=title;    
-		this.headerNames=headerNames;
-		this.data=data;
-		this.step=step;
-		this.cellFunc=cellFunc;*/
-		//this.minRows=minRows ? minRows : data.length/step;
+
 		this.rows=this.data.length/this.step;
 	},
 	buildTable: function(){
@@ -450,7 +444,7 @@ TableDisplay.Methods={
 		var landedOn=unescape(data[i*3+1]);
 		var linkCaption = DisplayHelper.truncateRight(url,DisplayHelper.truncateBig);
 		var landedOnCaption = DisplayHelper.truncateLeft(landedOn,DisplayHelper.truncateSmall);
-
+		
 		return TableDisplay.tableRow(
 			linkCaption.link("http://"+url) + db.span({cls:'to'},'To&nbsp;'+landedOnCaption.link("http://"+landedOn)),
 			isDate ? DisplayHelper.timeAgo(data[i*3+2]) : DisplayHelper.comma(data[i*3+2])
@@ -661,6 +655,7 @@ DisplayHelper.Methods={
 		var days=Math.floor(hrs/24);
 		var weeks=Math.floor(days/7);
 		var mos=Math.floor(days/30);
+
 		if (mins<1) 		return "just&nbsp;now";
 		else if (hrs <1)		return this.formatTimeAgo(mins,"min");
 		else if (days < 1)		return this.formatTimeAgo(hrs,"hr");
