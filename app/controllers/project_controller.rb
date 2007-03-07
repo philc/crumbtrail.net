@@ -417,10 +417,11 @@ class JSDate
   # The browsers will parse that date and then show it specific to the user's locale. So
   # new Date("Sun Feb 25 5:38:14 2007 -0300") will show up as 3:38:14 2007 for people using EST
   def initialize(d)
-    #@date=d.to_s.sub("UTC","")
-    @date=d.strftime("%a %b %d %H:%M:%S %Y %Z")
+    @date=d.to_s.sub("UTC","")
+    #@date=d.strftime("%a %b %d %H:%M:%S %Y %Z")
   end
   def to_json
-    return "new Date(\"#{@date}\")"
+    #return "new Date(\"#{@date}\")"
+    return "dh.jsDate(\"#{@date}\")"
   end
 end

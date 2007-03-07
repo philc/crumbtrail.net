@@ -61,6 +61,9 @@ var KeyboardShortcuts={
 		// while IE doesn't have a charCode property at all, but would have keyCode=105.
 		var c=$pick(ev.charCode,ev.keyCode);
 		
+		// Opera uses the "a" key to highlight the next link in the page, so in opera
+		// random text starts getting selected. no big deal, and can workaround by using the
+		// other hotkeys		
 		var key = String.fromCharCode(c).toLowerCase();
 		switch(key){
 			case "s":
@@ -84,6 +87,11 @@ var KeyboardShortcuts={
 			Page.menuNav(section);
 		if (panel && panel.tagName=="A")		
 			Page.panelNav(panel);
+		// Cancel event propagation for both MS and w3c. Not sure if this is needed, but can't hurt...
+		if (ev.stopPropagation)
+			ev.stopPropagation();
+		ev.cancelBubble=true;
+
 	},
 	previousSection:function(){
 		var section = Page.activeSection;
@@ -133,30 +141,29 @@ var Page = {
 		this.totalReferersPager=new Pagination("totalReferers",20);
 
 		this.populate();
-
-		// set menu links
-		$A($('menu-links').getElementsByTagName("LI")).each(function(e){
-			l=e.getElementsByTagName("A")[0];
-			l.onclick=function(){ Page.menuNav(this); return false;};
-		});
-		// set panel links
-		$A(document.getElementsByClassName("panel_link","content")).each(function (e){
-			e.onclick=function(){ Page.panelNav(this); return false;};
-		});
 		
-		$(document).addEvent('keypress',KeyboardShortcuts.keypress.bindAsEventListener(KeyboardShortcuts));
-		
-		// referer options
-			// set collapse links
-			$$("#currently_condensing a").each(function(e){
-				e.onclick=function(e){
-						var input=$(this).getNext();
-						input.value = (input.value=="on" ? "off" : "on");
-						console.log(this);
-						Page.syncRefererPreferenceLink(this);
-						return false;
-				};
+			// set menu links
+				$A($('menu-links').getElementsByTagName("LI")).each(function(e){
+					l=e.getElementsByTagName("A")[0];
+					l.onclick=function(){ Page.menuNav(this); return false;};
+				});
+			// set panel links
+			$A(document.getElementsByClassName("panel_link","content")).each(function (e){
+				e.onclick=function(){ Page.panelNav(this); return false;};
 			});
+			
+			$(document).addEvent('keypress',KeyboardShortcuts.keypress.bindAsEventListener(KeyboardShortcuts));
+			
+				// set collapse links
+				$$("#currently_condensing a").each(function(e){
+					e.onclick=function(e){
+							var input=$(this).getNext();
+							input.value = (input.value=="on" ? "off" : "on");
+							console.log(this);
+							Page.syncRefererPreferenceLink(this);
+							return false;
+					};
+				});
 	},
 	populate:function(){
 		/*
@@ -181,7 +188,7 @@ var Page = {
 			panel1+'<br/>'+'<h2 class="title">Top referers this week</h2>'+panel2,
 			{title:'Top referers today'}
 		);
-		
+
 		var contents="";
 		var alt=0;
 		for (var key in data.glance_sources){
@@ -190,7 +197,6 @@ var Page = {
 				db.td({cls:'s ' + (alt++%2 ? '':'a')},DisplayHelper.formatPercent(data.glance_sources[key]))
 			);		
 		}
-		//$('source_stats').innerHTML="<tbody>"+contents+"</tbody>";
 		$('source_stats').innerHTML="<table>"+contents+"</table>";
 
 
@@ -291,13 +297,15 @@ var Page = {
 			rowDisplay:TableDisplay.searchesRow,
 			headers:["Keywords","Visited"]
 		});
+
 		/*
 		* Details
 		*/
 		// don't graph uniques on the line graph
-		var onlyHits = [];
-		for (var i=0;i<data['pageviews_week'].length;i+=2) onlyHits[i/2]=data['pageviews_week'][i];
-		lg=new LineGraph("pageviewsWeek-linegraph",onlyHits, 200, "week",1);
+		var nonUniques = [];
+		for (var i=0;i<data['pageviews_week'].length;i+=2) nonUniques[i/2]=data['pageviews_week'][i];
+
+		lg=new LineGraph("pageviewsWeek-linegraph",nonUniques, 200, "week",1);
 		lg.drawGraph();  
 
 		// visitor details graphs
@@ -640,7 +648,26 @@ DisplayHelper.Methods={
 	// Truncatation value for big and small text
 	truncateBig:40,
 	truncateSmall:45,
-
+	/* 
+	 * This is pretty amazing. All browsers except IE can parse
+	 * ruby's Time.to_s. IE accepts a different version, which works on Mozilla
+	* but not on safari. So parse the string; if the date is NaN, then mod the string a bit and try again.
+	*/
+	jsDate:function(dateString){
+		var d = new Date(dateString);
+		// Most browsers show "Invalid Date" for bad dates; IE shows "NaN"
+		if (d.toString()=="NaN")
+			{
+				var tokens = dateString.split(' ');
+				var n = tokens.slice(0,4);
+				n.push(tokens[6]);
+				n.push(tokens[5]);
+				
+				// Switch the last two tokens in the date string
+				d = new Date(n.join(' '));
+			}
+		return d;
+	},
 	/*
 	 * Formats a floating point percentage into a string representation
 	 */
@@ -752,7 +779,8 @@ DisplayHelper.Methods={
 };
 
 Object.extend(DisplayHelper,DisplayHelper.Methods);
-
+// shortcuts
+dh=DisplayHelper;
 
 /*
 * Line graph drawing
@@ -760,8 +788,14 @@ Object.extend(DisplayHelper,DisplayHelper.Methods);
 LineGraph=new Class({
 	initialize: function(id,data, width, labels, style){
 		this.element=$(id);    
+
 		this.width=width;
-		this.height=parseInt(this.element.getStyle('height'),10);
+		// console.log(this.element.toString());
+		// console.log(this.element.getStyle.toString());
+		// Could use mootools' getStyle('height') to get the computer style,
+		// but safari doesn't support it on elements with display:none
+		this.height=parseInt(this.element.style['height'],10);
+		
 		this.max = data.max();
 		this.min = data.min();
 		this.labels=labels;
