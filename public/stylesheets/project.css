@@ -702,3 +702,16 @@ a.feed{
 	margin-right:10px;
 	float:right;
 }
+
+.shortcuts {
+    font-size: .7em;
+    font-weight: normal;
+    margin-top: 18px;
+}
+
+.shortcuts span {
+  padding-left: 1em;
+}
+/*.shortcuts b {
+    font-weight: bold;
+}*/
