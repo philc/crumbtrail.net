@@ -703,15 +703,14 @@ a.feed{
 	float:right;
 }
 
-.shortcuts {
-    font-size: .7em;
+#shortcuts {
+    font-size: .8em;
     font-weight: normal;
-    margin-top: 18px;
+	color:#666666;
+	margin-bottom:10px;
+/*    margin-top: 18px;*/
+	text-align:center;
 }
-
-.shortcuts span {
-  padding-left: 1em;
+#shortcuts span {
+  padding-left: 20px;
 }
-/*.shortcuts b {
-    font-weight: bold;
-}*/

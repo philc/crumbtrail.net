@@ -54,10 +54,11 @@ table,img{ border:0;}
 }
 #footer, #footer-project{
 /*  margin-top:20px;*/
-  padding-top:20px;
+/*  padding-top:20px;*/
+/*padding-top:10px;*/
   clear:both;
   text-align:center;
-	margin-bottom:10px;
+	margin-bottom:8px;
 }
 /* The project page has its own footer that's "offset" from the center.*/
 #footer-project{

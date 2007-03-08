@@ -673,6 +673,8 @@ DisplayHelper.Methods={
 	 */
 	formatPercent:function(percent){
 		// Show a decimal place only if it's < 1%
+		if (percent==0)
+			return percent+"%";
 		return percent.toFixed( percent < 1 ? 1 : 0) + "%";				
 	},
 	timeAgo: function(date){

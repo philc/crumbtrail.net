@@ -149,11 +149,7 @@
 		<br clear="both"/>
 
 		<%= render :partial=>"panel", :locals=>
-		{:p=>:glance,:v=>:referers_today,:options=>{:force_visible=>"true",:c=>"links"}} %>
-
-		<%= render :partial=>"panel", :locals=>
-		{:p=>:glance,:v=>:referers_week,:options=>{:force_visible=>"true",:c=>"links" }} %>
-		<br clear="both"/>
+		{:p=>:glance,:v=>:referers_today,:options=>{:force_visible=>"true",:c=>"links"}} %>	
 	</div>
 
 	<div id="pageviews" class="section" <%=panel_style(:pageviews)-%> >
@@ -173,9 +169,6 @@
 		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:month,:options=>{:c=>"date"}} %>
 		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:year,:options=>{:c=>"date"}} %>
 
-
-
-		<br clear="both"/>
 	</div>
 
 	<div id="referers" class="section" <%=panel_style(:referers)-%> >
@@ -214,9 +207,6 @@
 		:locals=>{:p=>:pages,:v=>:popular,:options=>{:c=>"links"}} %>
 	</div>
 
-
-
-
 	<div id="searches" class="section" <%=panel_style(:searches)-%> >
 		<h2 class="section_title" id="searches_title">Searches</h2> 
 		<div class="panel_links">
@@ -230,9 +220,6 @@
 
 	</div>
 
-
-
-
 	<div id="details" class="section" <%=panel_style(:details)-%> >
 		<h2 class="section_title" id="details_title">Details</h2>
 
@@ -241,16 +228,15 @@
 		</div>
 		<br/>
 		<div class="chart"  id="os_details"><div class="chart_frame"></div></div>
-	</div>
-   
-     <center class="shortcuts">Shortcuts: 
-        <span><strong>w/s</strong> - switch between pages</span>
-        <span><strong>a/d</strong> - flip through details</span>
-     </center>
+	</div>  
+
   
-	<br clear="both"/>
   
 </div>
 
-
-
+<% content_for (:footer) do %>
+<div id="shortcuts">Shortcuts: 
+   <span><strong>w/s</strong> - switch between pages</span>
+   <span><strong>a/d</strong> - flip through details</span>
+</div>
+<% end %>
