@@ -38,8 +38,13 @@
       <b class="ds"><b class="hd"><b class="c"></b></b><b class="bd">
       <b class="c">
 	<table><tr><td>
-	 <% if @account && !@account.demo? %>
-	  <li><a href="/signout">Sign out</a></li>
+	 <% if @account %>
+		<% if !@account.demo?%> 
+	  		<li><a href="/signout">Sign out</a></li>
+		<%end%>
+		<% if @account.role=="a"%>
+			<li><a href="/project/admin">Admin</a></li>
+		<%end%>
 	  <% end %>         
           <td><a href="/project/all">My projects</a></td>
           <td><a href="" class="last">About</a></td>

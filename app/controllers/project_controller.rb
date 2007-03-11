@@ -264,6 +264,12 @@ class ProjectController < ApplicationController
   
   # Admin page
   def admin
+    
+    if (!@account || @account.role!="a")
+      redirect_to "/signin/?r=" + request.request_uri
+      return
+    end
+    
     @title="Admin"
     @accounts=Account.find(:all)
 
