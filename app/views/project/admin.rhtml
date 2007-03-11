@@ -1,0 +1,46 @@
+<% content_for (:head) do %>
+
+
+<%= stylesheet_link_tag "admin" %>
+
+<%end%>
+
+
+<div class="copy-content">
+	<div class="copy">
+
+		<h2>Overview</h2>
+
+		<p>
+			Accounts: <strong><%=@accounts.length%></strong><br/>
+			Projects: <strong><%=Project.count %></strong><br/>
+			<!-- Avg projects per account: <strong><%=Project.count*1.0/@accounts.length %></strong><br/> -->
+			Total traffic today: <strong><%=@pageviews[:today]%> / <%=@uniques[:today]%></strong><br/>
+			Total traffic yesterday: <strong><%=@pageviews[:yesterday]%> / <%=@uniques[:yesterday]%></strong>
+			</p>
+
+			<h2><span class="pageviews" style="font-size:.8em">Uniques today</span>Accounts</h2>
+
+			<% @accounts.each do |account| %>
+			<% projects = account.projects%>
+			<% sum= projects.map{|p| p.hits(:today)[1]}.sum()%>
+
+			<h3><span class="pageviews"><%=sum%></span><%=account.username%> </h3>
+
+
+			<% if projects.length==0%>
+			<em>No projects</em>
+			<% else%>
+			<table class="project-details" cellspacing="0">
+				<% projects.each do |project|%>
+				<tr>
+					<td><a href="/project/<%=project.id%>"><%= project.title%></a></td>
+					<td><a href="<%= project.url%>"><%= project.url%></a></td>
+					<td class="last"><%=project.hits(:today)[1]%></td>
+				</tr>
+
+				<%end%>
+			</table>
+			<%end%>
+			<%end%>
+		</div></div>

@@ -1,6 +1,6 @@
 class ProjectController < ApplicationController
   include ActionView::Helpers::NumberHelper
-  before_filter :authorize, :except=>[:index,:pagedata]
+  before_filter :authorize, :except=>[:index,:pagedata,:admin]
 
   # These are the default view strings, in case they don't have a cookie
   # expressing what section they should be viewing
@@ -249,9 +249,8 @@ class ProjectController < ApplicationController
   end
   
 
-  
-  def save_options
-    
+  # Saves referer options
+  def save_options    
     result = process_options()
 
     if (result.nil?)
@@ -263,7 +262,30 @@ class ProjectController < ApplicationController
     redirect_to "/project/" + params[:pageid]
   end
   
-  
+  # Admin page
+  def admin
+    @title="Admin"
+    @accounts=Account.find(:all)
+
+    # Record total number of pageviews today
+    @pageviews={:today=>0,:yesterday=>0}
+    @uniques={:today=>0,:yesterday=>0}
+
+
+    @accounts.each do |a|
+      a.projects.each do |p|
+        h=p.hits(:week)
+        @pageviews[:today]+=h[0][0]
+        @pageviews[:yesterday]+=h[1][0]
+        @uniques[:today]+=h[0][1]
+        @uniques[:yesterday]+=h[1][1]
+      end
+    end
+
+  end
+
+
+
   
   private  
 

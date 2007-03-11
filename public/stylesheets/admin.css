@@ -1,0 +1,35 @@
+
+.pageviews{
+	font-weight:normal;
+	float:right;
+	font-size:1em;
+}
+
+h2{width:400px;}
+h3{
+	padding-bottom:3px;
+	border-bottom:1px solid #cccccc;
+	width:40%;
+	width:400px;
+	margin-bottom:3px;
+}
+table.project-details{
+	width:400px;
+	padding:0;
+	margin:0;
+	margin-bottom:10px;
+}
+table.project-details td{
+	padding:0;
+	margin:0;
+	white-space:nowrap;
+	padding-left:7px;
+	
+}
+table.project-details .last{
+	text-align:right;
+	width:100%;
+}
+ul{
+	margin-bottom:8px;
+}
