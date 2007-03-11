@@ -35,7 +35,7 @@
 				<% projects.each do |project|%>
 				<tr>
 					<td><a href="/project/<%=project.id%>"><%= project.title%></a></td>
-					<td><a href="<%= project.url%>"><%= project.url%></a></td>
+					<td><%= project.url%></td>
 					<td class="last"><%=project.hits(:today)[1]%></td>
 				</tr>
 

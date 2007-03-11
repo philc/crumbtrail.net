@@ -25,7 +25,8 @@ def add
                       :lastname    => "Quinn",
                       :last_access => Date.today,
                       :country_id => 1,
-                      :zone=>z) 
+                      :zone=>z,
+                      :role=>"a") 
   
   proj = Project.new(:account => mikeq,
                      :title => "Personal Site",
