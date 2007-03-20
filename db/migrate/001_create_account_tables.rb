@@ -7,6 +7,7 @@ class CreateAccountTables < ActiveRecord::Migration
       t.column :firstname, :string, :null => false
       t.column :lastname, :string, :null => false
       t.column :country_id, :integer, :null => false
+      # secret value to append to the user's feeds, so the URLs are hidden
       t.column :access_key, :string
       t.column :zone_id, :integer, :limit => 45, :null => false
       t.column :last_access, :date, :null => false

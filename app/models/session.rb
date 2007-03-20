@@ -6,6 +6,7 @@ require 'digest/sha1'
 class Session < ActiveRecord::Base
   belongs_to :account
   
+  # Period of time for which the cookie should exist
   def self.expiration_time
     return 30.days.from_now
   end
@@ -21,7 +22,7 @@ class Session < ActiveRecord::Base
     if (s.expires < Time.now)
       s.destroy
       return nil
-    elsif s.expires< (self.expiration_time-1.day)         
+    elsif s.expires < (self.expiration_time-1.day)         
     # If the last time we've accessed this thing is 24 hours ago,
     # then update its time stamp. Saves us a few writes to the db    
       s.expires=self.expiration_time

@@ -7,6 +7,7 @@ class Account < ActiveRecord::Base
   belongs_to :zone
  
   def before_create
+    # secret value to append to the user's feeds, so the URLs are hidden
     self.access_key ||= Digest::SHA1.hexdigest(self.username + self.password + rand(500).to_s)
   end    
   
