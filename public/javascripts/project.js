@@ -52,7 +52,7 @@ var KeyboardShortcuts={
 			return;
 		
 		// Don't process anything with modifiers
-		if (ev.ctrlKEY || ev.shiftKey || ev.altKey || ev.metaKey)
+		if (ev.ctrlKey || ev.shiftKey || ev.altKey || ev.metaKey)
 			return;
 			
 		var section=null,panel=null;

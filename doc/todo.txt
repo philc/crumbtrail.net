@@ -1,15 +1,4 @@
 
-speed of inserts:
-http://dev.mysql.com/doc/refman/5.0/en/insert-speed.html
-
-
-line graph squiggle
-
-
-Apache apparently resolves the client's hostname in its logs; how can that hurt or help our performance?
-"- All the usual stuff: don’t follow symlinks, don’t use .htaccess files, don’t resolve client hostnames (move the logs to another machine and batch it later), etc.."
-
-
 verify that index and pagedata own the id they're modifying
 
 search the db of referers for urls "like yahoo" to find out which searches we're missing
@@ -21,5 +10,37 @@ I think recent_unique_referers isn't prefetching each referer's data
 
 
 a nice UI for the search panel would be to show a little search engine logo image, a little square, in the table rows
-3:14
 wouldn't take up much space and you could quickly see which engine gave you a hit without mousing over the link
+
+
+Nicer error messages for no route, etc.
+preload the circle image
+
+
+parsing bugs:
+yahoo regex's
+this search:
+http://google.com/search?q=definition:+vulpes&hl=en&start=10&sa=N
+gets a query term assigned as "definition" instead of "definition: vulpes"
+
+
+some of the search referers don't have http:// in front of them
+ctionController::RoutingError (no route found to match "/project/yubnub.org/example/echo?text=%3Cscript%3Edef%3Dwindow.open%28%27http%3A%2F%2Fwww.ninjawords.com%2Fzeitgeist%27%29%3BsetTimeout%28%22def.close%28%29%3Bhistory.go%28-1%29%3B%22%2C10000%29%3B%3C%2Fscrip" with {:method=>:get}):
+    /vendor/rails/actionpack/lib/action_controller/routing.rb:1292:in `recognize_path'
+    /vendor/rails/actionpack/lib/action_controller/routing.rb:1282:in `recognize'
+    /vendor/rails/railties/lib/dispatcher.rb:40:in `dispatch'
+    /usr/lib/ruby/gems/1.8/gems/mongrel-0.3.13.4/lib/mongrel/rails.rb:84:in `process'
+    /usr/lib/ruby/1.8/sync.rb:229:in `synchronize'
+    /usr/lib/ruby/gems/1.8/gems/mongrel-0.3.13.4/lib/mongrel/rails.rb:83:in `
+
+
+
+
+
+Performance notes:
+speed of inserts:
+http://dev.mysql.com/doc/refman/5.0/en/insert-speed.html
+
+Apache apparently resolves the client's hostname in its logs; how can that hurt or help our performance?
+"- All the usual stuff: don’t follow symlinks, don’t use .htaccess files, don’t resolve client hostnames (move the logs to another machine and batch it later), etc.."
+
