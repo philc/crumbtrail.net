@@ -1,0 +1,46 @@
+
+<div class="copy-content">
+
+	<div class="copy">
+
+		<% # confirmation message
+		if request.post? %>
+
+		<p>Ok, got it. Thanks for your interest!</p>
+
+		<% else %>
+
+		<h1>Coming real soon</h1>    
+
+		<p>We'd love for you to use Breadcrumbs, but we're in private beta. If you leave your email, we'll notify you as soon as Breadcrumbs is ready.</p>
+
+		<div class="centered_form">
+
+
+			<div class="left_form">
+				<form action="/waitlist" method="post">
+
+					<div class="text-form">
+						Email
+						<input type="text" name="email" id="email" size="30" />
+
+						How'd you hear about us? <span class="example">(optional)</span>
+						<input type="text" name="hearabout" size="30"  />
+					</div>
+
+					<div class="button_area">
+						<input type="submit"  value="Notify me" class="submit">
+					</div>
+				</form>
+
+				<script type="text/javascript">
+				$("email").focus();
+				</script>
+			</div>
+
+		</div>
+
+		<% end %>
+
+	</div>
+</div>

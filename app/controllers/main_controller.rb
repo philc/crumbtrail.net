@@ -10,6 +10,16 @@ class MainController < ApplicationController
     end
   end
   
+  def waitlist
+    @title="Get notified when we launch - Breadcrumbs"    
+     if request.post?
+       email=params[:email]
+       hearabout=params[:hearabout]
+       WaitlistUser.create(:email=>email,:hearabout=>hearabout)
+     end     
+  end
+  
+  
   def signup
     @title="Sign up - Breadcrumbs"
 
@@ -18,6 +28,12 @@ class MainController < ApplicationController
     
     if @account
       redirect_to "/project/recent" 
+      return
+    end    
+    
+    # If they didn't come from the beta url, send them to the waitlist
+    unless (request.request_uri =~ /privatesignup/)
+      redirect_to :action=>"waitlist"
       return
     end
     

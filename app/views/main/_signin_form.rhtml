@@ -1,31 +1,31 @@
 <div id="signin-box">
-	
+
 	<b class="d"><b class="hd"><b class="c"></b></b><b class="bd">
 		<b class="c">
-			
+
 			<% if !@account %>
 			<h1>Sign in</h1>
-	
-				<div class="left_form">
-					
-					<form action="" method="post">
-						<div class="text-form">
 
-							<%=show_form_error(@login_error)%>
-							E-mail
-							<input type="text" name="email" id="email" class="field" value="<%=@email%>"/>
-							Password
-							<input type="password" name="password" id="password" class="field"/>
-						</div>
-						<div class="button_area">
+			<div class="left_form">
+
+				<form action="" method="post">
+					<div class="text-form">
+
+						<%=show_form_error(@login_error)%>
+						E-mail
+						<input type="text" name="email" id="email" class="field" value="<%=@email%>"/>
+						Password
+						<input type="password" name="password" id="password" class="field"/>
+					</div>
+					<div class="button_area">
 						<input type="submit" class="submit" value="Sign in"/>
-						</div>
-						<% if (defined? show_signup_link) && show_signup_link %>
-						<p>Don't have an account?<br/><a href="/signup">Sign up for one in seconds &raquo;</a></p>
-						<% end %>
+					</div>
+					<% if (defined? show_signup_link) && show_signup_link %>
+					<p>Don't have an account?<br/><a href="/signup">Sign up for one in seconds &raquo;</a></p>
+					<% end %>
 
-					</form>
-			   </div>
+				</form>
+			</div>
 
 			<% else %>
 			<h1>Welcome back</h1>

@@ -1,3 +1,6 @@
+analyitics -
+see how often each member logs in, which projects he views, how many times he reloads the page
+
 
 verify that index and pagedata own the id they're modifying
 
@@ -22,7 +25,7 @@ yahoo regex's
 this search:
 http://google.com/search?q=definition:+vulpes&hl=en&start=10&sa=N
 gets a query term assigned as "definition" instead of "definition: vulpes"
-
+images.google.com is not a referer..
 
 some of the search referers don't have http:// in front of them
 ctionController::RoutingError (no route found to match "/project/yubnub.org/example/echo?text=%3Cscript%3Edef%3Dwindow.open%28%27http%3A%2F%2Fwww.ninjawords.com%2Fzeitgeist%27%29%3BsetTimeout%28%22def.close%28%29%3Bhistory.go%28-1%29%3B%22%2C10000%29%3B%3C%2Fscrip" with {:method=>:get}):

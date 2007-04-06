@@ -10,12 +10,6 @@ your stats, you'll need to re-enable it in your web browser.
 </div>
 </noscript>
 
-<%
-   unless request.request_uri =~ /privatesignup/
- 	return "<br/>We're in private beta at the moment, so we're not accepting new sign ups just yet. Check back in one week - thanks!" 
-end
-%>
-
 
 <h1>Choose a plan</h1>
     
@@ -64,16 +58,9 @@ end
       
   </form>
 
-<!-- <script type="text/javascript">
-  $("email").focus();
-</script> -->
 
 
 <br clear="both"/>
 
 
-
-<!--<h1>What's cool about this?</h1>
-# ...
--->
 </div>

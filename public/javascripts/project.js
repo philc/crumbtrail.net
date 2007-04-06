@@ -159,7 +159,6 @@ var Page = {
 					e.onclick=function(e){
 							var input=$(this).getNext();
 							input.value = (input.value=="on" ? "off" : "on");
-							console.log(this);
 							Page.syncRefererPreferenceLink(this);
 							return false;
 					};
