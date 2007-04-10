@@ -2,8 +2,8 @@
 #
 # Usage:
 #   logreader.rb nameOfLog  [resume]
-#   nameOfLog should reside  in script. Omitting this parameter 
-#   runs it on the default log
+#   nameOfLog should reside in script/log/
+#    Omitting this parameter runs it on the default log
 #
 
 require "vendor/rails/activerecord/lib/active_record.rb"
@@ -96,7 +96,7 @@ end
 
 class ApacheLogReader
 
-  @@regex = Regexp.compile('(.+)\s+\[(.+)\]\s+(.+)\s+(.+)\s+"(.+)"')
+  @@log_line_regex = Regexp.compile('(.+)\s+\[(.+)\]\s+(.+)\s+(.+)\s+"(.+)"')
   
   @@log_dir="/var/log/breadcrumbs/"
   def self.log_dir; @@log_dir end
@@ -122,7 +122,7 @@ class ApacheLogReader
 
   def self.process_line(line)
     
-    if @@regex.match(line)
+    if @@log_line_regex.match(line)
       begin
         id = parse_project_id($3).to_i
         project = Project.find(id)
@@ -379,7 +379,7 @@ def log_to_process()
 
   return "./script/testlogs/#{logfile}" if (FileTest.exists?("./script/testlogs/#{logfile}"))
   return "./script/log/#{logfile}" if (FileTest.exists?("./script/log/#{logfile}"))
-  raise "Log file "#{logfile}" could not be found. It doesn't exist!"
+  raise "Log file #{logfile} could not be found"
 end
 
 def check_logger_setup()
