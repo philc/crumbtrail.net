@@ -1,4 +1,4 @@
-require "app/models/source.rb"
+require File.dirname(__FILE__)+"/source.rb"
 
 class Project < ActiveRecord::Base
   belongs_to :account

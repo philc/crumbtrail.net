@@ -1,4 +1,4 @@
-require 'lib/time_helpers'
+require File.dirname(__FILE__)+'/../../lib/time_helpers.rb'
 
 # Represents the number of hits for a project for any given day
 class HitDaily < ActiveRecord::Base

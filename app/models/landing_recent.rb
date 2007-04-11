@@ -9,7 +9,7 @@ class LandingRecent < ActiveRecord::Base
              :class_name  => "Source",
              :foreign_key  => "source_id"           
 
-  require './lib/rollable_recent_table.rb'
+  require File.dirname(__FILE__)+'/../../lib/rollable_recent_table.rb'
 
   def self.add_new_landing(request)
     RollableRecentTable::add_new(LandingRecent, 

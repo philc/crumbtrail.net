@@ -1,4 +1,4 @@
-require 'lib/time_helpers.rb'
+require File.dirname(__FILE__)+'/../../lib/time_helpers.rb'
 
 class HitHourly < ActiveRecord::Base
   belongs_to :project

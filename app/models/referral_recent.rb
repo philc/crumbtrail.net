@@ -9,7 +9,7 @@ class ReferralRecent < ActiveRecord::Base
              :class_name  => "Page",
              :foreign_key  => "page_id"      
   
-  require './lib/rollable_recent_table.rb'
+  require File.dirname(__FILE__)+'/../../lib/rollable_recent_table.rb'
 
   def self.add_new_referer(request)
     RollableRecentTable::add_new(ReferralRecent, 

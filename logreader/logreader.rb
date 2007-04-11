@@ -1,12 +1,19 @@
 #!/usr/bin/env ruby
 #
 # Usage:
-#   logreader.rb nameOfLog  [resume]
-#   nameOfLog should reside in script/log/
-#    Omitting this parameter runs it on the default log
+#   logreader.rb [nameOfLog] [-resume] [-p=1050]
+#     
+#     nameOfLog 
+#       should reside in script/log/. 
+#       Otherwise the default log gets used (/var/log/apache2/stats.crumbtrail/access.log)
+#     -resume 
+#       resumes the log using the progress stored in /var/log/breadcrumbs/progress.txt
+#     -p=projectID
+#       only process log files that are from a certain project
 #
 
-require "vendor/rails/activerecord/lib/active_record.rb"
+APP_PATH=File.dirname(__FILE__) + '/../'
+require APP_PATH+"vendor/rails/activerecord/lib/active_record.rb"
 
 
 # require "lib/rollable_time_table.rb"
@@ -27,7 +34,7 @@ def require_many(directory)
   end
 end
 
-require_many("app/models")
+require_many(APP_PATH+"app/models")
 
 class ApacheRequest
   attr_reader   :project
@@ -72,7 +79,7 @@ class ApacheRequest
     
     @target = @project.get_or_new_page(@page_url)
     
-    puts "TARGET IS NIL!" if @target.nil?
+    # puts "TARGET IS NIL!" if @target.nil?
     
     if !@target.nil?
       if (!@source_url.nil? && @source_url != "/" && @source_url != "-")
@@ -110,7 +117,7 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
 
   def self.establish_connection()
-    f=YAML::load(File.open('config/database.yml'))
+    f=YAML::load(File.open(APP_PATH+'config/database.yml'))
     args={}
     env=ENV['RAILS_ENV'] || 'development'
     f[env].map{ |k,v| args[k.intern]=v}
@@ -120,13 +127,17 @@ class ApacheLogReader
 
 #------------------------------------------------------------------------------
 
-  def self.process_line(line)
-    
+  def self.process_line(line,project_id=nil)
     if @@log_line_regex.match(line)
-      begin
-        id = parse_project_id($3).to_i
+      id = parse_project_id($3).to_i
+      #project_id=nil
+      # Only process stats from a single account if that option is in effect
+      unless project_id.nil?
+        return if id!=project_id 
+      end
+      
+      begin        
         project = Project.find(id)
-
         if !project.nil?
           ip          = $1
           time        = parse_time($2, project)
@@ -138,13 +149,13 @@ class ApacheLogReader
 
           strip_protocol(referer_url)
           strip_protocol(landing_url)
-
+          return
           request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
           request.save
         end
 
       rescue ActiveRecord::RecordNotFound
-        puts "Couldn't find project : " + line
+        # puts "Couldn't find project #{id} from: " + line
       end
     end
   end
@@ -152,10 +163,22 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
 
 
-  def self.tail_log(logfile, resume=false)
+  def self.tail_log(logfile, resume=false, project_id=nil)
     puts "Parsing log file: " + logfile.to_s
     file = File.new(logfile, "r")
 
+    # Allow our thread to exit under normal TERM and INT signals
+    exited=false    
+    Signal.trap("TERM") do
+      exited=true
+      Kernel.exit()
+    end
+    Signal.trap("INT") do
+      exited=true
+      Kernel.exit()
+    end
+    
+    
     #
     # Try and resume into the log file if we need to
     #    
@@ -172,12 +195,12 @@ class ApacheLogReader
     end
     
 
-    while (1)
+    while (!exited)
       begin
         line = file.gets
 
         if !line.nil?
-          process_line(line)
+          process_line(line,project_id)
           
           count+=1
           record_progress(count) if (count % @@progress_frequency==0)
@@ -185,8 +208,10 @@ class ApacheLogReader
           sleep 1
         end
       rescue Exception=>e
-        # Let interrupts (ctrl+C) go through
-        raise e if e.class==Interrupt
+        # Let exceptions from TERM and INT signals go through, like (ctrl+C)
+        raise e if (e.class==Interrupt || e.class==SystemExit)
+        
+        # otherwise, log the error for later analysis
         f=File.new @@error_file, 'a'
         err="#{count} : #{e}\n for this line: #{line}"
         err += "\nBacktrace\n#{e.backtrace}"
@@ -308,9 +333,9 @@ class ApacheLogReader
   
   @@referer = Regexp.compile('[&\?]r=([A-Za-z0-9\/:+%\.\-_]+)')
   def self.parse_referer(query)
-    puts "----Before: #{query}"
+    #puts "----Before: #{query}"
     @@referer.match(query)
-    puts "----After: #{$1}"
+    #puts "----After: #{$1}"
     return $1
   end
 
@@ -367,8 +392,9 @@ end
 
 def log_to_process()
   logfile = ARGV[0]
+  script_dir=APP_PATH+"script/"
   if (logfile.nil?)
-    return "./script/testlogs/test.log"
+    return script_dir+"testlogs/test.log"
   end
   
   # First try the file outright, e.g. /var/log/apache2/access.log
@@ -377,11 +403,15 @@ def log_to_process()
 
   return logfile if (FileTest.exists? logfile )
 
-  return "./script/testlogs/#{logfile}" if (FileTest.exists?("./script/testlogs/#{logfile}"))
-  return "./script/log/#{logfile}" if (FileTest.exists?("./script/log/#{logfile}"))
+  return script_dir+"testlogs/#{logfile}" if (FileTest.exists?(script_dir+"testlogs/#{logfile}"))
+  return script_dir+"log/#{logfile}" if (FileTest.exists?(script_dir+"log/#{logfile}"))
   raise "Log file #{logfile} could not be found"
 end
 
+#
+# Ensures that the log directory where we store our progress (usually /var/log/breadcrumbs)
+# exists and we can write to it
+# 
 def check_logger_setup()
   log_dir=ApacheLogReader::log_dir
   # Make sure we can record our progress
@@ -404,6 +434,28 @@ def check_logger_setup()
     
 end
 
+
+
+#
+# Strips an option out of the command line args. So 
+# strip_arg('-resume') would return -resume and remove it from ARGV.
+# Passing in a regex will use that pattern to find the option and return
+# the result of any grouping, e.g. strip_arg(/p=(\d+)/) would return the value of \d+
+#
+def strip_arg(pattern)
+  if (pattern.class==Regexp)
+    for a in ARGV
+      m = a.match(pattern)
+      return m[1] unless m.nil?
+    end
+    return nil
+  else
+    ARGV.delete(pattern)
+  end
+end
+
+
+
 ##
 
 check_logger_setup()
@@ -411,9 +463,12 @@ check_logger_setup()
 ApacheLogReader::establish_connection()
 #logfile="test.log"
 #logfile=ARGV[0] if ARGV.length>0
+
+# Check if -resume option was supplied, and if so remove it from CLI
+resume = strip_arg("-resume")
+project_id = strip_arg(/-p=(\d+)/)
+
 logfile = log_to_process()
 #ApacheLogReader::benchmark_log("script/testlogs/" + logfile)
 #ApacheLogReader::tail_log("script/testlogs/" + logfile)
-ApacheLogReader::tail_log(logfile, ARGV[1])
-
-
+ApacheLogReader::tail_log(logfile, resume, project_id)
