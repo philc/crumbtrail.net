@@ -1,0 +1,16 @@
+#!/bin/bash
+appname=`cat ~/railsappname 2> /dev/null`
+#echo $appname
+if test "$appname" == ""
+then
+	echo "Usage:"
+	echo "To deploy, define the name of your app in ~/railsappname"
+	exit
+fi
+echo "deploying $appname..."
+export RAILS_ENV="production"
+# App is assumed to live (or at least have a symlink) in /$appname
+cd /$appname
+svn update
+#./script/compact_files.sh
+sudo /etc/init.d/mongrel restart
