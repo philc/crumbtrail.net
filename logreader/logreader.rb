@@ -164,7 +164,7 @@ class ApacheLogReader
 
 
   def self.tail_log(logfile, resume=false, project_id=nil)
-    puts "Parsing log file: " + logfile.to_s + "\r\n"
+    puts "Parsing log file:  #{logfile.to_s}  Logging to #{ENV['RAILS_ENV'] || 'development'} database."
     file = File.new(logfile, "r")
 
     # Allow our thread to exit under normal TERM and INT signals
@@ -186,6 +186,7 @@ class ApacheLogReader
     if (resume)
       count=load_progress
       puts "Resuming #{count} lines into the log file"
+      $stdout.flush
       skip_ahead(file,count)
       puts "Done seeking ahead into the log file. Starting to read."
     else
@@ -194,7 +195,7 @@ class ApacheLogReader
       # with 'resume' enabled but forgot to.
       `cp #{@@progress_file} #{@@progress_file}.bak 2> /dev/null`
     end
-    # Flush our initial information messages to stdout. Important for the daemon, since it wants to show a status msg
+
     $stdout.flush
 
     while (!exited)
