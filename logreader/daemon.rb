@@ -18,15 +18,16 @@ module LogReader
         return
       end
       # don't wait for this to finish; run it in its own subprocess
-      exec("nohup ./logreader.rb #{log}  -resume > /tmp/nohup &") if fork.nil?
+      exec("nohup #{LOGREADER_PATH}logreader.rb #{log}  -resume > /tmp/nohup &") if fork.nil?
       
       # Show the initial output from the logreader
       puts `cat /tmp/nohup`
-      
+  
       puts "started"      
     end
     
     def self.stop
+      puts "stopping"
       pids = pid_of_reader()
       if pids.length<=0
         puts "LogReader doesn't appear to be running"
@@ -36,7 +37,7 @@ module LogReader
       if pids.length>1
         puts "There are #{pids.length} logReader processes running. Killing them all"
       end
-
+      
       for pid in pids do
         `kill #{pid}`
       end
@@ -73,8 +74,16 @@ module LogReader
       # each match is on its own line. The first col is the proc number.
 
       # reject out any procs that contain grep in them, because that's probably the process
-      # we're using to grep for our target proc anyway
-      `ps ax | grep "#{proc}"`.reject{|line|line.index("grep")}.map{|line| line.split(' ')[0]}
+      # we're using to grep for our target proc anyway. Also reject out 'daemon' - that's the process
+      # we're running running. 
+      `ps ax | grep "#{proc}"`.reject{|line|line.include?("grep") || line.include?("daemon")}.map{|line| line.split(' ')[0]}
     end
   end
+end
+
+case ARGV[0]
+  when "start" : LogReader::Daemon.start
+  when "restart" : LogReader::Daemon.restart
+  when "stop" : LogReader::Daemon.stop
+  else puts "specify one of the following: start|restart|stop"
 end

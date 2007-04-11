@@ -164,7 +164,7 @@ class ApacheLogReader
 
 
   def self.tail_log(logfile, resume=false, project_id=nil)
-    puts "Parsing log file: " + logfile.to_s
+    puts "Parsing log file: " + logfile.to_s + "\r\n"
     file = File.new(logfile, "r")
 
     # Allow our thread to exit under normal TERM and INT signals
@@ -194,6 +194,8 @@ class ApacheLogReader
       `cp #{@@progress_file} #{@@progress_file}.bak 2> /dev/null`
     end
     
+    # Flush our initial information messages to stdout. Important for the daemon, since it wants to show a status msg
+    $stdout.flush
 
     while (!exited)
       begin
