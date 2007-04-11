@@ -21,6 +21,8 @@ module LogReader
       exec("nohup #{LOGREADER_PATH}logreader.rb #{log}  -resume > /tmp/nohup &") if fork.nil?
       
       # Show the initial output from the logreader
+      # Allow the /tmp/nohup file a second to get created/filled
+      `sleep 1s`
       puts `cat /tmp/nohup`
   
       puts "started"      

@@ -187,20 +187,19 @@ class ApacheLogReader
       count=load_progress
       puts "Resuming #{count} lines into the log file"
       skip_ahead(file,count)
+      puts "Done seeking ahead into the log file. Starting to read."
     else
       puts "Starting at the beginning of the log file"
       # Back up the old progress file in case we wanted to run
       # with 'resume' enabled but forgot to.
       `cp #{@@progress_file} #{@@progress_file}.bak 2> /dev/null`
     end
-    
     # Flush our initial information messages to stdout. Important for the daemon, since it wants to show a status msg
     $stdout.flush
 
     while (!exited)
       begin
         line = file.gets
-
         if !line.nil?
           process_line(line,project_id)
           
@@ -248,7 +247,7 @@ class ApacheLogReader
   
   # Skip n lines into the log file
   def self.skip_ahead(file,n)    
-    n-1.times do
+    (n-1).times do
       file.gets
     end
   end
