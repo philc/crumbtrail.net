@@ -42,14 +42,16 @@ module LogReader
       
       for pid in pids do
         `kill #{pid}`
-      end
-      puts "stopped"
+      end      
       
-      # If we failed to stop something, return an error condition
+      # If we failed to stop something, return an error condition. Sleep for a second to let these processes exit.
+      `sleep 1s`
       pids = pid_of_reader()
       if pids.length>0
         puts "failed to kill #{pids.length} processes" 
         return false
+      else
+        puts "stopped"
       end
       
       return true            

@@ -149,7 +149,6 @@ class ApacheLogReader
 
           strip_protocol(referer_url)
           strip_protocol(landing_url)
-          return
           request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
           request.save
         end
