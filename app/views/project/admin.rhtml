@@ -1,7 +1,6 @@
 <% content_for (:head) do %>
 
-
-<%= stylesheet_link_tag "admin" %>
+	<%= stylesheet_link_tag "admin" %>
 
 <%end%>
 
@@ -16,12 +15,15 @@
 			Projects: <strong><%=Project.count %></strong><br/>
 			<!-- Avg projects per account: <strong><%=Project.count*1.0/@accounts.length %></strong><br/> -->
 			Total traffic today: <strong><%=@pageviews[:today]%> / <%=@uniques[:today]%></strong><br/>
-			Total traffic yesterday: <strong><%=@pageviews[:yesterday]%> / <%=@uniques[:yesterday]%></strong>
-			</p>
+			Total traffic yesterday: <strong><%=@pageviews[:yesterday]%> / <%=@uniques[:yesterday]%></strong><br/>
+			
+			Average pageviews per user: <%=@pageviews[:yesterday]/@accounts.size%> per day
+			
+		</p>
 
-			<h2><span class="pageviews" style="font-size:.8em">Uniques today</span>Accounts</h2>
+		<h2><span class="pageviews" style="font-size:.8em">Uniques today</span>Accounts</h2>
 
-			<% @accounts.each do |account| %>
+		<% @accounts.each do |account| %>
 			<% projects = account.projects%>
 			<% sum= projects.map{|p| p.hits(:today)[1]}.sum()%>
 
@@ -29,18 +31,29 @@
 
 
 			<% if projects.length==0%>
-			<em>No projects</em>
+				<em>No projects</em>
 			<% else%>
-			<table class="project-details" cellspacing="0">
-				<% projects.each do |project|%>
-				<tr>
-					<td><a href="/project/<%=project.id%>"><%= project.title%></a></td>
-					<td><%= project.url%></td>
-					<td class="last"><%=project.hits(:today)[1]%></td>
-				</tr>
-
-				<%end%>
-			</table>
+				<table class="project-details" cellspacing="0">
+					<% projects.each do |project|%>
+						<tr>
+							<td><a href="/project/<%=project.id%>"><%= project.title%></a></td>
+							<td><%= project.url%></td>
+							<td class="last"><%=project.hits(:today)[1]%></td>
+						</tr>
+					<%end%>
+				</table>
 			<%end%>
-			<%end%>
-		</div></div>
+			
+		<%end%>
+		
+		<br/><br/>
+		
+		<h2>Waitlist (<%=@waitlist.size%>)</h2>
+		<% @waitlist.each do |w|%>
+			<ul>
+				<%=w.email%>
+				<%="<br/>#{w.hearabout}" if w.hearabout %>
+			</ul>
+		<%end%>
+	</div>
+</div>

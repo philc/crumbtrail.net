@@ -288,7 +288,9 @@ class ProjectController < ApplicationController
         @uniques[:yesterday]+=h[1][1]
       end
     end
-
+    
+    @waitlist=WaitlistUser.find(:all)
+    
   end
 
 
