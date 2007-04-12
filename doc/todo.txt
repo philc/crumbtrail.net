@@ -1,10 +1,16 @@
+implement password reset (a beta user has already needed it =/)
+implement compressed javascript into the build process.
+progress meter when you click next
+Nicer error messages for no route, etc.
+preload the circle image
+
 analyitics -
 see how often each member logs in, which projects he views, how many times he reloads the page
 
 
 verify that index and pagedata own the id they're modifying
 
-search the db of referers for urls "like yahoo" to find out which searches we're missing
+search the db of referers for urls "like yahoo" to find out which searches we're missing. DO we capture images.google.com? check eightpence
 
 collapse referers for the current db takes _minutes_
 
@@ -16,8 +22,6 @@ a nice UI for the search panel would be to show a little search engine logo imag
 wouldn't take up much space and you could quickly see which engine gave you a hit without mousing over the link
 
 
-Nicer error messages for no route, etc.
-preload the circle image
 
 
 parsing bugs:
