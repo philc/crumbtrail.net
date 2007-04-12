@@ -24,7 +24,7 @@ class Referer < Source
              :foreign_key => "path_id"
   
   serialize  :daily_hit_counts, Hash
-
+  
   def self.find_by_url(project, url)
     referers = find_all_by_project_id_and_url_hash(project.id, url.hash)
     for id in referers
@@ -88,7 +88,14 @@ class Referer < Source
 
     return referers
   end  
-
+  
+  #
+  # Finds referers that have a url containg the given word. Useful for looking at things like
+  # non-search referers containg the word "google" (to see if our search parsing is missing anything)
+  #
+  def self.urls_containing(word)
+    Referer.find(:all, :conditions=>["url like ?", "%#{word}%"]).map{|s|CGI.unescape(s.url)}
+  end
   private
   
   def self.update_hit_counts(ref, time)
@@ -163,11 +170,12 @@ class Search < Source
   
   @@search_term = '([A-Za-z0-9+\-_.: %]+)'
 
-  # I'm not sure why "blog" is in this regex. Disabling:  @@google = Regexp.compile("google\..*\/(?:blog)?(search.*[&\?]q=#{@@search_term}&?")
-  @@google = Regexp.compile("google\..*\/(?:search|images).*[&\?]q=#{@@search_term}&?")
+  # Do we want to special case each google service like this?
+  @@google = Regexp.compile("google\..*\/(?:search|images|ie|custom|blogsearch).*[&\?]q=#{@@search_term}&?")
   @@msn    = Regexp.compile("search\.msn\..*/results\.aspx.*[&\?]q=#{@@search_term}&?")
   @@live   = Regexp.compile("search\.live\..*\/results\.aspx.*[&\?]q=#{@@search_term}&?")
-  @@yahoo  = Regexp.compile("search\.yahoo\..*/search.*[&\?]p=#{@@search_term}&?")
+  #  @@yahoo  = Regexp.compile("search\.yahoo\..*/search.*[&\?]p=#{@@search_term}&?")
+  @@yahoo  = Regexp.compile("yahoo\..*/search.*[&\?]p=#{@@search_term}&?")
   def self.analyze_url(url)
     unesc_url = CGI.unescape(url)
     if !@@google.match(unesc_url).nil? ||
