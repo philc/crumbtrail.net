@@ -492,12 +492,25 @@ TableDisplay.Methods={
 		var url = unescape(data[i*4+1]);
 		var to = unescape(data[i*4+2]);
 		var toCaption = DisplayHelper.truncateRight(to,DisplayHelper.truncateSmall);
-
+		var faviconClass=TableDisplay.searchProvider(url);
 		return TableDisplay.tableRow(
-			terms.link("http://"+url) + db.span({cls:'to'},'To&nbsp;'+toCaption.link("http://"+to)),
+			(db.span({cls:"search-icon "+faviconClass}) + terms).link("http://"+url) + db.span({cls:'to'},'To&nbsp;'+toCaption.link("http://"+to)),
 			isDate ? DisplayHelper.timeAgo(data[i*4+3]) : DisplayHelper.comma(data[i*4+3])
 		);
-
+	},
+	yahoo:/.*yahoo\..*/,
+	google:/.*google\..*/,
+	msn:/.*(live|msn)\..*/,
+	// Determines whether a url comes from a known search provider
+	// returns google, yahoo, msn, or null
+	searchProvider:function(url){
+		if (url.test(TableDisplay.google))
+			return "google";
+		else if (url.test(TableDisplay.yahoo))
+			return "yahoo";
+		else if (url.test(TableDisplay.msn))
+			return "msn";
+		return null;
 	},
 	pagesRow:function(i,data,dataMax, isDate){
 		var url = unescape(data[i*2]);

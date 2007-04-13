@@ -363,6 +363,31 @@ float:right;
   background-color:transparent;
   color:#021a41;  /* Should be the same as the global a hover */
 }
+
+/*
+ * For searches, we're display favicons, so we don't need as much padding on the left
+ */
+.searches .d td a {
+	padding-left:0px;
+}
+.searches td .to{
+  padding-left:4px;
+}
+
+/* favicons */
+.search-icon{
+/*	position:absolute;*/
+	width:16px;
+	height:30px;
+	margin:2px;
+/*		margin-left:-9px;*/
+	margin-right:3px;
+/*	display:block;*/
+	float:left;
+}
+.google{ background: transparent url(/images/searchicons.png) no-repeat 0 0 ;}
+.yahoo{ background: transparent url(/images/searchicons.png) no-repeat -20px 0 ;}
+.msn{ background: transparent url(/images/searchicons.png) no-repeat -40px 0 ;}
 /* Styles for table cells that have graphs in the background of them */
 .graph-cell div{
   position:relative;
@@ -456,12 +481,17 @@ float:right;
 	top:5px;
 }
 
-.linegraph_container{
-/*	  height:130px;*/
-}
+
+
+
+
+
 /*
  * Line graphs
  */
+.linegraph_container{
+/*	  height:130px;*/
+}
 .linegraph{
   /*margin-left:50px;*/  
 /*  height:110px;*/

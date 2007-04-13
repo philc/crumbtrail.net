@@ -13,9 +13,11 @@
    height="595.27559pt"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.44.1"
+   inkscape:version="0.45"
    sodipodi:docbase="/Users/reformist/synced/desktop/projects/rcs/achilles/design"
-   sodipodi:docname="canvas.svg">
+   sodipodi:docname="canvas.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   sodipodi:modified="true">
   <defs
      id="defs4">
     <linearGradient
@@ -79,9 +81,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="1254.2832"
-     inkscape:cy="257.22181"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="1836.2167"
+     inkscape:cy="1950.4239"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:window-width="1263"
@@ -89,7 +91,13 @@
      inkscape:window-x="255"
      inkscape:window-y="28"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     showgrid="true"
+     gridempcolor="#a47275"
+     gridempopacity="0.37647059"
+     inkscape:grid-points="true"
+     inkscape:object-nodes="false"
+     gridtolerance="50">
     <sodipodi:guide
        orientation="horizontal"
        position="933.50000"
@@ -975,34 +983,6 @@
          id="tspan2296"
          sodipodi:role="line">Visitor details</tspan></text>
     <text
-       xml:space="preserve"
-       style="font-size:56.506710px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#617ca9;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Asenine"
-       x="1177.6865"
-       y="201.07234"
-       id="text2310"
-       sodipodi:linespacing="125.00000%"
-       inkscape:export-filename="/home/reformist/achilles/public/images/h/details.png"
-       inkscape:export-xdpi="86.080002"
-       inkscape:export-ydpi="86.080002"><tspan
-         sodipodi:role="line"
-         id="tspan2312"
-         x="1177.6865"
-         y="201.07234">Visitor details</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:56.50671005px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:black;fill:#617ca9;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;font-family:Asenine"
-       x="1581.9897"
-       y="563.07233"
-       id="text2188"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/reformist/achilles/public/images/h/hits2.png"
-       inkscape:export-xdpi="70.994438"
-       inkscape:export-ydpi="70.994438"><tspan
-         y="563.07233"
-         x="1581.9897"
-         id="tspan2190"
-         sodipodi:role="line">Hits</tspan></text>
-    <text
        inkscape:export-ydpi="71.689606"
        inkscape:export-xdpi="71.689606"
        inkscape:export-filename="/home/reformist/achilles/public/images/h/pageviews.gif"
@@ -1072,66 +1052,6 @@
          id="tspan2417"
          x="1186.9897"
          y="735.10712">Visitor details</tspan></text>
-    <text
-       transform="scale(0.870356,1.148955)"
-       inkscape:export-ydpi="86.080002"
-       inkscape:export-xdpi="86.080002"
-       inkscape:export-filename="/home/reformist/achilles/public/images/h/details.png"
-       sodipodi:linespacing="125.00000%"
-       id="text2302"
-       y="212.42981"
-       x="1348.9673"
-       style="font-size:49.180950px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#617ca9;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Asenine Wide"
-       xml:space="preserve"><tspan
-         y="212.42981"
-         x="1348.9673"
-         id="tspan2304"
-         sodipodi:role="line">Visitor details</tspan></text>
-    <text
-       transform="scale(0.870356,1.148955)"
-       inkscape:export-ydpi="86.080002"
-       inkscape:export-xdpi="86.080002"
-       inkscape:export-filename="/home/reformist/achilles/public/images/h/details.png"
-       sodipodi:linespacing="125.00000%"
-       id="text2306"
-       y="265.52148"
-       x="1359.3076"
-       style="font-size:49.180965px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#617ca9;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Ogirema"
-       xml:space="preserve"><tspan
-         y="265.52148"
-         x="1359.3076"
-         id="tspan2308"
-         sodipodi:role="line">Visitor details</tspan></text>
-    <text
-       transform="scale(0.870356,1.148955)"
-       inkscape:export-ydpi="86.080002"
-       inkscape:export-xdpi="86.080002"
-       inkscape:export-filename="/home/reformist/achilles/public/images/h/details.png"
-       sodipodi:linespacing="125.00000%"
-       id="text2326"
-       y="314.26138"
-       x="1353.5626"
-       style="font-size:49.180962px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#617ca9;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Zachary"
-       xml:space="preserve"><tspan
-         y="314.26138"
-         x="1353.5626"
-         id="tspan2330"
-         sodipodi:role="line">Visitor details</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:49.180954px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#617ca9;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Zachary"
-       x="1669.7699"
-       y="351.1662"
-       id="text2404"
-       sodipodi:linespacing="125.00000%"
-       inkscape:export-filename="/home/reformist/achilles/public/images/h/details.png"
-       inkscape:export-xdpi="86.080002"
-       inkscape:export-ydpi="86.080002"
-       transform="scale(0.870356,1.148955)"><tspan
-         sodipodi:role="line"
-         id="tspan2332"
-         x="1669.7699"
-         y="351.1662">Referers</tspan></text>
     <text
        inkscape:export-ydpi="86.080002"
        inkscape:export-xdpi="86.080002"
@@ -1375,28 +1295,6 @@
        d="M 1618.3258,-225.02005 L 1618.6811,-225.01771 L 1618.3224,-224.52773 L 1618.3258,-225.02005 z M 1618.8789,-225.01622 L 1701.8238,-224.43053 L 1701.0046,-108.43346 L 1699.6428,-108.44303 L 1700.6030,-109.75635 L 1618.8789,-225.01622 z "
        id="path2395" />
     <text
-       sodipodi:linespacing="125.00000%"
-       xml:space="preserve"
-       style="font-size:60.000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#000000;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Marker SD"
-       x="-76"
-       y="-883.90546"
-       id="text2229"><tspan
-         sodipodi:role="line"
-         id="tspan2231"
-         x="-76"
-         y="-883.90546">Breadcrumbs</tspan></text>
-    <text
-       sodipodi:linespacing="125.00000%"
-       xml:space="preserve"
-       style="font-size:60.000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#000000;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Apple Garamond"
-       x="357"
-       y="-982.90546"
-       id="text2309"><tspan
-         sodipodi:role="line"
-         id="tspan2311"
-         x="357"
-         y="-982.90546">Breadcrumbs</tspan></text>
-    <text
        id="text2269"
        y="-632.96149"
        x="183.82947"
@@ -1428,72 +1326,6 @@
          y="-907.90552"
          x="360"
          id="tspan2283"
-         sodipodi:role="line">Breadcrumbs</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       xml:space="preserve"
-       style="font-size:60.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr;text-anchor:start;opacity:1.0000000;color:#000000;fill:#000000;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Leftist Mono Serif"
-       x="363"
-       y="-847.90552"
-       id="text2233"><tspan
-         sodipodi:role="line"
-         id="tspan2235"
-         x="363"
-         y="-847.90552">Breadcrumbs</tspan></text>
-    <text
-       id="text2257"
-       y="-1069.9055"
-       x="-66"
-       style="font-size:60.000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#000000;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Kochi Mincho"
-       xml:space="preserve"
-       sodipodi:linespacing="125.00000%"><tspan
-         y="-1069.9055"
-         x="-66"
-         id="tspan2259"
-         sodipodi:role="line">Breadcrumbs</tspan></text>
-    <text
-       sodipodi:linespacing="125.00000%"
-       xml:space="preserve"
-       style="font-size:60.000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#000000;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Riot Act"
-       x="-63"
-       y="-1187.9055"
-       id="text2249"><tspan
-         sodipodi:role="line"
-         id="tspan2251"
-         x="-63"
-         y="-1187.9055">Breadcrumbs</tspan></text>
-    <text
-       id="text2265"
-       y="-1387.9055"
-       x="-57"
-       style="font-size:60.000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#000000;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Samanata"
-       xml:space="preserve"
-       sodipodi:linespacing="125.00000%"><tspan
-         y="-1387.9055"
-         x="-57"
-         id="tspan2267"
-         sodipodi:role="line">Breadcrumbs</tspan></text>
-    <text
-       sodipodi:linespacing="125.00000%"
-       xml:space="preserve"
-       style="font-size:60.000000px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#000000;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:aakar"
-       x="-71"
-       y="-1017.9055"
-       id="text2253"><tspan
-         sodipodi:role="line"
-         id="tspan2255"
-         x="-71"
-         y="-1017.9055">Breadcrumbs</tspan></text>
-    <text
-       id="text1490"
-       y="-1244.9055"
-       x="-59"
-       style="font-size:60.000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#000000;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Gentium"
-       xml:space="preserve"
-       sodipodi:linespacing="125.00000%"><tspan
-         y="-1244.9055"
-         x="-59"
-         id="tspan1492"
          sodipodi:role="line">Breadcrumbs</tspan></text>
     <text
        inkscape:export-ydpi="91.858658"
@@ -1569,13 +1401,13 @@
          y="-322.90656">crumbs</tspan></text>
     <text
        id="text1478"
-       y="-790.90546"
-       x="646.99994"
-       style="font-size:60.000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0.0000000;text-align:start;text-decoration:none;line-height:125.00000%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1.0000000;color:#000000;fill:#000000;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;visibility:visible;display:inline;overflow:visible;font-family:Marker SD"
+       y="-833.33185"
+       x="375.47095"
+       style="font-size:60px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;font-family:Marker SD"
        xml:space="preserve"
-       sodipodi:linespacing="125.00000%"><tspan
-         y="-790.90546"
-         x="646.99994"
+       sodipodi:linespacing="125%"><tspan
+         y="-833.33185"
+         x="375.47095"
          id="tspan1480"
          sodipodi:role="line">Breadcrumbs</tspan></text>
     <text
@@ -2158,5 +1990,39 @@
        sodipodi:ry="6.0000000"
        d="M 784.00000 381.09448 A 6.0000000 6.0000000 0 1 1  772.00000,381.09448 A 6.0000000 6.0000000 0 1 1  784.00000 381.09448 z"
        transform="translate(69.00000,19.00000)" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot2478"
+       transform="matrix(6.8527609,0,0,6.8527609,-10798.961,7730.0958)"><flowRegion
+         id="flowRegion2480"><rect
+           id="rect2482"
+           width="212.13203"
+           height="175.36249"
+           x="1832.8208"
+           y="-1323.4857" /></flowRegion><flowPara
+         id="flowPara2484">Export section</flowPara></flowRoot>    <image
+       y="-1210.9055"
+       x="1850"
+       id="image2589"
+       height="16"
+       width="16"
+       sodipodi:absref="/Users/reformist/Desktop/downloads/favicons/google.png"
+       xlink:href="/Users/reformist/Desktop/downloads/favicons/google.png" />
+    <image
+       y="-1210.9055"
+       x="1830"
+       id="image2632"
+       height="16"
+       width="16"
+       sodipodi:absref="/Users/reformist/Desktop/downloads/favicons/live.ico"
+       xlink:href="/Users/reformist/Desktop/downloads/favicons/live.ico" />
+    <image
+       y="-1210.9055"
+       x="1810"
+       id="image2675"
+       height="16"
+       width="16"
+       sodipodi:absref="/Users/reformist/Desktop/downloads/favicons/yahoo.gif"
+       xlink:href="/Users/reformist/Desktop/downloads/favicons/yahoo.gif" />
   </g>
 </svg>
