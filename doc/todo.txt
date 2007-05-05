@@ -1,6 +1,6 @@
+text for about page
 refactor the JS into multiple files, set up a build system for compression
 quick NW today: make those selection arrows unselectable. Do the same for jjot's arrows
-put a gray outline around the colors
 counter
 version the tracker JS, do some research on what a unique hit really is
 traffic sources in the overview page arenn't sorted by anything. They're arbitrary
