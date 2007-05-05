@@ -74,23 +74,6 @@ extendIfAbsent(Array.prototype,{
 	}
 });
 
-// Maybe put these in their own util.breadcrumbs file
-String.prototype.toDisplayString = Array.prototype.toDisplayString || function(){ return this.firstUpCase().replace(/_/g,' '); };
-
-/* This is different than the mootools camcelcase function. This changes hits_week => hitsWeek */
-String.prototype.toCamelCase = Array.prototype.toCamelCase || function(){ 
-	var n=[];
-	for (var i=0;i<this.length;i++){
-		if (this.charAt(i)=='_'){
-			n.push(this.charAt(i+1).toUpperCase());
-			i++;
-		}else
-			n.push(this.charAt(i));
-	}
-	return n.join('');
-};
-
-
 	
 /*
  * browser detection

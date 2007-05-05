@@ -1,3 +1,12 @@
+/*
+ * These are util methods that are very specific to Breadcrumbs
+ */
+
+
+
+/*
+ * Some string methods
+*/
 extendIfAbsent(String.prototype,{
 	toDisplayString: function(){ return this.firstUpCase().replace(/_/g,' '); },
 	/* This is different than the mootools camcelcase function. This changes hits_week => hitsWeek */
