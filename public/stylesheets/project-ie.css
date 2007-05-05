@@ -7,22 +7,22 @@
   height:1px;
 }
 
-.chart_image{
+.chart-image{
   display:none;
 }
-.chart_image_div{
+.chart-image_div{
   position:absolute;
   display:block;
   font-size:1px;
 }
-.chart_filler{
+.chart-filler{
   font-size:1px;
 }
 
 /*
  * transparent pngs
  */
-.chart_frame{
+.chart-frame{
   background-image:none;
   filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/c/circle.png', sizingMethod='crop');
 }

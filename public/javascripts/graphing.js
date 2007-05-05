@@ -270,8 +270,8 @@ PieGraphDisplay = new Class({
 		// Add a div here. IE uses the div, while everyone else uses the img.
 		var div=$(document.createElement("div"));
 		var img=$(document.createElement("img"));
-		img.addClass("chart_image ");
-		div.addClass("chart_image chart_image_div");
+		img.addClass("chart-image ");
+		div.addClass("chart-image chart-image-div");
 		img.style.width=div.style.width=px(w);
 		img.style.height=div.style.height=px(h);
 
@@ -319,7 +319,7 @@ PieGraphDisplay = new Class({
 
 		var div=$(document.createElement("div"));
 		div.style.backgroundColor=color;
-		div.addClass("chart_filler");
+		div.addClass("chart-filler");
 		div.style.zIndex=level+"";
 
 		// div dimentions
