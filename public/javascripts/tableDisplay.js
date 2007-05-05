@@ -1,4 +1,11 @@
 /*
+ * Code for the displaying tabular data
+ * Some general gotchas:
+ * - (IE) If you want to add trs to a table using inner HTML, do it all with innerHTML, e.g. myNode.innerHTML="<table><tr>...</tr></table>"
+ *  
+ */
+
+/*
 * Table display
 */
 TableDisplay=new Class({

@@ -1,12 +1,3 @@
-/*
- * Code for the 
- * Some general gotchas:
- * - (IE) If you want to add trs to a table using inner HTML, do it all with innerHTML, e.g. myNode.innerHTML="<table><tr>...</tr></table>"
- *  
- */
-
-
-
 
 /*
 * Generic display methods
@@ -53,12 +44,12 @@ DisplayHelper.Methods={
 		var weeks=Math.floor(days/7);
 		var mos=Math.floor(days/30);
 
-		if (mins<1) 		return "just&nbsp;now";
-		else if (hrs <1)		return this.formatTimeAgo(mins,"min");
-		else if (days < 1)		return this.formatTimeAgo(hrs,"hr");
-		else if (weeks < 1)		return this.formatTimeAgo(days,"day");
-		else if (mos<1)		return this.formatTimeAgo(weeks,"week");
-		else		return this.formatTimeAgo(mos,"month");
+		if (mins<1) return "just&nbsp;now";
+		else if (hrs <1) return this.formatTimeAgo(mins,"min");
+		else if (days < 1)	return this.formatTimeAgo(hrs,"hr");
+		else if (weeks < 1)	return this.formatTimeAgo(days,"day");
+		else if (mos<1)	return this.formatTimeAgo(weeks,"week");
+		else return this.formatTimeAgo(mos,"month");
 	},
 	formatTimeAgo: function(n,word){
 		return n + "&nbsp;" + (n>1 ? word+"s" : word) + "&nbsp;ago";
