@@ -2,7 +2,7 @@
  * These are util methods that are very specific to Breadcrumbs
  */
 
-
+function px(v) {  return Math.ceil(v) + "px";}
 
 /*
  * Some string methods
