@@ -1159,15 +1159,21 @@ PieGraphDisplay = new Class({
 
 	drawTextLabels: function(placeholder){
 		var labelBox=$(document.createElement("div"));
-		labelBox.addClass("label_box");
+		labelBox.addClass("label-box");
 		labelBox.style.left=px(this.size);
 		labelBox.innerHTML=db.span({cls:'title'},this.title);
 
 		var ul = document.createElement("ul");
 		for (var i=0; i<this.labels.length;i++){
 			var div=$(document.createElement("li"));   
+			var boxColor = Page.colors[i];
+			
+			// Draw a 1px border around the color box, using a darker version of the box's color
+			var darkerColor = (new Color(boxColor)).setBrightness(65);
+			var styleString = "background-color:" + boxColor + "; border:1px solid rgb(" + darkerColor + ")";
+			
 			div.innerHTML= 
-			db.div( {cls:'color_box', style:"background-color:" + Page.colors[i]}) + 
+			db.div( {cls:'color-box', style:styleString}) + 
 			db.span(
 				{cls:'caption'},
 				this.labels[i],

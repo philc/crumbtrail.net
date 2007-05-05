@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # usage is 
-# fetch_mysql [environment]
+# fetch_mysql [environment] [table-names, separated by spaces]
 
 # This script will connect to the remote server, dump its database, zip it, 
 # and copy it locally into ./script/db/
@@ -15,26 +15,26 @@ host="crumbtrail.net"
 # If no env provided, assume production since we're copying from the server
 
 env = ARGV[0]
-if (env =~ /production|development|testing/).nil?
+unless (env =~ /production|development|testing/)
   env = "production"
   i = 0
 else
   i = 1
 end
-tables = ARGV[i, ARGV.length].join(' ')
+
+tables = ARGV[i, ARGV.length] || []
+tables = tables.join(' ')
 puts "using environment '#{env}'"
 puts "fetching tables '#{tables}'"
 
 # Parse credentials from env file
 f=YAML::load(File.open('config/database.yml'))
-
 v=f[env]
-
 db = v["database"]
 user = v["username"]
 pass = v["password"]
 
-filename = "#{db}#{("-"+tables.delete(' ')) unless tables.nil?}"
+filename = tables=="" ? db : "#{db}#{("-"+tables.delete(' ')) }"
 
 puts "downloading to file '#{filename}'"
 
@@ -42,12 +42,13 @@ puts "downloading to file '#{filename}'"
 compress="mkdir dbdump 2> /dev/null; " +
   "mysqldump -u#{user} -p#{pass} #{db} #{tables} | gzip -cf > dbdump/#{filename}.gz"
 
-
 puts "compressing database file on server"
 # execute the command remotely
-puts `ssh #{user}@#{host} "#{compress}"`
+#puts `ssh #{user}@#{host} "#{compress}"`
+puts `ssh #{host} "#{compress}"`
 
 puts "downloading db file from server"
 `mkdir ./script/db 2> /dev/null`
-puts `scp #{user}@#{host}:~/dbdump/#{filename}.gz ./script/db/`
+#puts `scp #{user}@#{host}:~/dbdump/#{filename}.gz ./script/db/`
+puts `scp #{host}:~/dbdump/#{filename}.gz ./script/db/`
 `gunzip -f ./script/db/#{filename}.gz`
