@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>	
+	<title>Plotr</title>
+	<script src="/javascripts/mootools1.js"></script>
+	<script src="/javascripts/plotr/EnumArray.js"></script>
+	<script src="/javascripts/plotr/wrapper.js"></script>
+	<script src="/javascripts/plotr/plotr_uncompressed.js"></script>
+</head>
+<body>
+	<div><canvas id="plotr1" height="300" width="300"></canvas></div>
+	<div><canvas id="plotr2" height="300" width="300"></canvas></div>
+	<div><canvas id="plotr3" height="300" width="300"></canvas></div>
+	
+	<script type="text/javascript">
+		var dataset1 = {
+			'myFirstDataset': [[0, 1.4], [1, 3], [2, 1.414], [3, 1.73], [4, 2.56]]
+		};
+		
+		var options = {
+			padding: {left: 30, right: 0, top: 10, bottom: 30},
+			backgroundColor: '#fff',
+			colorScheme: 'blue',
+			barOrientation: 'horizontal',
+		   	xTicks: [{v:0, label:'day 1'}, 
+		      	{v:1, label:'day 2'}, 
+		      	{v:2, label:'day 3'},
+		      	{v:3, label:'day 4'},
+		      	{v:4, label:'day 5'}
+			]
+		};
+			
+		var pie = new Plotr.PieChart('plotr1',options);
+		pie.addDataset(dataset1);
+		pie.render();
+		
+		var dataset2 = {
+			'mySecondDataset': [[0, 2.1], [1, 4.2], [2, 1.9], [3, 3.73], [4, 1.56], [5, 2.56]]
+		};
+		
+		Object.extend(options,{
+			xTicks: null,
+			colorScheme: "red",
+			strokeWidth: 1
+		});
+		
+		pie.reset();
+		pie.addDataset(dataset2);
+		pie.render('plotr2',options);
+		
+		var dataset3 = {
+			'myThirdDataset': [[0, 2.1], [1, 1.2], [2, 0.9], [3, 1.15], [4, 0.56]]
+		};
+		
+		Object.extend(options,{
+			colorScheme: "green",
+			strokeWidth: 1,
+			xTicks: [{v:0, label:'Firefox'}, 
+		      	{v:1, label:'Opera'}, 
+		      	{v:2, label:'Safari'},
+		      	{v:3, label:'IE6'},
+		      	{v:4, label:'IE7'}
+			]
+		});
+		
+		pie.reset();
+		pie.addDataset(dataset3);
+		pie.render('plotr3',options);
+	</script>
+</body>
+</html>

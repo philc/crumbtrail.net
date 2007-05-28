@@ -1,11 +1,9 @@
 class MainController < ApplicationController
   helper MainHelper
   def index
-    #@account=signed_in?
     @title="Breadcrumbs - Follow the trail"
     if (request.post?)
-      @email=params[:email]
-      
+      @email=params[:email]      
       @login_error=login(@email,params[:password])
     end
   end

@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>	
+	<title>Plotr</title>
+	<script src="../lib/prototype/prototype.js" type="text/javascript"></script>
+	<script src="../lib/plotr/excanvas.js" type="text/javascript"></script>
+	<script src="../lib/plotr/Base.js" type="text/javascript"></script>
+	<script src="../lib/plotr/Chart.js" type="text/javascript"></script>
+	<script src="../lib/plotr/Canvas.js" type="text/javascript"></script>
+	<script src="../lib/plotr/BarChart.js" type="text/javascript"></script>
+	<script src="../lib/plotr/PieChart.js" type="text/javascript"></script>	
+	<script src="../lib/plotr/LineChart.js" type="text/javascript"></script>		
+</head>
+<body>
+	<table border="1" id="table">
+		<tr>
+			<td>Useless</td>
+			<th>Heading</th>
+			<th>Another Heading</th>
+			<th>Yet Another Heading</th>
+			<th>Heading over here</th>
+		</tr>
+		<tr>
+			<td>Also useless</td>
+			<td>0.43</td>
+			<td>1.23</td>
+			<td>0.5</td>
+			<td>0.43</td>
+		</tr>
+		<tr>
+			<td>Also useless</td>
+			<td>0.1</td>
+			<td>2.5</td>
+			<td>0.5</td>
+			<td>0.16</td>
+		</tr>
+		<tr>
+			<td>Also useless</td>
+			<td>0.02</td>
+			<td>0.5</td>
+			<td>0.5</td>
+			<td>0.43</td>
+		</tr>
+		<tr>
+			<td>Also useless</td>
+			<td>0.16</td>
+			<td>0.1</td>
+			<td>0.5</td>
+			<td>0.1</td>
+		</tr>
+	</table>
+	<div><canvas id="plotr1" height="500" width="600"></canvas></div>
+	<div><canvas id="plotr2" height="500" width="600"></canvas></div>
+	<div><canvas id="plotr3" height="500" width="600"></canvas></div>
+	<script type="text/javascript">	
+		var options = {
+			padding: {left: 30, right: 0, top: 10, bottom: 30},
+			backgroundColor: '#dbdbdb',
+			colorScheme: 'green',
+			barOrientation: 'horizontal'
+		};
+		
+		var bar = new Plotr.BarChart('plotr1',options);
+		
+		/**
+		 * Plotr.Chart.addTable(table,x,y,xticks)
+		 * The upper left corner of the table is position x=0, y=0.
+		 * 
+		 * The following function call adds the data of element with id 'table'.
+		 * The data parsing starts at x=1 and y=1, so we avoind the headers. The 
+		 * fourth argument is the row number of the row containing the labels
+		 * for the xticks.
+		 */
+		bar.addTable('table',1,1,0);
+		bar.render();
+		
+		var pie = new Plotr.PieChart('plotr2',options);
+		pie.addTable('table',1,1,0);
+		pie.render();
+		
+		var line = new Plotr.LineChart('plotr3',options);
+		line.addTable('table',1,1,0);
+		line.render();
+	</script>
+</body>
+</html>
