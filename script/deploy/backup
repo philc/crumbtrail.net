@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# TODO add a timestamp to this log
+mysqldump -uachilles -pdbpass3 achilles_production > ~/achilles_production
+
