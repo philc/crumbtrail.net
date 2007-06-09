@@ -20,9 +20,37 @@ extendIfAbsent(String.prototype,{
 				n.push(this.charAt(i));
 		}
 		return n.join('');
-	}	
+	},
+	firstUpCase: function(){
+		return this.charAt(0).toUpperCase() + this.slice(1,this.length);
+	}
 });
 
+/*
+ * Array methods
+ */
+extendIfAbsent(Array.prototype,{
+	sum: function(){
+		var s=0; 
+		for (var i=0; i<this.length; i++) 
+			s+=this[i]; 
+		return s; 
+	},
+	max: function(){
+		var m=0; 
+		for (var i=0; i<this.length; i++) 
+			if (this[i] > m) 
+				m=this[i]; 
+		return m;
+	},
+	min: function(){
+		var m=Number.MAX_VALUE;
+		for (var i=0; i<this.length; i++) 
+			if (this[i] < m)
+			 	m=this[i]; 
+		return m;
+	}
+});
 
 
 BC={};
@@ -35,7 +63,8 @@ BC.apply=function(obj,options){
 
 
 // This only searches an element's immediate children for a class
-Element.extend({childrenOfClass:function(klass){
+Element.extend({
+	childrenOfClass:function(klass){
 	var kids = this.getChildren();
 	var results =[];
 	for (var i=0;i<kids.length;i++){

@@ -133,9 +133,10 @@ var Page = {
 			l.onclick=function(){ Page.menuNav(this); return false;};
 		});
 		// set panel links
-		$A(document.getElementsByClassName("panel_link","content")).each(function (e){
+		$ES(".panel_link","content").each(function(e){
 			e.onclick=function(){ Page.panelNav(this); return false;};
 		});
+
 
 		$(document).addEvent('keypress',KeyboardShortcuts.keypress.bindAsEventListener(KeyboardShortcuts));
 

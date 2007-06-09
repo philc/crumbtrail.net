@@ -1,0 +1,15 @@
+Using the Canvas tag to draw graphs.
+
+Canvas is supported everywhere except IE6/7. We're using the open source ExplorerCanvas project to support Canvas on IE using VML.
+http://excanvas.sourceforge.net/
+
+How to use canvas API:
+http://developer.mozilla.org/en/docs/Canvas_tutorial
+
+the plotting toolkit we're using:
+http://solutoire.com/plotr/
+
+here's a crappy mootools port:
+http://utils.softr.net/
+
+We're using our own mootools port (wrapper.js)
