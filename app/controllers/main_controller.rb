@@ -36,35 +36,44 @@ class MainController < ApplicationController
     end
     
     @zones = Zone.all
-    
+    @errors={}
     if (! params[:type].nil?)    
+
       if request.post?
         email=params[:email]
-        @email_error=MainHelper::validate_email(email)
+        @errors["email"]=MainHelper::validate_email(email)
       
-        # Check for duplicates
+        # See if we've already got an email registered with that name
         if (!@email_error)
           a=Account.find_by_username(email)        
-          @duplicate_error= !a.nil?
+          unless a.nil?
+            @errors["email"]="We already have an account using that email"
+          end          
+          # once we support resetting your password, enable this message, with the correct link
+          # We already have an account using that email. Forgotten your password?<br/>
+          # <a href="mailto:mikejquinn@gmail.com?subject=[reset password for <%= params[:email] %>]">
+          #   We can reset it and can email it to you</a>.
         end
             
         pw1=params[:password]
         pw2=params[:password_confirm]
       
-        @password_error=MainHelper::validate_password(pw1)
-      
+        @errors["password"]=MainHelper::validate_password(pw1)
         # No need to show that they made a typo in their
         # password if we're already showing an email or pw error
-        if (pw1!=pw2 && @email_error.nil? && @password_error.nil?)
-            @password_error="Your passwords don't match"
+        if (!@errors["password"] && pw1!=pw2)
+          @errors["password"]="Your passwords don't match"
         end
-      
+
         timezone=Zone.find_by_identifier(params[:timezone])
         return if timezone.nil?
       
-        unless (@password_error || @email_error || @duplicate_error)      
+        had_error = !@errors.values.reject(&:nil?).empty?
+        puts "had_error:",had_error
+        unless (had_error)
           # TODO: for now we're just ignoring what type of account
           # they've chosen, and every account is made to be free.
+          puts "creating account"
           create_account(email,pw1,timezone)
           redirect_to :controller=>"project", :action=>"new"
           return

@@ -29,6 +29,7 @@ var Preferences = new Class({
  */
 var KeyboardShortcuts={
 	keypress:function(ev){
+		// TODO: rewrite this using mootools's event obj
 		// target in moz, "srcElement" in ie
 		var sender = $pick(ev.target,ev.srcElement);
 		

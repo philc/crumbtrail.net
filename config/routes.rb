@@ -24,6 +24,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/privatesignup/:type', :controller=>'main', :action=>'signup'
 
   map.connect '/javascripts/*jsfile', :controller => 'javascripts'
+  map.connect '/stylesheets/*cssfile', :controller => 'stylesheets'
 
   # Allow downloading Web Service WSDL as a file with an extension
   # instead of a file named 'wsdl'

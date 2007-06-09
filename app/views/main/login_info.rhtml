@@ -1,6 +1,12 @@
 <% content_for (:head) do %>
 	<%= javascript_include_tag 'timezone' %>
-
+	<script type="text/javascript">
+		window.addEvent("domready",function(){
+			new Forms.EnhancedForm("login-info",{
+				submitOnSuccess:true
+			});
+		});
+	</script>
 <% end %>
 <div class="copy">
 
@@ -23,28 +29,34 @@
 
 	<div id="signup_form" clas="left_form">
 
-		<form action="" method="post">
+		<form action="" method="post" id="login-info">
 
 			<div id="signup-fields">
 				<div class="text-form">
 					E-mail
 					<%= show_form_error(@email_error)%>
 					<% if @duplicate_error %>
-					<div class="form_error">
-						We already have an account using that email. Forgotten your password?<br/>
-						<a href="mailto:mikejquinn@gmail.com?subject=[reset password for <%= params[:email] %>]">
-							We can reset it and can email it to you</a>.
+					<!-- <div class="form_error">
+							We already have an account using that email. Forgotten your password?<br/>
+							<a href="mailto:mikejquinn@gmail.com?subject=[reset password for <%= params[:email] %>]">
+								We can reset it and can email it to you</a>.
 
-					</div>
+						</div> -->
 					<%end%>
-					<input type="text" name="email" id="email" size="22"
-					value="<%=params[:email]%>" />
+					<%= field "text", :id=>"email", :value=>params[:email], 
+						:required=>true, :message=>"This doesn't look like a valid email address", :validate=>"email"
+					 %>
 
-					Password
+					<label for="password" style="clear:both">Password
 					<%= show_form_error(@password_error) if !@duplicate_error %>
-					<input type="password" name="password" id="password" size="22"/>
-					Confirm your password
-					<input type="password" name="password_confirm" id="password_confirm" size="22"/>
+					<%= field "password", :id=>"password", :show_error=>false,
+ 						:validate=>"minLength(5)"%>
+				
+					<label for="password-confirm">Confirm your password</label>					
+					<%= field "password", :id=>"password_confirm", :show_error_for=>"password",
+						:validate=>"sameAs(-1)", :message=>"Your passwords do not match"
+					 %>
+					<br clear="both">
 					<p>
 						Select your time zone<br/>
 
@@ -56,16 +68,13 @@
 					</p>
 				</div>
 
-				<script type="text/javascript">
-				set_select('timezone',<%= params[:timezone].nil? ? "get_tz_name()" : "\"#{params[:timezone]}\"" %>);
-				</script>
-
 				<input type="submit" class="submit" value="Sign up" class="submit">
 			</div>        
 		</div>
 	</form>
 	
 	<script type="text/javascript">
+	set_select('timezone',<%= params[:timezone].nil? ? "get_tz_name()" : "\"#{params[:timezone]}\"" %>);
 	  $("email").focus();
 	</script>
 </div>

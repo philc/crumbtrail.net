@@ -18,6 +18,11 @@ body{
   margin-left:auto;
   margin-right:auto;
 }
+/*
+ * General CSS shortcuts
+ */
+.left{	float:left; }
+.right{	float:right; }
 a{
   color:#617ca9;
   color:#4e6387;
@@ -290,23 +295,16 @@ a.linkbox:hover{
 .centered_form h1{
 	margin-left:-3px;
 }
-.text-form input, .text-form textarea{
-  border:1px solid #b89c65;
-  display:block;  
-/*  margin-bottom:8px;*/
-}
-.text-form input:focus{
-  background-color:#fffae8;
-}
+
 .text-form .example{
   font-size:.8em;
   color:#666666;
 }
-.form_error{
+/*.form_error{
   color:#d75b5c;
   color:#ef6f22;
-  /*background-color:#f9f2c4;*/
-}
+  //background-color:#f9f2c4;
+}*/
 .warning{
   background-color:#fdde88;
   padding:5px;
