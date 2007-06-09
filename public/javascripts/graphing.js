@@ -11,7 +11,7 @@ LineGraph=new Class({
 		// console.log(this.element.getStyle.toString());
 		// Could use mootools' getStyle('height') to get the computer style,
 		// but safari doesn't support it on elements with display:none
-		this.height=parseInt(this.element.style['height'],10);
+		this.height=this.element.style['height'].toInt();
 		
 		this.max = data.max();
 		this.min = data.min();

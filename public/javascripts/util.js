@@ -4,7 +4,6 @@
  */
 
 util={
-	parseInt:function(n){return parseInt(n,10);},
 	// Avoid having to provide a radix parameter for jslint to validate
 	escapeHTML:function(html){
 		return html.replace(/</g,"&lt;").replace(/>/g,'&gt;');
