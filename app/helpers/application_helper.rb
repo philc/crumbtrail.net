@@ -12,10 +12,6 @@ module ApplicationHelper
   def field(type,*args)
     opts=args[0]
     
-    att=[]
-    # att<<"name='#{opts['name']}'" if opts[:name]
-    # att<<"value='#{opts['value']}'"
-    
     # if they provided an ID for the field, but not a name, then
     # make the name the same as the ID
     if (opts[:id] && !opts[:name])
@@ -37,12 +33,18 @@ module ApplicationHelper
       input_type="type='#{type}'"
     end
 
+    errors = defined? @errors ? @errors : {}
+    
     # see if we have a validation error message attached to this form
-    error = @errors[opts[:show_error_for].to_s] || @errors[opts[:name].to_s]
+    error = errors[opts[:show_error_for].to_s] || errors[opts[:name].to_s]
     error = nil if opts[:show_error]==false
-            
+
     tag = (type == "textarea") ? "textarea" : "input"
-    input = %Q{<#{tag} class="field #{'form-error' if error}" #{input_type} #{att.join(' ')}></#{tag}>}    
+    
+    error_class=""
+    error_class="form-error" unless error.nil? || error.empty?
+    
+    input = %Q{<#{tag} class="field #{error_class}" #{att.join(' ')}></#{tag}>}    
     
     if error
       input += "<div class='form-error-message'>#{error}</div>"

@@ -12,10 +12,12 @@
 					<div class="text-form">
 
 						<%=show_form_error(@login_error)%>
-						E-mail
-						<input type="text" name="email" id="email" class="field" value="<%=@email%>"/>
-						Password
-						<input type="password" name="password" id="password" class="field"/>
+						<label>E-mail						</label>
+						<%= field "text", :id=>"email", :value=>@email %>
+						
+						<label for="password">Password</label>
+						<%= field "password", :id=>"password" %>
+						<br clear="both"/>
 					</div>
 					<div class="button_area">
 						<input type="submit" class="submit" value="Sign in"/>
