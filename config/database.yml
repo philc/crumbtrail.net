@@ -15,8 +15,6 @@ defaults: &defaults
   adapter: mysql
   username: achilles
   password: dbpass3
-  host: localhost
-  host: 127.0.0.1
   socket: /var/run/mysqld/mysqld.sock
 
 development:

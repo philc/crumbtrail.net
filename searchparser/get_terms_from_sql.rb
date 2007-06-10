@@ -3,7 +3,7 @@ require "rubygems"
 require "active_record"
 require "app/models/project.rb"
 
-@filename = "searchterms"
+@filename = "searchparser/searchterms"
 
 def establish_connection()
   f=YAML::load(File.open('config/database.yml'))
@@ -20,7 +20,7 @@ def save_terms(file)
 
   projects.each do |p|
     if (p.search_terms)
-      terms[p.id] = [p.url, p.search_terms]
+      terms[p.id] = { :domain => p.url, :queries => p.search_terms }
     end
   end
 

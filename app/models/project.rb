@@ -11,6 +11,8 @@ class Project < ActiveRecord::Base
   # An array of collapsed referers. Contains entries of ["referer string", "row_id"]
   serialize  :collapsing_refs
   
+  # An array of search terms
+  serialize  :search_terms
   
   def self.demo_project()
     # Show the ninjawords account. Can change this to another project at any time.
@@ -181,6 +183,15 @@ class Project < ActiveRecord::Base
 
   def recent_searches()
     return SearchRecent.get_recent_searches(self)
+  end
+
+  def add_search_term(term)
+    self.search_terms = [] if self.search_terms.nil?
+    self.search_terms << term
+  end
+
+  def remove_search_term(term)
+    search_terms.delete_if { |x| x == term }
   end
 
   # =Hits

@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 require 'rubygems'
 require 'hpricot'
@@ -10,9 +10,13 @@ Num = 100
 
 class RankFinder
   attr_reader :results
+  attr_reader :query
+  attr_reader :engine
 
-  def initialize()
+  def initialize(engine, query)
     @results = []
+    @engine = engine
+    @query = query
   end
 
   def <<(result)
@@ -20,6 +24,8 @@ class RankFinder
   end
 
   def get_rank(url)
+    format_url(url)
+
     i = 1
     @results.each do |result|
       return i if result.match("^http://(www.)?#{url}")
@@ -27,6 +33,12 @@ class RankFinder
     end
 
     return nil
+  end
+
+  private
+
+  def format_url(url)
+    url.chop! while url[url.length-1].chr == '/'
   end
 end
 
@@ -56,7 +68,7 @@ class Engine
   end
 
   def get_test_file(query, mode)
-    dirname = "results/#{@id.to_s}/#{query}"
+    dirname = "searchparser/results/#{@id.to_s}/#{query}"
     filename = "#{dirname}/#{@enginename}"
     FileUtils.mkpath(dirname) unless File.exists?(dirname)
 
@@ -95,7 +107,7 @@ class Google < Engine
       doc = Hpricot(get_source(build_query_str(query), query, nil))
       anchors = (doc/"a.l")
 
-      rankFinder = RankFinder.new
+      rankFinder = RankFinder.new(:google, query)
       anchors.each do |anchor|
         rankFinder << anchor.attributes['href']
       end
@@ -134,7 +146,7 @@ class Yahoo < Engine
       searchdiv = (doc/"div#yschweb")
       ems = (searchdiv/"em.yschurl")
 
-      rankFinder = RankFinder.new
+      rankFinder = RankFinder.new(:yahoo, query)
       ems.each do |em|
         rankFinder << "http://#{em.inner_text}"
       end
@@ -172,7 +184,7 @@ class Msn < Engine
       doc = Hpricot(get_source(build_query_str(query), query, @@cookie))
       anchors = (doc/"div#results>ul>li>h3>a")
 
-      rankFinder = RankFinder.new
+      rankFinder = RankFinder.new(:msn, query)
       anchors.each do |anchor|
         rankFinder << anchor.attributes['href']
       end
@@ -203,7 +215,7 @@ class Fetcher
   end
 
   def fetch_results(queries, fromfile)
-    results = {}
+    allresults = []
     queries.each do |query|
       query = CGI.escape(query)
       threads = []
@@ -211,20 +223,19 @@ class Fetcher
       threads << create_query_thread(Yahoo, query, fromfile)
       threads << create_query_thread(Msn, query, fromfile)
 
-      result = {}
+      results = []
       threads.each do |thr|
         thr.join
-        result[thr["engine"]] = thr["results"] if thr["results"]
+        results << thr["results"] if thr["results"]
       end
 
-      results[query] = result
+      allresults << results
     end
 
-    return results
+    return allresults
   end
 
   def save_test_files(queries)
-    puts "test"
     queries.each do |query|
       query = CGI.escape(query)
       [Google, Yahoo, Msn].each do |engine|
