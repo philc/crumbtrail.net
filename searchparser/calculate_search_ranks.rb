@@ -16,8 +16,10 @@ def save_rankings(infile, outfile, fromfile)
     output[pid] = {}
     results.each do |result|
       result.each do |r|
-        output[pid][r.query] = {} if output[pid][r.query].nil?
-        output[pid][r.query][r.engine] = r.get_rank(data[:domain])
+        rank = r.get_rank(data[:domain])
+        
+        output[pid][r.query] = {} if output[pid][r.query].nil? && !rank.nil?
+        output[pid][r.query][r.engine] = rank unless rank.nil?
       end
     end
   end

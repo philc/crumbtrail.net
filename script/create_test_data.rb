@@ -32,10 +32,10 @@ def add
                      :title => "Personal Site",
                      :url => "mikequinn.org/",
                      :zone => mikeq.zone)
-  proj.add_search_term("mike quinn")
-  proj.add_search_term("mike quinn blog")
-  proj.add_search_term("michael quinn")
-  proj.add_search_term("google interview")
+  proj.add_query("mike quinn")
+  proj.add_query("mike quinn blog")
+  proj.add_query("michael quinn")
+  proj.add_query("google interview")
   proj.id = 1051
   proj.save
 
@@ -63,10 +63,10 @@ def add
                      :title => "Ninja Words",
                      :url => "ninjawords.com/",
                      :zone => philc.zone)
-  proj.add_search_term("ninja words")
-  proj.add_search_term("fast dictionary")
-  proj.add_search_term("incontravertible")
-  proj.add_search_term("ninjawords.com")
+  proj.add_query("ninja words")
+  proj.add_query("fast dictionary")
+  proj.add_query("incontravertible")
+  proj.add_query("ninjawords.com")
   proj.id = 1050
   proj.save
   

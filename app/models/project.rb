@@ -12,7 +12,7 @@ class Project < ActiveRecord::Base
   serialize  :collapsing_refs
   
   # An array of search terms
-  serialize  :search_terms
+  serialize  :queries
   
   def self.demo_project()
     # Show the ninjawords account. Can change this to another project at any time.
@@ -185,13 +185,13 @@ class Project < ActiveRecord::Base
     return SearchRecent.get_recent_searches(self)
   end
 
-  def add_search_term(term)
-    self.search_terms = [] if self.search_terms.nil?
-    self.search_terms << term
+  def add_query(query)
+    self.queries = [] if self.queries.nil?
+    self.queries << query 
   end
 
-  def remove_search_term(term)
-    search_terms.delete_if { |x| x == term }
+  def remove_query(query)
+    self.queries.delete_if { |x| x == query }
   end
 
   # =Hits
