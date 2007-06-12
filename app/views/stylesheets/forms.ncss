@@ -1,0 +1,97 @@
+
+/*
+* Styles for forms
+*/
+textarea{
+	/* no monospaced */
+	font-family:inherit;
+	font-size:inherit;
+}
+.field{
+	margin:0;	/* nullifies margins of textareas, etc. */
+	border:1px solid #bdbd98;
+	padding:2px;
+	padding:2px 2px;
+	border:1px solid #655F5F;
+	border:1px solid #999999;
+	border:1px solid #b89c65;
+}
+.field-wrap, .field-wrap-checkbox{
+	border:2px solid #deecf4;
+	border:2px solid #fffae8;	
+	/*	float:left;*/
+	margin-right:2px;
+	line-height:100%;
+}
+/* this is used so checkboxes approximately line up with text on the same line */
+.field-wrap-checkbox{
+	margin-top:.12em;	
+}
+.field:focus{
+	border:1px solid #005dad;
+	border:1px solid #1871be;
+	border:1px solid #607eab;
+/*	border:1px solid #b89c65;*/
+	background-color:#f7f7f7;
+	background-color:#fffae8;
+
+}
+.checkbox{
+	float:left;
+	margin:0;
+}
+/* this is so labels can clear any floated form elements that came before them */
+label{
+/*	margin-top:8px;*/
+	padding-top:7px;	/* margins don't work in this floated instance */
+	display:block; /* won't clear unless we're block */
+	clear:both;
+	line-height:120%;
+}
+/* Used for submit buttons */
+.submit{
+}
+.form-error, .form-error:focus{
+	border:1px solid red;
+}
+.form-error-message{
+	color:#d77100;
+	font-size:small;
+	/* lots of times forms have whitespace:nowrap on the labels for form fields. Error messages
+	shouldn't inherit this style; they should wrap.
+	*/
+	white-space:normal;
+}
+/*
+* Set of buttons next to each other, like at the bottom of a dialog.
+* Give them some padding.
+*/
+.buttonset{
+	padding-top:3px;
+	text-align:right;
+	input{ margin-left:8px; }
+}
+
+/*
+* Radio button group, with crazy mouseovers
+*/
+.radio-group{
+	li{
+		margin:1px 0;
+		padding:2px 0;
+	}
+	li:hover{
+		background-color:#dae1e7;
+	}
+	input{
+		vertical-align:center;
+	}
+
+	*.disabled{
+		color:gray;
+	}
+	*.disabled:hover{
+		background-color:transparent;
+	}
+}
+

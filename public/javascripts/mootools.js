@@ -1,25 +1,348 @@
 /*
-Script: Moo.js
-	My Object Oriented javascript.
-
-Author:
-	Valerio Proietti, <http://mad4milk.net>
+Script: Core.js
+	Mootools - My Object Oriented javascript.
 
 License:
 	MIT-style license.
 
-Mootools Credits:
+MooTools Copyright:
+	copyright (c) 2007 Valerio Proietti, <http://mad4milk.net>
+
+MooTools Credits:
 	- Class is slightly based on Base.js <http://dean.edwards.name/weblog/2006/03/base/> (c) 2006 Dean Edwards, License <http://creativecommons.org/licenses/LGPL/2.1/>
-	- Some functions are based on those found in prototype.js <http://prototype.conio.net/> (c) 2005 Sam Stephenson sam [at] conio [dot] net, MIT-style license
+	- Some functions are inspired by those found in prototype.js <http://prototype.conio.net/> (c) 2005 Sam Stephenson sam [at] conio [dot] net, MIT-style license
 	- Documentation by Aaron Newton (aaron.newton [at] cnet [dot] com) and Valerio Proietti.
+*/
+
+var MooTools = {
+	version: '1.11'
+};
+
+/* Section: Core Functions */
+
+/*
+Function: $defined
+	Returns true if the passed in value/object is defined, that means is not null or undefined.
+
+Arguments:
+	obj - object to inspect
+*/
+
+function $defined(obj){
+	return (obj != undefined);
+};
+
+/*
+Function: $type
+	Returns the type of object that matches the element passed in.
+
+Arguments:
+	obj - the object to inspect.
+
+Example:
+	>var myString = 'hello';
+	>$type(myString); //returns "string"
+
+Returns:
+	'element' - if obj is a DOM element node
+	'textnode' - if obj is a DOM text node
+	'whitespace' - if obj is a DOM whitespace node
+	'arguments' - if obj is an arguments object
+	'object' - if obj is an object
+	'string' - if obj is a string
+	'number' - if obj is a number
+	'boolean' - if obj is a boolean
+	'function' - if obj is a function
+	'regexp' - if obj is a regular expression
+	'class' - if obj is a Class. (created with new Class, or the extend of another class).
+	'collection' - if obj is a native htmlelements collection, such as childNodes, getElementsByTagName .. etc.
+	false - (boolean) if the object is not defined or none of the above.
+*/
+
+function $type(obj){
+	if (!$defined(obj)) return false;
+	if (obj.htmlElement) return 'element';
+	var type = typeof obj;
+	if (type == 'object' && obj.nodeName){
+		switch(obj.nodeType){
+			case 1: return 'element';
+			case 3: return (/\S/).test(obj.nodeValue) ? 'textnode' : 'whitespace';
+		}
+	}
+	if (type == 'object' || type == 'function'){
+		switch(obj.constructor){
+			case Array: return 'array';
+			case RegExp: return 'regexp';
+			case Class: return 'class';
+		}
+		if (typeof obj.length == 'number'){
+			if (obj.item) return 'collection';
+			if (obj.callee) return 'arguments';
+		}
+	}
+	return type;
+};
+
+/*
+Function: $merge
+	merges a number of objects recursively without referencing them or their sub-objects.
+
+Arguments:
+	any number of objects.
+
+Example:
+	>var mergedObj = $merge(obj1, obj2, obj3);
+	>//obj1, obj2, and obj3 are unaltered
+*/
+
+function $merge(){
+	var mix = {};
+	for (var i = 0; i < arguments.length; i++){
+		for (var property in arguments[i]){
+			var ap = arguments[i][property];
+			var mp = mix[property];
+			if (mp && $type(ap) == 'object' && $type(mp) == 'object') mix[property] = $merge(mp, ap);
+			else mix[property] = ap;
+		}
+	}
+	return mix;
+};
+
+/*
+Function: $extend
+	Copies all the properties from the second passed object to the first passed Object.
+	If you do myWhatever.extend = $extend the first parameter will become myWhatever, and your extend function will only need one parameter.
+
+Example:
+	(start code)
+	var firstOb = {
+		'name': 'John',
+		'lastName': 'Doe'
+	};
+	var secondOb = {
+		'age': '20',
+		'sex': 'male',
+		'lastName': 'Dorian'
+	};
+	$extend(firstOb, secondOb);
+	//firstOb will become:
+	{
+		'name': 'John',
+		'lastName': 'Dorian',
+		'age': '20',
+		'sex': 'male'
+	};
+	(end)
+
+Returns:
+	The first object, extended.
+*/
+
+var $extend = function(){
+	var args = arguments;
+	if (!args[1]) args = [this, args[0]];
+	for (var property in args[1]) args[0][property] = args[1][property];
+	return args[0];
+};
+
+/*
+Function: $native
+	Will add a .extend method to the objects passed as a parameter, but the property passed in will be copied to the object's prototype only if non previously existent.
+	Its handy if you dont want the .extend method of an object to overwrite existing methods.
+	Used automatically in MooTools to implement Array/String/Function/Number methods to browser that dont support them whitout manual checking.
+
+Arguments:
+	a number of classes/native javascript objects
+
+*/
+
+var $native = function(){
+	for (var i = 0, l = arguments.length; i < l; i++){
+		arguments[i].extend = function(props){
+			for (var prop in props){
+				if (!this.prototype[prop]) this.prototype[prop] = props[prop];
+				if (!this[prop]) this[prop] = $native.generic(prop);
+			}
+		};
+	}
+};
+
+$native.generic = function(prop){
+	return function(bind){
+		return this.prototype[prop].apply(bind, Array.prototype.slice.call(arguments, 1));
+	};
+};
+
+$native(Function, Array, String, Number);
+
+/*
+Function: $chk
+	Returns true if the passed in value/object exists or is 0, otherwise returns false.
+	Useful to accept zeroes.
+
+Arguments:
+	obj - object to inspect
+*/
+
+function $chk(obj){
+	return !!(obj || obj === 0);
+};
+
+/*
+Function: $pick
+	Returns the first object if defined, otherwise returns the second.
+
+Arguments:
+	obj - object to test
+	picked - the default to return
+
+Example:
+	(start code)
+		function say(msg){
+			alert($pick(msg, 'no meessage supplied'));
+		}
+	(end)
+*/
+
+function $pick(obj, picked){
+	return $defined(obj) ? obj : picked;
+};
+
+/*
+Function: $random
+	Returns a random integer number between the two passed in values.
+
+Arguments:
+	min - integer, the minimum value (inclusive).
+	max - integer, the maximum value (inclusive).
+
+Returns:
+	a random integer between min and max.
+*/
+
+function $random(min, max){
+	return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+/*
+Function: $time
+	Returns the current timestamp
+
+Returns:
+	a timestamp integer.
+*/
+
+function $time(){
+	return new Date().getTime();
+};
+
+/*
+Function: $clear
+	clears a timeout or an Interval.
+
+Returns:
+	null
+
+Arguments:
+	timer - the setInterval or setTimeout to clear.
+
+Example:
+	>var myTimer = myFunction.delay(5000); //wait 5 seconds and execute my function.
+	>myTimer = $clear(myTimer); //nevermind
+
+See also:
+	<Function.delay>, <Function.periodical>
+*/
+
+function $clear(timer){
+	clearTimeout(timer);
+	clearInterval(timer);
+	return null;
+};
+
+/*
+Class: Abstract
+	Abstract class, to be used as singleton. Will add .extend to any object
+
+Arguments:
+	an object
+
+Returns:
+	the object with an .extend property, equivalent to <$extend>.
+*/
+
+var Abstract = function(obj){
+	obj = obj || {};
+	obj.extend = $extend;
+	return obj;
+};
+
+//window, document
+
+var Window = new Abstract(window);
+var Document = new Abstract(document);
+document.head = document.getElementsByTagName('head')[0];
+
+/*
+Class: window
+	Some properties are attached to the window object by the browser detection.
+	
+Note:
+	browser detection is entirely object-based. We dont sniff.
+
+Properties:
+	window.ie - will be set to true if the current browser is internet explorer (any).
+	window.ie6 - will be set to true if the current browser is internet explorer 6.
+	window.ie7 - will be set to true if the current browser is internet explorer 7.
+	window.gecko - will be set to true if the current browser is Mozilla/Gecko.
+	window.webkit - will be set to true if the current browser is Safari/Konqueror.
+	window.webkit419 - will be set to true if the current browser is Safari2 / webkit till version 419.
+	window.webkit420 - will be set to true if the current browser is Safari3 (Webkit SVN Build) / webkit over version 419.
+	window.opera - is set to true by opera itself.
+*/
+
+window.xpath = !!(document.evaluate);
+if (window.ActiveXObject) window.ie = window[window.XMLHttpRequest ? 'ie7' : 'ie6'] = true;
+else if (document.childNodes && !document.all && !navigator.taintEnabled) window.webkit = window[window.xpath ? 'webkit420' : 'webkit419'] = true;
+else if (document.getBoxObjectFor != null) window.gecko = true;
+
+/*compatibility*/
+
+window.khtml = window.webkit;
+
+Object.extend = $extend;
+
+/*end compatibility*/
+
+//htmlelement
+
+if (typeof HTMLElement == 'undefined'){
+	var HTMLElement = function(){};
+	if (window.webkit) document.createElement("iframe"); //fixes safari
+	HTMLElement.prototype = (window.webkit) ? window["[[DOMElement.prototype]]"] : {};
+}
+HTMLElement.prototype.htmlElement = function(){};
+
+//enables background image cache for internet explorer 6
+
+if (window.ie6) try {document.execCommand("BackgroundImageCache", false, true);} catch(e){};
+
+/*
+Script: Class.js
+	Contains the Class Function, aims to ease the creation of reusable Classes.
+
+License:
+	MIT-style license.
 */
 
 /*
 Class: Class
 	The base class object of the <http://mootools.net> framework.
+	Creates a new class, its initialize method will fire upon class instantiation.
+	Initialize wont fire on instantiation when you pass *null*.
 
 Arguments:
-	properties - the collection of properties that apply to the class. Creates a new class, its initialize method will fire upon class instantiation.
+	properties - the collection of properties that apply to the class.
 
 Example:
 	(start code)
@@ -29,17 +352,17 @@ Example:
 		}
 	});
 	var myCat = new Cat('Micia');
-	alert myCat.name; //alerts 'Micia'
+	alert(myCat.name); //alerts 'Micia'
 	(end)
 */
 
 var Class = function(properties){
 	var klass = function(){
-		if (this.initialize && arguments[0] != 'noinit') return this.initialize.apply(this, arguments);
-		else return this;
+		return (arguments[0] !== null && this.initialize && $type(this.initialize) == 'function') ? this.initialize.apply(this, arguments) : this;
 	};
-	for (var property in this) klass[property] = this[property];
+	$extend(klass, this);
 	klass.prototype = properties;
+	klass.constructor = Class;
 	return klass;
 };
 
@@ -73,29 +396,18 @@ Class.prototype = {
 			}
 		});
 		var myCat = new Cat('Micia', 20);
-		alert myCat.name; //alerts 'Micia'
-		alert myCat.age; //alerts 20
+		alert(myCat.name); //alerts 'Micia'
+		alert(myCat.age); //alerts 20
 		(end)
 	*/
 
 	extend: function(properties){
-		var pr0t0typ3 = new this('noinit');
-
-		var parentize = function(previous, current){
-			if (!previous.apply || !current.apply) return false;
-			return function(){
-				this.parent = previous;
-				return current.apply(this, arguments);
-			};
-		};
-
+		var proto = new this(null);
 		for (var property in properties){
-			var previous = pr0t0typ3[property];
-			var current = properties[property];
-			if (previous && previous != current) current = parentize(previous, current) || current;
-			pr0t0typ3[property] = current;
+			var pp = proto[property];
+			proto[property] = Class.Merge(pp, properties[property]);
 		}
-		return new Class(pr0t0typ3);
+		return new Class(proto);
 	},
 
 	/*
@@ -123,217 +435,260 @@ Class.prototype = {
 		(end)
 	*/
 
-	implement: function(properties){
-		for (var property in properties) this.prototype[property] = properties[property];
+	implement: function(){
+		for (var i = 0, l = arguments.length; i < l; i++) $extend(this.prototype, arguments[i]);
 	}
 
 };
 
-/* Section: Object related Functions */
+//internal
 
-/*
-Function: Object.extend
-	Copies all the properties from the second passed object to the first passed Object.
-	If you do myWhatever.extend = Object.extend the first parameter will become myWhatever, and your extend function will only need one parameter.
-
-Example:
-	(start code)
-	var firstOb = {
-		'name': 'John',
-		'lastName': 'Doe'
-	};
-	var secondOb = {
-		'age': '20',
-		'sex': 'male',
-		'lastName': 'Dorian'
-	};
-	Object.extend(firstOb, secondOb);
-	//firstOb will become: 
-	{
-		'name': 'John',
-		'lastName': 'Dorian',
-		'age': '20',
-		'sex': 'male'
-	};
-	(end)
-
-Returns:
-	The first object, extended.
-*/
-
-Object.extend = function(){
-	var args = arguments;
-	args = (args[1]) ? [args[0], args[1]] : [this, args[0]];
-	for (var property in args[1]) args[0][property] = args[1][property];
-	return args[0];
+Class.Merge = function(previous, current){
+	if (previous && previous != current){
+		var type = $type(current);
+		if (type != $type(previous)) return current;
+		switch(type){
+			case 'function':
+				var merged = function(){
+					this.parent = arguments.callee.parent;
+					return current.apply(this, arguments);
+				};
+				merged.parent = previous;
+				return merged;
+			case 'object': return $merge(previous, current);
+		}
+	}
+	return current;
 };
 
 /*
-Function: Object.Native
-	Will add a .extend method to the objects passed as a parameter, equivalent to <Class.implement>
-
-Arguments:
-	a number of classes/native javascript objects
-
-*/
-
-Object.Native = function(){
-	for (var i = 0; i < arguments.length; i++) arguments[i].extend = Class.prototype.implement;
-};
-
-new Object.Native(Function, Array, String, Number, Class);
-
-/*
-Script: Utility.js
-	Contains Utility functions
-
-Author:
-	Valerio Proietti, <http://mad4milk.net>
+Script: Class.Extras.js
+	Contains common implementations for custom classes. In Mootools is implemented in <Ajax>, <XHR> and <Fx.Base> and many more.
 
 License:
 	MIT-style license.
 */
 
-//htmlelement
-
-if (typeof HTMLElement == 'undefined'){
-	var HTMLElement = Class.empty;
-	HTMLElement.prototype = {};
-} else {
-	HTMLElement.prototype.htmlElement = true;
-}
-
-//window, document
-
-window.extend = document.extend = Object.extend;
-var Window = window;
-
 /*
-Function: $type
-	Returns the type of object that matches the element passed in.
-
-Arguments:
-	obj - the object to inspect.
+Class: Chain
+	An "Utility" Class. Its methods can be implemented with <Class.implement> into any <Class>.
+	Currently implemented in <Fx.Base>, <XHR> and <Ajax>. In <Fx.Base> for example, is used to execute a list of function, one after another, once the effect is completed.
+	The functions will not be fired all togheter, but one every completion, to create custom complex animations.
 
 Example:
-	>var myString = 'hello';
-	>$type(myString); //returns "string"
+	(start code)
+	var myFx = new Fx.Style('element', 'opacity');
 
-Returns:
-	'element' - if obj is a DOM element node
-	'textnode' - if obj is a DOM text node
-	'whitespace' - if obj is a DOM whitespace node
-	'array' - if obj is an array
-	'object' - if obj is an object
-	'string' - if obj is a string
-	'number' - if obj is a number
-	'boolean' - if obj is a boolean
-	'function' - if obj is a function
-	false - (boolean) if the object is not defined or none of the above.
+	myFx.start(1,0).chain(function(){
+		myFx.start(0,1);
+	}).chain(function(){
+		myFx.start(1,0);
+	}).chain(function(){
+		myFx.start(0,1);
+	});
+	//the element will appear and disappear three times
+	(end)
 */
 
-function $type(obj){
-	if (obj === null || obj === undefined) return false;
-	var type = typeof obj;
-	if (type == 'object'){
-		if (obj.htmlElement) return 'element';
-		if (obj.push) return 'array';
-		if (obj.nodeName){
-			switch (obj.nodeType){
-				case 1: return 'element';
-				case 3: return obj.nodeValue.test(/\S/) ? 'textnode' : 'whitespace';
+var Chain = new Class({
+
+	/*
+	Property: chain
+		adds a function to the Chain instance stack.
+
+	Arguments:
+		fn - the function to append.
+	*/
+
+	chain: function(fn){
+		this.chains = this.chains || [];
+		this.chains.push(fn);
+		return this;
+	},
+
+	/*
+	Property: callChain
+		Executes the first function of the Chain instance stack, then removes it. The first function will then become the second.
+	*/
+
+	callChain: function(){
+		if (this.chains && this.chains.length) this.chains.shift().delay(10, this);
+	},
+
+	/*
+	Property: clearChain
+		Clears the stack of a Chain instance.
+	*/
+
+	clearChain: function(){
+		this.chains = [];
+	}
+
+});
+
+/*
+Class: Events
+	An "Utility" Class. Its methods can be implemented with <Class.implement> into any <Class>.
+	In <Fx.Base> Class, for example, is used to give the possibility add any number of functions to the Effects events, like onComplete, onStart, onCancel.
+	Events in a Class that implements <Events> can be either added as an option, or with addEvent. Never with .options.onEventName.
+
+Example:
+	(start code)
+	var myFx = new Fx.Style('element', 'opacity').addEvent('onComplete', function(){
+		alert('the effect is completed');
+	}).addEvent('onComplete', function(){
+		alert('I told you the effect is completed');
+	});
+
+	myFx.start(0,1);
+	//upon completion it will display the 2 alerts, in order.
+	(end)
+
+Implementing:
+	This class can be implemented into other classes to add the functionality to them.
+	Goes well with the <Options> class.
+
+Example:
+	(start code)
+	var Widget = new Class({
+		initialize: function(){},
+		finish: function(){
+			this.fireEvent('onComplete');
+		}
+	});
+	Widget.implement(new Events);
+	//later...
+	var myWidget = new Widget();
+	myWidget.addEvent('onComplete', myfunction);
+	(end)
+*/
+
+var Events = new Class({
+
+	/*
+	Property: addEvent
+		adds an event to the stack of events of the Class instance.
+
+	Arguments:
+		type - string; the event name (e.g. 'onComplete')
+		fn - function to execute
+	*/
+
+	addEvent: function(type, fn){
+		if (fn != Class.empty){
+			this.$events = this.$events || {};
+			this.$events[type] = this.$events[type] || [];
+			this.$events[type].include(fn);
+		}
+		return this;
+	},
+
+	/*
+	Property: fireEvent
+		fires all events of the specified type in the Class instance.
+
+	Arguments:
+		type - string; the event name (e.g. 'onComplete')
+		args - array or single object; arguments to pass to the function; if more than one argument, must be an array
+		delay - (integer) delay (in ms) to wait to execute the event
+
+	Example:
+	(start code)
+	var Widget = new Class({
+		initialize: function(arg1, arg2){
+			...
+			this.fireEvent("onInitialize", [arg1, arg2], 50);
+		}
+	});
+	Widget.implement(new Events);
+	(end)
+	*/
+
+	fireEvent: function(type, args, delay){
+		if (this.$events && this.$events[type]){
+			this.$events[type].each(function(fn){
+				fn.create({'bind': this, 'delay': delay, 'arguments': args})();
+			}, this);
+		}
+		return this;
+	},
+
+	/*
+	Property: removeEvent
+		removes an event from the stack of events of the Class instance.
+
+	Arguments:
+		type - string; the event name (e.g. 'onComplete')
+		fn - function that was added
+	*/
+
+	removeEvent: function(type, fn){
+		if (this.$events && this.$events[type]) this.$events[type].remove(fn);
+		return this;
+	}
+
+});
+
+/*
+Class: Options
+	An "Utility" Class. Its methods can be implemented with <Class.implement> into any <Class>.
+	Used to automate the options settings, also adding Class <Events> when the option begins with on.
+
+	Example:
+		(start code)
+		var Widget = new Class({
+			options: {
+				color: '#fff',
+				size: {
+					width: 100
+					height: 100
+				}
+			},
+			initialize: function(options){
+				this.setOptions(options);
+			}
+		});
+		Widget.implement(new Options);
+		//later...
+		var myWidget = new Widget({
+			color: '#f00',
+			size: {
+				width: 200
+			}
+		});
+		//myWidget.options = {color: #f00, size: {width: 200, height: 100}}
+		(end)
+*/
+
+var Options = new Class({
+
+	/*
+	Property: setOptions
+		sets this.options
+
+	Arguments:
+		defaults - object; the default set of options
+		options - object; the user entered options. can be empty too.
+
+	Note:
+		if your Class has <Events> implemented, every option beginning with on, followed by a capital letter (onComplete) becomes an Class instance event.
+	*/
+
+	setOptions: function(){
+		this.options = $merge.apply(null, [this.options].extend(arguments));
+		if (this.addEvent){
+			for (var option in this.options){
+				if ($type(this.options[option] == 'function') && (/^on[A-Z]/).test(option)) this.addEvent(option, this.options[option]);
 			}
 		}
+		return this;
 	}
-	return type;
-};
 
-/*
-Function: $chk
-	Returns true if the passed in value/object exists or is 0, otherwise returns false.
-	Useful to accept zeroes.
-*/
-
-function $chk(obj){
-	return !!(obj || obj === 0);
-};
-
-/*
-Function: $pick
-	Returns the first object if defined, otherwise returns the second.
-*/
-
-function $pick(obj, picked){
-	return ($type(obj)) ? obj : picked;
-};
-
-/*
-Function: $random
-	Returns a random integer number between the two passed in values.
-
-Arguments:
-	min - integer, the minimum value (inclusive).
-	max - integer, the maximum value (inclusive).
-
-Returns:
-	a random integer between min and max.
-*/
-
-function $random(min, max){
-	return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
-/*
-Function: $clear
-	clears a timeout or an Interval.
-
-Returns:
-	null
-
-Arguments:
-	timer - the setInterval or setTimeout to clear.
-
-Example:
-	>var myTimer = myFunction.delay(5000); //wait 5 seconds and execute my function.
-	>myTimer = $clear(myTimer); //nevermind
-
-See also:
-	<Function.delay>, <Function.periodical>
-*/
-
-function $clear(timer){
-	clearTimeout(timer);
-	clearInterval(timer);
-	return null;
-};
-
-/*
-Class: window
-	Some properties are attached to the window object by the browser detection.
-
-Properties:
-	window.ie - will be set to true if the current browser is internet explorer (any).
-	window.ie6 - will be set to true if the current browser is internet explorer 6.
-	window.ie7 - will be set to true if the current browser is internet explorer 7.
-	window.khtml - will be set to true if the current browser is Safari/Konqueror.
-	window.gecko - will be set to true if the current browser is Mozilla/Gecko.
-*/
-
-if (window.ActiveXObject) window.ie = window[window.XMLHttpRequest ? 'ie7' : 'ie6'] = true;
-else if (document.childNodes && !document.all && !navigator.taintEnabled) window.khtml = true;
-else if (document.getBoxObjectFor != null) window.gecko = true;
-
-//enables background image cache for internet explorer 6
-
-if (window.ie6) try {document.execCommand("BackgroundImageCache", false, true);} catch (e){};
+});
 
 /*
 Script: Array.js
 	Contains Array prototypes, <$A>, <$each>
-
-Authors:
-	- Christophe Beyls, <http://digitalia.be>
-	- Valerio Proietti, <http://mad4milk.net>
 
 License:
 	MIT-style license.
@@ -344,106 +699,169 @@ Class: Array
 	A collection of The Array Object prototype methods.
 */
 
-//emulated methods
-
-/*
-Property: forEach
-	Iterates through an array; This method is only available for browsers without native *forEach* support.
-	For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:forEach>
-*/
-
-Array.prototype.forEach = Array.prototype.forEach || function(fn, bind){
-	for (var i = 0; i < this.length; i++) fn.call(bind, this[i], i, this);
-};
-
-/*
-Property: filter
-	This method is provided only for browsers without native *filter* support.
-	For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:filter>
-*/
-
-Array.prototype.filter = Array.prototype.filter || function(fn, bind){
-	var results = [];
-	for (var i = 0; i < this.length; i++){
-		if (fn.call(bind, this[i], i, this)) results.push(this[i]);
-	}
-	return results;
-};
-
-/*
-Property: map
-	This method is provided only for browsers without native *map* support.
-	For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:map>
-*/
-
-Array.prototype.map = Array.prototype.map || function(fn, bind){
-	var results = [];
-	for (var i = 0; i < this.length; i++) results[i] = fn.call(bind, this[i], i, this);
-	return results;
-};
-
-/*
-Property: every
-	This method is provided only for browsers without native *every* support.
-	For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:every>
-*/
-
-Array.prototype.every = Array.prototype.every || function(fn, bind){
-	for (var i = 0; i < this.length; i++){
-		if (!fn.call(bind, this[i], i, this)) return false;
-	}
-	return true;
-};
-
-/*
-Property: some
-	This method is provided only for browsers without native *some* support.
-	For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:some>
-*/
-
-Array.prototype.some = Array.prototype.some || function(fn, bind){
-	for (var i = 0; i < this.length; i++){
-		if (fn.call(bind, this[i], i, this)) return true;
-	}
-	return false;
-};
-
-/*
-Property: indexOf
-	This method is provided only for browsers without native *indexOf* support.
-	For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:indexOf>
-*/
-
-Array.prototype.indexOf = Array.prototype.indexOf || function(item, from){
-	from = from || 0;
-	if (from < 0) from = Math.max(0, this.length + from);
-	while (from < this.length){
-		if(this[from] === item) return from;
-		from++;
-	}
-	return -1;
-};
-
 //custom methods
 
 Array.extend({
+
+	/*
+	Property: forEach
+		Iterates through an array; This method is only available for browsers without native *forEach* support.
+		For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:forEach>
+
+		*forEach* executes the provided function (callback) once for each element present in the array. callback is invoked only for indexes of the array which have assigned values; it is not invoked for indexes which have been deleted or which have never been assigned values.
+
+	Arguments:
+		fn - function to execute with each item in the array; passed the item and the index of that item in the array
+		bind - the object to bind "this" to (see <Function.bind>)
+
+	Example:
+		>['apple','banana','lemon'].each(function(item, index){
+		>	alert(index + " = " + item); //alerts "0 = apple" etc.
+		>}, bindObj); //optional second arg for binding, not used here
+	*/
+
+	forEach: function(fn, bind){
+		for (var i = 0, j = this.length; i < j; i++) fn.call(bind, this[i], i, this);
+	},
+
+	/*
+	Property: filter
+		This method is provided only for browsers without native *filter* support.
+		For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:filter>
+
+		*filter* calls a provided callback function once for each element in an array, and constructs a new array of all the values for which callback returns a true value. callback is invoked only for indexes of the array which have assigned values; it is not invoked for indexes which have been deleted or which have never been assigned values. Array elements which do not pass the callback test are simply skipped, and are not included in the new array.
+
+	Arguments:
+		fn - function to execute with each item in the array; passed the item and the index of that item in the array
+		bind - the object to bind "this" to (see <Function.bind>)
+
+	Example:
+		>var biggerThanTwenty = [10,3,25,100].filter(function(item, index){
+		> return item > 20;
+		>});
+		>//biggerThanTwenty = [25,100]
+	*/
+
+	filter: function(fn, bind){
+		var results = [];
+		for (var i = 0, j = this.length; i < j; i++){
+			if (fn.call(bind, this[i], i, this)) results.push(this[i]);
+		}
+		return results;
+	},
+
+	/*
+	Property: map
+		This method is provided only for browsers without native *map* support.
+		For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:map>
+
+		*map* calls a provided callback function once for each element in an array, in order, and constructs a new array from the results. callback is invoked only for indexes of the array which have assigned values; it is not invoked for indexes which have been deleted or which have never been assigned values.
+
+	Arguments:
+		fn - function to execute with each item in the array; passed the item and the index of that item in the array
+		bind - the object to bind "this" to (see <Function.bind>)
+
+	Example:
+		>var timesTwo = [1,2,3].map(function(item, index){
+		> return item*2;
+		>});
+		>//timesTwo = [2,4,6];
+	*/
+
+	map: function(fn, bind){
+		var results = [];
+		for (var i = 0, j = this.length; i < j; i++) results[i] = fn.call(bind, this[i], i, this);
+		return results;
+	},
+
+	/*
+	Property: every
+		This method is provided only for browsers without native *every* support.
+		For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:every>
+
+		*every* executes the provided callback function once for each element present in the array until it finds one where callback returns a false value. If such an element is found, the every method immediately returns false. Otherwise, if callback returned a true value for all elements, every will return true. callback is invoked only for indexes of the array which have assigned values; it is not invoked for indexes which have been deleted or which have never been assigned values.
+
+	Arguments:
+		fn - function to execute with each item in the array; passed the item and the index of that item in the array
+		bind - the object to bind "this" to (see <Function.bind>)
+
+	Example:
+		>var areAllBigEnough = [10,4,25,100].every(function(item, index){
+		> return item > 20;
+		>});
+		>//areAllBigEnough = false
+	*/
+
+	every: function(fn, bind){
+		for (var i = 0, j = this.length; i < j; i++){
+			if (!fn.call(bind, this[i], i, this)) return false;
+		}
+		return true;
+	},
+
+	/*
+	Property: some
+		This method is provided only for browsers without native *some* support.
+		For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:some>
+
+		*some* executes the callback function once for each element present in the array until it finds one where callback returns a true value. If such an element is found, some immediately returns true. Otherwise, some returns false. callback is invoked only for indexes of the array which have assigned values; it is not invoked for indexes which have been deleted or which have never been assigned values.
+
+	Arguments:
+		fn - function to execute with each item in the array; passed the item and the index of that item in the array
+		bind - the object to bind "this" to (see <Function.bind>)
+
+	Example:
+		>var isAnyBigEnough = [10,4,25,100].some(function(item, index){
+		> return item > 20;
+		>});
+		>//isAnyBigEnough = true
+	*/
+
+	some: function(fn, bind){
+		for (var i = 0, j = this.length; i < j; i++){
+			if (fn.call(bind, this[i], i, this)) return true;
+		}
+		return false;
+	},
+
+	/*
+	Property: indexOf
+		This method is provided only for browsers without native *indexOf* support.
+		For more info see <http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:indexOf>
+
+		*indexOf* compares a search element to elements of the Array using strict equality (the same method used by the ===, or triple-equals, operator).
+
+	Arguments:
+		item - any type of object; element to locate in the array
+		from - integer; optional; the index of the array at which to begin the search (defaults to 0)
+
+	Example:
+		>['apple','lemon','banana'].indexOf('lemon'); //returns 1
+		>['apple','lemon'].indexOf('banana'); //returns -1
+	*/
+
+	indexOf: function(item, from){
+		var len = this.length;
+		for (var i = (from < 0) ? Math.max(0, len + from) : from || 0; i < len; i++){
+			if (this[i] === item) return i;
+		}
+		return -1;
+	},
 
 	/*
 	Property: each
 		Same as <Array.forEach>.
 
 	Arguments:
-		fn - the function to execute with each item in the array
+		fn - function to execute with each item in the array; passed the item and the index of that item in the array
 		bind - optional, the object that the "this" of the function will refer to.
 
 	Example:
 		>var Animals = ['Cat', 'Dog', 'Coala'];
-		>Animals.forEach(function(animal){
+		>Animals.each(function(animal){
 		>	document.write(animal)
 		>});
 	*/
-
-	each: Array.prototype.forEach,
 
 	/*
 	Property: copy
@@ -451,10 +869,10 @@ Array.extend({
 
 	Returns:
 		a new array which is a copy of the current one.
-	
+
 	Arguments:
-		start - optional, the index where to start the copy, default is 0. If negative, it is taken as the offset from the end of the array.
-		length - optional, the number of elements to copy. By default, copies all elements from start to the end of the array.
+		start - integer; optional; the index where to start the copy, default is 0. If negative, it is taken as the offset from the end of the array.
+		length - integer; optional; the number of elements to copy. By default, copies all elements from start to the end of the array.
 
 	Example:
 		>var letters = ["a","b","c"];
@@ -486,50 +904,37 @@ Array.extend({
 
 	remove: function(item){
 		var i = 0;
-		while (i < this.length){
-			if (this[i] === item) this.splice(i, 1);
-			else i++;
+		var len = this.length;
+		while (i < len){
+			if (this[i] === item){
+				this.splice(i, 1);
+				len--;
+			} else {
+				i++;
+			}
 		}
 		return this;
 	},
 
 	/*
-	Property: test
+	Property: contains
 		Tests an array for the presence of an item.
 
 	Arguments:
 		item - the item to search for in the array.
-		from - optional, the index at which to begin the search, default is 0. If negative, it is taken as the offset from the end of the array.
+		from - integer; optional; the index at which to begin the search, default is 0. If negative, it is taken as the offset from the end of the array.
 
 	Returns:
 		true - the item was found
 		false - it wasn't
 
 	Example:
-		>["a","b","c"].test("a"); // true
-		>["a","b","c"].test("d"); // false
+		>["a","b","c"].contains("a"); // true
+		>["a","b","c"].contains("d"); // false
 	*/
 
-	test: function(item, from){
+	contains: function(item, from){
 		return this.indexOf(item, from) != -1;
-	},
-
-	/*
-	Property: extend
-		Extends an array with another
-
-	Arguments:
-		newArray - the array to extend ours with
-
-	Example:
-		>var Animals = ['Cat', 'Dog', 'Coala'];
-		>Animals.extend(['Lizard']);
-		>//Animals is now: ['Cat', 'Dog', 'Coala', 'Lizard'];
-	*/
-
-	extend: function(newArray){
-		for (var i = 0; i < newArray.length; i++) this.push(newArray[i]);
-		return this;
 	},
 
 	/*
@@ -544,7 +949,7 @@ Array.extend({
 		(start code)
 		var Animals = ['Cat', 'Dog', 'Coala', 'Lizard'];
 		var Speech = ['Miao', 'Bau', 'Fruuu', 'Mute'];
-		var Speeches = Animals.associate(speech);
+		var Speeches = Animals.associate(Speech);
 		//Speeches['Miao'] is now Cat.
 		//Speeches['Bau'] is now Dog.
 		//...
@@ -555,9 +960,83 @@ Array.extend({
 		var obj = {}, length = Math.min(this.length, keys.length);
 		for (var i = 0; i < length; i++) obj[keys[i]] = this[i];
 		return obj;
+	},
+
+	/*
+	Property: extend
+		Extends an array with another one.
+
+	Arguments:
+		array - the array to extend ours with
+
+	Example:
+		>var Animals = ['Cat', 'Dog', 'Coala'];
+		>Animals.extend(['Lizard']);
+		>//Animals is now: ['Cat', 'Dog', 'Coala', 'Lizard'];
+	*/
+
+	extend: function(array){
+		for (var i = 0, j = array.length; i < j; i++) this.push(array[i]);
+		return this;
+	},
+
+	/*
+	Property: merge
+		merges an array in another array, without duplicates. (case- and type-sensitive)
+
+	Arguments:
+		array - the array to merge from.
+
+	Example:
+		>['Cat','Dog'].merge(['Dog','Coala']); //returns ['Cat','Dog','Coala']
+	*/
+
+	merge: function(array){
+		for (var i = 0, l = array.length; i < l; i++) this.include(array[i]);
+		return this;
+	},
+
+	/*
+	Property: include
+		includes the passed in element in the array, only if its not already present. (case- and type-sensitive)
+
+	Arguments:
+		item - item to add to the array (if not present)
+
+	Example:
+		>['Cat','Dog'].include('Dog'); //returns ['Cat','Dog']
+		>['Cat','Dog'].include('Coala'); //returns ['Cat','Dog','Coala']
+	*/
+
+	include: function(item){
+		if (!this.contains(item)) this.push(item);
+		return this;
+	},
+
+	/*
+	Property: getRandom
+		returns a random item in the Array
+	*/
+
+	getRandom: function(){
+		return this[$random(0, this.length - 1)] || null;
+	},
+
+	/*
+	Property: getLast
+		returns the last item in the Array
+	*/
+
+	getLast: function(){
+		return this[this.length - 1] || null;
 	}
 
 });
+
+//copies
+
+Array.prototype.each = Array.prototype.forEach;
+Array.each = Array.forEach;
 
 /* Section: Utility Functions */
 
@@ -577,30 +1056,57 @@ Example:
 	(end)
 */
 
-function $A(array, start, length){
-	return Array.prototype.copy.call(array, start, length);
+function $A(array){
+	return Array.copy(array);
 };
 
 /*
 Function: $each
-	use to iterate through iterables that are not regular arrays, such as builtin getElementsByTagName calls, or arguments of a function.
+	Use to iterate through iterables that are not regular arrays, such as builtin getElementsByTagName calls, arguments of a function, or an object.
 
 Arguments:
-	iterable - an iterable element.
+	iterable - an iterable element or an objct.
 	function - function to apply to the iterable.
 	bind - optional, the 'this' of the function will refer to this object.
+
+Function argument:
+	The function argument will be passed the following arguments.
+
+	item - the current item in the iterator being procesed
+	index - integer; the index of the item, or key in case of an object.
+
+Examples:
+	(start code)
+	$each(['Sun','Mon','Tue'], function(day, index){
+		alert('name:' + day + ', index: ' + index);
+	});
+	//alerts "name: Sun, index: 0", "name: Mon, index: 1", etc.
+	//over an object
+	$each({first: "Sunday", second: "Monday", third: "Tuesday"}, function(value, key){
+		alert("the " + key + " day of the week is " + value);
+	});
+	//alerts "the first day of the week is Sunday",
+	//"the second day of the week is Monday", etc.
+	(end)
 */
 
 function $each(iterable, fn, bind){
-	return Array.prototype.forEach.call(iterable, fn, bind);
+	if (iterable && typeof iterable.length == 'number' && $type(iterable) != 'object'){
+		Array.forEach(iterable, fn, bind);
+	} else {
+		 for (var name in iterable) fn.call(bind || iterable, iterable[name], name);
+	}
 };
+
+/*compatibility*/
+
+Array.prototype.test = Array.prototype.contains;
+
+/*end compatibility*/
 
 /*
 Script: String.js
-	Contains String prototypes and Number prototypes.
-
-Author:
-	Valerio Proietti, <http://mad4milk.net>
+	Contains String prototypes.
 
 License:
 	MIT-style license.
@@ -632,7 +1138,7 @@ String.extend({
 	*/
 
 	test: function(regex, params){
-		return ((typeof regex == 'string') ? new RegExp(regex, params) : regex).test(this);
+		return (($type(regex) == 'string') ? new RegExp(regex, params) : regex).test(this);
 	},
 
 	/*
@@ -647,8 +1153,19 @@ String.extend({
 	*/
 
 	toInt: function(){
-		return parseInt(this);
+		return parseInt(this, 10);
 	},
+
+	/*
+	Property: toFloat
+		parses a string to an float.
+
+	Returns:
+		either a float or "NaN" if the string is not a number.
+
+	Example:
+		>var value = "10.848".toFloat(); // value is 10.848
+	*/
 
 	toFloat: function(){
 		return parseFloat(this);
@@ -681,7 +1198,7 @@ String.extend({
 
 	hyphenate: function(){
 		return this.replace(/\w[A-Z]/g, function(match){
-			return (match.charAt(0)+'-'+match.charAt(1).toLowerCase());
+			return (match.charAt(0) + '-' + match.charAt(1).toLowerCase());
 		});
 	},
 
@@ -697,7 +1214,7 @@ String.extend({
 	*/
 
 	capitalize: function(){
-		return this.toLowerCase().replace(/\b[a-z]/g, function(match){
+		return this.replace(/\b[a-z]/g, function(match){
 			return match.toUpperCase();
 		});
 	},
@@ -771,62 +1288,69 @@ String.extend({
 	hexToRgb: function(array){
 		var hex = this.match(/^#?(\w{1,2})(\w{1,2})(\w{1,2})$/);
 		return (hex) ? hex.slice(1).hexToRgb(array) : false;
+	},
+
+	/*
+	Property: contains
+		checks if the passed in string is contained in the String. also accepts an optional second parameter, to check if the string is contained in a list of separated values.
+
+	Example:
+		>'a b c'.contains('c', ' '); //true
+		>'a bc'.contains('bc'); //true
+		>'a bc'.contains('b', ' '); //false
+	*/
+
+	contains: function(string, s){
+		return (s) ? (s + this + s).indexOf(s + string + s) > -1 : this.indexOf(string) > -1;
+	},
+
+	/*
+	Property: escapeRegExp
+		Returns string with escaped regular expression characters
+
+	Example:
+		>var search = 'animals.sheeps[1]'.escapeRegExp(); // search is now 'animals\.sheeps\[1\]'
+
+	Returns:
+		Escaped string
+	*/
+
+	escapeRegExp: function(){
+		return this.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1');
 	}
 
 });
 
 Array.extend({
-	
+
 	/*
 	Property: rgbToHex
 		see <String.rgbToHex>, but as an array method.
 	*/
-	
+
 	rgbToHex: function(array){
 		if (this.length < 3) return false;
-		if (this[3] && (this[3] == 0) && !array) return 'transparent';
+		if (this.length == 4 && this[3] == 0 && !array) return 'transparent';
 		var hex = [];
 		for (var i = 0; i < 3; i++){
-			var bit = (this[i]-0).toString(16);
-			hex.push((bit.length == 1) ? '0'+bit : bit);
+			var bit = (this[i] - 0).toString(16);
+			hex.push((bit.length == 1) ? '0' + bit : bit);
 		}
-		return array ? hex : '#'+hex.join('');
+		return array ? hex : '#' + hex.join('');
 	},
-	
+
 	/*
 	Property: hexToRgb
 		same as <String.hexToRgb>, but as an array method.
 	*/
-	
+
 	hexToRgb: function(array){
 		if (this.length != 3) return false;
 		var rgb = [];
 		for (var i = 0; i < 3; i++){
-			rgb.push(parseInt((this[i].length == 1) ? this[i]+this[i] : this[i], 16));
+			rgb.push(parseInt((this[i].length == 1) ? this[i] + this[i] : this[i], 16));
 		}
-		return array ? rgb : 'rgb('+rgb.join(',')+')';
-	}
-
-});
-
-/*
-Class: Number
-	contains the internal method toInt.
-*/
-
-Number.extend({
-
-	/*
-	Property: toInt
-		Returns this number; useful because toInt must work on both Strings and Numbers.
-	*/
-
-	toInt: function(){
-		return parseInt(this);
-	},
-
-	toFloat: function(){
-		return parseFloat(this);
+		return array ? rgb : 'rgb(' + rgb.join(',') + ')';
 	}
 
 });
@@ -834,9 +1358,6 @@ Number.extend({
 /* 
 Script: Function.js
 	Contains Function prototypes and utility functions .
-
-Author:
-	Valerio Proietti, <http://mad4milk.net>
 
 License:
 	MIT-style license.
@@ -855,59 +1376,56 @@ Function.extend({
 	/*
 	Property: create
 		Main function to create closures.
-	
+
 	Returns:
 		a function.
-	
+
 	Arguments:
 		options - An Options object.
-	
+
 	Options:
 		bind - The object that the "this" of the function will refer to. Default is the current function.
 		event - If set to true, the function will act as an event listener and receive an event as first argument.
 				If set to a class name, the function will receive a new instance of this class (with the event passed as argument's constructor) as first argument.
 				Default is false.
 		arguments - A single argument or array of arguments that will be passed to the function when called.
+		
 					If both the event and arguments options are set, the event is passed as first argument and the arguments array will follow.
+					
 					Default is no custom arguments, the function will receive the standard arguments when called.
+					
 		delay - Numeric value: if set, the returned function will delay the actual execution by this amount of milliseconds and return a timer handle when called.
 				Default is no delay.
 		periodical - Numeric value: if set, the returned function will periodically perform the actual execution with this specified interval and return a timer handle when called.
 				Default is no periodical execution.
-		attempt - If set to true, the returned function will try to execute and return either the results or the error when called. Default is false.
+		attempt - If set to true, the returned function will try to execute and return either the results or false on error. Default is false.
 	*/
 
 	create: function(options){
 		var fn = this;
-		options = Object.extend({
-			'bind': fn, 
-			'event': false, 
-			'arguments': null, 
-			'delay': false, 
-			'periodical': false, 
+		options = $merge({
+			'bind': fn,
+			'event': false,
+			'arguments': null,
+			'delay': false,
+			'periodical': false,
 			'attempt': false
-		}, options || {});
+		}, options);
 		if ($chk(options.arguments) && $type(options.arguments) != 'array') options.arguments = [options.arguments];
 		return function(event){
 			var args;
 			if (options.event){
 				event = event || window.event;
 				args = [(options.event === true) ? event : new options.event(event)];
-				if (options.arguments) args = args.concat(options.arguments);
+				if (options.arguments) args.extend(options.arguments);
 			}
 			else args = options.arguments || arguments;
 			var returns = function(){
-				return fn.apply(options.bind, args);
+				return fn.apply($pick(options.bind, fn), args);
 			};
 			if (options.delay) return setTimeout(returns, options.delay);
 			if (options.periodical) return setInterval(returns, options.periodical);
-			if (options.attempt){
-				try {
-					return returns();
-				} catch(err){
-					return err;
-				}
-			}
+			if (options.attempt) try {return returns();} catch(err){return false;};
 			return returns();
 		};
 	},
@@ -930,10 +1448,10 @@ Function.extend({
 	pass: function(args, bind){
 		return this.create({'arguments': args, 'bind': bind});
 	},
-	
+
 	/*
 	Property: attempt
-		Tries to execute the function, returns either the function results or the error.
+		Tries to execute the function, returns either the result of the function or false on error.
 
 	Arguments:
 		args - the arguments passed. must be an array if arguments > 1
@@ -999,7 +1517,7 @@ Function.extend({
 		Delays the execution of a function by a specified duration.
 
 	Arguments:
-		ms - the duration to wait in milliseconds
+		delay - the duration to wait in milliseconds.
 		bind - optional, the object that the "this" of the function will refer to.
 		args - optional, the arguments passed. must be an array if arguments > 1
 
@@ -1008,8 +1526,8 @@ Function.extend({
 		>(function(){alert('one second later...')}).delay(1000); //wait a second and alert
 	*/
 
-	delay: function(ms, bind, args){
-		return this.create({'delay': ms, 'bind': bind, 'arguments': args})();
+	delay: function(delay, bind, args){
+		return this.create({'delay': delay, 'bind': bind, 'arguments': args})();
 	},
 
 	/*
@@ -1017,13 +1535,105 @@ Function.extend({
 		Executes a function in the specified intervals of time
 
 	Arguments:
-		ms - the duration of the intervals between executions.
+		interval - the duration of the intervals between executions.
 		bind - optional, the object that the "this" of the function will refer to.
 		args - optional, the arguments passed. must be an array if arguments > 1
 	*/
 
-	periodical: function(ms, bind, args){
-		return this.create({'periodical': ms, 'bind': bind, 'arguments': args})();
+	periodical: function(interval, bind, args){
+		return this.create({'periodical': interval, 'bind': bind, 'arguments': args})();
+	}
+
+});
+
+/*
+Script: Number.js
+	Contains the Number prototypes.
+
+License:
+	MIT-style license.
+*/
+
+/*
+Class: Number
+	A collection of The Number Object prototype methods.
+*/
+
+Number.extend({
+
+	/*
+	Property: toInt
+		Returns this number; useful because toInt must work on both Strings and Numbers.
+	*/
+
+	toInt: function(){
+		return parseInt(this);
+	},
+
+	/*
+	Property: toFloat
+		Returns this number as a float; useful because toFloat must work on both Strings and Numbers.
+	*/
+
+	toFloat: function(){
+		return parseFloat(this);
+	},
+
+	/*
+	Property: limit
+		Limits the number.
+
+	Arguments:
+		min - number, minimum value
+		max - number, maximum value
+
+	Returns:
+		the number in the given limits.
+
+	Example:
+		>(12).limit(2, 6.5)  // returns 6.5
+		>(-4).limit(2, 6.5)  // returns 2
+		>(4.3).limit(2, 6.5) // returns 4.3
+	*/
+
+	limit: function(min, max){
+		return Math.min(max, Math.max(min, this));
+	},
+
+	/*
+	Property: round
+		Returns the number rounded to specified precision.
+
+	Arguments:
+		precision - integer, number of digits after the decimal point. Can also be negative or zero (default).
+
+	Example:
+		>12.45.round() // returns 12
+		>12.45.round(1) // returns 12.5
+		>12.45.round(-1) // returns 10
+
+	Returns:
+		The rounded number.
+	*/
+
+	round: function(precision){
+		precision = Math.pow(10, precision || 0);
+		return Math.round(this * precision) / precision;
+	},
+
+	/*
+	Property: times
+		Executes a passed in function the specified number of times
+
+	Arguments:
+		function - the function to be executed on each iteration of the loop
+
+	Example:
+		>(4).times(alert);
+	*/
+
+	times: function(fn){
+		for (var i = 0; i < this; i++) fn(i);
 	}
 
 });
@@ -1031,10 +1641,6 @@ Function.extend({
 /*
 Script: Element.js
 	Contains useful Element prototypes, to be used with the dollar function <$>.
-
-Authors:
-	- Valerio Proietti, <http://mad4milk.net>
-	- Christophe Beyls, <http://digitalia.be>
 
 License:
 	MIT-style license.
@@ -1055,18 +1661,84 @@ var Element = new Class({
 		Creates a new element of the type passed in.
 
 	Arguments:
-		el - the tag name for the element you wish to create.
+		el - string; the tag name for the element you wish to create. you can also pass in an element reference, in which case it will be extended.
+		props - object; the properties you want to add to your element.
+		Accepts the same keys as <Element.setProperties>, but also allows events and styles
+
+	Props:
+		the key styles will be used as setStyles, the key events will be used as addEvents. any other key is used as setProperty.
 
 	Example:
-		>var div = new Element('div');
+		(start code)
+		new Element('a', {
+			'styles': {
+				'display': 'block',
+				'border': '1px solid black'
+			},
+			'events': {
+				'click': function(){
+					//aaa
+				},
+				'mousedown': function(){
+					//aaa
+				}
+			},
+			'class': 'myClassSuperClass',
+			'href': 'http://mad4milk.net'
+		});
+
+		(end)
 	*/
 
-	initialize: function(el){
-		if ($type(el) == 'string') el = document.createElement(el);
-		return $(el);
+	initialize: function(el, props){
+		if ($type(el) == 'string'){
+			if (window.ie && props && (props.name || props.type)){
+				var name = (props.name) ? ' name="' + props.name + '"' : '';
+				var type = (props.type) ? ' type="' + props.type + '"' : '';
+				delete props.name;
+				delete props.type;
+				el = '<' + el + name + type + '>';
+			}
+			el = document.createElement(el);
+		}
+		el = $(el);
+		return (!props || !el) ? el : el.set(props);
 	}
 
 });
+
+/*
+Class: Elements
+	- Every dom function such as <$$>, or in general every function that returns a collection of nodes in mootools, returns them as an Elements class.
+	- The purpose of the Elements class is to allow <Element> methods to work also on <Elements> array.
+	- Elements is also an Array, so it accepts all the <Array> methods.
+	- Every node of the Elements instance is already extended with <$>.
+
+Example:
+	>$$('myselector').each(function(el){
+	> //...
+	>});
+
+	some iterations here, $$('myselector') is also an array.
+
+	>$$('myselector').setStyle('color', 'red');
+	every element returned by $$('myselector') also accepts <Element> methods, in this example every element will be made red.
+*/
+
+var Elements = new Class({
+
+	initialize: function(elements){
+		return (elements) ? $extend(elements, this) : this;
+	}
+
+});
+
+Elements.extend = function(props){
+	for (var prop in props){
+		this.prototype[prop] = props[prop];
+		this[prop] = $native.generic(prop);
+	}
+};
 
 /*
 Section: Utility Functions
@@ -1094,67 +1766,83 @@ Note:
 */
 
 function $(el){
-	if (!el) return false;
-	if (el._element_extended_ || [window, document].test(el)) return el;
-	if ($type(el) == 'string') el = document.getElementById(el);
-	if ($type(el) != 'element') return false;
-	if (['object', 'embed'].test(el.tagName.toLowerCase()) || el.extend) return el;
-	el._element_extended_ = true;
-	Garbage.collect(el);
-	el.extend = Object.extend;
-	if (!(el.htmlElement)) el.extend(Element.prototype);
-	return el;
+	if (!el) return null;
+	if (el.htmlElement) return Garbage.collect(el);
+	if ([window, document].contains(el)) return el;
+	var type = $type(el);
+	if (type == 'string'){
+		el = document.getElementById(el);
+		type = (el) ? 'element' : false;
+	}
+	if (type != 'element') return null;
+	if (el.htmlElement) return Garbage.collect(el);
+	if (['object', 'embed'].contains(el.tagName.toLowerCase())) return el;
+	$extend(el, Element.prototype);
+	el.htmlElement = function(){};
+	return Garbage.collect(el);
 };
-
-//elements class
-
-var Elements = new Class({});
-
-new Object.Native(Elements);
-
-document.getElementsBySelector = document.getElementsByTagName;
 
 /*
 Function: $$
-	Selects, and extends DOM elements.
+	Selects, and extends DOM elements. Elements arrays returned with $$ will also accept all the <Element> methods.
+	The return type of element methods run through $$ is always an array. If the return array is only made by elements,
+	$$ will be applied automatically.
 
 Arguments:
-	HTMLCollection(document.getElementsByTagName, element.childNodes), an array of elements, a string.
+	HTML Collections, arrays of elements, arrays of strings as element ids, elements, strings as selectors.
+	Any number of the above as arguments are accepted.
 
 Note:
-	if you loaded <Dom.js>, $$ will also accept CSS Selectors.
+	if you load <Element.Selectors.js>, $$ will also accept CSS Selectors, otherwise the only selectors supported are tag names.
 
 Example:
 	>$$('a') //an array of all anchor tags on the page
 	>$$('a', 'b') //an array of all anchor and bold tags on the page
-	>$$('#myElement') //array containing only the element with id = myElement. (only with <Dom.js>)
-	>$$('#myElement a.myClass') //an array of all anchor tags with the class "myClass" within the DOM element with id "myElement" (only with <Dom.js>)
+	>$$('#myElement') //array containing only the element with id = myElement. (only with <Element.Selectors.js>)
+	>$$('#myElement a.myClass') //an array of all anchor tags with the class "myClass"
+	>//within the DOM element with id "myElement" (only with <Element.Selectors.js>)
+	>$$(myelement, myelement2, 'a', ['myid', myid2, 'myid3'], document.getElementsByTagName('div')) //an array containing:
+	>// the element referenced as myelement if existing,
+	>// the element referenced as myelement2 if existing,
+	>// all the elements with a as tag in the page,
+	>// the element with id = myid if existing
+	>// the element with id = myid2 if existing
+	>// the element with id = myid3 if existing
+	>// all the elements with div as tag in the page
 
 Returns:
-	array - array of all the dom elements matched
+	array - array of all the dom elements matched, extended with <$>.  Returns as <Elements>.
 */
 
+document.getElementsBySelector = document.getElementsByTagName;
+
 function $$(){
-	if (!arguments) return false;
-	if (arguments.length == 1){
-		if (!arguments[0]) return false;
-		if (arguments[0]._elements_extended_) return arguments[0];
-	}
 	var elements = [];
-	$each(arguments, function(selector){
-		switch ($type(selector)){
-			case 'element': elements.push($(selector)); break;
-			case 'string': selector = document.getElementsBySelector(selector);
-			default:
-			if (selector.length){
-				$each(selector, function(el){
-					if ($(el)) elements.push(el);
-				});
-			}
+	for (var i = 0, j = arguments.length; i < j; i++){
+		var selector = arguments[i];
+		switch($type(selector)){
+			case 'element': elements.push(selector);
+			case 'boolean': break;
+			case false: break;
+			case 'string': selector = document.getElementsBySelector(selector, true);
+			default: elements.extend(selector);
 		}
-	});
-	elements._elements_extended_ = true;
-	return Object.extend(elements, new Elements);
+	}
+	return $$.unique(elements);
+};
+
+$$.unique = function(array){
+	var elements = [];
+	for (var i = 0, l = array.length; i < l; i++){
+		if (array[i].$included) continue;
+		var element = $(array[i]);
+		if (element && !element.$included){
+			element.$included = true;
+			elements.push(element);
+		}
+	}
+	for (var n = 0, d = elements.length; n < d; n++) elements[n].$included = null;
+	return new Elements(elements);
 };
 
 Elements.Multi = function(property){
@@ -1162,13 +1850,12 @@ Elements.Multi = function(property){
 		var args = arguments;
 		var items = [];
 		var elements = true;
-		$each(this, function(el){
-			var returns = el[property].apply(el, args);
+		for (var i = 0, j = this.length, returns; i < j; i++){
+			returns = this[i][property].apply(this[i], args);
 			if ($type(returns) != 'element') elements = false;
 			items.push(returns);
-		});
-		if (elements) items = $$(items);
-		return items;
+		};
+		return (elements) ? $$.unique(items) : items;
 	};
 };
 
@@ -1176,7 +1863,9 @@ Element.extend = function(properties){
 	for (var property in properties){
 		HTMLElement.prototype[property] = properties[property];
 		Element.prototype[property] = properties[property];
-		Elements.prototype[property] = Elements.Multi(property);
+		Element[property] = $native.generic(property);
+		var elementsProperty = (Array.prototype[property]) ? property + 'Elements' : property;
+		Elements.prototype[elementsProperty] = Elements.Multi(property);
 	}
 };
 
@@ -1187,15 +1876,40 @@ Class: Element
 
 Element.extend({
 
+	/*
+	Property: set
+		you can set events, styles and properties with this shortcut. same as calling new Element.
+	*/
+
+	set: function(props){
+		for (var prop in props){
+			var val = props[prop];
+			switch(prop){
+				case 'styles': this.setStyles(val); break;
+				case 'events': if (this.addEvents) this.addEvents(val); break;
+				case 'properties': this.setProperties(val); break;
+				default: this.setProperty(prop, val);
+			}
+		}
+		return this;
+	},
+
 	inject: function(el, where){
-		el = $(el) || new Element(el);
-		switch (where){
-			case "before": $(el.parentNode).insertBefore(this, el); break;
-			case "after":
-				if (!el.getNext()) $(el.parentNode).appendChild(this);
-				else $(el.parentNode).insertBefore(this, el.getNext());
+		el = $(el);
+		switch(where){
+			case 'before': el.parentNode.insertBefore(this, el); break;
+			case 'after':
+				var next = el.getNext();
+				if (!next) el.parentNode.appendChild(this);
+				else el.parentNode.insertBefore(this, next);
 				break;
-			case "inside": el.appendChild(this);
+			case 'top':
+				var first = el.firstChild;
+				if (first){
+					el.insertBefore(this, first);
+					break;
+				}
+			default: el.appendChild(this);
 		}
 		return this;
 	},
@@ -1204,9 +1918,8 @@ Element.extend({
 	Property: injectBefore
 		Inserts the Element before the passed element.
 
-	Parameteres:
-		el - a string representing the element to be injected in (myElementId, or div), or an element reference.
-		If you pass div or another tag, the element will be created.
+	Arguments:
+		el - an element reference or the id of the element to be injected in.
 
 	Example:
 		>html:
@@ -1217,7 +1930,6 @@ Element.extend({
 		>resulting html:
 		><div id="mySecondElement"></div>
 		><div id="myElement"></div>
-
 	*/
 
 	injectBefore: function(el){
@@ -1239,20 +1951,32 @@ Element.extend({
 	*/
 
 	injectInside: function(el){
-		return this.inject(el, 'inside');
+		return this.inject(el, 'bottom');
+	},
+
+	/*
+	Property: injectTop
+		Same as <Element.injectInside>, but inserts the element inside, at the top.
+	*/
+
+	injectTop: function(el){
+		return this.inject(el, 'top');
 	},
 
 	/*
 	Property: adopt
-		Inserts the passed element inside the Element. Works as <Element.injectInside> but in reverse.
+		Inserts the passed elements inside the Element.
 
-	Parameteres:
-		el - a string representing the element to be injected in (myElementId, or div), or an element reference.
-		If you pass div or another tag, the element will be created.
+	Arguments:
+		accepts elements references, element ids as string, selectors ($$('stuff')) / array of elements, array of ids as strings and collections.
 	*/
 
-	adopt: function(el){
-		this.appendChild($(el) || new Element(el));
+	adopt: function(){
+		var elements = [];
+		$each(arguments, function(argument){
+			elements = elements.concat(argument);
+		});
+		$$(elements).inject(this);
 		return this;
 	},
 
@@ -1265,15 +1989,17 @@ Element.extend({
 	*/
 
 	remove: function(){
-		this.parentNode.removeChild(this);
-		return this;
+		return this.parentNode.removeChild(this);
 	},
 
 	/*
 	Property: clone
 		Clones the Element and returns the cloned one.
 
-	Returns: 
+	Arguments:
+		contents - boolean, when true the Element is cloned with childNodes, default true
+
+	Returns:
 		the cloned element
 
 	Example:
@@ -1282,15 +2008,21 @@ Element.extend({
 	*/
 
 	clone: function(contents){
-		var el = this.cloneNode(contents !== false);
-		return $(el);
+		var el = $(this.cloneNode(contents !== false));
+		if (!el.$events) return el;
+		el.$events = {};
+		for (var type in this.$events) el.$events[type] = {
+			'keys': $A(this.$events[type].keys),
+			'values': $A(this.$events[type].values)
+		};
+		return el.removeEvents();
 	},
 
 	/*
 	Property: replaceWith
 		Replaces the Element with an element passed.
 
-	Parameteres:
+	Arguments:
 		el - a string representing the element to be injected in (myElementId, or div), or an element reference.
 		If you pass div or another tag, the element will be created.
 
@@ -1302,7 +2034,7 @@ Element.extend({
 	*/
 
 	replaceWith: function(el){
-		el = $(el) || new Element(el);
+		el = $(el);
 		this.parentNode.replaceChild(el, this);
 		return el;
 	},
@@ -1320,12 +2052,6 @@ Element.extend({
 	*/
 
 	appendText: function(text){
-		if (window.ie){
-			switch(this.getTag()){
-				case 'style': this.styleSheet.cssText = text; return this;
-				case 'script': this.setProperty('text', text); return this;
-			}
-		}
 		this.appendChild(document.createTextNode(text));
 		return this;
 	},
@@ -1335,19 +2061,19 @@ Element.extend({
 		Tests the Element to see if it has the passed in className.
 
 	Returns:
-	 	true - the Element has the class
-	 	false - it doesn't
-	 
+		true - the Element has the class
+		false - it doesn't
+
 	Arguments:
-		className - the class name to test.
-	 
+		className - string; the class name to test.
+
 	Example:
 		><div id="myElement" class="testClass"></div>
 		>$('myElement').hasClass('testClass'); //returns true
 	*/
 
 	hasClass: function(className){
-		return this.className.test('(?:^|\\s)'+className+'(?:\\s|$)');
+		return this.className.contains(className, ' ');
 	},
 
 	/*
@@ -1355,25 +2081,25 @@ Element.extend({
 		Adds the passed in class to the Element, if the element doesnt already have it.
 
 	Arguments:
-		className - the class name to add
+		className - string; the class name to add
 
-	Example: 
+	Example:
 		><div id="myElement" class="testClass"></div>
 		>$('myElement').addClass('newClass'); //<div id="myElement" class="testClass newClass"></div>
 	*/
 
 	addClass: function(className){
-		if (!this.hasClass(className)) this.className = (this.className+' '+className).clean();
+		if (!this.hasClass(className)) this.className = (this.className + ' ' + className).clean();
 		return this;
 	},
 
 	/*
 	Property: removeClass
-		works like <Element.addClass>, but removes the class from the element.
+		Works like <Element.addClass>, but removes the class from the element.
 	*/
 
 	removeClass: function(className){
-		this.className = this.className.replace(new RegExp('(^|\\s)'+className+'(?:\\s|$)'), '$1').clean();
+		this.className = this.className.replace(new RegExp('(^|\\s)' + className + '(?:\\s|$)'), '$1').clean();
 		return this;
 	},
 
@@ -1402,15 +2128,24 @@ Element.extend({
 
 		Arguments:
 			property - the property to set
-			value - the value to which to set it
+			value - the value to which to set it; for numeric values that require "px" you can pass an integer
 
 		Example:
 			>$('myElement').setStyle('width', '300px'); //the width is now 300px
+			>$('myElement').setStyle('width', 300); //the width is now 300px
 	*/
 
 	setStyle: function(property, value){
-		if (property == 'opacity') this.setOpacity(parseFloat(value));
-		else this.style[property.camelCase()] = (value.push) ? 'rgb('+value.join(',')+')' : value;
+		switch(property){
+			case 'opacity': return this.setOpacity(parseFloat(value));
+			case 'float': property = (window.ie) ? 'styleFloat' : 'cssFloat';
+		}
+		property = property.camelCase();
+		switch($type(value)){
+			case 'number': if (!['zIndex', 'zoom'].contains(property)) value += 'px'; break;
+			case 'array': value = 'rgb(' + value.join(',') + ')';
+		}
+		this.style[property] = value;
 		return this;
 	},
 
@@ -1419,13 +2154,13 @@ Element.extend({
 		Applies a collection of styles to the Element.
 
 	Arguments:
-		source - an object or string containing all the styles to apply. You cannot set the opacity using a string.
+		source - an object or string containing all the styles to apply. When its a string it overrides old style.
 
 	Examples:
 		>$('myElement').setStyles({
 		>	border: '1px solid #000',
-		>	width: '300px',
-		>	height: '400px'
+		>	width: 300,
+		>	height: 400
 		>});
 
 		OR
@@ -1434,12 +2169,9 @@ Element.extend({
 	*/
 
 	setStyles: function(source){
-		switch ($type(source)){
-			case 'object':
-				for (var property in source) this.setStyle(property, source[property]);
-				break;
-			case 'string':
-				this.style.cssText = source;
+		switch($type(source)){
+			case 'object': Element.setMany(this, 'setStyle', source); break;
+			case 'string': this.style.cssText = source;
 		}
 		return this;
 	},
@@ -1449,7 +2181,7 @@ Element.extend({
 		Sets the opacity of the Element, and sets also visibility == "hidden" if opacity == 0, and visibility = "visible" if opacity > 0.
 
 	Arguments:
-		opacity - Accepts numbers from 0 to 1.
+		opacity - float; Accepts values from 0 to 1.
 
 	Example:
 		>$('myElement').setOpacity(0.5) //make it 50% transparent
@@ -1457,13 +2189,13 @@ Element.extend({
 
 	setOpacity: function(opacity){
 		if (opacity == 0){
-			if(this.style.visibility != "hidden") this.style.visibility = "hidden";
+			if (this.style.visibility != "hidden") this.style.visibility = "hidden";
 		} else {
-			if(this.style.visibility != "visible") this.style.visibility = "visible";
+			if (this.style.visibility != "visible") this.style.visibility = "visible";
 		}
 		if (!this.currentStyle || !this.currentStyle.hasLayout) this.style.zoom = 1;
-		if (window.ie) this.style.filter = "alpha(opacity=" + opacity*100 + ")";
-		this.style.opacity = this.opacity = opacity;
+		if (window.ie) this.style.filter = (opacity == 1) ? '' : "alpha(opacity=" + opacity * 100 + ")";
+		this.style.opacity = this.$tmp.opacity = opacity;
 		return this;
 	},
 
@@ -1477,7 +2209,7 @@ Element.extend({
 	Example:
 		>$('myElement').getStyle('width'); //returns "400px"
 		>//but you can also use
-		>$('myElement').getStyle('width').toInt(); //returns "400"
+		>$('myElement').getStyle('width').toInt(); //returns 400
 
 	Returns:
 		the style as a string
@@ -1485,112 +2217,67 @@ Element.extend({
 
 	getStyle: function(property){
 		property = property.camelCase();
-		var style = this.style[property] || false;
-		if (!$chk(style)){
-			if (property == 'opacity') return $chk(this.opacity) ? this.opacity : 1;
-			if (['margin', 'padding'].test(property)){
-				return [this.getStyle(property+'-top') || 0, this.getStyle(property+'-right') || 0,
-						this.getStyle(property+'-bottom') || 0, this.getStyle(property+'-left') || 0].join(' ');
-			}
-			if (document.defaultView) style = document.defaultView.getComputedStyle(this, null).getPropertyValue(property.hyphenate());
-			else if (this.currentStyle) style = this.currentStyle[property];
-		}
-		if (style == 'auto' && ['height', 'width'].test(property)) return this['offset'+property.capitalize()]+'px';
-		return (style && property.test(/color/i) && style.test(/rgb/)) ? style.rgbToHex() : style;
-	},
-
-	/*
-	Property: addEvent
-		Attaches an event listener to a DOM element.
-
-	Arguments:
-		type - the event to monitor ('click', 'load', etc) without the prefix 'on'.
-		fn - the function to execute
-
-	Example:
-		>$('myElement').addEvent('click', function(){alert('clicked!')});
-	*/
-
-	addEvent: function(type, fn){
-		this.events = this.events || {};
-		this.events[type] = this.events[type] || {'keys': [], 'values': []};
-		if (!this.events[type].keys.test(fn)){
-			this.events[type].keys.push(fn);
-			if (this.addEventListener){
-				this.addEventListener((type == 'mousewheel' && window.gecko) ? 'DOMMouseScroll' : type, fn, false);
-			} else {
-				fn = fn.bind(this);
-				this.attachEvent('on'+type, fn);
-				this.events[type].values.push(fn);
-			}
-		}
-		return this;
-	},
-
-	addEvents: function(source){
-		if (source){
-			for (var type in source) this.addEvent(type, source[type]);
-		}
-		return this;
-	},
-
-	/*
-	Property: removeEvent
-		Works as Element.addEvent, but instead removes the previously added event listener.
-	*/
-
-	removeEvent: function(type, fn){
-		if (this.events && this.events[type]){
-			var pos = this.events[type].keys.indexOf(fn);
-			if (pos == -1) return this;
-			var key = this.events[type].keys.splice(pos,1)[0];
-			if (this.removeEventListener){
-				this.removeEventListener((type == 'mousewheel' && window.gecko) ? 'DOMMouseScroll' : type, key, false);
-			} else {
-				this.detachEvent('on'+type, this.events[type].values.splice(pos,1)[0]);
-			}
-		}
-		return this;
-	},
-
-	/*
-	Property: removeEvents
-		removes all events of a certain type from an element. if no argument is passed in, removes all events.
-	*/
-
-	removeEvents: function(type){
-		if (this.events){
-			if (type){
-				if (this.events[type]){
-					this.events[type].keys.each(function(fn){
-						this.removeEvent(type, fn);
+		var result = this.style[property];
+		if (!$chk(result)){
+			if (property == 'opacity') return this.$tmp.opacity;
+			result = [];
+			for (var style in Element.Styles){
+				if (property == style){
+					Element.Styles[style].each(function(s){
+						var style = this.getStyle(s);
+						result.push(parseInt(style) ? style : '0px');
 					}, this);
-					this.events[type] = null;
+					if (property == 'border'){
+						var every = result.every(function(bit){
+							return (bit == result[0]);
+						});
+						return (every) ? result[0] : false;
+					}
+					return result.join(' ');
 				}
-			} else {
-				for (var evType in this.events) this.removeEvents(evType);
-				this.events = null;
 			}
+			if (property.contains('border')){
+				if (Element.Styles.border.contains(property)){
+					return ['Width', 'Style', 'Color'].map(function(p){
+						return this.getStyle(property + p);
+					}, this).join(' ');
+				} else if (Element.borderShort.contains(property)){
+					return ['Top', 'Right', 'Bottom', 'Left'].map(function(p){
+						return this.getStyle('border' + p + property.replace('border', ''));
+					}, this).join(' ');
+				}
+			}
+			if (document.defaultView) result = document.defaultView.getComputedStyle(this, null).getPropertyValue(property.hyphenate());
+			else if (this.currentStyle) result = this.currentStyle[property];
 		}
-		return this;
+		if (window.ie) result = Element.fixStyle(property, result, this);
+		if (result && property.test(/color/i) && result.contains('rgb')){
+			return result.split('rgb').splice(1,4).map(function(color){
+				return color.rgbToHex();
+			}).join(' ');
+		}
+		return result;
 	},
 
 	/*
-	Property: fireEvent
-		executes all events of the specified type present in the element.
+	Property: getStyles
+		Returns an object of styles of the Element for each argument passed in.
+		Arguments:
+		properties - strings; any number of style properties
+	Example:
+		>$('myElement').getStyles('width','height','padding');
+		>//returns an object like:
+		>{width: "10px", height: "10px", padding: "10px 0px 10px 0px"}
 	*/
 
-	fireEvent: function(type, args){
-		if (this.events && this.events[type]){
-			this.events[type].keys.each(function(fn){
-				fn.bind(this, args)();
-			}, this);
-		}
+	getStyles: function(){
+		return Element.getMany(this, 'getStyle', arguments);
 	},
 
-	getBrother: function(what){
-		var el = this[what+'Sibling'];
-		while ($type(el) == 'whitespace') el = el[what+'Sibling'];
+	walk: function(brother, start){
+		brother += 'Sibling';
+		var el = (start) ? this[start] : this[brother];
+		while (el && $type(el) != 'element') el = el[brother];
 		return $(el);
 	},
 
@@ -1606,7 +2293,7 @@ Element.extend({
 	*/
 
 	getPrevious: function(){
-		return this.getBrother('previous');
+		return this.walk('previous');
 	},
 
 	/*
@@ -1615,7 +2302,7 @@ Element.extend({
 	*/
 
 	getNext: function(){
-		return this.getBrother('next');
+		return this.walk('next');
 	},
 
 	/*
@@ -1624,9 +2311,7 @@ Element.extend({
 	*/
 
 	getFirst: function(){
-		var el = this.firstChild;
-		while ($type(el) == 'whitespace') el = el.nextSibling;
-		return $(el);
+		return this.walk('next', 'firstChild');
 	},
 
 	/*
@@ -1635,11 +2320,9 @@ Element.extend({
 	*/
 
 	getLast: function(){
-		var el = this.lastChild;
-		while ($type(el) == 'whitespace') el = el.previousSibling;
-		return $(el);
+		return this.walk('previous', 'lastChild');
 	},
-	
+
 	/*
 	Property: getParent
 		returns the $(element.parentNode)
@@ -1648,7 +2331,7 @@ Element.extend({
 	getParent: function(){
 		return $(this.parentNode);
 	},
-	
+
 	/*
 	Property: getChildren
 		returns all the $(element.childNodes), excluding text nodes. Returns as <Elements>.
@@ -1659,11 +2342,67 @@ Element.extend({
 	},
 
 	/*
+	Property: hasChild
+		returns true if the passed in element is a child of the $(element).
+	*/
+
+	hasChild: function(el){
+		return !!$A(this.getElementsByTagName('*')).contains(el);
+	},
+
+	/*
+	Property: getProperty
+		Gets the an attribute of the Element.
+
+	Arguments:
+		property - string; the attribute to retrieve
+
+	Example:
+		>$('myImage').getProperty('src') // returns whatever.gif
+
+	Returns:
+		the value, or an empty string
+	*/
+
+	getProperty: function(property){
+		var index = Element.Properties[property];
+		if (index) return this[index];
+		var flag = Element.PropertiesIFlag[property] || 0;
+		if (!window.ie || flag) return this.getAttribute(property, flag);
+		var node = this.attributes[property];
+		return (node) ? node.nodeValue : null;
+	},
+
+	/*
+	Property: removeProperty
+		Removes an attribute from the Element
+
+	Arguments:
+		property - string; the attribute to remove
+	*/
+
+	removeProperty: function(property){
+		var index = Element.Properties[property];
+		if (index) this[index] = '';
+		else this.removeAttribute(property);
+		return this;
+	},
+
+	/*
+	Property: getProperties
+		same as <Element.getStyles>, but for properties
+	*/
+
+	getProperties: function(){
+		return Element.getMany(this, 'getProperty', arguments);
+	},
+
+	/*
 	Property: setProperty
 		Sets an attribute for the Element.
 
 	Arguments:
-		property - the property to assign the value passed in
+		property - string; the property to assign the value passed in
 		value - the value to assign to the property passed in
 
 	Example:
@@ -1671,19 +2410,9 @@ Element.extend({
 	*/
 
 	setProperty: function(property, value){
-		switch (property){
-			case 'class': this.className = value; break;
-			case 'style': this.setStyles(value); break;
-			case 'name': if (window.ie6){
-				var el = $(document.createElement('<'+this.getTag()+' name="'+value+'" />'));
-				$each(this.attributes, function(attribute){
-					if (attribute.name != 'name') el.setProperty(attribute.name, attribute.value);
-				});
-				if (this.parentNode) this.replaceWith(el);
-				return el;
-			}
-			default: this.setAttribute(property, value);
-		}
+		var index = Element.Properties[property];
+		if (index) this[index] = value;
+		else this.setAttribute(property, value);
 		return this;
 	},
 
@@ -1705,8 +2434,7 @@ Element.extend({
 	*/
 
 	setProperties: function(source){
-		for (var property in source) this.setProperty(property, source[property]);
-		return this;
+		return Element.setMany(this, 'setProperty', source);
 	},
 
 	/*
@@ -1714,7 +2442,7 @@ Element.extend({
 		Sets the innerHTML of the Element.
 
 	Arguments:
-		html - the new innerHTML for the element.
+		html - string; the new innerHTML for the element.
 
 	Example:
 		>$('myElement').setHTML(newHTML) //the innerHTML of myElement is now = newHTML
@@ -1726,21 +2454,48 @@ Element.extend({
 	},
 
 	/*
-	Property: getProperty
-		Gets the an attribute of the Element.
+	Property: setText
+		Sets the inner text of the Element.
 
 	Arguments:
-		property - the attribute to retrieve
+		text - string; the new text content for the element.
 
 	Example:
-		>$('myImage').getProperty('src') // returns whatever.gif
-
-	Returns:
-		the value, or an empty string
+		>$('myElement').setText('some text') //the text of myElement is now = 'some text'
 	*/
 
-	getProperty: function(property){
-		return (property == 'class') ? this.className : this.getAttribute(property);
+	setText: function(text){
+		var tag = this.getTag();
+		if (['style', 'script'].contains(tag)){
+			if (window.ie){
+				if (tag == 'style') this.styleSheet.cssText = text;
+				else if (tag ==  'script') this.setProperty('text', text);
+				return this;
+			} else {
+				this.removeChild(this.firstChild);
+				return this.appendText(text);
+			}
+		}
+		this[$defined(this.innerText) ? 'innerText' : 'textContent'] = text;
+		return this;
+	},
+
+	/*
+	Property: getText
+		Gets the inner text of the Element.
+	*/
+
+	getText: function(){
+		var tag = this.getTag();
+		if (['style', 'script'].contains(tag)){
+			if (window.ie){
+				if (tag == 'style') return this.styleSheet.cssText;
+				else if (tag ==  'script') return this.getProperty('text');
+			} else {
+				return this.innerHTML;
+			}
+		}
+		return ($pick(this.innerText, this.textContent));
 	},
 
 	/*
@@ -1759,8 +2514,923 @@ Element.extend({
 	},
 
 	/*
+	Property: empty
+		Empties an element of all its children.
+
+	Example:
+		>$('myDiv').empty() // empties the Div and returns it
+
+	Returns:
+		The element.
+	*/
+
+	empty: function(){
+		Garbage.trash(this.getElementsByTagName('*'));
+		return this.setHTML('');
+	}
+
+});
+
+Element.fixStyle = function(property, result, element){
+	if ($chk(parseInt(result))) return result;
+	if (['height', 'width'].contains(property)){
+		var values = (property == 'width') ? ['left', 'right'] : ['top', 'bottom'];
+		var size = 0;
+		values.each(function(value){
+			size += element.getStyle('border-' + value + '-width').toInt() + element.getStyle('padding-' + value).toInt();
+		});
+		return element['offset' + property.capitalize()] - size + 'px';
+	} else if (property.test(/border(.+)Width|margin|padding/)){
+		return '0px';
+	}
+	return result;
+};
+
+Element.Styles = {'border': [], 'padding': [], 'margin': []};
+['Top', 'Right', 'Bottom', 'Left'].each(function(direction){
+	for (var style in Element.Styles) Element.Styles[style].push(style + direction);
+});
+
+Element.borderShort = ['borderWidth', 'borderStyle', 'borderColor'];
+
+Element.getMany = function(el, method, keys){
+	var result = {};
+	$each(keys, function(key){
+		result[key] = el[method](key);
+	});
+	return result;
+};
+
+Element.setMany = function(el, method, pairs){
+	for (var key in pairs) el[method](key, pairs[key]);
+	return el;
+};
+
+Element.Properties = new Abstract({
+	'class': 'className', 'for': 'htmlFor', 'colspan': 'colSpan', 'rowspan': 'rowSpan',
+	'accesskey': 'accessKey', 'tabindex': 'tabIndex', 'maxlength': 'maxLength',
+	'readonly': 'readOnly', 'frameborder': 'frameBorder', 'value': 'value',
+	'disabled': 'disabled', 'checked': 'checked', 'multiple': 'multiple', 'selected': 'selected'
+});
+Element.PropertiesIFlag = {
+	'href': 2, 'src': 2
+};
+
+Element.Methods = {
+	Listeners: {
+		addListener: function(type, fn){
+			if (this.addEventListener) this.addEventListener(type, fn, false);
+			else this.attachEvent('on' + type, fn);
+			return this;
+		},
+
+		removeListener: function(type, fn){
+			if (this.removeEventListener) this.removeEventListener(type, fn, false);
+			else this.detachEvent('on' + type, fn);
+			return this;
+		}
+	}
+};
+
+window.extend(Element.Methods.Listeners);
+document.extend(Element.Methods.Listeners);
+Element.extend(Element.Methods.Listeners);
+
+var Garbage = {
+
+	elements: [],
+
+	collect: function(el){
+		if (!el.$tmp){
+			Garbage.elements.push(el);
+			el.$tmp = {'opacity': 1};
+		}
+		return el;
+	},
+
+	trash: function(elements){
+		for (var i = 0, j = elements.length, el; i < j; i++){
+			if (!(el = elements[i]) || !el.$tmp) continue;
+			if (el.$events) el.fireEvent('trash').removeEvents();
+			for (var p in el.$tmp) el.$tmp[p] = null;
+			for (var d in Element.prototype) el[d] = null;
+			Garbage.elements[Garbage.elements.indexOf(el)] = null;
+			el.htmlElement = el.$tmp = el = null;
+		}
+		Garbage.elements.remove(null);
+	},
+
+	empty: function(){
+		Garbage.collect(window);
+		Garbage.collect(document);
+		Garbage.trash(Garbage.elements);
+	}
+
+};
+
+window.addListener('beforeunload', function(){
+	window.addListener('unload', Garbage.empty);
+	if (window.ie) window.addListener('unload', CollectGarbage);
+});
+
+/*
+Script: Element.Event.js
+	Contains the Event Class, Element methods to deal with Element events, custom Events, and the Function prototype bindWithEvent.
+
+License:
+	MIT-style license.
+*/
+
+/*
+Class: Event
+	Cross browser methods to manage events.
+
+Arguments:
+	event - the event
+
+Properties:
+	shift - true if the user pressed the shift
+	control - true if the user pressed the control
+	alt - true if the user pressed the alt
+	meta - true if the user pressed the meta key
+	wheel - the amount of third button scrolling
+	code - the keycode of the key pressed
+	page.x - the x position of the mouse, relative to the full window
+	page.y - the y position of the mouse, relative to the full window
+	client.x - the x position of the mouse, relative to the viewport
+	client.y - the y position of the mouse, relative to the viewport
+	key - the key pressed as a lowercase string. key also returns 'enter', 'up', 'down', 'left', 'right', 'space', 'backspace', 'delete', 'esc'. Handy for these special keys.
+	target - the event target
+	relatedTarget - the event related target
+
+Example:
+	(start code)
+	$('myLink').onkeydown = function(event){
+		var event = new Event(event);
+		//event is now the Event class.
+		alert(event.key); //returns the lowercase letter pressed
+		alert(event.shift); //returns true if the key pressed is shift
+		if (event.key == 's' && event.control) alert('document saved');
+	};
+	(end)
+*/
+
+var Event = new Class({
+
+	initialize: function(event){
+		if (event && event.$extended) return event;
+		this.$extended = true;
+		event = event || window.event;
+		this.event = event;
+		this.type = event.type;
+		this.target = event.target || event.srcElement;
+		if (this.target.nodeType == 3) this.target = this.target.parentNode;
+		this.shift = event.shiftKey;
+		this.control = event.ctrlKey;
+		this.alt = event.altKey;
+		this.meta = event.metaKey;
+		if (['DOMMouseScroll', 'mousewheel'].contains(this.type)){
+			this.wheel = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
+		} else if (this.type.contains('key')){
+			this.code = event.which || event.keyCode;
+			for (var name in Event.keys){
+				if (Event.keys[name] == this.code){
+					this.key = name;
+					break;
+				}
+			}
+			if (this.type == 'keydown'){
+				var fKey = this.code - 111;
+				if (fKey > 0 && fKey < 13) this.key = 'f' + fKey;
+			}
+			this.key = this.key || String.fromCharCode(this.code).toLowerCase();
+		} else if (this.type.test(/(click|mouse|menu)/)){
+			this.page = {
+				'x': event.pageX || event.clientX + document.documentElement.scrollLeft,
+				'y': event.pageY || event.clientY + document.documentElement.scrollTop
+			};
+			this.client = {
+				'x': event.pageX ? event.pageX - window.pageXOffset : event.clientX,
+				'y': event.pageY ? event.pageY - window.pageYOffset : event.clientY
+			};
+			this.rightClick = (event.which == 3) || (event.button == 2);
+			switch(this.type){
+				case 'mouseover': this.relatedTarget = event.relatedTarget || event.fromElement; break;
+				case 'mouseout': this.relatedTarget = event.relatedTarget || event.toElement;
+			}
+			this.fixRelatedTarget();
+		}
+		return this;
+	},
+
+	/*
+	Property: stop
+		cross browser method to stop an event
+	*/
+
+	stop: function(){
+		return this.stopPropagation().preventDefault();
+	},
+
+	/*
+	Property: stopPropagation
+		cross browser method to stop the propagation of an event
+	*/
+
+	stopPropagation: function(){
+		if (this.event.stopPropagation) this.event.stopPropagation();
+		else this.event.cancelBubble = true;
+		return this;
+	},
+
+	/*
+	Property: preventDefault
+		cross browser method to prevent the default action of the event
+	*/
+
+	preventDefault: function(){
+		if (this.event.preventDefault) this.event.preventDefault();
+		else this.event.returnValue = false;
+		return this;
+	}
+
+});
+
+Event.fix = {
+
+	relatedTarget: function(){
+		if (this.relatedTarget && this.relatedTarget.nodeType == 3) this.relatedTarget = this.relatedTarget.parentNode;
+	},
+
+	relatedTargetGecko: function(){
+		try {Event.fix.relatedTarget.call(this);} catch(e){this.relatedTarget = this.target;}
+	}
+
+};
+
+Event.prototype.fixRelatedTarget = (window.gecko) ? Event.fix.relatedTargetGecko : Event.fix.relatedTarget;
+
+/*
+Property: keys
+	you can add additional Event keys codes this way:
+
+Example:
+	(start code)
+	Event.keys.whatever = 80;
+	$(myelement).addEvent(keydown, function(event){
+		event = new Event(event);
+		if (event.key == 'whatever') console.log(whatever key clicked).
+	});
+	(end)
+*/
+
+Event.keys = new Abstract({
+	'enter': 13,
+	'up': 38,
+	'down': 40,
+	'left': 37,
+	'right': 39,
+	'esc': 27,
+	'space': 32,
+	'backspace': 8,
+	'tab': 9,
+	'delete': 46
+});
+
+/*
+Class: Element
+	Custom class to allow all of its methods to be used with any DOM element via the dollar function <$>.
+*/
+
+Element.Methods.Events = {
+
+	/*
+	Property: addEvent
+		Attaches an event listener to a DOM element.
+
+	Arguments:
+		type - the event to monitor ('click', 'load', etc) without the prefix 'on'.
+		fn - the function to execute
+
+	Example:
+		>$('myElement').addEvent('click', function(){alert('clicked!')});
+	*/
+
+	addEvent: function(type, fn){
+		this.$events = this.$events || {};
+		this.$events[type] = this.$events[type] || {'keys': [], 'values': []};
+		if (this.$events[type].keys.contains(fn)) return this;
+		this.$events[type].keys.push(fn);
+		var realType = type;
+		var custom = Element.Events[type];
+		if (custom){
+			if (custom.add) custom.add.call(this, fn);
+			if (custom.map) fn = custom.map;
+			if (custom.type) realType = custom.type;
+		}
+		if (!this.addEventListener) fn = fn.create({'bind': this, 'event': true});
+		this.$events[type].values.push(fn);
+		return (Element.NativeEvents.contains(realType)) ? this.addListener(realType, fn) : this;
+	},
+
+	/*
+	Property: removeEvent
+		Works as Element.addEvent, but instead removes the previously added event listener.
+	*/
+
+	removeEvent: function(type, fn){
+		if (!this.$events || !this.$events[type]) return this;
+		var pos = this.$events[type].keys.indexOf(fn);
+		if (pos == -1) return this;
+		var key = this.$events[type].keys.splice(pos,1)[0];
+		var value = this.$events[type].values.splice(pos,1)[0];
+		var custom = Element.Events[type];
+		if (custom){
+			if (custom.remove) custom.remove.call(this, fn);
+			if (custom.type) type = custom.type;
+		}
+		return (Element.NativeEvents.contains(type)) ? this.removeListener(type, value) : this;
+	},
+
+	/*
+	Property: addEvents
+		As <addEvent>, but accepts an object and add multiple events at once.
+	*/
+
+	addEvents: function(source){
+		return Element.setMany(this, 'addEvent', source);
+	},
+
+	/*
+	Property: removeEvents
+		removes all events of a certain type from an element. if no argument is passed in, removes all events.
+
+	Arguments:
+		type - string; the event name (e.g. 'click')
+	*/
+
+	removeEvents: function(type){
+		if (!this.$events) return this;
+		if (!type){
+			for (var evType in this.$events) this.removeEvents(evType);
+			this.$events = null;
+		} else if (this.$events[type]){
+			this.$events[type].keys.each(function(fn){
+				this.removeEvent(type, fn);
+			}, this);
+			this.$events[type] = null;
+		}
+		return this;
+	},
+
+	/*
+	Property: fireEvent
+		executes all events of the specified type present in the element.
+
+	Arguments:
+		type - string; the event name (e.g. 'click')
+		args - array or single object; arguments to pass to the function; if more than one argument, must be an array
+		delay - (integer) delay (in ms) to wait to execute the event
+	*/
+
+	fireEvent: function(type, args, delay){
+		if (this.$events && this.$events[type]){
+			this.$events[type].keys.each(function(fn){
+				fn.create({'bind': this, 'delay': delay, 'arguments': args})();
+			}, this);
+		}
+		return this;
+	},
+
+	/*
+	Property: cloneEvents
+		Clones all events from an element to this element.
+
+	Arguments:
+		from - element, copy all events from this element
+		type - optional, copies only events of this type
+	*/
+
+	cloneEvents: function(from, type){
+		if (!from.$events) return this;
+		if (!type){
+			for (var evType in from.$events) this.cloneEvents(from, evType);
+		} else if (from.$events[type]){
+			from.$events[type].keys.each(function(fn){
+				this.addEvent(type, fn);
+			}, this);
+		}
+		return this;
+	}
+
+};
+
+window.extend(Element.Methods.Events);
+document.extend(Element.Methods.Events);
+Element.extend(Element.Methods.Events);
+
+/* Section: Custom Events */
+
+Element.Events = new Abstract({
+
+	/*
+	Event: mouseenter
+		In addition to the standard javascript events (load, mouseover, mouseout, click, etc.) <Event.js> contains two custom events
+		this event fires when the mouse enters the area of the dom element; will not be fired again if the mouse crosses over children of the element (unlike mouseover)
+
+
+	Example:
+		>$(myElement).addEvent('mouseenter', myFunction);
+	*/
+
+	'mouseenter': {
+		type: 'mouseover',
+		map: function(event){
+			event = new Event(event);
+			if (event.relatedTarget != this && !this.hasChild(event.relatedTarget)) this.fireEvent('mouseenter', event);
+		}
+	},
+
+	/*
+	Event: mouseleave
+		this event fires when the mouse exits the area of the dom element; will not be fired again if the mouse crosses over children of the element (unlike mouseout)
+
+
+	Example:
+		>$(myElement).addEvent('mouseleave', myFunction);
+	*/
+
+	'mouseleave': {
+		type: 'mouseout',
+		map: function(event){
+			event = new Event(event);
+			if (event.relatedTarget != this && !this.hasChild(event.relatedTarget)) this.fireEvent('mouseleave', event);
+		}
+	},
+
+	'mousewheel': {
+		type: (window.gecko) ? 'DOMMouseScroll' : 'mousewheel'
+	}
+
+});
+
+Element.NativeEvents = [
+	'click', 'dblclick', 'mouseup', 'mousedown', //mouse buttons
+	'mousewheel', 'DOMMouseScroll', //mouse wheel
+	'mouseover', 'mouseout', 'mousemove', //mouse movement
+	'keydown', 'keypress', 'keyup', //keys
+	'load', 'unload', 'beforeunload', 'resize', 'move', //window
+	'focus', 'blur', 'change', 'submit', 'reset', 'select', //forms elements
+	'error', 'abort', 'contextmenu', 'scroll' //misc
+];
+
+/*
+Class: Function
+	A collection of The Function Object prototype methods.
+*/
+
+Function.extend({
+
+	/*
+	Property: bindWithEvent
+		automatically passes MooTools Event Class.
+
+	Arguments:
+		bind - optional, the object that the "this" of the function will refer to.
+		args - optional, an argument to pass to the function; if more than one argument, it must be an array of arguments.
+
+	Returns:
+		a function with the parameter bind as its "this" and as a pre-passed argument event or window.event, depending on the browser.
+
+	Example:
+		>function myFunction(event){
+		>	alert(event.client.x) //returns the coordinates of the mouse..
+		>};
+		>myElement.addEvent('click', myFunction.bindWithEvent(myElement));
+	*/
+
+	bindWithEvent: function(bind, args){
+		return this.create({'bind': bind, 'arguments': args, 'event': Event});
+	}
+
+});
+
+
+/*
+Script: Element.Filters.js
+	add Filters capability to <Elements>.
+
+License:
+	MIT-style license.
+*/
+
+/*
+Class: Elements
+	A collection of methods to be used with <$$> elements collections.
+*/
+
+Elements.extend({
+	
+	/*
+	Property: filterByTag
+		Filters the collection by a specified tag name.
+		Returns a new Elements collection, while the original remains untouched.
+	*/
+	
+	filterByTag: function(tag){
+		return new Elements(this.filter(function(el){
+			return (Element.getTag(el) == tag);
+		}));
+	},
+	
+	/*
+	Property: filterByClass
+		Filters the collection by a specified class name.
+		Returns a new Elements collection, while the original remains untouched.
+	*/
+	
+	filterByClass: function(className, nocash){
+		var elements = this.filter(function(el){
+			return (el.className && el.className.contains(className, ' '));
+		});
+		return (nocash) ? elements : new Elements(elements);
+	},
+	
+	/*
+	Property: filterById
+		Filters the collection by a specified ID.
+		Returns a new Elements collection, while the original remains untouched.
+	*/
+	
+	filterById: function(id, nocash){
+		var elements = this.filter(function(el){
+			return (el.id == id);
+		});
+		return (nocash) ? elements : new Elements(elements);
+	},
+	
+	/*
+	Property: filterByAttribute
+		Filters the collection by a specified attribute.
+		Returns a new Elements collection, while the original remains untouched.
+		
+	Arguments:
+		name - the attribute name.
+		operator - optional, the attribute operator.
+		value - optional, the attribute value, only valid if the operator is specified.
+	*/
+	
+	filterByAttribute: function(name, operator, value, nocash){
+		var elements = this.filter(function(el){
+			var current = Element.getProperty(el, name);
+			if (!current) return false;
+			if (!operator) return true;
+			switch(operator){
+				case '=': return (current == value);
+				case '*=': return (current.contains(value));
+				case '^=': return (current.substr(0, value.length) == value);
+				case '$=': return (current.substr(current.length - value.length) == value);
+				case '!=': return (current != value);
+				case '~=': return current.contains(value, ' ');
+			}
+			return false;
+		});
+		return (nocash) ? elements : new Elements(elements);
+	}
+
+});
+
+/*
+Script: Element.Selectors.js
+	Css Query related functions and <Element> extensions
+
+License:
+	MIT-style license.
+*/
+
+/* Section: Utility Functions */
+
+/*
+Function: $E
+	Selects a single (i.e. the first found) Element based on the selector passed in and an optional filter element.
+	Returns as <Element>.
+
+Arguments:
+	selector - string; the css selector to match
+	filter - optional; a DOM element to limit the scope of the selector match; defaults to document.
+
+Example:
+	>$E('a', 'myElement') //find the first anchor tag inside the DOM element with id 'myElement'
+
+Returns:
+	a DOM element - the first element that matches the selector
+*/
+
+function $E(selector, filter){
+	return ($(filter) || document).getElement(selector);
+};
+
+/*
+Function: $ES
+	Returns a collection of Elements that match the selector passed in limited to the scope of the optional filter.
+	See Also: <Element.getElements> for an alternate syntax.
+	Returns as <Elements>.
+
+Returns:
+	an array of dom elements that match the selector within the filter
+
+Arguments:
+	selector - string; css selector to match
+	filter - optional; a DOM element to limit the scope of the selector match; defaults to document.
+
+Examples:
+	>$ES("a") //gets all the anchor tags; synonymous with $$("a")
+	>$ES('a','myElement') //get all the anchor tags within $('myElement')
+*/
+
+function $ES(selector, filter){
+	return ($(filter) || document).getElementsBySelector(selector);
+};
+
+$$.shared = {
+
+	'regexp': /^(\w*|\*)(?:#([\w-]+)|\.([\w-]+))?(?:\[(\w+)(?:([!*^$]?=)["']?([^"'\]]*)["']?)?])?$/,
+	
+	'xpath': {
+
+		getParam: function(items, context, param, i){
+			var temp = [context.namespaceURI ? 'xhtml:' : '', param[1]];
+			if (param[2]) temp.push('[@id="', param[2], '"]');
+			if (param[3]) temp.push('[contains(concat(" ", @class, " "), " ', param[3], ' ")]');
+			if (param[4]){
+				if (param[5] && param[6]){
+					switch(param[5]){
+						case '*=': temp.push('[contains(@', param[4], ', "', param[6], '")]'); break;
+						case '^=': temp.push('[starts-with(@', param[4], ', "', param[6], '")]'); break;
+						case '$=': temp.push('[substring(@', param[4], ', string-length(@', param[4], ') - ', param[6].length, ' + 1) = "', param[6], '"]'); break;
+						case '=': temp.push('[@', param[4], '="', param[6], '"]'); break;
+						case '!=': temp.push('[@', param[4], '!="', param[6], '"]');
+					}
+				} else {
+					temp.push('[@', param[4], ']');
+				}
+			}
+			items.push(temp.join(''));
+			return items;
+		},
+		
+		getItems: function(items, context, nocash){
+			var elements = [];
+			var xpath = document.evaluate('.//' + items.join('//'), context, $$.shared.resolver, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+			for (var i = 0, j = xpath.snapshotLength; i < j; i++) elements.push(xpath.snapshotItem(i));
+			return (nocash) ? elements : new Elements(elements.map($));
+		}
+
+	},
+	
+	'normal': {
+		
+		getParam: function(items, context, param, i){
+			if (i == 0){
+				if (param[2]){
+					var el = context.getElementById(param[2]);
+					if (!el || ((param[1] != '*') && (Element.getTag(el) != param[1]))) return false;
+					items = [el];
+				} else {
+					items = $A(context.getElementsByTagName(param[1]));
+				}
+			} else {
+				items = $$.shared.getElementsByTagName(items, param[1]);
+				if (param[2]) items = Elements.filterById(items, param[2], true);
+			}
+			if (param[3]) items = Elements.filterByClass(items, param[3], true);
+			if (param[4]) items = Elements.filterByAttribute(items, param[4], param[5], param[6], true);
+			return items;
+		},
+
+		getItems: function(items, context, nocash){
+			return (nocash) ? items : $$.unique(items);
+		}
+
+	},
+
+	resolver: function(prefix){
+		return (prefix == 'xhtml') ? 'http://www.w3.org/1999/xhtml' : false;
+	},
+
+	getElementsByTagName: function(context, tagName){
+		var found = [];
+		for (var i = 0, j = context.length; i < j; i++) found.extend(context[i].getElementsByTagName(tagName));
+		return found;
+	}
+
+};
+
+$$.shared.method = (window.xpath) ? 'xpath' : 'normal';
+
+/*
+Class: Element
+	Custom class to allow all of its methods to be used with any DOM element via the dollar function <$>.
+*/
+
+Element.Methods.Dom = {
+
+	/*
+	Property: getElements
+		Gets all the elements within an element that match the given (single) selector.
+		Returns as <Elements>.
+
+	Arguments:
+		selector - string; the css selector to match
+
+	Examples:
+		>$('myElement').getElements('a'); // get all anchors within myElement
+		>$('myElement').getElements('input[name=dialog]') //get all input tags with name 'dialog'
+		>$('myElement').getElements('input[name$=log]') //get all input tags with names ending with 'log'
+
+	Notes:
+		Supports these operators in attribute selectors:
+
+		- = : is equal to
+		- ^= : starts-with
+		- $= : ends-with
+		- != : is not equal to
+
+		Xpath is used automatically for compliant browsers.
+	*/
+
+	getElements: function(selector, nocash){
+		var items = [];
+		selector = selector.trim().split(' ');
+		for (var i = 0, j = selector.length; i < j; i++){
+			var sel = selector[i];
+			var param = sel.match($$.shared.regexp);
+			if (!param) break;
+			param[1] = param[1] || '*';
+			var temp = $$.shared[$$.shared.method].getParam(items, this, param, i);
+			if (!temp) break;
+			items = temp;
+		}
+		return $$.shared[$$.shared.method].getItems(items, this, nocash);
+	},
+
+	/*
+	Property: getElement
+		Same as <Element.getElements>, but returns only the first. Alternate syntax for <$E>, where filter is the Element.
+		Returns as <Element>.
+
+	Arguments:
+		selector - string; css selector
+	*/
+
+	getElement: function(selector){
+		return $(this.getElements(selector, true)[0] || false);
+	},
+
+	/*
+	Property: getElementsBySelector
+		Same as <Element.getElements>, but allows for comma separated selectors, as in css. Alternate syntax for <$$>, where filter is the Element.
+		Returns as <Elements>.
+
+	Arguments:
+		selector - string; css selector
+	*/
+
+	getElementsBySelector: function(selector, nocash){
+		var elements = [];
+		selector = selector.split(',');
+		for (var i = 0, j = selector.length; i < j; i++) elements = elements.concat(this.getElements(selector[i], true));
+		return (nocash) ? elements : $$.unique(elements);
+	}
+
+};
+
+Element.extend({
+
+	/*
+	Property: getElementById
+		Targets an element with the specified id found inside the Element. Does not overwrite document.getElementById.
+
+	Arguments:
+		id - string; the id of the element to find.
+	*/
+
+	getElementById: function(id){
+		var el = document.getElementById(id);
+		if (!el) return false;
+		for (var parent = el.parentNode; parent != this; parent = parent.parentNode){
+			if (!parent) return false;
+		}
+		return el;
+	}/*compatibility*/,
+	
+	getElementsByClassName: function(className){ 
+		return this.getElements('.' + className); 
+	}
+	
+	/*end compatibility*/
+
+});
+
+document.extend(Element.Methods.Dom);
+Element.extend(Element.Methods.Dom);
+
+/*
+Script: Element.Form.js
+	Contains Element prototypes to deal with Forms and their elements.
+
+License:
+	MIT-style license.
+*/
+
+/*
+Class: Element
+	Custom class to allow all of its methods to be used with any DOM element via the dollar function <$>.
+*/
+
+Element.extend({
+
+	/*
+	Property: getValue
+		Returns the value of the Element, if its tag is textarea, select or input. getValue called on a multiple select will return an array.
+	*/
+
+	getValue: function(){
+		switch(this.getTag()){
+			case 'select':
+				var values = [];
+				$each(this.options, function(option){
+					if (option.selected) values.push($pick(option.value, option.text));
+				});
+				return (this.multiple) ? values : values[0];
+			case 'input': if (!(this.checked && ['checkbox', 'radio'].contains(this.type)) && !['hidden', 'text', 'password'].contains(this.type)) break;
+			case 'textarea': return this.value;
+		}
+		return false;
+	},
+
+	getFormElements: function(){
+		return $$(this.getElementsByTagName('input'), this.getElementsByTagName('select'), this.getElementsByTagName('textarea'));
+	},
+
+	/*
+	Property: toQueryString
+		Reads the children inputs of the Element and generates a query string, based on their values. Used internally in <Ajax>
+
+	Example:
+		(start code)
+		<form id="myForm" action="submit.php">
+		<input name="email" value="bob@bob.com">
+		<input name="zipCode" value="90210">
+		</form>
+
+		<script>
+		 $('myForm').toQueryString()
+		</script>
+		(end)
+
+		Returns:
+			email=bob@bob.com&zipCode=90210
+	*/
+
+	toQueryString: function(){
+		var queryString = [];
+		this.getFormElements().each(function(el){
+			var name = el.name;
+			var value = el.getValue();
+			if (value === false || !name || el.disabled) return;
+			var qs = function(val){
+				queryString.push(name + '=' + encodeURIComponent(val));
+			};
+			if ($type(value) == 'array') value.each(qs);
+			else qs(value);
+		});
+		return queryString.join('&');
+	}
+
+});
+
+/*
+Script: Element.Dimensions.js
+	Contains Element prototypes to deal with Element size and position in space.
+
+Note:
+	The functions in this script require n XHTML doctype.
+
+License:
+	MIT-style license.
+*/
+
+/*
+Class: Element
+	Custom class to allow all of its methods to be used with any DOM element via the dollar function <$>.
+*/
+
+Element.extend({
+
+	/*
 	Property: scrollTo
-		scrolls the element to the specified coordinated (if the element has an overflow)
+		Scrolls the element to the specified coordinated (if the element has an overflow)
 
 	Arguments:
 		x - the x coordinate
@@ -1776,27 +3446,8 @@ Element.extend({
 	},
 
 	/*
-	Property: getValue
-		Returns the value of the Element, if its tag is textarea, select or input. no multiple select support.
-	*/
-
-	getValue: function(){
-		switch (this.getTag()){
-			case 'select':
-				if (this.selectedIndex != -1){
-					var opt = this.options[this.selectedIndex];
-					return opt.value || opt.text;
-				}
-				break;
-			case 'input': if (!(this.checked && ['checkbox', 'radio'].test(this.type)) && !['hidden', 'text', 'password'].test(this.type)) break;
-			case 'textarea': return this.value;
-		}
-		return false;
-	},
-	
-	/*
 	Property: getSize
-		return an Object representing the size/scroll values of the element.
+		Return an Object representing the size/scroll values of the element.
 
 	Example:
 		(start code)
@@ -1825,13 +3476,16 @@ Element.extend({
 	Property: getPosition
 		Returns the real offsets of the element.
 
+	Arguments:
+		overflown - optional, an array of nested scrolling containers for scroll offset calculation, use this if your element is inside any element containing scrollbars
+
 	Example:
 		>$('element').getPosition();
 
 	Returns:
 		>{x: 100, y:500};
 	*/
-	
+
 	getPosition: function(overflown){
 		overflown = overflown || [];
 		var el = this, left = 0, top = 0;
@@ -1846,28 +3500,37 @@ Element.extend({
 		});
 		return {'x': left, 'y': top};
 	},
-	
+
 	/*
 	Property: getTop
 		Returns the distance from the top of the window to the Element.
+
+	Arguments:
+		overflown - optional, an array of nested scrolling containers, see Element::getPosition
 	*/
 
-	getTop: function(){
-		return this.getPosition().y;
+	getTop: function(overflown){
+		return this.getPosition(overflown).y;
 	},
 
 	/*
 	Property: getLeft
 		Returns the distance from the left of the window to the Element.
+
+	Arguments:
+		overflown - optional, an array of nested scrolling containers, see Element::getPosition
 	*/
 
-	getLeft: function(){
-		return this.getPosition().x;
+	getLeft: function(overflown){
+		return this.getPosition(overflown).x;
 	},
-	
+
 	/*
 	Property: getCoordinates
 		Returns an object with width, height, left, right, top, and bottom, representing the values of the Element
+
+	Arguments:
+		overflown - optional, an array of nested scrolling containers, see Element::getPosition
 
 	Example:
 		(start code)
@@ -1886,7 +3549,7 @@ Element.extend({
 		}
 		(end)
 	*/
-	
+
 	getCoordinates: function(overflown){
 		var position = this.getPosition(overflown);
 		var obj = {
@@ -1902,897 +3565,79 @@ Element.extend({
 
 });
 
-window.addEvent = document.addEvent = Element.prototype.addEvent;
-window.removeEvent = document.removeEvent = Element.prototype.removeEvent;
-window.removeEvents = document.removeEvents = Element.prototype.removeEvents;
-
-var Garbage = {
-
-	elements: [],
-
-	collect: function(element){
-		Garbage.elements.push(element);
-	},
-
-	trash: function(){
-		Garbage.collect(window);
-		Garbage.collect(document);
-		Garbage.elements.each(function(el){
-			if (el.removeEvents)	// philc - Sometimes an empty/invalid $(element) makes it into the garbage
-				el.removeEvents();
-			for (var p in Element.prototype) el[p] = null;
-			el.extend = null;
-		});
-	}
-
-};
-
-window.addEvent('unload', Garbage.trash);
-
 /*
-Script: Event.js
-	Event class
-
-Authors:
-	- Valerio Proietti, <http://mad4milk.net>
-	- Michael Jackson, <http://ajaxon.com/michael>
+Script: Window.DomReady.js
+	Contains the custom event domready, for window.
 
 License:
 	MIT-style license.
 */
 
+/* Section: Custom Events */
+
 /*
-Class: Event
-	Cross browser methods to manage events.
+Event: domready
+	executes a function when the dom tree is loaded, without waiting for images. Only works when called from window.
+
+Credits:
+	(c) Dean Edwards/Matthias Miller/John Resig, remastered for MooTools.
 
 Arguments:
-	event - the event
-
-Properties:
-	shift - true if the user pressed the shift
-	control - true if the user pressed the control 
-	alt - true if the user pressed the alt
-	meta - true if the user pressed the meta key
-	code - the keycode of the key pressed
-	page.x - the x position of the mouse, relative to the full window
-	page.y - the y position of the mouse, relative to the full window
-	client.x - the x position of the mouse, relative to the viewport
-	client.y - the y position of the mouse, relative to the viewport
-	key - the key pressed as a lowercase string. key also returns 'enter', 'up', 'down', 'left', 'right', 'space', 'backspace', 'delete', 'esc'. Handy for these special keys.
-	target - the event target
-	relatedTarget - the event related target
+	fn - the function to execute when the DOM is ready
 
 Example:
-	(start code)
-	$('myLink').onkeydown = function(event){
-		var event = new Event(event);
-		//event is now the Event class.
-		alert(event.key); //returns the lowercase letter pressed
-		alert(event.shift); //returns true if the key pressed is shift
-		if (event.key == 's' && event.control) alert('document saved');
-	};
-	(end)
+	> window.addEvent('domready', function(){
+	>	alert('the dom is ready');
+	> });
 */
 
-var Event = new Class({
+Element.Events.domready = {
 
-	initialize: function(event){
-		this.event = event || window.event;
-		this.type = this.event.type;
-		this.target = this.event.target || this.event.srcElement;
-		if (this.target.nodeType == 3) this.target = this.target.parentNode; // Safari
-		this.shift = this.event.shiftKey;
-		this.control = this.event.ctrlKey;
-		this.alt = this.event.altKey;
-		this.meta = this.event.metaKey;
-		if (['DOMMouseScroll', 'mousewheel'].test(this.type)){
-			this.wheel = this.event.wheelDelta ? (this.event.wheelDelta / (window.opera ? -120 : 120)) : -(this.event.detail || 0) / 3;
-		} else if (this.type.test(/key/)){
-			this.code = this.event.which || this.event.keyCode;
-			for (var name in Event.keys){
-				if (Event.keys[name] == this.code){
-					this.key = name;
-					break;
-				}
+	add: function(fn){
+		if (window.loaded){
+			fn.call(this);
+			return;
+		}
+		var domReady = function(){
+			if (window.loaded) return;
+			window.loaded = true;
+			window.timer = $clear(window.timer);
+			this.fireEvent('domready');
+		}.bind(this);
+		if (document.readyState && window.webkit){
+			window.timer = function(){
+				if (['loaded','complete'].contains(document.readyState)) domReady();
+			}.periodical(50);
+		} else if (document.readyState && window.ie){
+			if (!$('ie_ready')){
+				var src = (window.location.protocol == 'https:') ? '://0' : 'javascript:void(0)';
+				document.write('<script id="ie_ready" defer src="' + src + '"><\/script>');
+				$('ie_ready').onreadystatechange = function(){
+					if (this.readyState == 'complete') domReady();
+				};
 			}
-			this.key = this.key || String.fromCharCode(this.code).toLowerCase();
-
-		} else if (this.type.test(/mouse/) || (this.type == 'click')){
-			this.page = {
-				'x': this.event.pageX || this.event.clientX + document.documentElement.scrollLeft,
-				'y': this.event.pageY || this.event.clientY + document.documentElement.scrollTop
-			};
-			this.client = {
-				'x': this.event.pageX ? this.event.pageX - window.pageXOffset : this.event.clientX,
-				'y': this.event.pageY ? this.event.pageY - window.pageYOffset : this.event.clientY
-			};
-			this.rightClick = (this.event.which == 3) || (this.event.button == 2);
-			switch (this.type){
-				case 'mouseover': this.relatedTarget = this.event.relatedTarget || this.event.fromElement; break;
-				case 'mouseout': this.relatedTarget = this.event.relatedTarget || this.event.toElement;
-			}
-		}
-	},
-
-	/*
-	Property: stop
-		cross browser method to stop an event
-	*/
-
-	stop: function() {
-		this.stopPropagation();
-		this.preventDefault();
-		return this;
-	},
-
-	/*
-	Property: stopPropagation
-		cross browser method to stop the propagation of an event
-	*/
-
-	stopPropagation: function(){
-		if (this.event.stopPropagation) this.event.stopPropagation();
-		else this.event.cancelBubble = true;
-		return this;
-    },
-
-	/*
-	Property: preventDefault
-		cross browser method to prevent the default action of the event
-	*/
-
-	preventDefault: function(){
-		if (this.event.preventDefault) this.event.preventDefault();
-		else this.event.returnValue = false;
-		return this;
-	}
-
-});
-
-Event.keys = {
-	'enter': 13,
-	'up': 38,
-	'down': 40,
-	'left': 37,
-	'right': 39,
-	'esc': 27,
-	'space': 32,
-	'backspace': 8,
-	'delete': 46
-};
-
-Function.extend({
-
-	/*
-	Property: bindWithEvent
-		automatically passes mootools Event Class.
-
-	Arguments:
-		bind - optional, the object that the "this" of the function will refer to.
-
-	Returns:
-		a function with the parameter bind as its "this" and as a pre-passed argument event or window.event, depending on the browser.
-
-	Example:
-		>function myFunction(event){
-		>	alert(event.clientx) //returns the coordinates of the mouse..
-		>};
-		>myElement.onclick = myFunction.bindWithEvent(myElement);
-	*/
-
-	bindWithEvent: function(bind, args){
-		return this.create({'bind': bind, 'arguments': args, 'event': Event});
-	}
-
-});
-
-
-/*
-Script: Common.js
-	Contains common implementations for custom classes. In Mootools is implemented in <Ajax>, <XHR> and <Fx.Base>.
-
-Author:
-	Valerio Proietti, <http://mad4milk.net>
-
-License:
-	MIT-style license.
-*/
-
-/*
-Class: Chain
-	An "Utility" Class. Its methods can be implemented with <Class.implement> into any <Class>.
-	Currently implemented in <Fx.Base>, <XHR> and <Ajax>. In <Fx.Base> for example, is used to execute a list of function, one after another, once the effect is completed.
-	The functions will not be fired all togheter, but one every completion, to create custom complex animations.
-
-Example:
-	(start code)
-	var myFx = new Fx.Style('element', 'opacity');
-
-	myFx.start(1,0).chain(function(){
-		myFx.start(0,1);
-	}).chain(function(){
-		myFx.start(1,0);
-	}).chain(function(){
-		myFx.start(0,1);
-	});
-	//the element will appear and disappear three times
-	(end)
-*/
-
-var Chain = new Class({
-
-	/*
-	Property: chain
-		adds a function to the Chain instance stack.
-
-	Arguments:
-		fn - the function to append.
-	*/
-
-	chain: function(fn){
-		this.chains = this.chains || [];
-		this.chains.push(fn);
-		return this;
-	},
-
-	/*
-	Property: callChain
-		Executes the first function of the Chain instance stack, then removes it. The first function will then become the second.
-	*/
-
-	callChain: function(){
-		if (this.chains && this.chains.length) this.chains.shift().delay(10, this);
-	},
-
-	/*
-	Property: clearChain
-		Clears the stack of a Chain instance.
-	*/
-
-	clearChain: function(){
-		this.chains = [];
-	}
-
-});
-
-/*
-Class: Events
-	An "Utility" Class. Its methods can be implemented with <Class.implement> into any <Class>.
-	In <Fx.Base> Class, for example, is used to give the possibility add any number of functions to the Effects events, like onComplete, onStart, onCancel
-
-Example:
-	(start code)
-	var myFx = new Fx.Style('element', 'opacity').addEvent('onComplete', function(){
-		alert('the effect is completed');
-	}).addEvent('onComplete', function(){
-		alert('I told you the effect is completed');
-	});
-
-	myFx.start(0,1);
-	//upon completion it will display the 2 alerts, in order.
-	(end)
-*/
-
-var Events = new Class({
-
-	/*
-	Property: addEvent
-		adds an event to the stack of events of the Class instance.
-	*/
-
-	addEvent: function(type, fn){
-		if (fn != Class.empty){
-			this.events = this.events || {};
-			this.events[type] = this.events[type] || [];
-			if (!this.events[type].test(fn)) this.events[type].push(fn);
-		}
-		return this;
-	},
-
-	/*
-	Property: fireEvent
-		fires all events of the specified type in the Class instance.
-	*/
-
-	fireEvent: function(type, args, delay){
-		if (this.events && this.events[type]){
-			this.events[type].each(function(fn){
-				fn.create({'bind': this, 'delay': delay, 'arguments': args})();
-			}, this);
-		}
-		return this;
-	},
-
-	/*
-	Property: removeEvent
-		removes an event from the stack of events of the Class instance.
-	*/
-
-	removeEvent: function(type, fn){
-		if (this.events && this.events[type]) this.events[type].remove(fn);
-		return this;
-	}
-
-});
-
-/*
-Class: Options
-	An "Utility" Class. Its methods can be implemented with <Class.implement> into any <Class>.
-	Used to automate the options settings, also adding Class <Events> when the option begins with on.
-*/
-
-var Options = new Class({
-
-	/*
-	Property: setOptions
-		sets this.options
-
-	Arguments:
-		defaults - the default set of options
-		options - the user entered options. can be empty too.
-
-	Note:
-		if your Class has <Events> implemented, every option beginning with on, followed by a capital letter (onComplete) becomes an Class instance event.
-	*/
-
-	setOptions: function(defaults, options){
-		this.options = Object.extend(defaults, options);
-		if (this.addEvent){
-			for (var option in this.options){
-				if (($type(this.options[option]) == 'function') && option.test(/^on[A-Z]/)) this.addEvent(option, this.options[option]);
-			}
-		}
-		return this;
-	}
-
-});
-
-/*
-Class: Group
-	An "Utility" Class.
-*/
-
-var Group = new Class({
-
-	initialize: function(){
-		this.instances = $A(arguments);
-		this.events = {};
-		this.checker = {};
-	},
-	
-	addEvent: function(type, fn){
-		this.checker[type] = this.checker[type] || {};
-		this.events[type] = this.events[type] || [];
-		if (this.events[type].test(fn)) return false;
-		else this.events[type].push(fn);
-		this.instances.each(function(instance, i){
-			instance.addEvent(type, this.check.bind(this, [type, instance, i]));
-		}, this);
-		return this;
-	},
-	
-	check: function(type, instance, i){
-		this.checker[type][i] = true;
-		var every = this.instances.every(function(current, j){
-			return this.checker[type][j] || false;
-		}, this);
-		if (!every) return;
-		this.instances.each(function(current, j){
-			this.checker[type][j] = false;
-		}, this);
-		this.events[type].each(function(event){
-			event.call(this, this.instances, instance);
-		}, this);
-	}
-
-});
-
-/*
-Script: Dom.js
-	Css Query related function and <Element> extensions
-
-Authors:
-	- Valerio Proietti, <http://mad4milk.net>
-	- Christophe Beyls, <http://digitalia.be>
-
-License:
-	MIT-style license.
-*/
-
-/* Section: Utility Functions */
-
-/* 
-Function: $E 
-	Selects a single (i.e. the first found) Element based on the selector passed in and an optional filter element.
-
-Arguments:
-	selector - the css selector to match
-	filter - optional; a DOM element to limit the scope of the selector match; defaults to document.
-
-Example:
-	>$E('a', 'myElement') //find the first anchor tag inside the DOM element with id 'myElement'
-
-Returns:
-	a DOM element - the first element that matches the selector
-*/
-
-function $E(selector, filter){
-	return ($(filter) || document).getElement(selector);
-};
-
-/*
-Function: $ES
-	Returns a collection of Elements that match the selector passed in limited to the scope of the optional filter.
-	See Also: <Element.getElements> for an alternate syntax.
-
-Returns:
-	an array of dom elements that match the selector within the filter
-
-Arguments:
-	selector - css selector to match
-	filter - optional; a DOM element to limit the scope of the selector match; defaults to document.
-
-Examples:
-	>$ES("a") //gets all the anchor tags; synonymous with $$("a")
-	>$ES('a','myElement') //get all the anchor tags within $('myElement')
-*/
-
-function $ES(selector, filter){
-	return ($(filter) || document).getElementsBySelector(selector);
-};
-
-/*
-Class: Element
-	Custom class to allow all of its methods to be used with any DOM element via the dollar function <$>.
-*/
-
-Element.extend({
-
-	/*
-	Property: getElements 
-		Gets all the elements within an element that match the given (single) selector.
-
-	Arguments:
-		selector - the css selector to match
-
-	Example:
-		>$('myElement').getElements('a'); // get all anchors within myElement
-	*/
-
-	getElements: function(selector){
-		var elements = [];
-		selector.clean().split(' ').each(function(sel, i){
-			var param = sel.match(/^(\w*|\*)(?:#([\w-]+)|\.([\w-]+))?(?:\[(\w+)(?:([*^$]?=)["']?([^"'\]]*)["']?)?])?$/);
-			//PARAM ARRAY: 0 = full string: 1 = tag; 2 = id; 3 = class; 4 = attribute; 5 = operator; 6 = value;
-			if (!param) return;
-			Filters.selector = param;
-			param[1] = param[1] || '*';
-			if (i == 0){
-				if (param[2]){
-					var el = this.getElementById(param[2]);
-					if (!el || ((param[1] != '*') && (Element.prototype.getTag.call(el) != param[1]))) return;
-					elements = [el];
-				} else {
-					elements = $A(this.getElementsByTagName(param[1]));
-				}
-			} else {
-				elements = Elements.prototype.getElementsByTagName.call(elements, param[1], true);
-				if (param[2]) elements = elements.filter(Filters.id);
-			}
-			if (param[3]) elements = elements.filter(Filters.className);
-			if (param[4]) elements = elements.filter(Filters.attribute);
-		}, this);
-		return $$(elements);
-	},
-
-	/*
-	Property: getElementById
-		Targets an element with the specified id found inside the Element. Does not overwrite document.getElementById.
-
-	Arguments:
-		id - the id of the element to find.
-	*/
-
-	getElementById: function(id){
-		var el = document.getElementById(id);
-		if (!el) return false;
-		for (var parent = el.parentNode; parent != this; parent = parent.parentNode){
-			if (!parent) return false;
-		}
-		return el;
-	},
-
-	/*
-	Property: getElement
-		Same as <Element.getElements>, but returns only the first. Alternate syntax for <$E>, where filter is the Element.
-	*/
-
-	getElement: function(selector){
-		return this.getElementsBySelector(selector)[0];
-	},
-
-	/*
-	Property: getElementsBySelector
-		Same as <Element.getElements>, but allows for comma separated selectors, as in css. Alternate syntax for <$$>, where filter is the Element.
-
-	*/
-
-	getElementsBySelector: function(selector){
-		var els = [];
-		selector.split(',').each(function(sel){
-			els.extend(this.getElements(sel));
-		}, this);
-		return $$(els);
-	}
-
-});
-
-/* Section: document related functions */
-
-document.extend({
-	/*
-	Function: document.getElementsByClassName 
-		Returns all the elements that match a specific class name. 
-		Here for compatibility purposes. can also be written: document.getElements('.className'), or $$('.className')
-	*/
-
-	getElementsByClassName: function(className){
-		return document.getElements('.'+className);
-	},
-	getElement: Element.prototype.getElement,
-	getElements: Element.prototype.getElements,
-	getElementsBySelector: Element.prototype.getElementsBySelector
-
-});
-
-//dom filters, internal methods.
-
-var Filters = {
-	
-	selector: [],
-
-	id: function(el){
-		return (el.id == Filters.selector[2]);
-	},
-
-	className: function(el){
-		return (Element.prototype.hasClass.call(el, Filters.selector[3]));
-	},
-
-	attribute: function(el){
-		var current = el.getAttribute(Filters.selector[4]);
-		if (!current) return false;
-		var operator = Filters.selector[5];
-		if (!operator) return true;
-		var value = Filters.selector[6];
-		switch (operator){
-			case '*=': return (current.test(value));
-			case '=': return (current == value);
-			case '^=': return (current.test('^'+value));
-			case '$=': return (current.test(value+'$'));
-		}
-		return false;
-	}
-
-};
-
-/*
-Class: Elements
-	Methods for dom queries arrays, <$$>.
-*/
-
-Elements.extend({
-
-	getElementsByTagName: function(tagName){
-		var found = [];
-		this.each(function(el){
-			found.extend(el.getElementsByTagName(tagName));
-		});
-		return found;
-	}
-
-});
-
-/*
-Script: Color.js
-	Contains the Color class.
-
-Authors:
-	- Michael Jackson, <http://ajaxon.com/michael>
-	- Valerio Proietti, <http://mad4milk.net>
-	- Christophe Beyls, <http://www.digitalia.be>
-
-License:
-	MIT-style license.
-*/
-
-/*
-Class: Color
-	Creates a new Color Object, which is an array with some color specific methods.
-	
-Arguments:
-	color - the hex, the RGB array or the HSB array of the color to create. For HSB colors, you need to specify the second argument.
-	type - a string representing the type of the color to create. needs to be specified if you intend to create the color with HSB values, or an array of HEX values. Can be 'rgb', 'hsb' or 'hex'.
-
-Example:
-	(start code)
-	var black = new Color('#000');
-	var purple = new Color([255,0,255]);
-	// mix black with white and purple, each time at 10% of the new color
-	var darkpurple = black.mix('#fff', purple, 10);
-	$('myDiv').setStyle('background-color', darkpurple);
-	(end)
-*/
-
-var Color = new Class({
-
-	initialize: function(color, type){
-		if (color.isColor) return color;
-		color.isColor = true;
-		type = type || (color.push ? 'rgb' : 'hex');
-		var rgb, hsb;
-		switch(type){
-			case 'rgb':
-				rgb = color;
-				hsb = rgb.rgbToHsb();
-				break;
-			case 'hsb':
-				rgb = color.hsbToRgb();
-				hsb = color;
-				break;
-			default:
-				rgb = color.hexToRgb(true);
-				hsb = rgb.rgbToHsb();
-		}
-		rgb.hsb = hsb;
-		return Object.extend(rgb, Color.prototype);
-	},
-	
-	/*
-	Property: mix
-		Mixes two or more colors with the Color.
-		
-	Arguments:
-		color - a color to mix. you can use as arguments how many colors as you want to mix with the original one.
-		alpha - if you use a number as the last argument, it will be threated as the amount of the color to mix.
-	*/
-	
-	mix: function(){
-		var colors = $A(arguments);
-		var alpha = ($type(colors[colors.length-1]) == 'number') ? colors.pop() : 50;
-		var rgb = this.copy();
-		colors.each(function(color){
-			color = new Color(color);
-			for (var i = 0; i < 3; i++) rgb[i] = Math.round((rgb[i] / 100 * (100 - alpha)) + (color[i] / 100 * alpha));
-		});
-		return new Color(rgb, 'rgb');
-	},
-	
-	/*
-	Property: invert
-		Inverts the Color.
-	*/
-
-	invert: function(){
-		return new Color(this.map(function(value){
-			return 255 - value;
-		}));
-	},
-	
-	/*
-	Property: setHue
-		Modifies the hue of the Color, and returns a new one.
-		
-	Arguments:
-		value - the hue to set
-	*/
-
-	setHue: function(value){
-		return new Color([value, this.hsb[1], this.hsb[2]], 'hsb');
-	},
-	
-	/*
-	Property: setSaturation
-		Changes the saturation of the Color, and returns a new one.
-		
-	Arguments:
-		percent - the percentage of the saturation to set
-	*/
-
-	setSaturation: function(percent){
-		return new Color([this.hsb[0], percent, this.hsb[2]], 'hsb');
-	},
-	
-	/*
-	Property: setBrightness
-		Changes the brightness of the Color, and returns a new one.
-		
-	Arguments:
-		percent - the percentage of the brightness to set
-	*/
-
-	setBrightness: function(percent){
-		return new Color([this.hsb[0], this.hsb[1], percent], 'hsb');
-	}
-
-});
-
-/*
-Function: $RGB
-	Shortcut to create a new color, based on red, green, blue values.
-*/
-
-function $RGB(r, g, b){
-	return new Color([r, g, b], 'rgb');
-};
-
-/*
-Function: $HSB
-	Shortcut to create a new color, based on hue, saturation, brightness values.
-*/
-
-function $HSB(h, s, b){
-	return new Color([h, s, b], 'hsb');
-};
-
-/*
-Class: Array
-	A collection of The Array Object prototype methods.
-*/
-
-Array.extend({
-	
-	/*
-	Property: rgbToHsb
-		Converts a RGB array to an HSB array.
-
-	Returns:
-		the HSB array.
-	*/
-	
-	rgbToHsb: function(){
-		var red = this[0], green = this[1], blue = this[2];
-		var hue, saturation, brightness;
-		var max = Math.max(red, green, blue), min = Math.min(red, green, blue);
-		var delta = max - min;
-		brightness = max / 255;
-		saturation = (max != 0) ? delta / max : 0;
-		if (saturation == 0){
-			hue = 0;
 		} else {
-			var rr = (max - red) / delta;
-			var gr = (max - green) / delta;
-			var br = (max - blue) / delta;
-			if (red == max) hue = br - gr;
-			else if (green == max) hue = 2 + rr - br;
-			else hue = 4 + gr - rr;
-			hue /= 6;
-			if (hue < 0) hue++;
+			window.addListener("load", domReady);
+			document.addListener("DOMContentLoaded", domReady);
 		}
-		return [Math.round(hue * 360), Math.round(saturation * 100), Math.round(brightness * 100)];
-	},
-	
-	/*
-	Property: hsbToRgb
-		Converts an HSB array to an RGB array.
-
-	Returns:
-		the RGB array.
-	*/
-	
-	hsbToRgb: function(){
-		var br = Math.round(this[2] / 100 * 255);
-		if (this[1] == 0){
-			return [br, br, br];
-		} else {
-			var hue = this[0] % 360;
-			var f = hue % 60;
-			var p = Math.round((this[2] * (100 - this[1])) / 10000 * 255);
-			var q = Math.round((this[2] * (6000 - this[1] * f)) / 600000 * 255);
-			var t = Math.round((this[2] * (6000 - this[1] * (60 - f))) / 600000 * 255);
-			switch (Math.floor(hue / 60)){
-				case 0: return [br, t, p];
-				case 1: return [q, br, p];
-				case 2: return [p, br, t];
-				case 3: return [p, q, br];
-				case 4: return [t, p, br];
-				case 5: return [br, p, q];
-			}
-		}
-		return false;
 	}
 
-});
+};
 
-/*
-Script: Window.Base.js
-	Contains Window.onDomReady
-	
-Authors:
-	- Christophe Beyls, <http://www.digitalia.be>
-	- Valerio Proietti, <http://mad4milk.net>
+/*compatibility*/
 
-License:
-	MIT-style license.
-*/
+window.onDomReady = function(fn){ 
+	return this.addEvent('domready', fn); 
+};
 
-/*
-Class: Window
-	Cross browser methods to get the window size, onDomReady method.
-*/
-
-window.extend({
-	
-	/*
-	Property: window.addEvent
-		same as <Element.addEvent> but allows the event 'domready', which is the same as <window.onDomReady>
-
-	Credits:
-		(c) Dean Edwards/Matthias Miller/John Resig, remastered for mootools.
-
-	Arguments:
-		init - the function to execute when the DOM is ready
-
-	Example:
-		> window.addEvent('domready', function(){alert('the dom is ready')});
-	*/
-
-	addEvent: function(type, fn){
-		if (type == 'domready'){
-			if (this.loaded) fn();
-			else if (!this.events || !this.events.domready){
-				var domReady = function(){
-					if (this.loaded) return;
-					this.loaded = true;
-					if (this.timer) this.timer = $clear(this.timer);
-					Element.prototype.fireEvent.call(this, 'domready');
-					this.events.domready = null;
-				}.bind(this);
-				if (document.readyState && this.khtml){ //safari and konqueror
-					this.timer = function(){
-						if (['loaded','complete'].test(document.readyState)) domReady();
-					}.periodical(50);
-				}
-				else if (document.readyState && this.ie){ //ie
-					document.write("<script id=ie_ready defer src=javascript:void(0)><\/script>");
-					$('ie_ready').onreadystatechange = function(){
-						if (this.readyState == 'complete') domReady();
-					};
-				} else { //others
-					this.addEvent("load", domReady);
-					document.addEvent("DOMContentLoaded", domReady);
-				}
-			}
-		}
-		Element.prototype.addEvent.call(this, type, fn);
-		return this;
-	},
-
-	/*
-	Property: window.onDomReady
-		Executes the passed in function when the DOM is ready (when the document tree has loaded, not waiting for images).
-		Same as <window.addEvent> ('domready', init).
-
-	Arguments:
-		init - the function to execute when the DOM is ready
-
-	Example:
-		> window.addEvent('domready', function(){alert('the dom is ready')});
-	*/
-
-	onDomReady: function(init){
-		return this.addEvent('domready', init);
-	}
-
-});
+/*end compatibility*/
 
 /*
 Script: Window.Size.js
 	Window cross-browser dimensions methods.
-
-Authors:
-	- Christophe Beyls, <http://www.digitalia.be>
-	- Valerio Proietti, <http://mad4milk.net>
+	
+Note:
+	The Functions in this script require an XHTML doctype.
 
 License:
 	MIT-style license.
@@ -2812,7 +3657,7 @@ window.extend({
 	*/
 
 	getWidth: function(){
-		if (this.khtml) return this.innerWidth;
+		if (this.webkit419) return this.innerWidth;
 		if (this.opera) return document.body.clientWidth;
 		return document.documentElement.clientWidth;
 	},
@@ -2823,7 +3668,7 @@ window.extend({
 	*/
 
 	getHeight: function(){
-		if (this.khtml) return this.innerHeight;
+		if (this.webkit419) return this.innerHeight;
 		if (this.opera) return document.body.clientHeight;
 		return document.documentElement.clientHeight;
 	},
@@ -2839,7 +3684,7 @@ window.extend({
 
 	getScrollWidth: function(){
 		if (this.ie) return Math.max(document.documentElement.offsetWidth, document.documentElement.scrollWidth);
-		if (this.khtml) return document.body.scrollWidth;
+		if (this.webkit) return document.body.scrollWidth;
 		return document.documentElement.scrollWidth;
 	},
 
@@ -2854,7 +3699,7 @@ window.extend({
 
 	getScrollHeight: function(){
 		if (this.ie) return Math.max(document.documentElement.offsetHeight, document.documentElement.scrollHeight);
-		if (this.khtml) return document.body.scrollHeight;
+		if (this.webkit) return document.body.scrollHeight;
 		return document.documentElement.scrollHeight;
 	},
 
@@ -2896,16 +3741,13 @@ window.extend({
 	},
 
 	//ignore
-	getPosition: function(){return {'x': 0, 'y': 0}}
+	getPosition: function(){return {'x': 0, 'y': 0};}
 
 });
 
 /*
 Script: Fx.Base.js
-	Contains <Fx.Base> and two Transitions.
-
-Author:
-	Valerio Proietti, <http://mad4milk.net>
+	Contains <Fx.Base>, the foundamentals of the MooTools Effects.
 
 License:
 	MIT-style license.
@@ -2915,49 +3757,51 @@ var Fx = {};
 
 /*
 Class: Fx.Base
-	Base class for the Mootools Effects (Moo.Fx) library.
+	Base class for the Effects.
 
 Options:
-	onStart - the function to execute as the effect begins; nothing (<Class.empty>) by default.
-	onComplete - the function to execute after the effect has processed; nothing (<Class.empty>) by default.
-	transition - the equation to use for the effect see <Fx.Transitions>; default is <Fx.Transitions.sineInOut>
+	transition - the equation to use for the effect see <Fx.Transitions>; default is <Fx.Transitions.Sine.easeInOut>
 	duration - the duration of the effect in ms; 500 is the default.
 	unit - the unit is 'px' by default (other values include things like 'em' for fonts or '%').
 	wait - boolean: to wait or not to wait for a current transition to end before running another of the same instance. defaults to true.
-	fps - the frames per second for the transition; default is 30
+	fps - the frames per second for the transition; default is 50
+	
+Events:
+	onStart - the function to execute as the effect begins; nothing (<Class.empty>) by default.
+	onComplete - the function to execute after the effect has processed; nothing (<Class.empty>) by default.
+	onCancel - the function to execute when you manually stop the effect.
 */
 
 Fx.Base = new Class({
 
-	getOptions: function(){
-		return {
-			onStart: Class.empty,
-			onComplete: Class.empty,
-			onCancel: Class.empty,
-			transition: Fx.Transitions.sineInOut,
-			duration: 500,
-			unit: 'px',
-			wait: true,
-			fps: 50
-		};
+	options: {
+		onStart: Class.empty,
+		onComplete: Class.empty,
+		onCancel: Class.empty,
+		transition: function(p){
+			return -(Math.cos(Math.PI * p) - 1) / 2;
+		},
+		duration: 500,
+		unit: 'px',
+		wait: true,
+		fps: 50
 	},
 
 	initialize: function(options){
 		this.element = this.element || null;
-		this.setOptions(this.getOptions(), options);
+		this.setOptions(options);
 		if (this.options.initialize) this.options.initialize.call(this);
 	},
 
 	step: function(){
-		var time = new Date().getTime();
+		var time = $time();
 		if (time < this.time + this.options.duration){
-			this.cTime = time - this.time;
+			this.delta = this.options.transition((time - this.time) / this.options.duration);
 			this.setNow();
 			this.increase();
 		} else {
 			this.stop(true);
-			this.now = this.to;
-			this.increase();
+			this.set(this.to);
 			this.fireEvent('onComplete', this.element, 10);
 			this.callChain();
 		}
@@ -2985,7 +3829,7 @@ Fx.Base = new Class({
 	},
 
 	compute: function(from, to){
-		return this.options.transition(this.cTime, from, (to - from), this.options.duration);
+		return (to - from) * this.delta + from;
 	},
 
 	/*
@@ -3005,8 +3849,9 @@ Fx.Base = new Class({
 		else if (this.timer) return this;
 		this.from = from;
 		this.to = to;
-		this.time = new Date().getTime();
-		this.timer = this.step.periodical(Math.round(1000/this.options.fps), this);
+		this.change = this.to - this.from;
+		this.time = $time();
+		this.timer = this.step.periodical(Math.round(1000 / this.options.fps), this);
 		this.fireEvent('onStart', this.element);
 		return this;
 	},
@@ -3021,50 +3866,25 @@ Fx.Base = new Class({
 		this.timer = $clear(this.timer);
 		if (!end) this.fireEvent('onCancel', this.element);
 		return this;
+	}/*compatibility*/,
+	
+	custom: function(from, to){
+		return this.start(from, to);
 	},
 
-	//compat
-	custom: function(from, to){return this.start(from, to)},
-	clearTimer: function(end){return this.stop(end)}
+	clearTimer: function(end){
+		return this.stop(end);
+	}
+
+	/*end compatibility*/
 
 });
 
-Fx.Base.implement(new Chain);
-Fx.Base.implement(new Events);
-Fx.Base.implement(new Options);
-
-/*
-Class: Fx.Transitions
-	A collection of transition equations for use with the <Fx.Base> Class.
-
-See Also:
-	<Fx.Transitions.js> for a whole bunch of transitions.
-
-Credits:
-	Easing Equations, (c) 2003 Robert Penner (http://www.robertpenner.com/easing/), Open Source BSD License.
-*/
-
-Fx.Transitions = {
-
-	/* Property: linear */
-	linear: function(t, b, c, d){
-		return c*t/d + b;
-	},
-
-	/* Property: sineInOut */
-	sineInOut: function(t, b, c, d){
-		return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b;
-	}
-
-};
+Fx.Base.implement(new Chain, new Events, new Options);
 
 /*
 Script: Fx.CSS.js
 	Css parsing class for effects. Required by <Fx.Style>, <Fx.Styles>, <Fx.Elements>. No documentation needed, as its used internally.
-
-Authors:
-	- Christophe Beyls, <http://www.digitalia.be>
-	- Valerio Proietti, <http://mad4milk.net>
 
 License:
 	MIT-style license.
@@ -3074,19 +3894,20 @@ Fx.CSS = {
 
 	select: function(property, to){
 		if (property.test(/color/i)) return this.Color;
-		if (to.test && to.test(' ')) return this.Multi;
+		var type = $type(to);
+		if ((type == 'array') || (type == 'string' && to.contains(' '))) return this.Multi;
 		return this.Single;
 	},
 
 	parse: function(el, property, fromTo){
 		if (!fromTo.push) fromTo = [fromTo];
 		var from = fromTo[0], to = fromTo[1];
-		if (!to && to != 0){
+		if (!$chk(to)){
 			to = from;
 			from = el.getStyle(property);
 		}
 		var css = this.select(property, to);
-		return {from: css.parse(from), to: css.parse(to), css: css};
+		return {'from': css.parse(from), 'to': css.parse(to), 'css': css};
 	}
 
 };
@@ -3101,8 +3922,9 @@ Fx.CSS.Single = {
 		return fx.compute(from, to);
 	},
 
-	getValue: function(value, unit){
-		return value+unit;
+	getValue: function(value, unit, property){
+		if (unit == 'px' && property != 'opacity') value = Math.round(value);
+		return value + unit;
 	}
 
 };
@@ -3121,8 +3943,9 @@ Fx.CSS.Multi = {
 		return now;
 	},
 
-	getValue: function(value, unit){
-		return value.join(unit+' ')+unit;
+	getValue: function(value, unit, property){
+		if (unit == 'px' && property != 'opacity') value = value.map(Math.round);
+		return value.join(unit + ' ') + unit;
 	}
 
 };
@@ -3140,7 +3963,7 @@ Fx.CSS.Color = {
 	},
 
 	getValue: function(value){
-		return 'rgb('+value.join(',')+')';
+		return 'rgb(' + value.join(',') + ')';
 	}
 
 };
@@ -3149,17 +3972,15 @@ Fx.CSS.Color = {
 Script: Fx.Style.js
 	Contains <Fx.Style>
 
-Author:
-	Valerio Proietti, <http://mad4milk.net>
-
 License:
 	MIT-style license.
 */
 
 /*
 Class: Fx.Style
-	The Style effect; Extends <Fx.Base>, inherits all its properties. Used to transition any css property from one value to another. Includes colors.
+	The Style effect, used to transition any css property from one value to another. Includes colors.
 	Colors must be in hex format.
+	Inherits methods, properties, options and events from <Fx.Base>.
 
 Arguments:
 	el - the $(element) to apply the style transition to
@@ -3181,7 +4002,7 @@ Fx.Style = Fx.Base.extend({
 
 	/*
 	Property: hide
-		Same as <Fx.Base.set> (0)
+		Same as <Fx.Base.set> (0); hides the element immediately without transition.
 	*/
 
 	hide: function(){
@@ -3192,6 +4013,17 @@ Fx.Style = Fx.Base.extend({
 		this.now = this.css.getNow(this.from, this.to, this);
 	},
 
+	/*
+	Property: set
+		Sets the element's css property (specified at instantiation) to the specified value immediately.
+
+	Example:
+		(start code)
+		var marginChange = new Fx.Style('myElement', 'margin-top', {duration:500});
+		marginChange.set(10); //margin-top is set to 10px immediately
+		(end)
+	*/
+
 	set: function(to){
 		this.css = Fx.CSS.select(this.property, to);
 		return this.parent(this.css.parse(to));
@@ -3199,11 +4031,18 @@ Fx.Style = Fx.Base.extend({
 
 	/*
 	Property: start
-		displays the transition to the value/values passed in
+		Displays the transition to the value/values passed in
+
+	Arguments:
+		from - (integer; optional) the starting position for the transition
+		to - (integer) the ending position for the transition
+
+	Note:
+		If you provide only one argument, the transition will use the current css value for its starting value.
 
 	Example:
 		(start code)
-		var var marginChange = new Fx.Style('myElement', 'margin-top', {duration:500});
+		var marginChange = new Fx.Style('myElement', 'margin-top', {duration:500});
 		marginChange.start(10); //tries to read current margin top value and goes from current to 10
 		(end)
 	*/
@@ -3216,7 +4055,7 @@ Fx.Style = Fx.Base.extend({
 	},
 
 	increase: function(){
-		this.element.setStyle(this.property, this.css.getValue(this.now, this.options.unit));
+		this.element.setStyle(this.property, this.css.getValue(this.now, this.options.unit, this.property));
 	}
 
 });
@@ -3232,9 +4071,15 @@ Element.extend({
 	Property: effect
 		Applies an <Fx.Style> to the Element; This a shortcut for <Fx.Style>.
 
+	Arguments:
+		property - (string) the css property to alter
+		options - (object; optional) key/value set of options (see <Fx.Style>)
+
 	Example:
 		>var myEffect = $('myElement').effect('height', {duration: 1000, transition: Fx.Transitions.linear});
 		>myEffect.start(10, 100);
+		>//OR
+		>$('myElement').effect('height', {duration: 1000, transition: Fx.Transitions.linear}).start(10,100);
 	*/
 
 	effect: function(property, options){
@@ -3244,217 +4089,139 @@ Element.extend({
 });
 
 /*
-Script: Fx.Transitions.js
-	Cool transitions, to be used with all the effects.
-
-Author:
-	Robert Penner, <http://www.robertpenner.com/easing/>, modified to be used with mootools.
+Script: Fx.Scroll.js
+	Contains <Fx.Scroll>
 
 License:
-	Easing Equations v1.5, (c) 2003 Robert Penner, all rights reserved. Open Source BSD License.
+	MIT-style license.
 */
 
 /*
-Class: Fx.Transitions
-	A collection of tweaning transitions for use with the <Fx.Base> classes.
+Class: Fx.Scroll
+	Scroll any element with an overflow, including the window element.
+	Inherits methods, properties, options and events from <Fx.Base>.
+
+Note:
+	Fx.Scroll requires an XHTML doctype.
+
+Arguments:
+	element - the element to scroll
+	options - optional, see Options below.
+
+Options:
+	all the Fx.Base options and events, plus:
+	offset - the distance for the scrollTo point/element. an Object with x/y properties.
+	overflown - an array of nested scrolling containers, see <Element.getPosition>
 */
 
-Fx.Transitions = {
+Fx.Scroll = Fx.Base.extend({
 
-	/* Property: linear */
-	linear: function(t, b, c, d){
-		return c*t/d + b;
+	options: {
+		overflown: [],
+		offset: {'x': 0, 'y': 0},
+		wheelStops: true
 	},
 
-	/* Property: quadIn */
-	quadIn: function(t, b, c, d){
-		return c*(t/=d)*t + b;
-	},
-
-	/* Property: quadOut */
-	quadOut: function(t, b, c, d){
-		return -c *(t/=d)*(t-2) + b;
-	},
-
-	/* Property: quadInOut */
-	quadInOut: function(t, b, c, d){
-		if ((t/=d/2) < 1) return c/2*t*t + b;
-		return -c/2 * ((--t)*(t-2) - 1) + b;
-	},
-
-	/* Property: cubicIn */
-	cubicIn: function(t, b, c, d){
-		return c*(t/=d)*t*t + b;
-	},
-
-	/* Property: cubicOut */
-	cubicOut: function(t, b, c, d){
-		return c*((t=t/d-1)*t*t + 1) + b;
-	},
-
-	/* Property: cubicInOut */
-	cubicInOut: function(t, b, c, d){
-		if ((t/=d/2) < 1) return c/2*t*t*t + b;
-		return c/2*((t-=2)*t*t + 2) + b;
-	},
-
-	/* Property: quartIn */
-	quartIn: function(t, b, c, d){
-		return c*(t/=d)*t*t*t + b;
-	},
-
-	/* Property: quartOut */
-	quartOut: function(t, b, c, d){
-		return -c * ((t=t/d-1)*t*t*t - 1) + b;
-	},
-
-	/* Property: quartInOut */
-	quartInOut: function(t, b, c, d){
-		if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
-		return -c/2 * ((t-=2)*t*t*t - 2) + b;
-	},
-
-	/* Property: quintIn */
-	quintIn: function(t, b, c, d){
-		return c*(t/=d)*t*t*t*t + b;
-	},
-
-	/* Property: quintOut */
-	quintOut: function(t, b, c, d){
-		return c*((t=t/d-1)*t*t*t*t + 1) + b;
-	},
-
-	/* Property: quintInOut */
-	quintInOut: function(t, b, c, d){
-		if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
-		return c/2*((t-=2)*t*t*t*t + 2) + b;
-	},
-
-	/* Property: sineIn */
-	sineIn: function(t, b, c, d){
-		return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
-	},
-
-	/* Property: sineOut */
-	sineOut: function(t, b, c, d){
-		return c * Math.sin(t/d * (Math.PI/2)) + b;
-	},
-
-	/* Property: sineInOut */
-	sineInOut: function(t, b, c, d){
-		return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b;
-	},
-
-	/* Property: expoIn */
-	expoIn: function(t, b, c, d){
-		return (t==0) ? b : c * Math.pow(2, 10 * (t/d - 1)) + b;
-	},
-
-	/* Property: expoOut */
-	expoOut: function(t, b, c, d){
-		return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
-	},
-
-	/* Property: expoInOut */
-	expoInOut: function(t, b, c, d){
-		if (t==0) return b;
-		if (t==d) return b+c;
-		if ((t/=d/2) < 1) return c/2 * Math.pow(2, 10 * (t - 1)) + b;
-		return c/2 * (-Math.pow(2, -10 * --t) + 2) + b;
-	},
-
-	/* Property: circIn */
-	circIn: function(t, b, c, d){
-		return -c * (Math.sqrt(1 - (t/=d)*t) - 1) + b;
-	},
-
-	/* Property: circOut */
-	circOut: function(t, b, c, d){
-		return c * Math.sqrt(1 - (t=t/d-1)*t) + b;
-	},
-
-	/* Property: circInOut */
-	circInOut: function(t, b, c, d){
-		if ((t/=d/2) < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
-		return c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
-	},
-
-	/* Property: elasticIn */
-	elasticIn: function(t, b, c, d, a, p){
-		if (t==0) return b; if ((t/=d)==1) return b+c; if (!p) p=d*.3; if (!a) a = 1;
-		if (a < Math.abs(c)){ a=c; var s=p/4; }
-		else var s = p/(2*Math.PI) * Math.asin(c/a);
-		return -(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
-	},
-
-	/* Property: elasticOut */
-	elasticOut: function(t, b, c, d, a, p){
-		if (t==0) return b; if ((t/=d)==1) return b+c; if (!p) p=d*.3; if (!a) a = 1;
-		if (a < Math.abs(c)){ a=c; var s=p/4; }
-		else var s = p/(2*Math.PI) * Math.asin(c/a);
-		return a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b;
-	},
-
-	/* Property: elasticInOut */
-	elasticInOut: function(t, b, c, d, a, p){
-		if (t==0) return b; if ((t/=d/2)==2) return b+c; if (!p) p=d*(.3*1.5); if (!a) a = 1;
-		if (a < Math.abs(c)){ a=c; var s=p/4; }
-		else var s = p/(2*Math.PI) * Math.asin(c/a);
-		if (t < 1) return -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
-		return a*Math.pow(2,-10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )*.5 + c + b;
-	},
-
-	/* Property: backIn */
-	backIn: function(t, b, c, d, s){
-		if (!s) s = 1.70158;
-		return c*(t/=d)*t*((s+1)*t - s) + b;
-	},
-
-	/* Property: backOut */
-	backOut: function(t, b, c, d, s){
-		if (!s) s = 1.70158;
-		return c*((t=t/d-1)*t*((s+1)*t + s) + 1) + b;
-	},
-
-	/* Property: backInOut */
-	backInOut: function(t, b, c, d, s){
-		if (!s) s = 1.70158;
-		if ((t/=d/2) < 1) return c/2*(t*t*(((s*=(1.525))+1)*t - s)) + b;
-		return c/2*((t-=2)*t*(((s*=(1.525))+1)*t + s) + 2) + b;
-	},
-
-	/* Property: bounceIn */
-	bounceIn: function(t, b, c, d){
-		return c - Fx.Transitions.bounceOut (d-t, 0, c, d) + b;
-	},
-
-	/* Property: bounceOut */
-	bounceOut: function(t, b, c, d){
-		if ((t/=d) < (1/2.75)){
-			return c*(7.5625*t*t) + b;
-		} else if (t < (2/2.75)){
-			return c*(7.5625*(t-=(1.5/2.75))*t + .75) + b;
-		} else if (t < (2.5/2.75)){
-			return c*(7.5625*(t-=(2.25/2.75))*t + .9375) + b;
-		} else {
-			return c*(7.5625*(t-=(2.625/2.75))*t + .984375) + b;
+	initialize: function(element, options){
+		this.now = [];
+		this.element = $(element);
+		this.bound = {'stop': this.stop.bind(this, false)};
+		this.parent(options);
+		if (this.options.wheelStops){
+			this.addEvent('onStart', function(){
+				document.addEvent('mousewheel', this.bound.stop);
+			}.bind(this));
+			this.addEvent('onComplete', function(){
+				document.removeEvent('mousewheel', this.bound.stop);
+			}.bind(this));
 		}
 	},
 
-	/* Property: bounceInOut */
-	bounceInOut: function(t, b, c, d){
-		if (t < d/2) return Fx.Transitions.bounceIn(t*2, 0, c, d) * .5 + b;
-		return Fx.Transitions.bounceOut(t*2-d, 0, c, d) * .5 + c*.5 + b;
+	setNow: function(){
+		for (var i = 0; i < 2; i++) this.now[i] = this.compute(this.from[i], this.to[i]);
+	},
+
+	/*
+	Property: scrollTo
+		Scrolls the chosen element to the x/y coordinates.
+
+	Arguments:
+		x - the x coordinate to scroll the element to
+		y - the y coordinate to scroll the element to
+	*/
+
+	scrollTo: function(x, y){
+		if (this.timer && this.options.wait) return this;
+		var el = this.element.getSize();
+		var values = {'x': x, 'y': y};
+		for (var z in el.size){
+			var max = el.scrollSize[z] - el.size[z];
+			if ($chk(values[z])) values[z] = ($type(values[z]) == 'number') ? values[z].limit(0, max) : max;
+			else values[z] = el.scroll[z];
+			values[z] += this.options.offset[z];
+		}
+		return this.start([el.scroll.x, el.scroll.y], [values.x, values.y]);
+	},
+
+	/*
+	Property: toTop
+		Scrolls the chosen element to its maximum top.
+	*/
+
+	toTop: function(){
+		return this.scrollTo(false, 0);
+	},
+
+	/*
+	Property: toBottom
+		Scrolls the chosen element to its maximum bottom.
+	*/
+
+	toBottom: function(){
+		return this.scrollTo(false, 'full');
+	},
+
+	/*
+	Property: toLeft
+		Scrolls the chosen element to its maximum left.
+	*/
+
+	toLeft: function(){
+		return this.scrollTo(0, false);
+	},
+
+	/*
+	Property: toRight
+		Scrolls the chosen element to its maximum right.
+	*/
+
+	toRight: function(){
+		return this.scrollTo('full', false);
+	},
+
+	/*
+	Property: toElement
+		Scrolls the specified element to the position the passed in element is found.
+
+	Arguments:
+		el - the $(element) to scroll the window to
+	*/
+
+	toElement: function(el){
+		var parent = this.element.getPosition(this.options.overflown);
+		var target = $(el).getPosition(this.options.overflown);
+		return this.scrollTo(target.x - parent.x, target.y - parent.y);
+	},
+
+	increase: function(){
+		this.element.scrollTo(this.now[0], this.now[1]);
 	}
 
-};
+});
 
 /*
 Script: XHR.js
 	Contains the basic XMLHttpRequest Class Wrapper.
-
-Author:
-	Valerio Proietti, <http://mad4milk.net>
 
 License:
 	MIT-style license.
@@ -3465,58 +4232,73 @@ Class: XHR
 	Basic XMLHttpRequest Wrapper.
 
 Arguments:
-	
+	options - an object with options names as keys. See options below.
 
 Options:
-	method - 'post' or 'get' - the prototcol for the request; optional, defaults to 'post'.
+	method - 'post' or 'get' - the protocol for the request; optional, defaults to 'post'.
 	async - boolean: asynchronous option; true uses asynchronous requests. Defaults to true.
+	encoding - the encoding, defaults to utf-8.
+	autoCancel - cancels the already running request if another one is sent. defaults to false.
+	headers - accepts an object, that will be set to request headers.
+	
+Events:
 	onRequest - function to execute when the XHR request is fired.
 	onSuccess - function to execute when the XHR request completes.
 	onStateChange - function to execute when the state of the XMLHttpRequest changes.
 	onFailure - function to execute when the state of the XMLHttpRequest changes.
-	headers - accepts an object, that will be set to request headers.
+
+Properties:
+	running - true if the request is running.
+	response - object, text and xml as keys. You can access this property in the onSuccess event.
 
 Example:
-	>var myXHR = new XHR({method: 'get'}).send('http://site.com/requestHandler.php', 'name=john&lastname=doe');
+	>var myXHR = new XHR({method: 'get'}).send('http://site.com/requestHandler.php', 'name=john&lastname=dorian');
 */
 
 var XHR = new Class({
 
-	getOptions: function(){
-		return {
-			method: 'post',
-			async: true,
-			onRequest: Class.empty,
-			onStateChange: Class.empty,
-			onSuccess: Class.empty,
-			onFailure: Class.empty,
-			headers: {},
-			isSuccess: this.isSuccess
-		}
+	options: {
+		method: 'post',
+		async: true,
+		onRequest: Class.empty,
+		onSuccess: Class.empty,
+		onFailure: Class.empty,
+		urlEncoded: true,
+		encoding: 'utf-8',
+		autoCancel: false,
+		headers: {}
+	},
+
+	setTransport: function(){
+		this.transport = (window.XMLHttpRequest) ? new XMLHttpRequest() : (window.ie ? new ActiveXObject('Microsoft.XMLHTTP') : false);
+		return this;
 	},
 
 	initialize: function(options){
-		this.transport = window.XMLHttpRequest ? new XMLHttpRequest() : (window.ie ? new ActiveXObject('Microsoft.XMLHTTP') : false);
-		this.setOptions(this.getOptions(), options);
-		if (!this.transport) return;
+		this.setTransport().setOptions(options);
+		this.options.isSuccess = this.options.isSuccess || this.isSuccess;
 		this.headers = {};
+		if (this.options.urlEncoded && this.options.method == 'post'){
+			var encoding = (this.options.encoding) ? '; charset=' + this.options.encoding : '';
+			this.setHeader('Content-type', 'application/x-www-form-urlencoded' + encoding);
+		}
 		if (this.options.initialize) this.options.initialize.call(this);
 	},
 
 	onStateChange: function(){
-		this.fireEvent('onStateChange', this.transport);
-		if (this.transport.readyState != 4) return;
+		if (this.transport.readyState != 4 || !this.running) return;
+		this.running = false;
 		var status = 0;
-		try {status = this.transport.status} catch (e){}
-		if (this.options.isSuccess(status)) this.onSuccess();
+		try {status = this.transport.status;} catch(e){};
+		if (this.options.isSuccess.call(this, status)) this.onSuccess();
 		else this.onFailure();
 		this.transport.onreadystatechange = Class.empty;
 	},
-	
+
 	isSuccess: function(status){
 		return ((status >= 200) && (status < 300));
 	},
-	
+
 	onSuccess: function(){
 		this.response = {
 			'text': this.transport.responseText,
@@ -3525,40 +4307,82 @@ var XHR = new Class({
 		this.fireEvent('onSuccess', [this.response.text, this.response.xml]);
 		this.callChain();
 	},
-	
+
 	onFailure: function(){
 		this.fireEvent('onFailure', this.transport);
 	},
+
+	/*
+	Property: setHeader
+		Add/modify an header for the request. It will not override headers from the options.
+
+	Example:
+		>var myXhr = new XHR(url, {method: 'get', headers: {'X-Request': 'JSON'}});
+		>myXhr.setHeader('Last-Modified','Sat, 1 Jan 2005 05:00:00 GMT');
+	*/
 
 	setHeader: function(name, value){
 		this.headers[name] = value;
 		return this;
 	},
 
+	/*
+	Property: send
+		Opens the XHR connection and sends the data. Data has to be null or a string.
+
+	Example:
+		>var myXhr = new XHR({method: 'post'});
+		>myXhr.send(url, querystring);
+		>
+		>var syncXhr = new XHR({async: false, method: 'post'});
+		>syncXhr.send(url, null);
+		>
+	*/
+
 	send: function(url, data){
-		this.fireEvent('onRequest');
-		this.transport.open(this.options.method, url, this.options.async);
+		if (this.options.autoCancel) this.cancel();
+		else if (this.running) return this;
+		this.running = true;
+		if (data && this.options.method == 'get'){
+			url = url + (url.contains('?') ? '&' : '?') + data;
+			data = null;
+		}
+		this.transport.open(this.options.method.toUpperCase(), url, this.options.async);
 		this.transport.onreadystatechange = this.onStateChange.bind(this);
 		if ((this.options.method == 'post') && this.transport.overrideMimeType) this.setHeader('Connection', 'close');
-		Object.extend(this.headers, this.options.headers);
-		for (var type in this.headers) this.transport.setRequestHeader(type, this.headers[type]);
-		this.transport.send(data);
+		$extend(this.headers, this.options.headers);
+		for (var type in this.headers) try {this.transport.setRequestHeader(type, this.headers[type]);} catch(e){};
+		this.fireEvent('onRequest');
+		this.transport.send($pick(data, null));
+		return this;
+	},
+
+	/*
+	Property: cancel
+		Cancels the running request. No effect if the request is not running.
+
+	Example:
+		>var myXhr = new XHR({method: 'get'}).send(url);
+		>myXhr.cancel();
+	*/
+
+	cancel: function(){
+		if (!this.running) return this;
+		this.running = false;
+		this.transport.abort();
+		this.transport.onreadystatechange = Class.empty;
+		this.setTransport();
+		this.fireEvent('onCancel');
 		return this;
 	}
 
 });
 
-XHR.implement(new Chain);
-XHR.implement(new Events);
-XHR.implement(new Options);
+XHR.implement(new Chain, new Events, new Options);
 
 /*
 Script: Ajax.js
 	Contains the <Ajax> class. Also contains methods to generate querystings from forms and Objects.
-
-Authors:
-	- Valerio Proietti, <http://mad4milk.net>
-	- Christophe Beyls, <http://digitalia.be>
 
 Credits:
 	Loosely based on the version from prototype.js <http://prototype.conio.net>
@@ -3569,19 +4393,21 @@ License:
 
 /*
 Class: Ajax
-	An Ajax class, For all your asynchronous needs. Inherits methods, properties and options from <XHR>.
+	An Ajax class, For all your asynchronous needs.
+	Inherits methods, properties, options and events from <XHR>.
 
 Arguments:
 	url - the url pointing to the server-side script.
 	options - optional, an object containing options.
 
 Options:
-	postBody - if method is post, you can write parameters here. Can be a querystring, an object or a Form element.
-	onComplete - function to execute when the ajax request completes.
+	data - you can write parameters here. Can be a querystring, an object or a Form element.
 	update - $(element) to insert the response text of the XHR into, upon completion of the request.
-	evalScripts - boolean; default is false. Execute scripts in the response text onComplete.
-	evalResponse - boolean; should you eval the whole responsetext? I dont know, but this option makes it possible.
-	encoding - the encoding, defaults to utf-8.
+	evalScripts - boolean; default is false. Execute scripts in the response text onComplete. When the response is javascript the whole response is evaluated.
+	evalResponse - boolean; default is false. Force global evalulation of the whole response, no matter what content-type it is.
+	
+Events:
+	onComplete - function to execute when the ajax request completes.
 
 Example:
 	>var myAjax = new Ajax(url, {method: 'get'}).request();
@@ -3589,38 +4415,33 @@ Example:
 
 var Ajax = XHR.extend({
 
-	moreOptions: function(){
-		return {
-			postBody: null,
-			update: null,
-			onComplete: Class.empty,
-			evalScripts: false,
-			evalResponse: false,
-			encoding: 'utf-8'
-		};
+	options: {
+		data: null,
+		update: null,
+		onComplete: Class.empty,
+		evalScripts: false,
+		evalResponse: false
 	},
 
 	initialize: function(url, options){
 		this.addEvent('onSuccess', this.onComplete);
-		this.setOptions(this.moreOptions(), options);
-		this.parent(this.options);
-		if (!['post', 'get'].test(this.options.method)){
-			this._method = '_method='+this.options.method;
+		this.setOptions(options);
+		/*compatibility*/
+		this.options.data = this.options.data || this.options.postBody;
+		/*end compatibility*/
+		if (!['post', 'get'].contains(this.options.method)){
+			this._method = '_method=' + this.options.method;
 			this.options.method = 'post';
 		}
-		if (this.options.method == 'post'){
-			var encoding = (this.options.encoding) ? '; charset=' + this.options.encoding : '';
-			this.setHeader('Content-type', 'application/x-www-form-urlencoded' + encoding);
-		}
+		this.parent();
 		this.setHeader('X-Requested-With', 'XMLHttpRequest');
 		this.setHeader('Accept', 'text/javascript, text/html, application/xml, text/xml, */*');
 		this.url = url;
 	},
 
 	onComplete: function(){
-		if (this.options.update) $(this.options.update).setHTML(this.response.text);
-		if (this.options.evalResponse) eval(this.response.text);
-		if (this.options.evalScripts) this.evalScripts.delay(30, this);
+		if (this.options.update) $(this.options.update).empty().setHTML(this.response.text);
+		if (this.options.evalScripts || this.options.evalResponse) this.evalScripts();
 		this.fireEvent('onComplete', [this.response.text, this.response.xml], 20);
 	},
 
@@ -3637,12 +4458,11 @@ var Ajax = XHR.extend({
 		>new Ajax(url, {method: 'get'}).request();
 	*/
 
-	request: function(){
-		var data = null;
-		switch ($type(this.options.postBody)){
-			case 'element': data = $(this.options.postBody).toQueryString(); break;
-			case 'object': data = Object.toQueryString(this.options.postBody); break;
-			case 'string': data = this.options.postBody;
+	request: function(data){
+		data = data || this.options.data;
+		switch($type(data)){
+			case 'element': data = $(data).toQueryString(); break;
+			case 'object': data = Object.toQueryString(data);
 		}
 		if (this._method) data = (data) ? [this._method, data].join('&') : this._method;
 		return this.send(this.url, data);
@@ -3654,8 +4474,25 @@ var Ajax = XHR.extend({
 	*/
 
 	evalScripts: function(){
-		var script, regexp = /<script[^>]*>([\s\S]*?)<\/script>/gi;
-		while ((script = regexp.exec(this.response.text))) eval(script[1]);
+		var script, scripts;
+		if (this.options.evalResponse || (/(ecma|java)script/).test(this.getHeader('Content-type'))) scripts = this.response.text;
+		else {
+			scripts = [];
+			var regexp = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+			while ((script = regexp.exec(this.response.text))) scripts.push(script[1]);
+			scripts = scripts.join('\n');
+		}
+		if (scripts) (window.execScript) ? window.execScript(scripts) : window.setTimeout(scripts, 0);
+	},
+
+	/*
+	Property: getHeader
+		Returns the given response header or null
+	*/
+
+	getHeader: function(name){
+		try {return this.transport.getResponseHeader(name);} catch(e){};
+		return null;
 	}
 
 });
@@ -3678,7 +4515,7 @@ Example:
 
 Object.toQueryString = function(source){
 	var queryString = [];
-	for (var property in source) queryString.push(encodeURIComponent(property)+'='+encodeURIComponent(source[property]));
+	for (var property in source) queryString.push(encodeURIComponent(property) + '=' + encodeURIComponent(source[property]));
 	return queryString.join('&');
 };
 
@@ -3712,42 +4549,7 @@ Element.extend({
 	*/
 
 	send: function(options){
-		options = Object.extend(options || {}, {postBody: this.toQueryString(), method: 'post'});
-		return new Ajax(this.getProperty('action'), options).request();
-	},
-
-	/*
-	Property: toQueryString
-		Reads the children inputs of the Element and generates a query string, based on their values. Used internally in <Ajax>
-
-	Example:
-		(start code)
-		<form id="myForm" action="submit.php">
-		<input name="email" value="bob@bob.com">
-		<input name="zipCode" value="90210">
-		</form>
-
-		<script>
-		 $('myForm').toQueryString()
-		</script>
-		(end)
-
-		Returns:
-			email=bob@bob.com&zipCode=90210
-	*/
-
-	toObject: function(){
-		var obj = {};
-		$$(this.getElementsByTagName('input'), this.getElementsByTagName('select'), this.getElementsByTagName('textarea')).each(function(el){
-			var name = $(el).name;
-			var value = el.getValue();
-			if ((value !== false) && name) obj[name] = value;
-		});
-		return obj;
-	},
-
-	toQueryString: function(){
-		return Object.toQueryString(this.toObject());
+		return new Ajax(this.getProperty('action'), $merge({data: this.toQueryString()}, options, {method: 'post'})).request();
 	}
 
 });
@@ -3756,10 +4558,7 @@ Element.extend({
 Script: Cookie.js
 	A cookie reader/creator
 
-Author:
-	Christophe Beyls, <http://www.digitalia.be>
-
-Credits: 
+Credits:
 	based on the functions by Peter-Paul Koch (http://quirksmode.org)
 */
 
@@ -3768,7 +4567,14 @@ Class: Cookie
 	Class for creating, getting, and removing cookies.
 */
 
-var Cookie = {
+var Cookie = new Abstract({
+
+	options: {
+		domain: false,
+		path: false,
+		duration: false,
+		secure: false
+	},
 
 	/*
 	Property: set
@@ -3777,35 +4583,37 @@ var Cookie = {
 	Arguments:
 		key - the key (name) for the cookie
 		value - the value to set, cannot contain semicolons
-		options - an object representing the Cookie options. See Options below:
+		options - an object representing the Cookie options. See Options below. Default values are stored in Cookie.options.
 
 	Options:
 		domain - the domain the Cookie belongs to. If you want to share the cookie with pages located on a different domain, you have to set this value. Defaults to the current domain.
 		path - the path the Cookie belongs to. If you want to share the cookie with pages located in a different path, you have to set this value, for example to "/" to share the cookie with all pages on the domain. Defaults to the current path.
 		duration - the duration of the Cookie before it expires, in days.
-				   If set to false or 0, the cookie will be a session cookie that expires when the browser is closed. Defaults to 365 days.
+					If set to false or 0, the cookie will be a session cookie that expires when the browser is closed. This is default.
+		secure - Stored cookie information can be accessed only from a secure environment.
+
+	Returns:
+		An object with the options, the key and the value. You can give it as first parameter to Cookie.remove.
 
 	Example:
-		>Cookie.set("username", "Aaron", {duration: 5}); //save this for 5 days
-		>Cookie.set("username", "Jack", {duration: false}); //session cookie
+		>Cookie.set('username', 'Harald'); // session cookie (duration is false), or ...
+		>Cookie.set('username', 'JackBauer', {duration: 1}); // save this for 1 day
 
 	*/
 
 	set: function(key, value, options){
-		options = Object.extend({
-			domain: false,
-			path: false,
-			duration: 365
-		}, options || {});
-		value = escape(value);
-		if (options.domain) value += "; domain=" + options.domain;
-		if (options.path) value += "; path=" + options.path;
+		options = $merge(this.options, options);
+		value = encodeURIComponent(value);
+		if (options.domain) value += '; domain=' + options.domain;
+		if (options.path) value += '; path=' + options.path;
 		if (options.duration){
 			var date = new Date();
-			date.setTime(date.getTime() + (options.duration * 86400000));
-			value += "; expires=" + date.toGMTString();
+			date.setTime(date.getTime() + options.duration * 24 * 60 * 60 * 1000);
+			value += '; expires=' + date.toGMTString();
 		}
-		document.cookie = key + "=" + value;
+		if (options.secure) value += '; secure';
+		document.cookie = key + '=' + value;
+		return $extend(options, {'key': key, 'value': value});
 	},
 
 	/*
@@ -3819,12 +4627,12 @@ var Cookie = {
 		The cookie string value, or false if not found.
 
 	Example:
-		>Cookie.get("username") //returns Aaron
+		>Cookie.get("username") //returns JackBauer
 	*/
 
 	get: function(key){
-		var value = document.cookie.match('(?:^|;)\\s*'+key+'=([^;]*)');
-		return value ? unescape(value[1]) : false;
+		var value = document.cookie.match('(?:^|;)\\s*' + key.escapeRegExp() + '=([^;]*)');
+		return value ? decodeURIComponent(value[1]) : false;
 	},
 
 	/*
@@ -3832,25 +4640,26 @@ var Cookie = {
 		Removes a cookie from the browser.
 
 	Arguments:
-		key - the name of the cookie to remove
+		cookie - the name of the cookie to remove or a previous cookie (for domains)
+		options - optional. you can also pass the domain and path here. Same as options in <Cookie.set>
 
 	Examples:
-		>Cookie.remove("username") //bye-bye Aaron
+		>Cookie.remove('username') //bye-bye JackBauer, cya in 24 hours
+		>
+		>var myCookie = Cookie.set('username', 'Aaron', {domain: 'mootools.net'}); // Cookie.set returns an object with all values need to remove the cookie
+		>Cookie.remove(myCookie);
 	*/
 
-	remove: function(key){
-		this.set(key, '', {duration: -1});
+	remove: function(cookie, options){
+		if ($type(cookie) == 'object') this.set(cookie.key, '', $merge(cookie, {duration: -1}));
+		else this.set(cookie, '', $merge(options, {duration: -1}));
 	}
 
-};
+});
 
 /*
 Script: Json.js
 	Simple Json parser and Stringyfier, See: <http://www.json.org/>
-
-Authors:
-	- Christophe Beyls, <http://www.digitalia.be>
-	- Valerio Proietti, <http://mad4milk.net>
 
 License:
 	MIT-style license.
@@ -3875,22 +4684,24 @@ var Json = {
 
 	Example:
 		(start code)
-		Json.toString({apple: 'red', lemon: 'yellow'}); "{"apple":"red","lemon":"yellow"}" //don't get hung up on the quotes; it's just a string.
+		Json.toString({apple: 'red', lemon: 'yellow'}); '{"apple":"red","lemon":"yellow"}'
 		(end)
 	*/
 
 	toString: function(obj){
-		switch ($type(obj)){
+		switch($type(obj)){
 			case 'string':
-				return '"'+obj.replace(new RegExp('(["\\\\])', 'g'), '\\$1')+'"';
+				return '"' + obj.replace(/(["\\])/g, '\\$1') + '"';
 			case 'array':
-				return '['+ obj.map(function(ar){
-					return Json.toString(ar);
-				}).join(',') +']';
+				return '[' + obj.map(Json.toString).join(',') + ']';
 			case 'object':
 				var string = [];
-				for (var property in obj) string.push('"'+property+'":'+Json.toString(obj[property]));
-				return '{'+string.join(',')+'}';
+				for (var property in obj) string.push(Json.toString(property) + ':' + Json.toString(obj[property]));
+				return '{' + string.join(',') + '}';
+			case 'number':
+				if (isFinite(obj)) break;
+			case false:
+				return 'null';
 		}
 		return String(obj);
 	},
@@ -3900,15 +4711,236 @@ var Json = {
 		converts a json string to an javascript Object.
 
 	Arguments:
-		str - the string to evaluate.
+		str - the string to evaluate. if its not a string, it returns false.
+		secure - optionally, performs syntax check on json string. Defaults to false.
+
+	Credits:
+		Json test regexp is by Douglas Crockford <http://crockford.org>.
 
 	Example:
 		>var myObject = Json.evaluate('{"apple":"red","lemon":"yellow"}');
 		>//myObject will become {apple: 'red', lemon: 'yellow'}
 	*/
 
-	evaluate: function(str){
-		return eval('(' + str + ')');
+	evaluate: function(str, secure){
+		return (($type(str) != 'string') || (secure && !str.test(/^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/))) ? null : eval('(' + str + ')');
 	}
 
 };
+
+/*
+Script: Color.js
+	Contains the Color class.
+
+License:
+	MIT-style license.
+*/
+
+/*
+Class: Color
+	Creates a new Color Object, which is an array with some color specific methods.
+Arguments:
+	color - the hex, the RGB array or the HSB array of the color to create. For HSB colors, you need to specify the second argument.
+	type - a string representing the type of the color to create. needs to be specified if you intend to create the color with HSB values, or an array of HEX values. Can be 'rgb', 'hsb' or 'hex'.
+
+Example:
+	(start code)
+	var black = new Color('#000');
+	var purple = new Color([255,0,255]);
+	// mix black with white and purple, each time at 10% of the new color
+	var darkpurple = black.mix('#fff', purple, 10);
+	$('myDiv').setStyle('background-color', darkpurple);
+	(end)
+*/
+
+var Color = new Class({
+
+	initialize: function(color, type){
+		type = type || (color.push ? 'rgb' : 'hex');
+		var rgb, hsb;
+		switch(type){
+			case 'rgb':
+				rgb = color;
+				hsb = rgb.rgbToHsb();
+				break;
+			case 'hsb':
+				rgb = color.hsbToRgb();
+				hsb = color;
+				break;
+			default:
+				rgb = color.hexToRgb(true);
+				hsb = rgb.rgbToHsb();
+		}
+		rgb.hsb = hsb;
+		rgb.hex = rgb.rgbToHex();
+		return $extend(rgb, Color.prototype);
+	},
+
+	/*
+	Property: mix
+		Mixes two or more colors with the Color.
+		
+	Arguments:
+		color - a color to mix. you can use as arguments how many colors as you want to mix with the original one.
+		alpha - if you use a number as the last argument, it will be threated as the amount of the color to mix.
+	*/
+
+	mix: function(){
+		var colors = $A(arguments);
+		var alpha = ($type(colors[colors.length - 1]) == 'number') ? colors.pop() : 50;
+		var rgb = this.copy();
+		colors.each(function(color){
+			color = new Color(color);
+			for (var i = 0; i < 3; i++) rgb[i] = Math.round((rgb[i] / 100 * (100 - alpha)) + (color[i] / 100 * alpha));
+		});
+		return new Color(rgb, 'rgb');
+	},
+
+	/*
+	Property: invert
+		Inverts the Color.
+	*/
+
+	invert: function(){
+		return new Color(this.map(function(value){
+			return 255 - value;
+		}));
+	},
+
+	/*
+	Property: setHue
+		Modifies the hue of the Color, and returns a new one.
+	
+	Arguments:
+		value - the hue to set
+	*/
+
+	setHue: function(value){
+		return new Color([value, this.hsb[1], this.hsb[2]], 'hsb');
+	},
+
+	/*
+	Property: setSaturation
+		Changes the saturation of the Color, and returns a new one.
+	
+	Arguments:
+		percent - the percentage of the saturation to set
+	*/
+
+	setSaturation: function(percent){
+		return new Color([this.hsb[0], percent, this.hsb[2]], 'hsb');
+	},
+
+	/*
+	Property: setBrightness
+		Changes the brightness of the Color, and returns a new one.
+	
+	Arguments:
+		percent - the percentage of the brightness to set
+	*/
+
+	setBrightness: function(percent){
+		return new Color([this.hsb[0], this.hsb[1], percent], 'hsb');
+	}
+
+});
+
+/* Section: Utility Functions */
+
+/*
+Function: $RGB
+	Shortcut to create a new color, based on red, green, blue values.
+
+Arguments:
+	r - (integer) red value (0-255)
+	g - (integer) green value (0-255)
+	b - (integer) blue value (0-255)
+
+*/
+
+function $RGB(r, g, b){
+	return new Color([r, g, b], 'rgb');
+};
+
+/*
+Function: $HSB
+	Shortcut to create a new color, based on hue, saturation, brightness values.
+
+Arguments:
+	h - (integer) hue value (0-100)
+	s - (integer) saturation value (0-100)
+	b - (integer) brightness value (0-100)
+*/
+
+function $HSB(h, s, b){
+	return new Color([h, s, b], 'hsb');
+};
+
+/*
+Class: Array
+	A collection of The Array Object prototype methods.
+*/
+
+Array.extend({
+	
+	/*
+	Property: rgbToHsb
+		Converts a RGB array to an HSB array.
+
+	Returns:
+		the HSB array.
+	*/
+
+	rgbToHsb: function(){
+		var red = this[0], green = this[1], blue = this[2];
+		var hue, saturation, brightness;
+		var max = Math.max(red, green, blue), min = Math.min(red, green, blue);
+		var delta = max - min;
+		brightness = max / 255;
+		saturation = (max != 0) ? delta / max : 0;
+		if (saturation == 0){
+			hue = 0;
+		} else {
+			var rr = (max - red) / delta;
+			var gr = (max - green) / delta;
+			var br = (max - blue) / delta;
+			if (red == max) hue = br - gr;
+			else if (green == max) hue = 2 + rr - br;
+			else hue = 4 + gr - rr;
+			hue /= 6;
+			if (hue < 0) hue++;
+		}
+		return [Math.round(hue * 360), Math.round(saturation * 100), Math.round(brightness * 100)];
+	},
+
+	/*
+	Property: hsbToRgb
+		Converts an HSB array to an RGB array.
+
+	Returns:
+		the RGB array.
+	*/
+
+	hsbToRgb: function(){
+		var br = Math.round(this[2] / 100 * 255);
+		if (this[1] == 0){
+			return [br, br, br];
+		} else {
+			var hue = this[0] % 360;
+			var f = hue % 60;
+			var p = Math.round((this[2] * (100 - this[1])) / 10000 * 255);
+			var q = Math.round((this[2] * (6000 - this[1] * f)) / 600000 * 255);
+			var t = Math.round((this[2] * (6000 - this[1] * (60 - f))) / 600000 * 255);
+			switch(Math.floor(hue / 60)){
+				case 0: return [br, t, p];
+				case 1: return [q, br, p];
+				case 2: return [p, br, t];
+				case 3: return [p, q, br];
+				case 4: return [t, p, br];
+				case 5: return [br, p, q];
+			}
+		}
+		return false;
+	}
+
+});
