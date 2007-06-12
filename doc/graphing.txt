@@ -12,4 +12,4 @@ http://solutoire.com/plotr/
 here's a crappy mootools port:
 http://utils.softr.net/
 
-We're using our own mootools port (wrapper.js)
+We're using our own mootools port (plotMootoolsSupport.js) written by PHIL CROSBY
