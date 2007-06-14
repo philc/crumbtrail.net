@@ -11,7 +11,7 @@ class ProjectController < ApplicationController
     :pages=>:recent,
     :searches=>:recent,
   }
-  @@valid_sections=[:glance,:pageviews,:referers,:pages,:searches,:details]
+  @@valid_sections=[:glance,:pageviews,:referers,:pages,:searches,:details,:rankings]
   
   # Show all the projects the user has
   def all
@@ -204,6 +204,8 @@ class ProjectController < ApplicationController
     
     # Details; browser and OS
     build_details()
+
+    build_rankings()
   end
  
   #
@@ -419,7 +421,7 @@ class ProjectController < ApplicationController
       v=browsers[key]
       next if v <=0
       @browser_labels << "\"#{key}\""
-      @browser_data<<v
+      @browser_data << v
     end
     
     @browser_labels=@browser_labels.join(',')
@@ -431,13 +433,25 @@ class ProjectController < ApplicationController
     os = @project.get_details(:os)
     HitDetail.os_display.each do |key|
       v=os[key]
-      next if v <=0
+      next if v <= 0
       @os_labels << "\"#{key}\""
-      @os_data<<v
+      @os_data << v
     end    
     
     @os_labels=@os_labels.join(',')
     @os_data=@os_data.join(',')
+  end
+
+  def build_rankings()
+    @google_rankings = @project.query_results[:google].map { |q|
+      retval = nil
+      if q.class == String
+        retval = [q,nil,nil]
+      else
+        retval = [q.query,q.rank,q.delta]
+      end
+      retval
+    }.flatten.to_json
   end
 end
 

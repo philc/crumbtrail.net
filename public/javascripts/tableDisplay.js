@@ -168,6 +168,17 @@ TableDisplay.Methods={
 		cell2=this.td(cell2);
 		return this.tr(cell1+cell2, this.classString(i));
 	},
+  engineRankingsRow:function(i,data,dataMax){
+    var query = data[i*3];
+    var rank  = data[i*3+1];
+    var delta = data[i*3+2];
+
+    return db.tr(
+      db.td({cls:'f'},query),
+      db.td(rank),
+      db.td(delta)
+    );
+  },
 	// Shows a table, but doesn't wrap it in a dialog
 	showTableWithoutDialog:function(options){
 		var display = new TableDisplay(options);

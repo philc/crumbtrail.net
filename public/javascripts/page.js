@@ -301,6 +301,16 @@ var Page = {
 		osLabels);
 		pg.drawChart();  
 
+    /*
+    * Rankings
+    */
+    TableDisplay.showTable({
+      htmlID:'rankings_google',
+      title: 'Google',
+      step: 3,
+      rowDisplay:TableDisplay.engineRankingsRow,
+      headers:["Query", "Rank", "Change"]
+    });
 	},
 
 	// Gets the menu link for the given section, e.g. the <a> link for section "pageviews"

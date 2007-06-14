@@ -194,6 +194,10 @@ class Project < ActiveRecord::Base
     self.queries.delete_if { |x| x == query }
   end
 
+  def query_results()
+    Ranking.get_rank_details(self)
+  end
+
   # =Hits
   #------------------------------------------------------------------------------
 

@@ -27,7 +27,7 @@ def save_rankings(infile, outfile, fromfile)
   outfile.puts(output.to_yaml)
 end
 
-fromfiles = strip_arg('-fromfiles')
+fromfiles = strip_arg('-f')
 infile = File.open(@infile, "r")
 outfile = File.open(@outfile, "w")
 save_rankings(infile, outfile, !fromfiles.nil?)

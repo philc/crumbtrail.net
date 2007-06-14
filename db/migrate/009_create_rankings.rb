@@ -5,6 +5,7 @@ class CreateRankings < ActiveRecord::Migration
       t.column :query, :string, :null => false
       t.column :engine, :string, :limit => 1, :null => false
       t.column :rank, :integer, :null => false
+      t.column :delta, :integer
       t.column :search_date, :date, :null => false
     end
 

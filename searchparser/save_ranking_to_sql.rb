@@ -3,6 +3,7 @@ require 'rubygems'
 require 'active_record'
 require 'yaml'
 require 'date'
+require 'cgi'
 require 'app/models/ranking.rb'
 
 @filename = "searchparser/searchresults"
@@ -27,10 +28,11 @@ def save_query_ranks(pid, query, rankhash)
 
     if ranking.nil? || ranking.rank != rank
       newrank = Ranking.new(:project_id  => pid,
-                            :query       => query,
+                            :query       => CGI.unescape(query),
                             :engine      => enginechr,
                             :rank        => rank,
                             :search_date => Date.today)
+      newrank.delta = ranking.rank - rank unless ranking.nil?
       newrank.save!
     end
   end

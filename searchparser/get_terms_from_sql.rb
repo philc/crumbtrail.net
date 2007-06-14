@@ -16,11 +16,11 @@ end
 
 def save_terms(file)
   terms = {}
-  projects = Project.find_by_sql("select id,url,search_terms from projects")
+  projects = Project.find_by_sql("select id,url,queries from projects")
 
   projects.each do |p|
-    if (p.search_terms)
-      terms[p.id] = { :domain => p.url, :queries => p.search_terms }
+    if (p.queries)
+      terms[p.id] = { :domain => p.url, :queries => p.queries }
     end
   end
 
