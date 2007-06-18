@@ -14,9 +14,9 @@ RankDataDisplay=new Class({
       db.tr(
         {cls: "header"},
         db.th({scope:"col", id:"ranking_query"},  "Query"),
-        db.th({scope:"col"}, db.span({cls: "engine-icon google"}), "Google"),
-        db.th({scope:"col"}, db.span({cls: "engine-icon yahoo"}), "Yahoo"),
-        db.th({scope:"col"}, db.span({cls: "engine-icon msn"}), "MSN")
+        this.createHeader("google", "Google"),
+        this.createHeader("yahoo", "Yahoo"),
+        this.createHeader("msn", "MSN")
       )
     );
     var rows='';
@@ -25,6 +25,13 @@ RankDataDisplay=new Class({
 
     var tbody   = db.tbody(rows);
     return db.table({cls: "d", id: "rankings_table"}, thead, tbody);
+  },
+  createHeader: function(cls, engine){
+    return db.th({scope:"col"},
+      db.div(
+        db.span({cls: "engine-icon " + cls}, engine)
+      )
+    );
   },
   createRow: function(row){
     var tds = db.td({cls: "query f"}, this.data[row][0]);
