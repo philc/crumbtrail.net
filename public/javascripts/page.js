@@ -304,7 +304,6 @@ var Page = {
     /*
     * Rankings
     */
-    */
     RankDataDisplay.showTable({data: data.rankings}, "rankings_table_div");
     log("success");
 	},
