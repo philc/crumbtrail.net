@@ -737,7 +737,9 @@ a.feed{
 #shortcuts span {
 	padding-left: 20px;
 }
-
+#rankings_table tbody td{
+  width: auto;
+}
 #rankings_table .engine-icon{
   margin-left: auto;
   margin-right: auto;
