@@ -5,6 +5,82 @@
  *  
  */
 
+RankDataDisplay=new Class({
+  initialize: function(options){
+    BC.apply(this, options)
+  },
+  createTable: function(){
+    var thead   = db.thead(
+      db.tr(
+        {cls: "header"},
+        db.th({scope:"col", id:"ranking_query"},  "Query"),
+        db.th({scope:"col"}, db.span({cls: "engine-icon google"}), "Google"),
+        db.th({scope:"col"}, db.span({cls: "engine-icon yahoo"}), "Yahoo"),
+        db.th({scope:"col"}, db.span({cls: "engine-icon msn"}), "MSN")
+      )
+    );
+    var rows='';
+    for (var i=0; i<this.data.length; i++)
+      rows += this.createRow(i);
+
+    var tbody   = db.tbody(rows);
+    return db.table({cls: "d", id: "rankings_table"}, thead, tbody);
+  },
+  createRow: function(row){
+    var tds = db.td({cls: "query f"}, this.data[row][0]);
+    for (var i=1; i<7; i+=2)
+    {
+      var rank      = this.data[row][i];
+      var delta     = this.data[row][i+1];
+      
+      var rankDiv  = db.div(
+        {cls: (this.getDataCellClass(delta) + " rank")},
+        (rank == null ? "-" : rank)
+      );
+      var deltaDiv = db.div(
+        {cls: (this.getDataCellClass(delta) + " delta")},
+        db.span(),
+        (delta == null ? "-" : delta)
+      );
+      
+      tds += db.td(rankDiv,deltaDiv);
+    }
+
+    return db.tr({cls: (row%2 == 0 ? 'a' : '')}, tds);
+  },
+  getDataCellClass: function(value){
+    var classStr = '';
+    if (value > 0)
+      classStr = "up";
+    else if (value < 0)
+      classStr = "down";
+    else if (value == null)
+      classStr = "empty";
+
+    return "data " + classStr;
+  }
+});
+RankDataDisplay.Methods={
+  switchVisible: function(view){
+    var dataCells = $$("#rankings_table" + " .data");
+    
+    for (var i=0; i<dataCells.length; i++)
+    {
+      var cell = dataCells[i];
+      if (cell.hasClass(view))
+        cell.show();
+      else
+        cell.hide();        
+    }
+  },
+  showTable: function(options, htmlID){
+    var dataDisplay = new RankDataDisplay(options);
+    $(htmlID).innerHTML = DisplayHelper.dialog(dataDisplay.createTable(), {title: "Rank Change"});
+    RankDataDisplay.switchVisible("delta");
+  }
+};
+Object.extend(RankDataDisplay, RankDataDisplay.Methods);
+
 /*
 * Table display
 */
@@ -174,6 +250,7 @@ TableDisplay.Methods={
     var delta = data[i*3+2];
 
     return db.tr(
+      {cls:this.classString(i)},
       db.td({cls:'f'},query),
       db.td(rank),
       db.td(delta)

@@ -443,15 +443,28 @@ class ProjectController < ApplicationController
   end
 
   def build_rankings()
-    @google_rankings = @project.query_results[:google].map { |q|
-      retval = nil
-      if q.class == String
-        retval = [q,nil,nil]
-      else
-        retval = [q.query,q.rank,q.delta]
-      end
-      retval
-    }.flatten.to_json
+    @rankings = build_rank_array()
+  end
+
+  private
+
+  def build_rank_array()
+    rank_array = []
+    @project.rankings_by_query().each_pair do |query, engines|
+      ranks = [query]
+      ranks = ranks + build_rank_results_pair(engines[:google])
+      ranks = ranks + build_rank_results_pair(engines[:yahoo])
+      ranks = ranks + build_rank_results_pair(engines[:msn])
+      rank_array << ranks
+    end
+    
+    return rank_array.to_json
+  end
+
+  def build_rank_results_pair(ranking)
+    pair = [nil,nil]
+    pair = [ranking.rank, ranking.delta] unless ranking.nil?
+    return pair
   end
 end
 

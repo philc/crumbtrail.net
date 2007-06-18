@@ -737,3 +737,49 @@ a.feed{
 #shortcuts span {
 	padding-left: 20px;
 }
+
+#rankings_table .engine-icon{
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 5px;
+  height: 16px;
+  display: inline;
+}
+#rankings_table .google {
+  background: transparent url(/images/google.png) no-repeat 0 0 ;
+}
+#rankings_table .yahoo {
+  background: transparent url(/images/yahoo.png) no-repeat 0 0 ;
+}
+#rankings_table .msn {
+  background: transparent url(/images/msn.png) no-repeat 0 0 ;
+}
+#rankings_table .down span {
+  background: transparent url(/images/down-arrow.png) no-repeat 0 0;
+  padding-left: 21px;
+  padding-bottom: 24px;
+}
+#rankings_table .up span {
+  background: transparent url(/images/up-arrow.png) no-repeat 0 0;
+   padding-left: 21px;
+   padding-bottom: 24px;
+}
+#rankings_table .data {
+  text-align: center;
+}
+#ranking_query {
+  text-indent: -5000px;
+}
+/*
+#rankings_body .data {
+}
+span.arrow-icon{
+  width: 21px;
+  height: 24px;
+  margin: 2px;
+  margin-right: 4px;
+}
+span.down{ background: transparent url(/images/arrows.png) no-repeat 0 0;}
+span.up{ background: transparent url(/images/arrows.png) no-repeat -21px 0;}
+*/

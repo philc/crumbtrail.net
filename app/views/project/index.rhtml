@@ -51,8 +51,7 @@
 	browserData=[<%= @browser_data %>];
   browserLabels=[<%= @browser_labels %>];
 
-  data.rankings_google=<%= @google_rankings %>;
-
+  data.rankings=<%= @rankings %>;
 	</script>
 
 <% end %>
@@ -236,10 +235,11 @@
   <div id="rankings" class="section" >
     <h2 class="section_title" id="rankings_title">Search Engine Rankings</h2>
     <div class="panel_links">
-      <span class="navlink_show">Group By:</span>
-      <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:google,:d=>"Engine"} %>
+      <span class="navlink_show">Show:</span>
+      <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:ranks,:d=>"Rank"} %> | 
+      <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:delta,:d=>"Most Recent Change"} %>
     </div>
-    <%= render :partial=>"panel", :locals=>{:p=>:rankings,:v=>:google,:options=>{:c=>"links"}} %>
+    <div id="rankings_table_div"></div>
   </div>
   
   

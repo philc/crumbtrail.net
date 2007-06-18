@@ -6,6 +6,7 @@ class Project < ActiveRecord::Base
   has_many   :referers
   has_many   :pages
   has_many   :referral_totals
+  has_many   :rankings
   has_one    :recent_project, :class_name => "Project"
 
   # An array of collapsed referers. Contains entries of ["referer string", "row_id"]
@@ -194,8 +195,12 @@ class Project < ActiveRecord::Base
     self.queries.delete_if { |x| x == query }
   end
 
-  def query_results()
-    Ranking.get_rank_details(self)
+  def rankings_by_engine()
+    Ranking.get_rankings_by_engine(self)
+  end
+
+  def rankings_by_query()
+    Ranking.get_rankings_by_query(self)
   end
 
   # =Hits

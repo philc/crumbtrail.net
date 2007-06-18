@@ -304,13 +304,9 @@ var Page = {
     /*
     * Rankings
     */
-    TableDisplay.showTable({
-      htmlID:'rankings_google',
-      title: 'Google',
-      step: 3,
-      rowDisplay:TableDisplay.engineRankingsRow,
-      headers:["Query", "Rank", "Change"]
-    });
+    */
+    RankDataDisplay.showTable({data: data.rankings}, "rankings_table_div");
+    log("success");
 	},
 
 	// Gets the menu link for the given section, e.g. the <a> link for section "pageviews"

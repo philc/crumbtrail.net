@@ -4,6 +4,7 @@ require "app/models/account.rb"
 require "app/models/project.rb"
 require "app/models/zone.rb"
 require "app/models/server.rb"
+require "app/models/ranking.rb"
 
 def establish_connection()
   f=YAML::load(File.open('config/database.yml'))
@@ -12,6 +13,40 @@ def establish_connection()
   f[env].map{ |k,v| args[k.intern]=v}
 
   ActiveRecord::Base.establish_connection(args)
+end
+
+def generate_test_ranks(proj)
+  proj.queries.each do |query|
+    [:google, :yahoo, :msn].each do |engine|
+      
+      date = Date.today-14
+      lastRank = nil
+      rank = 1 + rand(20)
+     
+      while (date <= Date.today)
+        delta = lastRank-rank unless lastRank.nil?
+
+        # if there has been a change in rank, record it
+        if delta != 0
+          ranking = Ranking.new(:project     => proj,
+                                :query       => query,
+                                :engine      => engine.to_s[0].chr,
+                                :rank        => rank,
+                                :search_date => date);
+          ranking.delta = delta unless delta.nil?
+          ranking.save
+        end
+        
+        # randomize the next rank
+        lastRank = rank
+        rank = rank + (-5 + rand(9))
+        rank = 1 if rank < 1
+
+        # randomize the next date a change is recorded
+        date = date + 1 + rand(3)
+      end
+    end
+  end
 end
 
 def add
@@ -38,6 +73,8 @@ def add
   proj.add_query("google interview")
   proj.id = 1051
   proj.save
+
+  generate_test_ranks(proj)
 
   test  = Account.create(:username => "a@b.c", 
     :password => "password",
