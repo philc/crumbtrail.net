@@ -232,14 +232,15 @@
 		<div class="chart"  id="os_details"><div class="chart-frame"></div></div>
 	</div>  
 
-  <div id="rankings" class="section" >
+  <div id="rankings" class="section" <%=panel_style(:rankings)-%> >
     <h2 class="section_title" id="rankings_title">Search Engine Rankings</h2>
     <div class="panel_links">
       <span class="navlink_show">Show:</span>
-      <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:ranks,:d=>"Rank"} %> | 
-      <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:delta,:d=>"Most Recent Change"} %>
+      <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:ranks,:d=>"Current Rank"} %> | 
+      <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:deltas,:d=>"Most Recent Change"} %>
     </div>
-    <div id="rankings_table_div"></div>
+    <%= render :partial=>"panel", :locals=>{:p=>:rankings,:v=>:ranks, :options=>{}} %>
+    <%= render :partial=>"panel", :locals=>{:p=>:rankings,:v=>:deltas, :options=>{}} %>
     <%= render :partial=>"query_options" %>
   </div>
   

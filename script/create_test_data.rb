@@ -67,14 +67,14 @@ def add
                      :title => "Personal Site",
                      :url => "mikequinn.org/",
                      :zone => mikeq.zone)
-  #proj.add_query("mike quinn")
-  #proj.add_query("mike quinn blog")
-  #proj.add_query("michael quinn")
-  #proj.add_query("google interview")
+  proj.add_query("mike quinn")
+  proj.add_query("mike quinn blog")
+  proj.add_query("michael quinn")
+  proj.add_query("google interview")
   proj.id = 1051
   proj.save
 
-  #generate_test_ranks(proj)
+  generate_test_ranks(proj)
 
   test  = Account.create(:username => "a@b.c", 
     :password => "password",

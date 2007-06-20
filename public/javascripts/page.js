@@ -304,7 +304,8 @@ var Page = {
     /*
     * Rankings
     */
-    RankDataDisplay.showTable({data: data.rankings}, "rankings_table_div");
+    RankDataDisplay.showTable({data: data.rankings, tabletype: "ranks"}, "rankings_ranks");
+    RankDataDisplay.showTable({data: data.rankings, tabletype: "deltas"}, "rankings_deltas");
 	},
 
 	// Gets the menu link for the given section, e.g. the <a> link for section "pageviews"
