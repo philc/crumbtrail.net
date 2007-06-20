@@ -15,6 +15,7 @@ class Ranking < ActiveRecord::Base
   # each engine for each query
   def self.get_rankings_by_query(project)
     rankings = {}
+    project.queries = [] if project.queries.nil?
     project.queries.each do |query|
       rankings[query] = get_ranks_for_query(project, query)
     end

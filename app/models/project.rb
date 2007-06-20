@@ -192,7 +192,13 @@ class Project < ActiveRecord::Base
   end
 
   def remove_query(query)
+    self.queries = [] if self.queries.nil?
     self.queries.delete_if { |x| x == query }
+  end
+
+  def is_tracking_query(query)
+    self.queries = [] if self.queries.nil?
+    self.queries.include?(query)
   end
 
   def rankings_by_engine()

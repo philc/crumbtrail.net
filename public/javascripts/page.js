@@ -305,7 +305,6 @@ var Page = {
     * Rankings
     */
     RankDataDisplay.showTable({data: data.rankings}, "rankings_table_div");
-    log("success");
 	},
 
 	// Gets the menu link for the given section, e.g. the <a> link for section "pageviews"

@@ -5,7 +5,9 @@ require 'hpricot'
 require 'open-uri'
 require 'cgi'
 require 'fileutils'
-
+require 'active_record'
+require 'app/models/project.rb'
+require 'app/models/ranking.rb'
 Num = 100
 
 class RankFinder
@@ -218,18 +220,7 @@ class Fetcher
     allresults = []
     queries.each do |query|
       query = CGI.escape(query)
-      threads = []
-      threads << create_query_thread(Google, query, fromfile)
-      threads << create_query_thread(Yahoo, query, fromfile)
-      threads << create_query_thread(Msn, query, fromfile)
-
-      results = []
-      threads.each do |thr|
-        thr.join
-        results << thr["results"] if thr["results"]
-      end
-
-      allresults << results
+      allresults << threaded_search(query, fromfile)
     end
 
     return allresults
@@ -245,7 +236,56 @@ class Fetcher
     end
   end
 
+  def self.one_shot_search(pid, query)
+    #establish_connection() 
+    p = Project.find(pid)
+    
+    unless p.nil?
+      results = Fetcher.new(1051).fetch_results([query],false)
+
+      # threaded_search returns an array of Ranking objects.
+      # Save the results.
+      results[0].each do |result|
+        enginechr = result.engine.to_s[0].chr
+        rank = result.get_rank(p.url)
+        unless rank.nil?
+          ranking = Ranking.find(
+            :first,
+            :conditions => ['project_id = ? and engine = ? and query = ?',
+                            p.id, enginechr, query],
+            :order      => "search_date DESC")
+
+          if ranking.nil? || ranking.rank != rank
+            newrank = Ranking.new(
+              :project     => p,
+              :query       => CGI.unescape(query),
+              :engine      => enginechr,
+              :rank        => rank,
+              :search_date => Date.today)
+              newrank.delta = ranking.rank - rank unless ranking.nil?
+              newrank.save!
+          end
+        end
+      end
+    end
+  end
+
   private
+
+  def threaded_search(query, fromfile)
+    threads = []
+    threads << create_query_thread(Google, query, fromfile)
+    threads << create_query_thread(Yahoo, query, fromfile)
+    threads << create_query_thread(Msn, query, fromfile)
+
+    results = []
+    threads.each do |thr|
+      thr.join
+      results << thr["results"] if thr["results"]
+    end
+
+    return results
+  end
 
   def create_query_thread(engine, query, fromfile)
     thread = Thread.new(engine, query) do |e, q|
@@ -257,6 +297,16 @@ class Fetcher
 
     return thread
   end
+
+  def self.establish_connection()
+    f=YAML::load(File.open('config/database.yml'))
+    args={}
+    env=ENV['RAILS_ENV'] || 'development'
+    f[env].map{ |k,v| args[k.intern]=v}
+
+    ActiveRecord::Base.establish_connection(args)
+  end
+
 end
 
 #------------------------------------------------------------------------------

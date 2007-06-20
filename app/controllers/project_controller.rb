@@ -1,3 +1,5 @@
+require 'searchparser/fetcher.rb'
+
 class ProjectController < ApplicationController
   include ActionView::Helpers::NumberHelper
   before_filter :authorize, :except=>[:index,:pagedata,:admin]
@@ -207,7 +209,36 @@ class ProjectController < ApplicationController
 
     build_rankings()
   end
- 
+
+  def queries
+    id=params[:project]
+    query=params[:query]
+    @project = Project.find_by_id(id)
+
+    if (@project.nil? || query.nil? || query == "")
+      render :nothing=>true
+      return
+    end
+
+    if (@project.is_tracking_query(query))
+      @success = false
+      @message = "You are already tracking this query."
+      @data = nil
+      render :layout=>false
+      return
+    end
+
+    @project.add_query(query)
+    @project.save
+
+    Fetcher.one_shot_search(@project.id, query)
+
+    @success = true
+    @message = nil
+    @data = build_rank_array()
+    render :layout=>false
+  end
+
   #
   # fetches data used for pagination
   #

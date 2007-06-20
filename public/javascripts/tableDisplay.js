@@ -44,13 +44,13 @@ RankDataDisplay=new Class({
         {cls: (this.getDataCellClass(delta) + " rank")},
         (rank == null ? "-" : rank)
       );
-      var deltaDiv = db.div(
+/*      var deltaDiv = db.div(
         {cls: (this.getDataCellClass(delta) + " delta")},
         db.span(),
         (delta == null ? "-" : delta)
       );
-      
-      tds += db.td(rankDiv,deltaDiv);
+*/
+      tds += db.td(rankDiv);
     }
 
     return db.tr({cls: (row%2 == 0 ? 'a' : '')}, tds);
@@ -83,11 +83,41 @@ RankDataDisplay.Methods={
   showTable: function(options, htmlID){
     var dataDisplay = new RankDataDisplay(options);
     $(htmlID).innerHTML = DisplayHelper.dialog(dataDisplay.createTable(), {title: "Rank Change"});
-    RankDataDisplay.switchVisible("delta");
+    //RankDataDisplay.switchVisible("delta");
+  },
+  showQueryManager: function(htmlID){
+    var dataDisplay = new RankDataDisplay();
+    $(htmlID).innerHTML = dataDisplay.createQueryManager();
   }
 };
 Object.extend(RankDataDisplay, RankDataDisplay.Methods);
 
+QueryManager=new Class({
+  initialize: function(options){
+  }
+});
+QueryManager.Methods={
+  addQuery: function(){
+    var pid = Page.project;
+    var query = document.query_form.query.value;
+    var a=new Ajax('/project/queries/add?project='+pid+'&query='+query,
+    {
+      method:'get',
+      onComplete:function(r){this.handleResponse(r);}.bind(this)
+    });
+    a.request();
+    return false;
+  },
+  handleResponse:function(response){
+    var results = eval(response);
+    if (results[0] == true)
+    {
+      data.rankings = results[2];
+      RankDataDisplay.showTable({data: data.rankings}, "rankings_table_div");
+    }
+  }
+};
+Object.extend(QueryManager, QueryManager.Methods);
 /*
 * Table display
 */
@@ -160,7 +190,6 @@ TableDisplay=new Class({
 		);
 	}
 });
-
 
 
 
