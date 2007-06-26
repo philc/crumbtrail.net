@@ -1,0 +1,24 @@
+<div class="options">
+  <a href="#" title="query_options" onclick="return toggleAppear('query_options');">
+    Add or Remove Tracked Queries
+  </a>
+
+  <b class="d2 options_panel" id="query_options" style="display:none">
+    <b class="hd"><b class="c"></b></b>
+    <b class="bd"><b class="c">
+        <form name="query_form">
+          <h2>Manage Tracked Queries</h2>
+          <p>
+            Track your page rank on Google, Yahoo, and MSN.
+          </p>
+          <p>You may track up to 5 queries.<strong>You have 5 left.</strong></p>
+          <div class="text-form">
+            <input type="text" name="query" id="query" />
+          </div>
+          <input type="button" value="Track" onclick="QueryManager.addQuery();" />
+        </form>
+    </b></b>
+    <b class="ft"><b class="c"></b></b>
+  </b>
+
+</div>
