@@ -19,7 +19,7 @@ def generate_test_ranks(proj)
   proj.queries.each do |query|
     [:google, :yahoo, :msn].each do |engine|
       
-      date = Date.today-14
+      date = Date.today-120
       lastRank = nil
       rank = 1 + rand(20)
      

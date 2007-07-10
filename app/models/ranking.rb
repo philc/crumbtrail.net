@@ -1,5 +1,75 @@
+require 'date'
+
 class Ranking < ActiveRecord::Base
   belongs_to :project
+
+  def self.get_plot_data_for_engine(project, engine)
+    cutoff = Date.today - 90
+    enginechr = engine.to_s[0].chr
+
+    rankings = {}
+    project.queries.each do |query|
+      #puts "Checking #{query}"
+      rankings[query] = Ranking.find(
+        :all,
+        :conditions => ['project_id = ? and engine = ? and query = ? and search_date >= ?',
+                        project.id, enginechr, query, cutoff],
+        :order      => "search_date")
+      #puts "#{query} returned nil" if rankings[query].nil?
+      #puts "Found #{rankings[query].size.to_s} for #{query}"
+    end
+
+    rankings.each_pair {|e, r| puts "#{e} => #{r.size.to_s}"}
+
+    oldest_date   = get_oldest_date(rankings)
+
+    plot_hash = {}
+    rankings.each_pair do |engine, rankings|
+      plot_hash[engine] = []
+      current_rank = nil
+      current_date = oldest_date
+      i = 0
+      rankings.each do |ranking|
+        while (current_date != ranking.search_date && current_date <= Date.today)
+          #puts "#{current_rank.to_s} for #{current_date.to_s} ranking date #{ranking.search_date.to_s}"
+          plot_hash[engine] << [i, current_rank] unless current_rank.nil?
+          i += 1
+          current_date += 1
+        end
+        current_rank = ranking.rank
+      end
+
+      while (current_date <= Date.today)
+        plot_hash[engine] << [i, current_rank] unless current_rank.nil?
+        i += 1
+        current_date += 1
+      end
+    end
+
+    time_labels = []
+    current_date = oldest_date
+    i = 0
+    while (current_date <= Date.today)
+      if (time_labels.last.nil? || time_labels.last[1] != Date::MONTHNAMES[current_date.month])
+        time_labels << [i, Date::MONTHNAMES[current_date.month]]
+      end
+      i += 1
+      current_date += 1
+    end
+
+    return [plot_hash, time_labels]
+  end
+
+  def self.get_oldest_date(rank_hash)
+    date = Date.today
+    rank_hash.each_pair do |key, rankings|
+      rankings.each do |ranking|
+        date = ranking.search_date if ranking.search_date < date
+      end
+    end
+
+    return date
+  end
 
   # Returns a big hash with each engine as the key.  Contains all results for
   # each query for each engine

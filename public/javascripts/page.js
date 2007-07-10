@@ -306,6 +306,20 @@ var Page = {
     */
     RankDataDisplay.showTable({data: data.rankings, tabletype: "ranks"}, "rankings_ranks");
     RankDataDisplay.showTable({data: data.rankings, tabletype: "deltas"}, "rankings_deltas");
+
+    var dataset = {
+      'dataset1': data.plots
+    };
+
+    var options = {
+      backgroundColor: '#f2f2f2',
+      colorScheme: 'blue',
+      shouldFill: false,
+    };
+
+    var line = new Plotr.LineChart("rank_graph",options);
+    line.addDataset(dataset);
+    line.render();
 	},
 
 	// Gets the menu link for the given section, e.g. the <a> link for section "pageviews"

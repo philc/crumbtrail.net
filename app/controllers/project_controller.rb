@@ -475,6 +475,9 @@ class ProjectController < ApplicationController
 
   def build_rankings()
     @rankings = build_rank_array()
+    someplots = Ranking.get_plot_data_for_engine(@project, :google)
+    @plots = someplots[0]["mike quinn blog"].to_json
+    @labels = someplots[1].to_json
   end
 
   private
