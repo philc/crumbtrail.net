@@ -21,15 +21,15 @@
 				<form action="/waitlist" method="post">
 
 					<div class="text-form">
-						Email
-						<input type="text" name="email" id="email" size="30" />
-
-						How'd you hear about us? <span class="example">(optional)</span>
-						<input type="text" name="hearabout" size="30"  />
+						<label for="email">Email</label>
+						<%= field "text", :id=>"email" %>
+						
+						<label for="hearabout">How'd you hear about us? <span class="example">(optional)</span></label>
+						<%= field "text", :id=>"hearabout" %>
 					</div>
 
 					<div class="button_area">
-						<input type="submit"  value="Notify me" class="submit">
+						<input type="submit"  value="Notify me" class="submit"/>
 					</div>
 				</form>
 

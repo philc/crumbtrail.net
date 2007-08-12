@@ -381,7 +381,7 @@ Plotr.Canvas = {
 			xTickPrecision: 		1,
         	yTickPrecision: 		1,
 			pieRadius: 				0.4,
-			reverseYAxis:true,			// philc
+			reverseYAxis:false,			// philc
 			shadow:					true
 	    }, options || {});		
 	},

@@ -1,4 +1,3 @@
-
 /*
 * Styles for forms
 */
@@ -95,3 +94,7 @@ label{
 	}
 }
 
+/* clears below the floated fields that just came before the button area */
+.button_area{
+	clear:both;
+}

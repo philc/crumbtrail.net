@@ -405,11 +405,11 @@ a.linkbox:hover{
   background-color:#e4eaf4;
   background-color:#d4dae4;
   text-align:left;
+	background-color:#aabbd6;
 /*	white-space:nowrap;*/
 }
 #signup-cost tr.f{
 	background-color:#fbeac8;
-	
 }
 #signup-cost tr.alt{
 	  background-color:#fffae8;
