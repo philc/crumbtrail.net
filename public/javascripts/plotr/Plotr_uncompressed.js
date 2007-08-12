@@ -381,6 +381,7 @@ Plotr.Canvas = {
 			xTickPrecision: 		1,
         	yTickPrecision: 		1,
 			pieRadius: 				0.4,
+			reverseYAxis:true,			// philc
 			shadow:					true
 	    }, options || {});		
 	},
@@ -599,7 +600,7 @@ Plotr.Canvas = {
 					} 
 					
 	                var x = this.area.x;
-	                var y = this.area.y + tick[0] * this.area.h;
+	                var y = this.area.y + (this.options.reverseYAxis ? 1-tick[0] : tick[0]) * this.area.h;	//philc
 					
 	                cx.beginPath();
 	                cx.moveTo(x, y);
@@ -648,7 +649,7 @@ Plotr.Canvas = {
 	                label.appendChild(document.createTextNode(tick[1]));
 					
 	                Element.setStyle(label, Object.extend(labelStyle,{
-						top: (y + this.options.axisTickSize) + 'px',
+						top: ((this.options.reverseYAxis ? -10 : y) + this.options.axisTickSize) + 'px',	//philc
 						left: (x - this.options.axisLabelWidth/2) + 'px',
 						width: this.options.axisLabelWidth + 'px',
 						textAlign: 'center'
@@ -661,8 +662,8 @@ Plotr.Canvas = {
 	        }
 	
 	        cx.beginPath();
-	        cx.moveTo(this.area.x, this.area.y + this.area.h);
-	        cx.lineTo(this.area.x + this.area.w, this.area.y + this.area.h);
+	        cx.moveTo(this.area.x, this.area.y + (this.options.reverseYAxis ? 0 : this.area.h));	//philc
+	        cx.lineTo(this.area.x + this.area.w, this.area.y + (this.options.reverseYAxis ? 0 : this.area.h));	//philc
 	        cx.closePath();
 	        cx.stroke();
 	    }		
@@ -1344,7 +1345,8 @@ Object.extend(Plotr.LineChart.prototype,{
 			store.value.each(function(item){
 				var point = {
 	                x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
-	                y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
+	                y: this.options.reverseYAxis ? ((parseFloat(item[1]) - this.minyval) * this.yscale) :  //philc
+	 									1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
 	                xval: parseFloat(item[0]),
 	                yval: parseFloat(item[1]),
 	                name: store.key
@@ -1373,9 +1375,10 @@ Object.extend(Plotr.LineChart.prototype,{
 				}
 			}.bind(this));
 			
+			if (this.options.shouldFill){	// philc - these lines should only be drawn if it's should fill
             cx.lineTo(this.area.w + this.area.x, this.area.h + this.area.y);
             cx.lineTo(this.area.x, this.area.y + this.area.h);
-			
+			}
 			if(this.options.shouldFill){
 				cx.closePath();
 			}else{
