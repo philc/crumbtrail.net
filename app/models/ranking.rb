@@ -3,72 +3,43 @@ require 'date'
 class Ranking < ActiveRecord::Base
   belongs_to :project
 
-  def self.get_plot_data_for_engine(project, engine)
-    cutoff = Date.today - 90
-    enginechr = engine.to_s[0].chr
-
-    rankings = {}
+  def self.get_plot_data(project)
+    oldest_date = Date.today
+    rank_hash = {}
     project.queries.each do |query|
-      #puts "Checking #{query}"
-      rankings[query] = Ranking.find(
-        :all,
-        :conditions => ['project_id = ? and engine = ? and query = ? and search_date >= ?',
-                        project.id, enginechr, query, cutoff],
-        :order      => "search_date")
-      #puts "#{query} returned nil" if rankings[query].nil?
-      #puts "Found #{rankings[query].size.to_s} for #{query}"
-    end
+      rank_hash[query] = {}
+      [:google, :yahoo, :msn].each do |engine|
+        rank_hash[query][engine] = []
 
-    rankings.each_pair {|e, r| puts "#{e} => #{r.size.to_s}"}
+        # search our database for the query/engine combo
+        enginechr = engine.to_s[0].chr
+        rankings = Ranking.find(
+          :all,
+          :conditions => ['project_id = ? and engine = ? and query = ?',
+                          project.id, enginechr, query],
+          :order      => "search_date")
 
-    oldest_date   = get_oldest_date(rankings)
-
-    plot_hash = {}
-    rankings.each_pair do |engine, rankings|
-      plot_hash[engine] = []
-      current_rank = nil
-      current_date = oldest_date
-      i = 0
-      rankings.each do |ranking|
-        while (current_date != ranking.search_date && current_date <= Date.today)
-          #puts "#{current_rank.to_s} for #{current_date.to_s} ranking date #{ranking.search_date.to_s}"
-          plot_hash[engine] << [i, current_rank] unless current_rank.nil?
-          i += 1
-          current_date += 1
+        # copy mini [date, rank] arrays from the Ranking results into our rank_hash
+        unless rankings.nil? || rankings[0].nil?
+          oldest_date = rankings[0].search_date if rankings[0].search_date < oldest_date
+          rankings.each do |ranking|
+            rank_hash[query][engine] << [ranking.search_date, ranking.rank]
+          end
         end
-        current_rank = ranking.rank
-      end
-
-      while (current_date <= Date.today)
-        plot_hash[engine] << [i, current_rank] unless current_rank.nil?
-        i += 1
-        current_date += 1
       end
     end
 
-    time_labels = []
-    current_date = oldest_date
-    i = 0
-    while (current_date <= Date.today)
-      if (time_labels.last.nil? || time_labels.last[1] != Date::MONTHNAMES[current_date.month])
-        time_labels << [i, Date::MONTHNAMES[current_date.month]]
-      end
-      i += 1
-      current_date += 1
-    end
+    normalize_dates(rank_hash, oldest_date)
 
-    return [plot_hash, time_labels]
+    return rank_hash
   end
 
-  def self.get_oldest_date(rank_hash)
-    date = Date.today
-    rank_hash.each_pair do |key, rankings|
-      rankings.each do |ranking|
-        date = ranking.search_date if ranking.search_date < date
+  def self.normalize_dates(rank_hash, oldest_date)
+    rank_hash.each_pair do |query, engines|
+      engines.each_key do |engine|
+        rank_hash[query][engine].each { |result| result[0] = (result[0] - oldest_date).to_i }
       end
     end
-
-    return date
   end
 
   # Returns a big hash with each engine as the key.  Contains all results for
