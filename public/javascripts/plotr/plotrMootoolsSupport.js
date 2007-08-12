@@ -49,14 +49,17 @@ Object.extend({
 	}
 });
 
+
+
+// 
+// This will overwrite mootool's hash. The each() function is a little different than the
+// mootools hash; maybe we should throw an exception if the Mootools hash is already defined.
+// 
 var Hash = function(obj) {
   Object.extend(this, obj || {});
 };
-function $H(object) {
-  if (object && object.constructor == Hash) return object;
-  return new Hash(object);
-};
 Object.extend(Hash.prototype, Enumerable);
+
 Object.extend(Hash.prototype, {
   _each: function(iterator) {
     for (var key in this) {
@@ -113,6 +116,9 @@ Object.extend(Hash.prototype, {
 });
 
 
+/*
+ * ObjectRange from Prototype
+ */
 ObjectRange = Class.create();
 Object.extend(ObjectRange.prototype, Enumerable);
 Object.extend(ObjectRange.prototype, {
@@ -138,3 +144,5 @@ Object.extend(ObjectRange.prototype, {
     return value <= this.end;
   }
 });
+
+
