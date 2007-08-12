@@ -1,8 +1,9 @@
 /*
-	Plotr V0.1.4
-	============
-	This is a uncompressed version of Plotr.{Base,Chart,Canvas,LineChart,BarChart}, 
-	packed by Dean Edwards's Packer.
+	Plotr.Base
+	==========	
+	Plotr.Base is part of the Plotr Charting Framework. Plotr.Base
+	contains functions that are needed by the rest if the Plotr
+	files.
 	
 	For license/info/documentation: http://www.solutoire.com/plotr/
 	
@@ -17,230 +18,95 @@
  	For use under the BSD license. <http://www.solutoire.com/plotr>
 */
 
-try {
-	if (typeof(Prototype) == 'undefined') throw '';
-} catch(e) {
-	throw 'Plotr depends on the Prototype framework (version 1.5.0).';
-};
+if(typeof(Prototype) == 'undefined' || Prototype.Version < '1.5.1'){
+	throw 'Plotr depends on the Prototype framework (version 1.5.1).';
+}
 
-if (typeof(Plotr) == 'undefined') {
-	Plotr = {};
-};
+if(typeof(Plotr) == 'undefined'){
+	Plotr = {
+		author:  'Bas Wenneker',
+		name: 	 'Plotr',
+		version: '0.2.0'
+	};
+}
 
-Plotr.name = 'Plotr';
-Plotr.version = '0.1.4';
-Plotr.author = 'Bas Wenneker';
-
-if (typeof(Plotr.Base) == 'undefined') {
+if(typeof(Plotr.Base) == 'undefined'){
 	Plotr.Base = {};
-};
+}
+
 /** 
- * Plotr.Base.items puts all (non Function) items of lst into 
- * an Array and returns the Array.
+ * Returns an array of all values (!function) of the object obj.
  * 
- * @alias items
- * @param {Object} lst
- * @return {Array} result - Array that contains all nonFunction items of lst.
+ * @param {Object} 	obj
+ * @return {Array} 	Array that contains all non function items of lst.
  */
-Plotr.Base.items = function(lst) {
-	var result = new Array();
-	for(var item in lst){
-		if (typeof(lst[item]) == 'function') continue;
-		result.push(lst[item]);
-	}	
-	return result;	
+Plotr.Base.items = function(obj){
+	
+	return Object.values(obj).reject(function(item){
+		return (typeof(item) == 'function');
+	});
 };
 
 /**
  * Check if obj is null or undefined.
  * 
- * @alias isNil
- * @param {Object} obj
- * @return {Boolean} true if null or undefined.
+ * @param {Object} 		obj
+ * @return {Boolean} 	true if null or undefined.
  */
-Plotr.Base.isNil = function(obj) {
-	return (obj == null || typeof(obj) == 'undefined');
+Plotr.Base.isNil = function(obj){
+	
+	return (obj === null || typeof(obj) == 'undefined');
 };
 
 /**
- * Check if canvas simulation by ExCanvas is supported by the browser.
+ * Checks if canvas simulation by ExCanvas is supported by 
+ * the browser.
  *  
- * @alias excanvasSupported
- * @return {Boolean} true if userAgent is IE
+ * @return {Boolean} 	true if userAgent is IE
  */
-Plotr.Base.excanvasSupported = function() {
-     if (/MSIE/.test(navigator.userAgent) && !window.opera) {
-         return true;
-     }
-     return false;
+Plotr.Base.excanvasSupported = function(){
+	
+	return (/MSIE/.test(navigator.userAgent) && !window.opera);
 };
 
 /**
- * Check whether or not canvas is supported by the browser.
+ * Checks whether or not canvas is supported by the browser.
  * 
- * @alias isSupported
- * @param {String} canvasName - ID of the canvas element.
- * @return {Boolean} true if browser has canvas support supported.
+ * @param {String} canvasName	ID of the canvas element.
+ * @return {Boolean} 			true if browser has canvas support supported.
  */
-Plotr.Base.isSupported = function(canvasName) {
-    var canvas = null;
-    try {
-        if (Plotr.Base.isNil(canvasName)) 
-            canvas = document.createElement('canvas');
-        else
-            canvas = $(canvasName);
-        var context = canvas.getContext('2d');
+Plotr.Base.isSupported = function(canvasName){
+    
+    try{
+		((Plotr.Base.isNil(canvasName)) ? document.createElement('canvas') : $(canvasName)).getContext('2d');
+		
+    }catch(e){
+        
+		var ie = navigator.appVersion.match(/MSIE (\d\.\d)/);
+		return ((!ie) || (ie[1] < 6) || (navigator.userAgent.toLowerCase().indexOf('opera') != -1));
     }
-    catch(e) {
-        var ie = navigator.appVersion.match(/MSIE (\d\.\d)/);
-        var opera = (navigator.userAgent.toLowerCase().indexOf('opera') != -1);
-        if ((!ie) || (ie[1] < 6) || (opera))
-            return false;
-        return true;
-    }
-    return true;
+	return true;
 };
 
 /**
- * This function checks lst for the element with the largest length and
+ * Checks lst for the element with the largest length and
  * then returns an array with element 0 .. length.
  * 
- * @alias uniqueIndices
- * @param {Array} lst
- * @return {Array} result - Returns an array with unique numbers.
+ * @param {Array} arr	Array of arrays.
+ * @return {Array} 		Returns an array with unique numbers.
  */
-Plotr.Base.uniqueIndices = function(lst) {
-	var result = new Array();
-	lst.max(function(item){
+Plotr.Base.uniqueIndices = function(arr){
+	
+	return new ObjectRange(0,arr.max(function(item){		
 		return item.length;
-	}).times(function(i){
-		result.push(i);	
-	});	
-	return result;	
+	})).toArray();	
 };
 
 Plotr.Base.sum = function(lst){
-	lst = lst.flatten();
-	var result = 0;
-	for(var i = lst.length-1; i >= 0; i--)
-		result += lst[i];
-	return result;
-};
-
-/**
- * Convert an string with an hexadecimal color code {'#ffffff','ffffff'} 
- * to an RGB object {r: int, g: int, b: int}.
- * 
- * @alias hexToRGB
- * @param {String} hex - String with hexadecimal color code like '#ffffff' or 'ffffff'.
- * @return {Object} rgbObj - Returns an object {r: int, g: int, b: int}.
- */
-Plotr.Base.hexToRGB = function(hex) {	
-	hex = parseInt(((hex.indexOf('#') > -1) ? hex.substring(1) : hex), 16);
-	return {r: hex >> 16, g: (hex & 0x00FF00) >> 8, b: (hex & 0x0000FF)};
-};
-
-/**
- * Returns a String representation of rgbObj.
- * 
- * @alias toRGBString
- * @param {Object} rgbObj - Object with RGB values {r: int, g: int, b: int}.
- * @return {String} rgb - Returns a String representation of the rgbObj.
- */
-Plotr.Base.toRGBString = function(rgbObj) {
-	return '#' + [rgbObj.r, rgbObj.g, rgbObj.b].invoke('toColorPart').join('');
-};
-
-/**
- * Convert an string with an hexadecimal color code {'#ffffff','ffffff'} 
- * to an HSB object {h: int, s: int, b: int}.
- * 
- * @alias hexToHSB
- * @param {String} hex - String with hexadecimal color code like '#ffffff' or 'ffffff'.
- * @return {Object} rgbObj - Returns an object {r: int, g: int, b: int}. 
- */
-Plotr.Base.hexToHSB = function(hex) {
-	return Plotr.Base.rgbToHSB(Plotr.Base.hexToRGB(hex));
-};
-
-/** 
- * Modification of Promeths' script. Converts a rgbObj {r: int, g: int, b: int}
- * to a hsbObj {h: int, s: int, b: int}.
- * 
- * @alias rgbToHSB
- * @param {Object} rgbObj - Object with RGB values {r: int, g: int, b: int}.
- * @return {Object} hsbObj - Returns an object with HSB values {h: int, s: int, b: int}.
- * @author Prometh - http://proto.layer51.com/d.aspx?f=1136
- */
-Plotr.Base.rgbToHSB = function(rgbObj) {
-	var r = rgbObj.r;
-	var g = rgbObj.g;
-	var b = rgbObj.b;
-	var hsb = {};
 	
-	hsb.b = Math.max(Math.max(r,g),b);
-	hsb.s = (hsb.b <= 0) ? 0 : Math.round(100*(hsb.b - Math.min(Math.min(r,g),b))/hsb.b);
-	hsb.b = Math.round((hsb.b /255)*100);
-	if((r==g) && (g==b)) hsb.h = 0;
-	else if(r>=g && g>=b) hsb.h = 60*(g-b)/(r-b);
-	else if(g>=r && r>=b) hsb.h = 60  + 60*(g-r)/(g-b);
-	else if(g>=b && b>=r) hsb.h = 120 + 60*(b-r)/(g-r);
-	else if(b>=g && g>=r) hsb.h = 180 + 60*(b-g)/(b-r);
-	else if(b>=r && r>=g) hsb.h = 240 + 60*(r-g)/(b-g);
-	else if(r>=b && b>=g) hsb.h = 300 + 60*(r-b)/(r-g);
-	else hsb.h = 0;
-	hsb.h = Math.round(hsb.h);
-	return hsb;
-};
-
-/** 
- * Modification of Promeths' script. Converts a hsbObj {h: int, s: int, b: int}
- * to a rgbObj {r: int, g: int, b: int}.
- * 
- * @alias hsbToRGB
- * @param {Object} hsbObj - Object with HSB value {h: int, s: int, b: int}.
- * @return {Object} rgbObj - Returns an Object with RGB values {r: int, g: int, b: int}.
- * @author Prometh - http://proto.layer51.com/d.aspx?f=1135
- */
-Plotr.Base.hsbToRGB = function(hsbObj) {
-	var r,g,b;
-	var h = Math.round(hsbObj.h);
-	var s = Math.round(hsbObj.s*255/100);
-	var v = Math.round(hsbObj.b*255/100);
-	if(s == 0) {
-		r = g = b = v;
-	} else {
-		var t1 = v;	
-		var t2 = (255-s)*v/255;	
-		var t3 = (t1-t2)*(h%60)/60;
-		if(h==360) h = 0;
-		if(h<60) {r=t1;	b=t2; g=t2+t3}
-		else if(h<120) {g=t1; b=t2;	r=t1-t3}
-		else if(h<180) {g=t1; r=t2;	b=t2+t3}
-		else if(h<240) {b=t1; r=t2;	g=t1-t3}
-		else if(h<300) {b=t1; g=t2;	r=t2+t3}
-		else if(h<360) {r=t1; g=t2;	b=t1-t3}
-		else {r=0; g=0;	b=0}
-	}
-	return {r:Math.round(r), g:Math.round(g), b:Math.round(b)};
-};
-
-/**
- * Plotr.Base.levelHSB takes an hsbObj alters the brightness of it.
- * The brightness will be the max(initial brightness + level, 100).
- * 
- * @alias levelHSB
- * @param {Object} hsbObj - Object with HSB values {h: int, s: int, b: int}.
- * @param {Object} level - Increase Brightness with level.
- * @return {String} rgbString - Returns a RGB string representation of the leveled hsbObj.
- */
-Plotr.Base.levelHSB = function(hsbObj, level) {
-	var hsb = {
-		h: hsbObj.h,
-		s: hsbObj.s,
-		b: Math.min(hsbObj.b + level, 100)
-	};
-	return Plotr.Base.toRGBString(Plotr.Base.hsbToRGB(hsb));
+	return lst.flatten().inject(0, function(sum, n) { 
+		return sum + n; 
+	});
 };
 
 /** 
@@ -249,56 +115,52 @@ Plotr.Base.levelHSB = function(hsbObj, level) {
  * and Saturation but a leveled Brightness. So colors go from dark to light. 
  * If reverse is set to true, the colors go from light to dark. 
  * 
- * @alias generateColorscheme
- * @param {String} hex - String with hexadecimal color code like '#ffffff' or 'ffffff'.
- * @param {Integer} size - Size of the colorScheme.
- * @param {Boolean} reverse - True if you want the colorScheme to be reversed.
- * @return {Array} result - Returns a colorScheme Array of length 'size'.
+ * @param {String} hex		String with hexadecimal color code like '#ffffff' or 'ffffff'.
+ * @param {Integer} size	Size of the colorScheme.
+ * @return {Array} result	Returns a colorScheme Array of length 'size'.
  */
-Plotr.Base.generateColorscheme = function(hex, size, reverse) {
-	var hsb = Plotr.Base.hexToHSB(hex);
-	var result = new Array();
-	var level = (100 - hsb.b)/size;
+Plotr.Base.generateColorscheme = function(/*String*/ hex, /*String[]*/ setKeys){
 	
-	size.times(function(index){
-		result.push(Plotr.Base.levelHSB(hsb, level*index));
+	if(setKeys.length === 0){
+		return new Hash();
+	}
+	
+	var color = new Plotr.Color(hex);
+	var result = new Hash();
+	
+	setKeys.each(function(index){
+		result[index] = color.lighten(25).toHexString();
 	});
 	
-	return (reverse) ? result.reverse() : result;
+	return result;
 };
 
 /**
  * Returns the default (green) colorScheme.
  * 
- * @alias defaultScheme
- * @param {Integer} size - Size of the colorScheme to return.
- * @return {Array} colorScheme - Returns an Array of colors of length 'size'.
+ * @param {Integer} size		Size of the colorScheme to return.
+ * @return {Hash} colorScheme	Returns an Hash of colors of length 'size'.
  */
-Plotr.Base.defaultScheme = function(size) {
-	return Plotr.Base.generateColorscheme('#3c581a',size)
+Plotr.Base.defaultScheme = function(/*String[]*/ setKeys){
+	
+	return Plotr.Base.generateColorscheme('#3c581a', setKeys);
 };
 
 /**
  * Function returns a colorScheme based on 'color' of length 'size'.
  * 
- * @alias getColorscheme
  * @see Plotr.Base.colorSchemes 
  * @param {String} color
- * @param {Object} size - Size the colorScheme that's returned should have.
- * @return {Array} colorScheme - Returns an Array of colors of length 'size'.
+ * @param {Array} setKeys		An array of keys in the dataset.
+ * @return {Array} colorScheme	Returns an Array of colors of length 'size'.
  */
-Plotr.Base.getColorscheme = function(color, size) {
-	var scheme = Plotr.Base.colorSchemes[color];
-	if(Plotr.Base.isNil(scheme)){
-		return Plotr.Base.generateColorscheme(color,(size) ? size : 3);
-	}
-	return Plotr.Base.generateColorscheme(scheme,(size) ? size : 3);
+Plotr.Base.getColorscheme = function(/*String*/ color, /*String[]*/ setKeys){
+	
+	return Plotr.Base.generateColorscheme(Plotr.Base.colorSchemes[color] || color, setKeys);
 };
 
 /**
  * Storage of colors for predefined colorSchemes.
- * 
- * @alias colorSchemes
  */
 Plotr.Base.colorSchemes = {
 	red: '#6d1d1d',
@@ -306,248 +168,147 @@ Plotr.Base.colorSchemes = {
 	blue: '#224565',
 	grey: '#444444',
 	black: '#000000'
-};
-/**
- * Plotr.Chart
- * 
- * @alias Plotr.Chart
- * @namespace Plotr 
- */
-Plotr.Chart = {
+};/*
+	Plotr.Color
+	==========	
+	Plotr.Color is part of the Plotr Charting Framework.
 	
-	/**
-	 * The constructor of Plotr.Chart.
-	 * 
-	 * @alias initialize
-	 * @see Plotr.Canvas.setOptions
-	 * @param {String} type - Choose from {'bar'}.
-	 * @param {Object} options - Object with options.
-	 */
-	initialize: function(element, options) {
-		this.setOptions(options);
-		this.sets = 0;
-		this.dataStores = new Array();
+	For license/info/documentation: http://www.solutoire.com/plotr/
+	
+	Credits
+	-------
+	Plotr is partially based on PlotKit (BSD license) by
+	Alastair Tse <http://www.liquidx.net/plotkit>.
+	
+	Copyright
+	---------
+ 	Copyright 2007 (c) Bas Wenneker <sabmann[a]gmail[d]com>
+ 	For use under the BSD license. <http://www.solutoire.com/plotr>
+*/
+
+Plotr.Color = Class.create();
+Plotr.Color.prototype = {
+	
+	initialize: function(color){
 		
-		if (!Plotr.Base.isNil(this.options.xAxis)) {
-	        this.minxval = this.options.xAxis[0];
-	        this.maxxval = this.options.xAxis[1];
-	        this.xscale = this.maxxval - this.minxval; 
-	    } else {
-	        this.minxval = 0;
-	        this.maxxval = this.xscale = null;
-	    }
-	
-	    if (!Plotr.Base.isNil(this.options.yAxis)) {
-	        this.minyval = this.options.yAxis[0];
-	        this.maxyval = this.options.yAxis[1];
-	        this.yscale = this.maxyval - this.minyval;
-	    } else {
-	        this.minyval = 0;
-	        this.maxyval = this.yscale = null;
-	    }
-	
-	    this.xticks = new Array();
-		this.yticks = new Array();
-	    this.minxdelta = 0;
-	    this.xrange = 1;
-		this.yrange = 1;
-		
-		this._initCanvas(element);
+		this.toHex(color);
 	},
 	
 	/**
-	 * Function adds the array to the dataStores object. Argument must be in 
-	 * the form of: {['<setName>': [[0,1],[1,2]...<data>], ..}. The function also 
-	 * keeps track of how many sets are added.
+	 * Parses and stores the hex values of the input color string.
 	 * 
-	 * @alias addDataset
-	 * @param {Object} arguments - Object with data
+	 * @param {String} color	Hex or rgb() css string.
 	 */
-	addDataset: function(store) {
-		for(var name in store) {
-			this.dataStores[name] = store[name];
-			this.sets++;
+	toHex: function(color){
+		
+		if(/^#?([\da-f]{3}|[\da-f]{6})$/i.test(color)){
+		
+			color = color.replace(/^#/, '').replace(/^([\da-f])([\da-f])([\da-f])$/i, "$1$1$2$2$3$3");
+			this.r = parseInt(color.substr(0,2), 16);
+			this.g = parseInt(color.substr(2,2), 16);
+			this.b = parseInt(color.substr(4,2), 16);
+   		}else if(/^rgb *\( *\d{0,3} *, *\d{0,3} *, *\d{0,3} *\)$/i.test(color)){
+      		
+			color = color.match(/^rgb *\( *(\d{0,3}) *, *(\d{0,3}) *, *(\d{0,3}) *\)$/i);
+			this.r = parseInt(color[1], 10);
+			this.g = parseInt(color[2], 10);
+			this.b = parseInt(color[3], 10);
 		}
+		return this.check();
 	},
 	
 	/**
-	 * This function makes it easy to parse a table and show it's
-	 * data in a chart. The upper left corner has coordinates (x=0,y=0).
+	 * Lightens the color.
 	 * 
-	 * @alias addTable
-	 * @param {String|Element} table - table id or element;
-	 * @param {Integer} x - xcoordinate to start with data parsing
-	 * @param {Integer} y - y coordinate to start with data parsing
-	 * @param {Integer} xticks - row number of row with labels for xticks
+	 * @param {integer} level	Level to lighten the color with.
 	 */
-	addTable: function(table, x, y, xticks){
-		table = $(table);
+	lighten: function(level){
+		this.r += parseInt(level, 10);
+   		this.g += parseInt(level, 10);
+		this.b += parseInt(level, 10);
+
+   		return this.check();
+	},
+	
+	/**
+	 * Darkens the color.
+	 * 
+	 * @param {integer} level	Level to darken the color with.
+	 */
+	darken: function(level){
+		this.r -= parseInt(level, 10);
+   		this.g -= parseInt(level, 10);
+		this.b -= parseInt(level, 10);
 		
-		if(Plotr.Base.isNil(x))	x = 0;
-		if(Plotr.Base.isNil(y)) y = 1;
-		if(Plotr.Base.isNil(xticks)) xticks = -1;
-		
-		var tr = table.tBodies[0].rows;
-		var store = {};
-		var labels = new Array();
-		
-		for(var i = y, ln = tr.length; i < ln; i++){
-			var j = 0;		
-			store['row_'+i] = $A(tr[i].cells).reject(function(cell,index){
-				return index < x;
-			}).collect(function(cell){
-				return [j++, parseFloat(cell.innerHTML)];
-			});
-		}
-		if(xticks >= 0){
-			var tickIndex = 0;
-			this.options.xTicks = $A(tr[xticks].cells).reject(function(cell,index){
-				return index < x;
-			}).collect(function(cell){
-				return {v: tickIndex++, label: cell.innerHTML};
-			});
-		}
-		this.addDataset(store);
+   		return this.check();
 	},
 	
 	/**
-	 * This function does all the math. It'll process all the data that has to do
-	 * with canvas measures.
-	 * 
-	 * @alias _eval
-	 * @param {Object} options - (optional) evaluate the chart with the given options.
+	 * Checks and validates if the hex values r, g and b are
+	 * between 0 and 255.
 	 */
-	_eval: function(options) {
-		if(!Plotr.Base.isNil(options)) {
-			Object.extend(options,{});
-			this.setOptions(options);
-		}
-		this.stores = Plotr.Base.items(this.dataStores);
-		this._evalXY();
-		this.setColorscheme();
+	check: function(){
+		if(this.r>255){this.r=255;}else if(this.r<0){this.r=0;}
+		if(this.g>255){this.g=255;}else if(this.g<0){this.g=0;}
+		if(this.b>255){this.b=255;}else if(this.b<0){this.b=0;}
+	
+	   return this;
 	},
 	
 	/**
-	 * Processes measures of the bars(/lines/pies).
-	 * 
-	 * @alias _evalXY
-	 */	
-	_evalXY: function() {		
-		var xdata = this.stores.collect(function(item) {return item.pluck(0)}).flatten();
-		if (Plotr.Base.isNil(this.options.xAxis)) {
-			this.minxval = (this.options.xOriginIsZero) ? 0 : parseFloat(xdata.min());
-			this.maxxval = parseFloat(xdata.max());
-		} else {
-			this.minxval = this.options.xAxis[0];
-	        this.maxxval = this.options.xAxis[1];
-			this.xscale = this.maxxval - this.minxval;
-		}
-		this.xrange = this.maxxval - this.minxval;
-		this.xscale = (this.xrange == 0) ? 1.0 : 1/this.xrange;	
-		
-		var ydata = this.stores.collect(function(item) {return item.pluck(1)}).flatten();
-		if (Plotr.Base.isNil(this.options.yAxis)) {
-			this.minyval = (this.options.yOriginIsZero) ? 0 : parseFloat(ydata.min());
-			this.maxyval = parseFloat(ydata.max());
-		} else {
-			this.minyval = this.options.yAxis[0];
-	        this.maxyval = this.options.yAxis[1];
-			this.yscale = this.maxyval - this.minyval;
-		}	
-	    this.yrange = this.maxyval - this.minyval;
-		this.yscale = (this.yrange == 0) ? 1.0 : 1/this.yrange;
-	},
-	
-	/**
-	 * Evaluates ticks for X and Y axis.
-	 * 
-	 * @alias _evalLineTicks
+	 * Returns a css hex string.
 	 */
-	_evalLineTicks: function() {		
-		this._evalLineTicksForXAxis();
-		this._evalLineTicksForYAxis();
+	toHexString: function(){
+		return '#' + [this.r, this.g, this.b].invoke('toColorPart').join('');
 	},
 	
 	/**
-	 * Evaluates ticks for X axis.
-	 * 
-	 * @alias _evalLineTicksForXAxis
+	 * Returns a rgb() css string.
 	 */
-	_evalLineTicksForXAxis: function() {	    
-	    if (this.options.xTicks) {	
-			this.xticks = this.options.xTicks.collect(function (tick) {
-				var label = tick.label;
-	            if (Plotr.Base.isNil(label))
-	                label = tick.v.toString();
-	            var pos = this.xscale * (tick.v - this.minxval);
-	            if ((pos >= 0.0) && (pos <= 1.0)) {
-	                return [pos, label];
-	            }
-			}.bind(this));
-	    } else if (this.options.xNumberOfTicks) {
-	        var uniqx = Plotr.Base.uniqueIndices(this.stores);
-	        var roughSeparation = this.xrange / this.options.xNumberOfTicks;
-	        var tickCount = 0;
-	
-	        this.xticks = new Array();
-	        for (var i = 0; i <= uniqx.length; i++) {
-	            if ((uniqx[i] - this.minxval) >= (tickCount * roughSeparation)) {
-	                var pos = this.xscale * (uniqx[i] - this.minxval);
-	                if ((pos > 1.0) || (pos < 0.0))
-	                    continue;
-	                this.xticks.push([pos, uniqx[i]]);
-	                tickCount++;
-	            }
-	            if (tickCount > this.options.xNumberOfTicks)
-	                break;
-	        }
-    	}
+	toRgbString: function(){
+		return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';		
 	},
 	
 	/**
-	 * Evaluates ticks for Y axis.
+	 * Returns a rgba() css string.
 	 * 
-	 * @alias _evalLineTicksForYAxis
+	 * @param {Integer} alpha	rgba() css string.
 	 */
-	_evalLineTicksForYAxis: function() {	    
-	    if (this.options.yTicks) {
-			this.yticks = this.options.yTicks.collect(function (tick) {
-				var label = tick.label;
-	            if (Plotr.Base.isNil(label))
-	                label = tick.v.toString();
-	            var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
-	            if ((pos >= 0.0) && (pos <= 1.0)) {
-	                return [pos, label];
-	            }
-			}.bind(this));
-	    }else if (this.options.yNumberOfTicks) { 
-	        this.yticks = new Array();
-			var prec = this.options.yTickPrecision;
-			var num = this.yrange/this.options.yNumberOfTicks;
-	        var roughSeparation = num.toFixed(this.options.yTickPrecision);
-			
-	        for (var i = 0; i <= this.options.yNumberOfTicks; i++) {
-	            var yval = this.minyval + (i * roughSeparation);
-	            var pos = 1.0 - ((yval - this.minyval) * this.yscale);
-	            if ((pos > 1.0) || (pos < 0.0))
-	                continue;
-	            this.yticks.push([pos, yval.toFixed(prec)]);
-	        }
-    	}
-	}
-};
+	toRgbaString: function(alpha){
+		return 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + alpha +')';		
+	}	
+	
+};/*
+	Plotr.Canvas
+	============	
+	Plotr.Canvas is part of the Plotr Charting Framework.
+	
+	For license/info/documentation: http://www.solutoire.com/plotr/
+	
+	Credits
+	-------
+	Plotr is partially based on PlotKit (BSD license) by
+	Alastair Tse <http://www.liquidx.net/plotkit>.
+	
+	Copyright
+	---------
+ 	Copyright 2007 (c) Bas Wenneker <sabmann[a]gmail[d]com>
+ 	For use under the BSD license. <http://www.solutoire.com/plotr>
+*/
+
+if(typeof(Plotr.Base) == 'undefined'){
+	throw 'Plotr.Canvas depends on Plotr.Base.';
+}
 
 /**
  * Plotr.Canvas
  * 
- * @alias Plotr.Canvas
  * @namespace Plotr 
  */
 Plotr.Canvas = {
 	
 	/**
 	 * Sets options of this chart. Current options are:
-	 * - sweetRender: using more advanced renderering techniques the chart will look much sweeter. {Boolean}
 	 * - drawBackground: whether a background should be drawn. {Boolean}
 	 * - backgroundLineColor: color of backgroundlines. {String}
 	 * - backgroundColor: background color. {String}
@@ -578,93 +339,102 @@ Plotr.Canvas = {
 	 * - yNumberOfTicks: number of ticks on Y axis when yTicks is null. {Integer}
 	 * - xTickPrecision: decimals for the labels on the X axis. {Integer}
 	 * - yTickPrecision: decimals for the labels on the Y axis. {Integer}
+	 * - shadow: whether or not to show shadow. {Boolean}
 	 * 
-	 * @alias Chart.setOptions
 	 * @param {Object} options - Object with options.
 	 */
-	setOptions: function(options) {
+	setOptions: function(options){
+		
+		if(!this.dataSets){
+			this.dataSets = new Hash();
+		}
+		
 		this.options = Object.extend({
-			sweetRender:		true,
-	        drawBackground: 	true,
-			backgroundLineColor:'#ffffff',
-	        backgroundColor: 	'#f5f5f5',
-	        padding: 			{left: 30, right: 30, top: 5, bottom: 10},
-			colorScheme: 		Plotr.Base.defaultScheme(Math.max(this.sets,3)),
-			strokeColor: 		'#ffffff',
-	        strokeWidth: 		0.5,
-	        shouldFill: 		true,
-			shouldStroke: 		true,
-	        drawXAxis: 			true,
-	        drawYAxis: 			true,			
-	        axisTickSize: 		3,
-	        axisLineColor: 		'#000000',
-	        axisLineWidth: 		0.5,
-	        axisLabelColor: 	'#666666',
-	        axisLabelFont: 		'Arial',
-	        axisLabelFontSize: 	9,
-			axisLabelWidth: 	50,
-			barWidthFillFraction: 0.75,
-			barOrientation: 'vertical',
-        	xOriginIsZero: true,
-			yOriginIsZero: true,
-			xAxis: null,
-        	yAxis: null,
-			xTicks: null,
-			yTicks: null,
-			xNumberOfTicks: 10,
-			yNumberOfTicks: 10,
-			xTickPrecision: 1,
-        	yTickPrecision: 1,
-			pieRadius: 0.4
-	    }, options || {});
+	        drawBackground: 		true,
+			backgroundLineColor:	'#ffffff',
+	        backgroundColor: 		'#f5f5f5',
+	        padding: 				{left: 30, right: 30, top: 5, bottom: 10},
+			colorScheme: 			Plotr.Base.defaultScheme(this.dataSets.keys()),
+			strokeColor: 			'#ffffff',
+	        strokeWidth: 			2,
+	        shouldFill: 			true,
+			shouldStroke: 			true,
+	        drawXAxis: 				true,
+	        drawYAxis: 				true,			
+	        axisTickSize: 			3,
+	        axisLineColor: 			'#000000',
+	        axisLineWidth: 			1.0,
+	        axisLabelColor: 		'#666666',
+	        axisLabelFont: 			'Arial',
+	        axisLabelFontSize: 		9,
+			axisLabelWidth: 		50,
+			barWidthFillFraction:	0.75,
+			barOrientation: 		'vertical',
+        	xOriginIsZero: 			true,
+			yOriginIsZero:			true,
+			xAxis: 					null,
+        	yAxis:					null,
+			xTicks: 				null,
+			yTicks: 				null,
+			xNumberOfTicks: 		10,
+			yNumberOfTicks: 		10,
+			xTickPrecision: 		1,
+        	yTickPrecision: 		1,
+			pieRadius: 				0.4,
+			shadow:					true
+	    }, options || {});		
 	},
 	
 	/**
 	 * Resets options and datasets of this chart.
-	 * 
-	 * @alias reset
 	 */
-	reset: function() {
+	reset: function(){
+		
+		// Set options to their defaults.
 		this.setOptions();
-		this.dataStores = new Array();
-		if(!Plotr.Base.isNil(this.renderDelay)){
+		
+		// Empty the datasets.
+		this.dataSets = new Hash();
+		
+		// Stop the delay.
+		if(!!this.renderDelay){
 			this.renderDelay.stop();
-			this.renderDelay = null;
+			delete this.renderDelay;
 		}
 	},
 	
 	/**
 	 * The constructor of Plotr.Canvas. 
 	 * 
-	 * @alias initialize
 	 * @see setOptions
 	 * @param {String} element  - Canvas element ID.
 	 * @param {Plotr.Chart} chart - Chart object to render.
 	 * @param {Object} options - Options.
 	 */
-	_initCanvas: function(element) {
+	_initCanvas: function(element){
+		
 		this.canvasNode = $(element);
 		this.containerNode = this.canvasNode.parentNode;
 		Element.setStyle(this.containerNode,{position: 'relative',width: this.canvasNode.width + 'px'});	
 		this.isIE = Plotr.Base.excanvasSupported();
 		
-	    if (this.isIE && !Plotr.Base.isNil(G_vmlCanvasManager)) {
-			this.IEDelay = 0.5;
-	        this.maxTries = 10;
-	        this.renderDelay = null;
-			this.renderStack = new Array();
+	    if(this.isIE && !Plotr.Base.isNil(G_vmlCanvasManager)){
+			
+	        this.maxTries = 20;
+			this.renderStack = new Hash();
 	        this.canvasNode = G_vmlCanvasManager.initElement(this.canvasNode);			
 	    }
 		
-		if(Plotr.Base.isNil(this.canvasNode))
-			throw 'Plotr.Canvas(): Could\'nt find canvas.';	
-		if(Plotr.Base.isNil(this.containerNode) || this.containerNode.nodeName.toLowerCase() != 'div')
+		if(!this.canvasNode){
+			throw 'Plotr.Canvas(): Could\'nt find canvas.';
+		}else if(Plotr.Base.isNil(this.containerNode) || this.containerNode.nodeName.toLowerCase() != 'div'){
 			throw 'Plotr.Canvas(): Canvas element is not enclosed by a <div> element.';	
-		if (!this.isIE && !(Plotr.Base.isSupported(element)))
+		}else if(!this.isIE && !(Plotr.Base.isSupported(element))){
         	throw "Plotr.Canvas(): Canvas is not supported.";
+		}
 		
-		this.xlabels = new Array();
-    	this.ylabels = new Array();
+		this.xlabels = [];
+    	this.ylabels = [];
 		
 		this.area = {
  	        x: this.options.padding.left,
@@ -677,45 +447,48 @@ Plotr.Canvas = {
 	/**
 	 * This function renders the background in the canvas element.
 	 * 
-	 * @alias render
 	 * @param {String} [element] - (optional) ID of the canvas element to render in.
 	 */
-	_render: function(element) {
-		if(!Plotr.Base.isNil(element)) this._initCanvas(element);
+	_render: function(element){
+		
+		if(!!element){
+			this._initCanvas(element);
+		}
 	
-		if (this.options.drawBackground) {
+		if(this.options.drawBackground){
 			this._renderBackground();
 		}
 	},
 	
 	_ieWaitForVML: function(element, options){
-		var isNil = Plotr.Base.isNil;
 		
-		if(!isNil(element)) {
-			this.renderStack[element] = options;
+		if(!!element){
+			this.renderStack.merge({element: options});
 		}
 		
 		try{
-			if(!isNil(this.canvasNode)) {	
+			if(!!this.canvasNode){	
 				this.canvasNode.getContext("2d");					
 			} else {
 				$(element).getContext("2d");
 			}
-		} catch(e) {
-			if(isNil(this.renderDelay)){
-				this.renderDelay = new PeriodicalExecuter(function(pe){
-					if(!isNil(this.canvasNode)) {	
+		} catch(e){
+			if(!!this.renderDelay){
+				this.renderDelay = new PeriodicalExecuter(function(){
+					if(!!this.canvasNode){	
 						this.render(this.canvasNode,options);					
 					} else {
 						this.render(element,options);
 					}					
-				}.bind(this), this.IEDelay);
-			}else if(this.maxTries-- <= 0) {
+				}.bind(this), 0.5);
+			}else if(this.maxTries-- <= 0){
 				this.renderDelay.stop();
 			}
 			return true;
 		}
-		if(!isNil(this.renderDelay)){
+		
+		if(!!this.renderDelay){
+
 			this.renderDelay.stop();
 			delete this.renderStack[element || this.canvasNode];
 		}
@@ -725,19 +498,18 @@ Plotr.Canvas = {
 	
 	/**
 	 * Sets the colorScheme used for the chart.
-	 * 
-	 * @alias setColorScheme 
 	 */
-	setColorscheme: function() {
+	setColorscheme: function(){
 		var scheme = this.options.colorScheme;
-		
-		if(scheme instanceof Array) { 
+
+		if(typeof(scheme) == 'object'){ 
 			return;
-		} else if(typeof(scheme) == 'string') {
+		} else if(typeof(scheme) == 'string'){
+			
 			if(this.type == 'pie'){
-				this.options.colorScheme = Plotr.Base.getColorscheme(scheme, Math.max(this.stores[0].length,3));
+				this.options.colorScheme = Plotr.Base.getColorscheme(scheme, new ObjectRange(0,this.stores[0].length).toArray());
 			}else{
-				this.options.colorScheme = Plotr.Base.getColorscheme(scheme, Math.max(this.sets,3));
+				this.options.colorScheme = Plotr.Base.getColorscheme(scheme, this.dataSets.keys());
 			}
 		} else { 
 			throw 'Plotr.Canvas.setColorscheme(): colorScheme is invalid!';
@@ -746,70 +518,62 @@ Plotr.Canvas = {
 	
 	/**
 	 * Renders the background of the chart.
-	 * 
-	 * @alias _renderBackground
 	 */
-	_renderBackground: function() {
+	_renderBackground: function(){
 		var cx = this.canvasNode.getContext('2d');
 		cx.save();
 	    cx.fillStyle = this.options.backgroundColor;
 			
-		if(this.options.sweetRender) {
-	        cx.fillRect(this.area.x, this.area.y, this.area.w, this.area.h);
-	        cx.strokeStyle = this.options.backgroundLineColor;
-	        cx.lineWidth = 1.0;
-	        
-	        var ticks = this.yticks;
-	        var horiz = false;
-	        if (this.type == 'bar' && this.options.barOrientation == 'horizontal') {
-				ticks = this.xticks;
-	            horiz = true;
-	        }
-	        
-			var drawBackgroundLines = function(tick) {
-				var x1 = x2 = y1 = y2 = 0;
-				
-				if(horiz) {
-					x1 = x2 = tick[0] * this.area.w + this.area.x;
-	                y1 = this.area.y;
-	                y2 = y1 + this.area.h;
-				}else{
-					x1 = this.area.x;
-	                y1 = tick[0] * this.area.h + this.area.y;
-	                x2 = x1 + this.area.w;
-	                y2 = y1;
-				}
-				
-				cx.beginPath();
-	            cx.moveTo(x1, y1);
-	            cx.lineTo(x2, y2);
-	            cx.closePath();
-            	cx.stroke();
-			}.bind(this);			
-			ticks.each(drawBackgroundLines);
-		} else {
-			cx.fillRect(0, 0, this.canvasNode.width, this.canvasNode.height);
-		}
+        cx.fillRect(this.area.x, this.area.y, this.area.w, this.area.h);
+        cx.strokeStyle = this.options.backgroundLineColor;
+        cx.lineWidth = 1.5;
+        
+        var ticks = this.yticks;
+        var horiz = false;
+        if(this.type == 'bar' && this.options.barOrientation == 'horizontal'){
+			ticks = this.xticks;
+            horiz = true;
+        }
+        
+		var drawBackgroundLines = function(tick){
+			var x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+			
+			if(horiz){
+				x1 = x2 = tick[0] * this.area.w + this.area.x;
+                y1 = this.area.y;
+                y2 = y1 + this.area.h;
+			}else{
+				x1 = this.area.x;
+                y1 = tick[0] * this.area.h + this.area.y;
+                x2 = x1 + this.area.w;
+                y2 = y1;
+			}
+			
+			cx.beginPath();
+            cx.moveTo(x1, y1);
+            cx.lineTo(x2, y2);
+            cx.closePath();
+        	cx.stroke();
+		}.bind(this);			
+		ticks.each(drawBackgroundLines);
+		
 		cx.restore();
 	},
 	
 	/**
 	 * Renders the axis for line charts.
-	 * 
-	 * @alias _renderLineAxis
 	 */
-	_renderLineAxis: function() {
+	_renderLineAxis: function(){
 		this._renderAxis();
 	},
 	
 	/**
 	 * Renders axis.
-	 * 
-	 * @alias _renderAxis 
 	 */
-	_renderAxis: function() {
-	    if (!this.options.drawXAxis && !this.options.drawYAxis)
+	_renderAxis: function(){
+	    if(!this.options.drawXAxis && !this.options.drawYAxis){
 	        return;
+		}
 	
 	    var cx = this.canvasNode.getContext('2d');
 	
@@ -827,10 +591,12 @@ Plotr.Canvas = {
 	    cx.strokeStyle = this.options.axisLineColor;
 	    cx.lineWidth = this.options.axisLineWidth;
 		
-	    if (this.options.drawYAxis) {
-	        if (this.yticks) {
-				var collectYLabels = function(tick) {
-					if(typeof(tick) == 'function') return;
+	    if(this.options.drawYAxis){
+	        if(this.yticks){
+				var collectYLabels = function(tick){
+					if(typeof(tick) == 'function'){
+						return;
+					} 
 					
 	                var x = this.area.x;
 	                var y = this.area.y + tick[0] * this.area.h;
@@ -862,10 +628,12 @@ Plotr.Canvas = {
 	        cx.stroke();
 	    }
 		
-		if(this.options.drawXAxis) {
-	        if(this.xticks) {
-				var collectXLabels = function(tick) {
-					if (typeof(tick) == 'function') return;
+		if(this.options.drawXAxis){
+	        if(this.xticks){
+				var collectXLabels = function(tick){
+					if(typeof(tick) == 'function'){
+						return;
+					}
 					
 	                var x = this.area.x + tick[0] * this.area.w;
                 	var y = this.area.y + this.area.h;
@@ -900,14 +668,356 @@ Plotr.Canvas = {
 	    }		
 		cx.restore();
 	}
-};
+};/*
+	Plotr.Chart
+	==========	
+	Plotr.Chart is part of the Plotr Charting Framework.
+	
+	For license/info/documentation: http://www.solutoire.com/plotr/
+	
+	Credits
+	-------
+	Plotr is partially based on PlotKit (BSD license) by
+	Alastair Tse <http://www.liquidx.net/plotkit>.
+	
+	Copyright
+	---------
+ 	Copyright 2007 (c) Bas Wenneker <sabmann[a]gmail[d]com>
+ 	For use under the BSD license. <http://www.solutoire.com/plotr>
+*/
+
+if(typeof(Plotr.Base) == 'undefined'){
+	throw 'Plotr.Chart depends on Plotr.Base.';
+}
+
+
+/**
+ * Plotr.Chart
+ * 
+ * @alias Plotr.Chart
+ * @namespace Plotr 
+ */
+Plotr.Chart = {
+	
+	/**
+	 * The constructor of Plotr.Chart.
+	 * 
+	 * @alias initialize
+	 * @see Plotr.Canvas.setOptions
+	 * @param {String} type - Choose from {'bar'}.
+	 * @param {Object} options - Object with options.
+	 */
+	initialize: function(element, options){
+		this.setOptions(options);
+		this.sets = 0;
+		this.xticks = this.yticks = [];
+		this.dataSets = new Hash();
+		
+		if(!Plotr.Base.isNil(this.options.xAxis)){
+	        this.minxval = this.options.xAxis[0];
+	        this.maxxval = this.options.xAxis[1];
+	        this.xscale = this.maxxval - this.minxval; 
+	    } else {
+	        this.minxval = 0;
+	        this.maxxval = this.xscale = null;
+	    }
+	
+	    if(!Plotr.Base.isNil(this.options.yAxis)){
+	        this.minyval = this.options.yAxis[0];
+	        this.maxyval = this.options.yAxis[1];
+	        this.yscale = this.maxyval - this.minyval;
+	    } else {
+	        this.minyval = 0;
+	        this.maxyval = this.yscale = null;
+	    }
+	
+	    this.minxdelta = 0;
+	    this.xrange = this.yrange = 1;
+		
+		this._initCanvas(element);
+	},
+	
+	/**
+	 * Function adds the array to the dataSets object. Argument must be in 
+	 * the form of: {['<setName>': [[0,1],[1,2]...<data>], ..}. The function also 
+	 * keeps track of how many sets are added.
+	 * 
+	 * @alias addDataset
+	 * @param {Object} arguments - Object with data
+	 */
+	addDataset: function(store){
+		this.dataSets.merge(store);
+	},
+	
+	/**
+	 * This function makes it easy to parse a table and show it's
+	 * data in a chart. The upper left corner has coordinates (x=0,y=0).
+	 * 
+	 * @alias addTable
+	 * @param {String|Element} table - table id or element;
+	 * @param {Integer} x - xcoordinate to start with data parsing
+	 * @param {Integer} y - y coordinate to start with data parsing
+	 * @param {Integer} xticks - row number of row with labels for xticks
+	 */
+	addTable: function(table, x, y, xticks){
+		table = $(table);
+		
+		x = x || 0;
+		y = y || 1;
+		xticks = xticks || -1;
+		
+		var tr = table.tBodies[0].rows;
+		var store = {};
+		var labels = [];
+		
+		for(var i = y, ln = tr.length; i < ln; i++){
+			var j = 0;		
+			store['row_'+i] = Array.from(tr[i].cells).reject(function(cell,index){
+				return index < x;
+			}).collect(function(cell){
+				return [j++, parseFloat(cell.innerHTML)];
+			});
+		}
+		if(xticks >= 0){
+			var tickIndex = 0;
+			this.options.xTicks = Array.from(tr[xticks].cells).reject(function(cell,index){
+				return index < x;
+			}).collect(function(cell){
+				return {v: tickIndex++, label: cell.innerHTML};
+			});
+		}
+		this.addDataset(store);
+	},
+	
+	addLegend: function(/*Element*/ element){
+		// Create a list that will be the legend.
+		var ul = $(document.createElement('ul'));		
+		Element.setStyle(ul,{
+			'listStyleType': 'none'
+		});
+		
+		this.dataSets.each(function(/*Array*/ set, /*Integer*/ i){
+			var li = $(document.createElement('li')).setStyle({
+				'lineHeight': '20px'
+			}).addClassName('legend_li');
+			
+			var div = $(document.createElement('div')).setStyle({
+				'display': 		'inline',
+				'position': 	'relative',
+				'top':			'-2px',
+				'border':		'1px solid #ccc',
+				'padding':		'2px 0',
+				'margin':		'2px',
+				'width': 		'5px',			
+				'fontSize': 	'5px'
+			});
+			
+			var color = $(document.createElement('div')).setStyle({
+				'display': 		'inline',
+				'padding':		'0 6px',
+				'margin':		'2px',
+				'background': this.options.colorScheme[set.key],
+				'color':	this.options.colorScheme[set.key]
+			}).addClassName('legend_li_color');
+			
+			color.appendChild(document.createTextNode(i+1));
+			div.appendChild(color);
+			li.appendChild(div);
+			li.appendChild(document.createTextNode(set.key));
+			ul.appendChild(li);
+		}.bind(this));
+		
+		// Add the list to the element.
+		element.appendChild(ul);
+	},
+	
+	/**
+	 * This function does all the math. It'll process all the data that has to do
+	 * with canvas measures.
+	 * 
+	 * @param {Object} options	Evaluate the chart with the given options.
+	 */
+	_eval: function(options){
+		
+		if(!!(options)){			
+			this.setOptions(options);
+		}
+		
+		this.stores = Plotr.Base.items(this.dataSets);
+		this._evalXY();
+		this.setColorscheme();
+	},
+	
+	/**
+	 * Processes measures.
+	 */	
+	_evalXY: function(){
+		
+		// Gather data for the x axis.
+		var xdata = this.stores.collect(function(item){return item.pluck(0);}).flatten();
+		if(!!!(this.options.xAxis)){
+			
+			this.minxval = (this.options.xOriginIsZero) ? 0 : parseFloat(xdata.min());
+			this.maxxval = parseFloat(xdata.max());
+		}else{
+		
+			this.minxval = this.options.xAxis[0];
+	        this.maxxval = this.options.xAxis[1];
+			this.xscale = this.maxxval - this.minxval;
+		}
+		this.xrange = this.maxxval - this.minxval;
+		this.xscale = (this.xrange === 0) ? 1.0 : 1/this.xrange;	
+		
+		// Gather data for the y axis.
+		var ydata = this.stores.collect(function(item){return item.pluck(1);}).flatten();
+		if(!!!(this.options.yAxis)){
+			
+			this.minyval = (this.options.yOriginIsZero) ? 0 : parseFloat(ydata.min());
+			this.maxyval = parseFloat(ydata.max());
+		}else {
+			
+			this.minyval = this.options.yAxis[0];
+	        this.maxyval = this.options.yAxis[1];
+			this.yscale = this.maxyval - this.minyval;
+		}
+		
+	    this.yrange = this.maxyval - this.minyval;
+		this.yscale = (this.yrange === 0) ? 1.0 : 1/this.yrange;
+	},
+	
+	/**
+	 * Evaluates ticks for X and Y axis.
+	 * 
+	 * @alias _evalLineTicks
+	 */
+	_evalLineTicks: function(){		
+		this._evalLineTicksForXAxis();
+		this._evalLineTicksForYAxis();
+	},
+	
+	/**
+	 * Evaluates ticks for X axis.
+	 * 
+	 * @alias _evalLineTicksForXAxis
+	 */
+	_evalLineTicksForXAxis: function(){	    
+	    
+		if(this.options.xTicks){	
+			
+			this.xticks = this.options.xTicks.collect(function (tick){
+				
+				var label = tick.label;
+	            if(Plotr.Base.isNil(label)){
+	                
+					label = tick.v.toString();
+				}
+				
+	            var pos = this.xscale * (tick.v - this.minxval);
+	            if((pos >= 0.0) && (pos <= 1.0)){
+	                
+					return [pos, label];
+	            }
+			}.bind(this));
+			
+	    } else if(this.options.xNumberOfTicks){
+	        var uniqx = Plotr.Base.uniqueIndices(this.stores);
+	        var roughSeparation = this.xrange / this.options.xNumberOfTicks;
+	        var tickCount = 0;
+	
+	        this.xticks = [];
+	        for (var i = 0; i <= uniqx.length; i++){
+	           
+			    if((uniqx[i] - this.minxval) >= (tickCount * roughSeparation)){
+	               
+				    var pos = this.xscale * (uniqx[i] - this.minxval);
+	                if((pos > 1.0) || (pos < 0.0)){
+	                    continue;
+					}
+	                
+					this.xticks.push([pos, uniqx[i]]);
+	                tickCount++;
+	            }
+				
+	            if(tickCount > this.options.xNumberOfTicks){
+	                break;
+				}
+	        }
+    	}
+	},
+	
+	/**
+	 * Evaluates ticks for Y axis.
+	 * 
+	 * @alias _evalLineTicksForYAxis
+	 */
+	_evalLineTicksForYAxis: function(){	    
+	    
+		if(this.options.yTicks){
+		
+			this.yticks = this.options.yTicks.collect(function(tick){
+				
+				var label = tick.label;
+	            if(Plotr.Base.isNil(label)){
+	            
+				    label = tick.v.toString();
+				}
+	            
+				var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
+	            if((pos >= 0.0) && (pos <= 1.0)){
+	            
+				    return [pos, label];
+	            }
+			}.bind(this));
+	    }else if(this.options.yNumberOfTicks){ 
+	        
+			this.yticks = [];
+			var prec = this.options.yTickPrecision;
+			var num = this.yrange/this.options.yNumberOfTicks;
+			var roughSeparation = (num < 1 && this.options.yTickPrecision == 0) ? 1 : num.toFixed(this.options.yTickPrecision);
+			
+	        for (var i = 0; i <= this.options.yNumberOfTicks; i++){
+	            var yval = this.minyval + (i * roughSeparation);
+	            var pos = 1.0 - ((yval - this.minyval) * this.yscale);
+	            
+				if((pos > 1.0) || (pos < 0.0)){
+	                continue;
+				}
+	            
+				this.yticks.push([pos, yval.toFixed(prec)]);
+	        }
+    	}
+	}
+};/*
+	Plotr.BarChart
+	==============	
+	Plotr.BarChart is part of the Plotr Charting Framework.
+	
+	For license/info/documentation: http://www.solutoire.com/plotr/
+	
+	Credits
+	-------
+	Plotr is partially based on PlotKit (BSD license) by
+	Alastair Tse <http://www.liquidx.net/plotkit>.
+	
+	Copyright
+	---------
+ 	Copyright 2007 (c) Bas Wenneker <sabmann[a]gmail[d]com>
+ 	For use under the BSD license. <http://www.solutoire.com/plotr>
+*/
+
+if (typeof(Plotr.Base) == 'undefined' || 
+	typeof(Plotr.Canvas) == 'undefined' ||
+	typeof(Plotr.Chart) == 'undefined'){
+			
+	throw 'Plotr.BarChart depends on Plotr.{Base,Canvas,Chart}.';
+}
 
 Plotr.BarChart = Class.create();
 Object.extend(Plotr.BarChart.prototype, Plotr.Canvas);
 Object.extend(Plotr.BarChart.prototype, Plotr.Chart);
 Object.extend(Plotr.BarChart.prototype,{
 	/**
-	 * Type of chart we're dealing with.
+	 * Type of chart.
 	 */
 	type: 'bar',
 	
@@ -919,38 +1029,47 @@ Object.extend(Plotr.BarChart.prototype,{
 	 * @param {String} [element] - (optional) ID of a canvas element.
 	 * @param {Object} [options] - (optional) Options for rendering.
 	 */
-	render: function(element, options) {
-		var isNil = Plotr.Base.isNil;
+	render: function(element, options) {		
 		
 		if(this.isIE && this._ieWaitForVML(element,options)){
+			// Wait for IE because the canvas element is
+			// rendered with a small delay.
+		
 			return;
 		}
-
+		
 		this._evaluate(options);
 		this._render(element);
 		this._renderBarChart();				
 		this._renderBarAxis();
 		
-		if(this.isIE) {
+		if(this.isIE){
 			for(var el in this.renderStack){
-				if(typeof(this.renderStack[el]) == 'function') break;
-				this.render(el,this.renderStack[el]);
-				break;
+				if(typeof(this.renderStack[el]) != 'function'){
+					this.render(el,this.renderStack[el]);
+					break;
+				}
 			}
 		}
 	},
 	
 	/**
-	 * This function does all the math. This function evaluates all the data needed
-	 * to plot the chart.
+	 * Evaluates all the data needed to plot the chart.
 	 * 
-	 * @alias _evaluate
-	 * @param {Object} [options] - (optional) Evaluate the chart with the given options.
+	 * @param {Object} [options]	Evaluate the chart with the given options.
 	 */
 	_evaluate: function(options) {
-		this._eval(options);
-		if(this.options.barOrientation == 'vertical') this._evalBarChart();
-		else this._evalHorizBarChart();
+		
+		this._eval(options);	
+			
+		if(this.options.barOrientation == 'vertical'){			
+			// Evaluate a vertical bar chart.
+			this._evalBarChart();
+						
+		}else{
+			// Evaluate a horizontal bar chart.
+			this._evalHorizBarChart();
+		}
 		this._evalBarTicks();
 	},
 	
@@ -962,8 +1081,8 @@ Object.extend(Plotr.BarChart.prototype,{
 	_evalBarChart: function() {		
 		var uniqx = Plotr.Base.uniqueIndices(this.stores);		
 		var xdelta = 10000000;
-	    for (var i = 1; i < uniqx.length; i++) {
-	        xdelta = Math.min(Math.abs(uniqx[i] - uniqx[i-1]), xdelta);
+	    for(var j = 1; j < uniqx.length; j++){
+	        xdelta = Math.min(Math.abs(uniqx[j] - uniqx[j-1]), xdelta);
 	    }
 		
 		var barWidth = 0;
@@ -984,30 +1103,26 @@ Object.extend(Plotr.BarChart.prototype,{
 	    }
 		
 		this.minxdelta = xdelta;
-		this.bars = new Array();
+		this.bars = [];
 		
-	    var i = 0;
-	    for (var name in this.dataStores) {
-	        var store = this.dataStores[name];
-			if(typeof(store) == 'function') continue;
-	        for (var j = 0; j < store.length; j++) {
-	            var item = store[j];
-	            var rect = {
+		this.dataSets.each(function(store, i){			
+			store.value.each(function(item){
+				var rect = {
 	                x: ((parseFloat(item[0]) - this.minxval) * this.xscale) + (i * barWidthForSet) + barMargin,
 	                y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
 	                w: barWidthForSet,
 	                h: ((parseFloat(item[1]) - this.minyval) * this.yscale),
 	                xval: parseFloat(item[0]),
 	                yval: parseFloat(item[1]),
-	                name: name
+	                name: store.key
 	            };
-	            if ((rect.x >= 0.0) && (rect.x <= 1.0) && 
+				
+				if ((rect.x >= 0.0) && (rect.x <= 1.0) && 
 	                (rect.y >= 0.0) && (rect.y <= 1.0)) {
 	                this.bars.push(rect);
 	            }
-	        }
-			i++;
-	    }
+			}.bind(this));	        
+		}.bind(this));	    
 	},
 	
 	/**
@@ -1015,13 +1130,13 @@ Object.extend(Plotr.BarChart.prototype,{
 	 * 
 	 * @alias _evalHorizBarChart
 	 */
-	_evalHorizBarChart: function() {
-		var uniqx = Plotr.Base.uniqueIndices(this.stores);		
+	_evalHorizBarChart: function() {		
+		var uniqx = Plotr.Base.uniqueIndices(this.stores);	
 		var xdelta = 10000000;
 	    for (var i = 1; i < uniqx.length; i++) {
 	        xdelta = Math.min(Math.abs(uniqx[i] - uniqx[i-1]), xdelta);
 	    }
-		
+					
 		var barWidth = 0;
 	    var barWidthForSet = 0;
 	    var barMargin = 0;
@@ -1040,30 +1155,25 @@ Object.extend(Plotr.BarChart.prototype,{
 		}
 		
 		this.minxdelta = xdelta;
-	    this.bars = new Array();
-	    var i = 0;
-	    for (var name in this.dataStores) {
-	        var store = this.dataStores[name];
-	        if (typeof(store) == 'function') continue;
-	        for (var j = 0; j < store.length; j++) {
-	            var item = store[j];
-	            var rect = {
+		this.bars = [];
+		this.dataSets.each(function(store, i){			
+			store.value.each(function(item){
+				var rect = {
 	                y: ((parseFloat(item[0]) - this.minxval) * this.xscale) + (i * barWidthForSet) + barMargin,
 	                x: 0.0,
 	                h: barWidthForSet,
 	                w: ((parseFloat(item[1]) - this.minyval) * this.yscale),
 	                xval: parseFloat(item[0]),
 	                yval: parseFloat(item[1]),
-	                name: name
+	                name: store.key
 	            };
 				
 				rect.y = (rect.y <= 0.0) ? 0.0 : (rect.y >= 1.0) ? 1.0 : rect.y;	            
 	            if ((rect.x >= 0.0) && (rect.x <= 1.0)) {
 	                this.bars.push(rect);
 	            }
-	        }
-	        i++;
-	    }		
+			}.bind(this));	        
+		}.bind(this));	 
 	},
 	
 	/**
@@ -1093,28 +1203,53 @@ Object.extend(Plotr.BarChart.prototype,{
 	 */
 	_renderBarChart: function() {
 		var cx = this.canvasNode.getContext('2d');
-		var index = 0;		
+					
+		var drawBar = function(bar, index) {
+			
+			// Setup context.			
+			cx.lineWidth = this.options.strokeWidth;
+			cx.fillStyle = this.options.colorScheme[bar.name];
+			cx.strokeStyle = this.options.strokeColor;
+			
+			// Gather bar proportions.
+			var x = this.area.w * bar.x + this.area.x;
+ 	    	var y = this.area.h * bar.y + this.area.y;
+        	var w = this.area.w * bar.w;
+        	var h = this.area.h * bar.h;
+      
+       		if((w < 1) || (h < 1)){
+				// Dont draw when the bar is too small.
+				return;
+			} 
+	        	
+			if(this.options.shadow){
+				// Draw fake shadow.
+				cx.fillStyle = "rgba(0,0,0,0.15)";
+			
+				if(this.options.barOrientation == 'vertical'){
+					cx.fillRect(x-2, y-2, w+4, h+2);
+				}else{
+					cx.fillRect(x, y-2, w+2, h+4);
+				}
+				
+				cx.fillStyle = this.options.colorScheme[bar.name];
+			}
+				
+			if(this.options.shouldFill){
+				// Fill rectangle.
+				cx.fillRect(x, y, w, h);
+			}		
+			
+			if(this.options.shouldStroke){
+				// Draw stroke.						
+				cx.strokeRect(x, y, w, h);
+			}			
+		}.bind(this);
 		
-		for(var storeName in this.dataStores) {
-			var drawBar = function(bar) {
-				if(bar.name != storeName || typeof(bar) == 'function') return;
-				cx.save();
-				cx.lineWidth = this.options.strokeWidth;
-				cx.fillStyle = this.options.colorScheme[index % this.options.colorScheme.length];
-				cx.strokeStyle = this.options.strokeColor;
-				var x = this.area.w * bar.x + this.area.x;
-	 	    	var y = this.area.h * bar.y + this.area.y;
-	 	        	var w = this.area.w * bar.w;
-	 	        	var h = this.area.h * bar.h;
-			      
-	 	       		if ((w < 1) || (h < 1)) return;
-	 	        	if (this.options.shouldFill) cx.fillRect(x, y, w, h);
-				if (this.options.shouldStroke) cx.strokeRect(x, y, w, h);				
-				cx.restore();
-			}.bind(this);
-			this.bars.each(drawBar);
-			index++;
-		}
+		// Draw the bars.
+		cx.save();
+		this.bars.each(drawBar);
+		cx.restore();		
 	},
 	
 	/**
@@ -1125,7 +1260,30 @@ Object.extend(Plotr.BarChart.prototype,{
 	_renderBarAxis: function() {
 		this._renderAxis();
 	}
-});
+});/*
+	Plotr.LineChart
+	===============	
+	Plotr.LineChart is part of the Plotr Charting Framework.
+	
+	For license/info/documentation: http://www.solutoire.com/plotr/
+	
+	Credits
+	-------
+	Plotr is partially based on PlotKit (BSD license) by
+	Alastair Tse <http://www.liquidx.net/plotkit>.
+	
+	Copyright
+	---------
+ 	Copyright 2007 (c) Bas Wenneker <sabmann[a]gmail[d]com>
+ 	For use under the BSD license. <http://www.solutoire.com/plotr>
+*/
+
+if (typeof(Plotr.Base) == 'undefined' || 
+	typeof(Plotr.Canvas) == 'undefined' ||
+	typeof(Plotr.Chart) == 'undefined'){
+			
+	throw 'Plotr.LineChart depends on Plotr.{Base,Canvas,Chart}.';
+}
 
 Plotr.LineChart = Class.create();
 Object.extend(Plotr.LineChart.prototype, Plotr.Canvas);
@@ -1140,11 +1298,10 @@ Object.extend(Plotr.LineChart.prototype,{
 	 * Renders the chart with the specified options. The optional parameters
 	 * can be used to render a linechart in a different canvas element with new options.
 	 * 
-	 * @alias render
 	 * @param {String} [element] - (optional) ID of a canvas element.
 	 * @param {Object} [options] - (optional) Options for rendering.
 	 */
-	render: function(element,options) {		
+	render: function(element,options){		
 		if(this.isIE && this._ieWaitForVML(element,options)){
 			return;
 		}
@@ -1154,11 +1311,12 @@ Object.extend(Plotr.LineChart.prototype,{
 		this._renderLineChart();
 		this._renderLineAxis();
 		
-		if(this.isIE) {
+		if(this.isIE){
 			for(var el in this.renderStack){
-				if(typeof(this.renderStack[el]) == 'function') break;
-				this.render(el,this.renderStack[el]);
-				break;
+				if(typeof(this.renderStack[el]) != 'function'){
+					this.render(el,this.renderStack[el]);
+					break;
+				}
 			}
 		}
 	},
@@ -1167,10 +1325,9 @@ Object.extend(Plotr.LineChart.prototype,{
 	 * This function does all the math. It'll process all the data needed to
 	 * plot the chart.
 	 * 
-	 * @alias evaluate
 	 * @param {Object} options - (optional) evaluate the chart with the given options.
 	 */
-	_evaluate: function(options) {
+	_evaluate: function(options){
 		this._eval(options);
 		this._evalLineChart();
 		this._evalLineTicksForXAxis();
@@ -1179,74 +1336,118 @@ Object.extend(Plotr.LineChart.prototype,{
 	
 	/**
 	 * Processes specific measures for line charts.
-	 * 
-	 * @alias _evalLineChart
 	 */
-	_evalLineChart: function() {
-	    this.points = new Array();
-			
-	    for (var name in this.dataStores) {
-	        var store = this.dataStores[name];
-	        if (typeof(store) == 'function') continue;
-	        for (var j = 0; j < store.length; j++) {
-	            var item = store[j];
-	            var point = {
+	_evalLineChart: function(){
+	    this.points = [];
+	
+		this.dataSets.each(function(store){			
+			store.value.each(function(item){
+				var point = {
 	                x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
 	                y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
 	                xval: parseFloat(item[0]),
 	                yval: parseFloat(item[1]),
-	                name: name
+	                name: store.key
 	            };
+				
 				point.y = (point.y <= 0.0) ? 0.0 : (point.y >= 1.0) ? 1.0 : point.y;
 	            
-	            if ((point.x >= 0.0) && (point.x <= 1.0)) {
+	            if((point.x >= 0.0) && (point.x <= 1.0)){
 	                this.points.push(point);
 	            }
-	        }
-	    }
+			}.bind(this));	        
+		}.bind(this));	    
 	},
 	
-	_renderLineChart: function() {
+	_renderLineChart: function(){
 	    var cx = this.canvasNode.getContext("2d");
-		var index = 0;
 		
-		for(var storeName in this.dataStores) {
-			cx.save();
-			cx.lineWidth = this.options.strokeWidth;
-			cx.fillStyle = this.options.colorScheme[index % this.options.colorScheme.length];
-		    cx.strokeStyle = this.options.strokeColor;
-			
-			var preparePath = function() {
-				cx.beginPath();
-	            cx.moveTo(this.area.x, this.area.y + this.area.h);
-	            var addPoint = function(point) {
-	                
-	            }.bind(this);
-				for(var point in this.points) {
-					var currPoint = this.points[point];
-					if (currPoint.name == storeName)
-	                    cx.lineTo(this.area.w * currPoint.x + this.area.x, this.area.h * currPoint.y + this.area.y);
+		var preparePath = function(storeName,index){
+				
+			cx.beginPath();
+            cx.moveTo(this.area.x, this.area.y + this.area.h);
+			this.points.each(function(point){
+				
+				if(point.name == storeName){
+                    cx.lineTo(this.area.w * point.x + this.area.x, this.area.h * point.y + this.area.y);
 				}
-	            cx.lineTo(this.area.w + this.area.x, this.area.h + this.area.y);
-	            cx.lineTo(this.area.x, this.area.y + this.area.h);
-	            cx.closePath();
+			}.bind(this));
+			
+            cx.lineTo(this.area.w + this.area.x, this.area.h + this.area.y);
+            cx.lineTo(this.area.x, this.area.y + this.area.h);
+			
+			if(this.options.shouldFill){
+				cx.closePath();
+			}else{
+	        	cx.strokeStyle = this.options.colorScheme[storeName];
+			    cx.stroke();
+			}	
+		}.bind(this);
+		
+		if(this.options.shouldFill){
+			
+			var drawLine = function(storeName, index){
+				
+				if(this.options.shadow){
+					// Draw shadow.
+					cx.save();
+					cx.fillStyle = 'rgba(0,0,0,0.15)';				
+					cx.translate(2, -2);
+					preparePath(storeName,index);	
+					cx.fill();				
+					cx.restore();
+				}
+				
+				// Fill line.
+				cx.fillStyle = this.options.colorScheme[storeName];		
+	            preparePath(storeName,index);
+		        cx.fill();			    			
+		        
+				if (this.options.shouldStroke){
+					// Draw stroke.
+		            preparePath(storeName,index);
+		            cx.stroke();
+		        }     
 			}.bind(this);
 			
-			if (this.options.shouldFill) {
-	            preparePath(cx);
-		        cx.fill();
-		    }
-	        if (this.options.shouldStroke) {
-	            preparePath(cx);
-	            cx.stroke();
-	        }
-	
-	        cx.restore();	
-				
-			index++;
+			// Draw the lines.
+			cx.save();
+			cx.lineWidth = this.options.strokeWidth;		
+		    cx.strokeStyle = this.options.strokeColor;
+			this.dataSets.keys().each(drawLine);		
+			cx.restore();
+		}else{
+			cx.save();
+			cx.lineWidth = this.options.strokeWidth;				
+			this.dataSets.keys().each(preparePath);
+			//cx.stroke();
+			cx.restore();
 		}
 	}
-});
+});/*
+	Plotr.PieChart
+	==============	
+	Plotr.PieChart is part of the Plotr Charting Framework.
+	
+	For license/info/documentation: http://www.solutoire.com/plotr/
+	
+	Credits
+	-------
+	Plotr is partially based on PlotKit (BSD license) by
+	Alastair Tse <http://www.liquidx.net/plotkit>.
+	
+	Copyright
+	---------
+ 	Copyright 2007 (c) Bas Wenneker <sabmann[a]gmail[d]com>
+ 	For use under the BSD license. <http://www.solutoire.com/plotr>
+*/
+
+if(typeof(Plotr.Base) == 'undefined' || 
+	typeof(Plotr.Canvas) == 'undefined' ||
+	typeof(Plotr.Chart) == 'undefined'){
+			
+	throw 'Plotr.PieChart depends on Plotr.{Base,Canvas,Chart}.';
+}
 
 Plotr.PieChart = Class.create();
 Object.extend(Plotr.PieChart.prototype, Plotr.Canvas);
@@ -1260,12 +1461,10 @@ Object.extend(Plotr.PieChart.prototype,{
 	/**
 	 * Renders the chart with the specified options.
 	 * 
-	 * @alias render
-	 * @param {String} [element] - (optional) ID of a canvas element.
-	 * @param {Object} [options] - (optional) Options for rendering.
+	 * @param {String} [element]	ID of a canvas element.
+	 * @param {Object} [options]	Options for rendering.
 	 */
-	render: function(element,options) {
-		var isNil = Plotr.Base.isNil;
+	render: function(element,options){
 		
 		if(this.isIE && this._ieWaitForVML(element,options)){
 			return;
@@ -1276,35 +1475,37 @@ Object.extend(Plotr.PieChart.prototype,{
 		this._renderPieChart();
 		this._renderPieAxis();
 		
-		if(this.isIE) {
+		if(this.isIE){
 			for(var el in this.renderStack){
-				if(typeof(this.renderStack[el]) == 'function') break;
-				this.render(el,this.renderStack[el]);
-				break;
+				if(typeof(this.renderStack[el]) != 'function'){
+					this.render(el,this.renderStack[el]);
+					break;
+				}
 			}
 		}
-	},
-	
+	},	
 	
 	/**
-	 * This function does all the math. This function evaluates all the data needed
+	 * This function evaluates all the data needed
 	 * to plot the chart.
 	 * 
-	 * @alias _evaluate
-	 * @param {Object} [options] - (optional) Evaluate the chart with the given options.
+	 * @param {Object} [options]	Evaluate the chart with the given options.
 	 */
-	_evaluate: function(options) {
+	_evaluate: function(options){
 		this._eval(options);
 		this._evalPieChart();
 		this._evalPieTicks();
 	},
 	
+	/**
+	 * Processes specific measures for pie charts.
+	 */
 	_evalPieChart: function(){
 		var store = this.stores[0];
 		var sum = Plotr.Base.sum(store.pluck(1));
 		
 		var angle = 0.0;
-		this.slices = new Array();
+		this.slices = [];
 		for(var i = 0, slice = null, fraction = null; i < store.length; i++){
 			slice = store[i];
 			if(slice[1] > 0){
@@ -1328,107 +1529,122 @@ Object.extend(Plotr.PieChart.prototype,{
     	var centery = this.area.y + this.area.h * 0.5;
 		var radius = Math.min(this.area.w * this.options.pieRadius, this.area.h * this.options.pieRadius);
 		
-		if(this.isIE) {
-	        centerx = parseInt(centerx);
-	        centery = parseInt(centery);
-	        radius = parseInt(radius);
+		if(this.isIE){
+	        centerx = parseInt(centerx,10);
+	        centery = parseInt(centery,10);
+	        radius = parseInt(radius,10);
 	    }
 		
-		for(var i = 0, ln = this.slices.length; i < ln; i++) {			
-			cx.save();
-			cx.fillStyle = this.options.colorScheme[i % this.options.colorScheme.length];
-			
-			var drawPie = function(){
-				cx.beginPath();
-				cx.moveTo(centerx, centery);
-				cx.arc(centerx, centery, radius, 
-                        this.slices[i].startAngle - Math.PI/2,
-                        this.slices[i].endAngle - Math.PI/2,
-                        false);
-				cx.lineTo(centerx, centery);
-           		cx.closePath();
-			}.bind(this);
-			
-			if(Math.abs(this.slices[i].startAngle - this.slices[i].endAngle) > 0.001) {
+		var drawPie = function(slice){
+			cx.beginPath();
+			cx.moveTo(centerx, centery);
+			cx.arc(centerx, centery, radius, 
+                    slice.startAngle - Math.PI/2,
+                    slice.endAngle - Math.PI/2,
+                    false);
+			cx.lineTo(centerx, centery);
+       		cx.closePath();
+		};
 				
-				if(this.options.shouldFill) {
-                	drawPie();
+		if(this.options.shadow){
+			cx.save();
+			cx.fillStyle = "rgba(0,0,0,0.15)";
+				
+	        cx.beginPath();
+			cx.moveTo(centerx, centery);
+			cx.arc(centerx+1, centery+2, radius+1, 0, Math.PI*2, false);
+			cx.lineTo(centerx, centery);
+       		cx.closePath();
+			cx.fill();
+			cx.restore();
+		}
+		
+		cx.save();
+		this.slices.each(function(slice,i){
+						
+			if(Math.abs(slice.startAngle - slice.endAngle) > 0.001){
+								
+				cx.fillStyle = this.options.colorScheme[i];
+				
+				if(this.options.shouldFill){
+					drawPie(slice);               	
 	                cx.fill();
 	            }
 	            
-	            if (this.options.shouldStroke) {
-	                drawPie();
+	            if(this.options.shouldStroke){
+					drawPie(slice);
 	                cx.lineWidth = this.options.strokeWidth;
-	                if (this.options.strokeColor)
-	                    cx.strokeStyle = this.options.strokeColor;	       
+	                
+					if(!!(this.options.strokeColor)){
+	                    cx.strokeStyle = this.options.strokeColor;
+					}
+						       
 	                cx.stroke();
 	            }
 			}
-			cx.restore();				
-		}
+			
+		}.bind(this));
+		cx.restore();
+		
 	},
 	
-	_evalPieTicks: function() {
-		this.xticks = new Array();
-		
-		var toPercentage = function(n){
-			n *= 100;
-			return n.toFixed(1)+'%';
-		};
-		
-		if(this.options.xTicks) {
-			var lookup = new Array();
-			for (var i = 0; i < this.slices.length; i++) {
-				lookup[this.slices[i].xval] = this.slices[i];
-			}
+	_evalPieTicks: function(){
+		this.xticks = [];
+				
+		if(!!(this.options.xTicks)){
 			
-			for(var i = 0; i < this.options.xTicks.length; i++) {
-				var tick = this.options.xTicks[i];
+			var lookup = [];
+			this.slices.each(function(slice){
+				lookup[slice.xval] = slice;
+			});
+			
+			this.options.xTicks.each(function(tick){
 				var slice = lookup[tick.v]; 
-	            var label = tick.label;
-				if(slice) {
-	                if (Plotr.Base.isNil(label))
-	                    label = tick.v.toString();
-					label += " (" + toPercentage(slice.fraction) + ")";
+	            var label = tick.label || tick.v.toString();
+				if(!!(slice)){
+					label += ' (' + (slice.fraction * 100).toFixed(1) + '%)';
 					this.xticks.push([tick.v, label]);
 				}
-			}
+			}.bind(this));
+			
 		}else{
-			for(var i =0; i < this.slices.length; i++) {
-				var slice = this.slices[i];
-				var label = slice.xval + " (" + toPercentage(slice.fraction) + ")";
+			
+			this.slices.each(function(slice){
+				var label = slice.xval + ' (' + (slice.fraction * 100).toFixed(1) + '%)';
 				this.xticks.push([slice.xval, label]);
-			}
+			}.bind(this));			
 		}
 	},
 	
-	_renderPieAxis: function() {
-		if (!this.options.drawXAxis)
-        	return;
+	_renderPieAxis: function(){
 		
-		if(this.xticks){
-			var lookup = new Array();
-			for (var i = 0; i < this.slices.length; i++) {
-				lookup[this.slices[i].xval] = this.slices[i];
-			}
+		if(!this.options.drawXAxis){
+        	return;
+		}
+		
+		if(!!(this.xticks)){
+			
+			var lookup = [];
+			this.slices.each(function(slice){
+				lookup[slice.xval] = slice;
+			});
+			
 			var centerx = this.area.x + this.area.w * 0.5;
 		    var centery = this.area.y + this.area.h * 0.5;
 		    var radius = Math.min(this.area.w * this.options.pieRadius,
 		                          this.area.h * this.options.pieRadius);
 			var labelWidth = this.options.axisLabelWidth;
 			
-			for(var i = 0; i < this.xticks.length; i++) {
-				var slice = lookup[this.xticks[i][0]];
-				if(Plotr.Base.isNil(slice))
-					continue;
-					
-				var angle = (slice.startAngle + slice.endAngle)/2;
+			this.xticks.each(function(tick){
+				var slice = lookup[tick[0]];
+				
 				// normalize the angle
-				var normalisedAngle = angle;
-				if (normalisedAngle > Math.PI * 2)
+				var normalisedAngle = (slice.startAngle + slice.endAngle)/2;
+				if(normalisedAngle > Math.PI * 2){
 					normalisedAngle = normalisedAngle - Math.PI * 2;
-				else if (normalisedAngle < 0)
+				}else if(normalisedAngle < 0){
 					normalisedAngle = normalisedAngle + Math.PI * 2;
+				}
 					
 				var labelx = centerx + Math.sin(normalisedAngle) * (radius + 10);
 		        var labely = centery - Math.cos(normalisedAngle) * (radius + 10);
@@ -1443,7 +1659,7 @@ Object.extend(Plotr.PieChart.prototype,{
 			        color: this.options.axisLabelColor
 			    };
 				
-				if(normalisedAngle <= Math.PI * 0.5) {
+				if(normalisedAngle <= Math.PI * 0.5){
 		            // text on top and align left
 					Object.extend(labelStyle, {
 						textAlign: 'left',
@@ -1451,7 +1667,7 @@ Object.extend(Plotr.PieChart.prototype,{
 						left: labelx + 'px',
 						top: (labely - this.options.axisLabelFontSize) + 'px'
 					});
-		        }else if ((normalisedAngle > Math.PI * 0.5) && (normalisedAngle <= Math.PI)) {
+		        }else if((normalisedAngle > Math.PI * 0.5) && (normalisedAngle <= Math.PI)){
 		            // text on bottom and align left
 					Object.extend(labelStyle, {
 						textAlign: 'left',
@@ -1459,7 +1675,7 @@ Object.extend(Plotr.PieChart.prototype,{
 						left: labelx + 'px',
 						top: labely + 'px'
 					});	
-		        }else if ((normalisedAngle > Math.PI) && (normalisedAngle <= Math.PI*1.5)) {
+		        }else if((normalisedAngle > Math.PI) && (normalisedAngle <= Math.PI*1.5)){
 		            // text on bottom and align right
 					Object.extend(labelStyle, {
 						textAlign: 'right',
@@ -1476,13 +1692,14 @@ Object.extend(Plotr.PieChart.prototype,{
 						top: (labely - this.options.axisLabelFontSize) + 'px'
 					});
 		        }
+				
 				var label = document.createElement('div');
-				label.appendChild(document.createTextNode(this.xticks[i][1]));
+				label.appendChild(document.createTextNode(tick[1]));
 				Element.setStyle(label, labelStyle);	
                 this.containerNode.appendChild(label);
 				this.xlabels.push(label);
-		  }
-		
+				
+			}.bind(this));		
 		}
 	}
 });

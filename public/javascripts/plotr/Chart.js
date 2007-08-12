@@ -16,11 +16,10 @@
  	For use under the BSD license. <http://www.solutoire.com/plotr>
 */
 
-try {
-	if (typeof(Plotr.Base) == 'undefined') throw '';
-} catch(e) {
-	throw 'Plotr depends on Plotr.Base.';
-};
+if(typeof(Plotr.Base) == 'undefined'){
+	throw 'Plotr.Chart depends on Plotr.Base.';
+}
+
 
 /**
  * Plotr.Chart
@@ -38,12 +37,13 @@ Plotr.Chart = {
 	 * @param {String} type - Choose from {'bar'}.
 	 * @param {Object} options - Object with options.
 	 */
-	initialize: function(element, options) {
+	initialize: function(element, options){
 		this.setOptions(options);
 		this.sets = 0;
-		this.dataStores = new Array();
+		this.xticks = this.yticks = [];
+		this.dataSets = new Hash();
 		
-		if (!Plotr.Base.isNil(this.options.xAxis)) {
+		if(!Plotr.Base.isNil(this.options.xAxis)){
 	        this.minxval = this.options.xAxis[0];
 	        this.maxxval = this.options.xAxis[1];
 	        this.xscale = this.maxxval - this.minxval; 
@@ -52,7 +52,7 @@ Plotr.Chart = {
 	        this.maxxval = this.xscale = null;
 	    }
 	
-	    if (!Plotr.Base.isNil(this.options.yAxis)) {
+	    if(!Plotr.Base.isNil(this.options.yAxis)){
 	        this.minyval = this.options.yAxis[0];
 	        this.maxyval = this.options.yAxis[1];
 	        this.yscale = this.maxyval - this.minyval;
@@ -61,28 +61,22 @@ Plotr.Chart = {
 	        this.maxyval = this.yscale = null;
 	    }
 	
-	    this.xticks = new Array();
-		this.yticks = new Array();
 	    this.minxdelta = 0;
-	    this.xrange = 1;
-		this.yrange = 1;
+	    this.xrange = this.yrange = 1;
 		
 		this._initCanvas(element);
 	},
 	
 	/**
-	 * Function adds the array to the dataStores object. Argument must be in 
+	 * Function adds the array to the dataSets object. Argument must be in 
 	 * the form of: {['<setName>': [[0,1],[1,2]...<data>], ..}. The function also 
 	 * keeps track of how many sets are added.
 	 * 
 	 * @alias addDataset
 	 * @param {Object} arguments - Object with data
 	 */
-	addDataset: function(store) {
-		for(var name in store) {
-			this.dataStores[name] = store[name];
-			this.sets++;
-		}
+	addDataset: function(store){
+		this.dataSets.merge(store);
 	},
 	
 	/**
@@ -98,17 +92,17 @@ Plotr.Chart = {
 	addTable: function(table, x, y, xticks){
 		table = $(table);
 		
-		if(Plotr.Base.isNil(x))	x = 0;
-		if(Plotr.Base.isNil(y)) y = 1;
-		if(Plotr.Base.isNil(xticks)) xticks = -1;
+		x = x || 0;
+		y = y || 1;
+		xticks = xticks || -1;
 		
 		var tr = table.tBodies[0].rows;
 		var store = {};
-		var labels = new Array();
+		var labels = [];
 		
 		for(var i = y, ln = tr.length; i < ln; i++){
 			var j = 0;		
-			store['row_'+i] = $A(tr[i].cells).reject(function(cell,index){
+			store['row_'+i] = Array.from(tr[i].cells).reject(function(cell,index){
 				return index < x;
 			}).collect(function(cell){
 				return [j++, parseFloat(cell.innerHTML)];
@@ -116,7 +110,7 @@ Plotr.Chart = {
 		}
 		if(xticks >= 0){
 			var tickIndex = 0;
-			this.options.xTicks = $A(tr[xticks].cells).reject(function(cell,index){
+			this.options.xTicks = Array.from(tr[xticks].cells).reject(function(cell,index){
 				return index < x;
 			}).collect(function(cell){
 				return {v: tickIndex++, label: cell.innerHTML};
@@ -125,52 +119,100 @@ Plotr.Chart = {
 		this.addDataset(store);
 	},
 	
+	addLegend: function(/*Element*/ element){
+		// Create a list that will be the legend.
+		var ul = $(document.createElement('ul'));		
+		Element.setStyle(ul,{
+			'listStyleType': 'none'
+		});
+		
+		this.dataSets.each(function(/*Array*/ set, /*Integer*/ i){
+			var li = $(document.createElement('li')).setStyle({
+				'lineHeight': '20px'
+			}).addClassName('legend_li');
+			
+			var div = $(document.createElement('div')).setStyle({
+				'display': 		'inline',
+				'position': 	'relative',
+				'top':			'-2px',
+				'border':		'1px solid #ccc',
+				'padding':		'2px 0',
+				'margin':		'2px',
+				'width': 		'5px',			
+				'fontSize': 	'5px'
+			});
+			
+			var color = $(document.createElement('div')).setStyle({
+				'display': 		'inline',
+				'padding':		'0 6px',
+				'margin':		'2px',
+				'background': this.options.colorScheme[set.key],
+				'color':	this.options.colorScheme[set.key]
+			}).addClassName('legend_li_color');
+			
+			color.appendChild(document.createTextNode(i+1));
+			div.appendChild(color);
+			li.appendChild(div);
+			li.appendChild(document.createTextNode(set.key));
+			ul.appendChild(li);
+		}.bind(this));
+		
+		// Add the list to the element.
+		element.appendChild(ul);
+	},
+	
 	/**
 	 * This function does all the math. It'll process all the data that has to do
 	 * with canvas measures.
 	 * 
-	 * @alias _eval
-	 * @param {Object} options - (optional) evaluate the chart with the given options.
+	 * @param {Object} options	Evaluate the chart with the given options.
 	 */
-	_eval: function(options) {
-		if(!Plotr.Base.isNil(options)) {
-			Object.extend(options,{});
+	_eval: function(options){
+		
+		if(!!(options)){			
 			this.setOptions(options);
 		}
-		this.stores = Plotr.Base.items(this.dataStores);
+		
+		this.stores = Plotr.Base.items(this.dataSets);
 		this._evalXY();
 		this.setColorscheme();
 	},
 	
 	/**
-	 * Processes measures of the bars(/lines/pies).
-	 * 
-	 * @alias _evalXY
+	 * Processes measures.
 	 */	
-	_evalXY: function() {		
-		var xdata = this.stores.collect(function(item) {return item.pluck(0)}).flatten();
-		if (Plotr.Base.isNil(this.options.xAxis)) {
+	_evalXY: function(){
+		
+		// Gather data for the x axis.
+		var xdata = this.stores.collect(function(item){return item.pluck(0);}).flatten();
+		if(!!!(this.options.xAxis)){
+			
 			this.minxval = (this.options.xOriginIsZero) ? 0 : parseFloat(xdata.min());
 			this.maxxval = parseFloat(xdata.max());
-		} else {
+		}else{
+		
 			this.minxval = this.options.xAxis[0];
 	        this.maxxval = this.options.xAxis[1];
 			this.xscale = this.maxxval - this.minxval;
 		}
 		this.xrange = this.maxxval - this.minxval;
-		this.xscale = (this.xrange == 0) ? 1.0 : 1/this.xrange;	
+		this.xscale = (this.xrange === 0) ? 1.0 : 1/this.xrange;	
 		
-		var ydata = this.stores.collect(function(item) {return item.pluck(1)}).flatten();
-		if (Plotr.Base.isNil(this.options.yAxis)) {
+		// Gather data for the y axis.
+		var ydata = this.stores.collect(function(item){return item.pluck(1);}).flatten();
+		if(!!!(this.options.yAxis)){
+			
 			this.minyval = (this.options.yOriginIsZero) ? 0 : parseFloat(ydata.min());
 			this.maxyval = parseFloat(ydata.max());
-		} else {
+		}else {
+			
 			this.minyval = this.options.yAxis[0];
 	        this.maxyval = this.options.yAxis[1];
 			this.yscale = this.maxyval - this.minyval;
-		}	
+		}
+		
 	    this.yrange = this.maxyval - this.minyval;
-		this.yscale = (this.yrange == 0) ? 1.0 : 1/this.yrange;
+		this.yscale = (this.yrange === 0) ? 1.0 : 1/this.yrange;
 	},
 	
 	/**
@@ -178,7 +220,7 @@ Plotr.Chart = {
 	 * 
 	 * @alias _evalLineTicks
 	 */
-	_evalLineTicks: function() {		
+	_evalLineTicks: function(){		
 		this._evalLineTicksForXAxis();
 		this._evalLineTicksForYAxis();
 	},
@@ -188,33 +230,47 @@ Plotr.Chart = {
 	 * 
 	 * @alias _evalLineTicksForXAxis
 	 */
-	_evalLineTicksForXAxis: function() {	    
-	    if (this.options.xTicks) {	
-			this.xticks = this.options.xTicks.collect(function (tick) {
+	_evalLineTicksForXAxis: function(){	    
+	    
+		if(this.options.xTicks){	
+			
+			this.xticks = this.options.xTicks.collect(function (tick){
+				
 				var label = tick.label;
-	            if (Plotr.Base.isNil(label))
-	                label = tick.v.toString();
+	            if(Plotr.Base.isNil(label)){
+	                
+					label = tick.v.toString();
+				}
+				
 	            var pos = this.xscale * (tick.v - this.minxval);
-	            if ((pos >= 0.0) && (pos <= 1.0)) {
-	                return [pos, label];
+	            if((pos >= 0.0) && (pos <= 1.0)){
+	                
+					return [pos, label];
 	            }
 			}.bind(this));
-	    } else if (this.options.xNumberOfTicks) {
+			
+	    } else if(this.options.xNumberOfTicks){
 	        var uniqx = Plotr.Base.uniqueIndices(this.stores);
 	        var roughSeparation = this.xrange / this.options.xNumberOfTicks;
 	        var tickCount = 0;
 	
-	        this.xticks = new Array();
-	        for (var i = 0; i <= uniqx.length; i++) {
-	            if ((uniqx[i] - this.minxval) >= (tickCount * roughSeparation)) {
-	                var pos = this.xscale * (uniqx[i] - this.minxval);
-	                if ((pos > 1.0) || (pos < 0.0))
+	        this.xticks = [];
+	        for (var i = 0; i <= uniqx.length; i++){
+	           
+			    if((uniqx[i] - this.minxval) >= (tickCount * roughSeparation)){
+	               
+				    var pos = this.xscale * (uniqx[i] - this.minxval);
+	                if((pos > 1.0) || (pos < 0.0)){
 	                    continue;
-	                this.xticks.push([pos, uniqx[i]]);
+					}
+	                
+					this.xticks.push([pos, uniqx[i]]);
 	                tickCount++;
 	            }
-	            if (tickCount > this.options.xNumberOfTicks)
+				
+	            if(tickCount > this.options.xNumberOfTicks){
 	                break;
+				}
 	        }
     	}
 	},
@@ -224,29 +280,40 @@ Plotr.Chart = {
 	 * 
 	 * @alias _evalLineTicksForYAxis
 	 */
-	_evalLineTicksForYAxis: function() {	    
-	    if (this.options.yTicks) {
-			this.yticks = this.options.yTicks.collect(function (tick) {
+	_evalLineTicksForYAxis: function(){	    
+	    
+		if(this.options.yTicks){
+		
+			this.yticks = this.options.yTicks.collect(function(tick){
+				
 				var label = tick.label;
-	            if (Plotr.Base.isNil(label))
-	                label = tick.v.toString();
-	            var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
-	            if ((pos >= 0.0) && (pos <= 1.0)) {
-	                return [pos, label];
+	            if(Plotr.Base.isNil(label)){
+	            
+				    label = tick.v.toString();
+				}
+	            
+				var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
+	            if((pos >= 0.0) && (pos <= 1.0)){
+	            
+				    return [pos, label];
 	            }
 			}.bind(this));
-	    }else if (this.options.yNumberOfTicks) { 
-	        this.yticks = new Array();
+	    }else if(this.options.yNumberOfTicks){ 
+	        
+			this.yticks = [];
 			var prec = this.options.yTickPrecision;
 			var num = this.yrange/this.options.yNumberOfTicks;
-	        var roughSeparation = num.toFixed(this.options.yTickPrecision);
+			var roughSeparation = (num < 1 && this.options.yTickPrecision == 0) ? 1 : num.toFixed(this.options.yTickPrecision);
 			
-	        for (var i = 0; i <= this.options.yNumberOfTicks; i++) {
+	        for (var i = 0; i <= this.options.yNumberOfTicks; i++){
 	            var yval = this.minyval + (i * roughSeparation);
 	            var pos = 1.0 - ((yval - this.minyval) * this.yscale);
-	            if ((pos > 1.0) || (pos < 0.0))
+	            
+				if((pos > 1.0) || (pos < 0.0)){
 	                continue;
-	            this.yticks.push([pos, yval.toFixed(prec)]);
+				}
+	            
+				this.yticks.push([pos, yval.toFixed(prec)]);
 	        }
     	}
 	}

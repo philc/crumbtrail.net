@@ -16,20 +16,19 @@
  	For use under the BSD license. <http://www.solutoire.com/plotr>
 */
 
-try {
-	if (typeof(Plotr.Base) == 'undefined') throw '';
-	if (typeof(Plotr.Canvas) == 'undefined') throw '';
-	if (typeof(Plotr.Chart) == 'undefined') throw '';
-} catch(e) {
+if (typeof(Plotr.Base) == 'undefined' || 
+	typeof(Plotr.Canvas) == 'undefined' ||
+	typeof(Plotr.Chart) == 'undefined'){
+			
 	throw 'Plotr.BarChart depends on Plotr.{Base,Canvas,Chart}.';
-};
+}
 
 Plotr.BarChart = Class.create();
 Object.extend(Plotr.BarChart.prototype, Plotr.Canvas);
 Object.extend(Plotr.BarChart.prototype, Plotr.Chart);
 Object.extend(Plotr.BarChart.prototype,{
 	/**
-	 * Type of chart we're dealing with.
+	 * Type of chart.
 	 */
 	type: 'bar',
 	
@@ -41,38 +40,47 @@ Object.extend(Plotr.BarChart.prototype,{
 	 * @param {String} [element] - (optional) ID of a canvas element.
 	 * @param {Object} [options] - (optional) Options for rendering.
 	 */
-	render: function(element, options) {
-		var isNil = Plotr.Base.isNil;
+	render: function(element, options) {		
 		
 		if(this.isIE && this._ieWaitForVML(element,options)){
+			// Wait for IE because the canvas element is
+			// rendered with a small delay.
+		
 			return;
 		}
-
+		
 		this._evaluate(options);
 		this._render(element);
 		this._renderBarChart();				
 		this._renderBarAxis();
 		
-		if(this.isIE) {
+		if(this.isIE){
 			for(var el in this.renderStack){
-				if(typeof(this.renderStack[el]) == 'function') break;
-				this.render(el,this.renderStack[el]);
-				break;
+				if(typeof(this.renderStack[el]) != 'function'){
+					this.render(el,this.renderStack[el]);
+					break;
+				}
 			}
 		}
 	},
 	
 	/**
-	 * This function does all the math. This function evaluates all the data needed
-	 * to plot the chart.
+	 * Evaluates all the data needed to plot the chart.
 	 * 
-	 * @alias _evaluate
-	 * @param {Object} [options] - (optional) Evaluate the chart with the given options.
+	 * @param {Object} [options]	Evaluate the chart with the given options.
 	 */
 	_evaluate: function(options) {
-		this._eval(options);
-		if(this.options.barOrientation == 'vertical') this._evalBarChart();
-		else this._evalHorizBarChart();
+		
+		this._eval(options);	
+			
+		if(this.options.barOrientation == 'vertical'){			
+			// Evaluate a vertical bar chart.
+			this._evalBarChart();
+						
+		}else{
+			// Evaluate a horizontal bar chart.
+			this._evalHorizBarChart();
+		}
 		this._evalBarTicks();
 	},
 	
@@ -84,8 +92,8 @@ Object.extend(Plotr.BarChart.prototype,{
 	_evalBarChart: function() {		
 		var uniqx = Plotr.Base.uniqueIndices(this.stores);		
 		var xdelta = 10000000;
-	    for (var i = 1; i < uniqx.length; i++) {
-	        xdelta = Math.min(Math.abs(uniqx[i] - uniqx[i-1]), xdelta);
+	    for(var j = 1; j < uniqx.length; j++){
+	        xdelta = Math.min(Math.abs(uniqx[j] - uniqx[j-1]), xdelta);
 	    }
 		
 		var barWidth = 0;
@@ -106,30 +114,26 @@ Object.extend(Plotr.BarChart.prototype,{
 	    }
 		
 		this.minxdelta = xdelta;
-		this.bars = new Array();
+		this.bars = [];
 		
-	    var i = 0;
-	    for (var name in this.dataStores) {
-	        var store = this.dataStores[name];
-			if(typeof(store) == 'function') continue;
-	        for (var j = 0; j < store.length; j++) {
-	            var item = store[j];
-	            var rect = {
+		this.dataSets.each(function(store, i){			
+			store.value.each(function(item){
+				var rect = {
 	                x: ((parseFloat(item[0]) - this.minxval) * this.xscale) + (i * barWidthForSet) + barMargin,
 	                y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
 	                w: barWidthForSet,
 	                h: ((parseFloat(item[1]) - this.minyval) * this.yscale),
 	                xval: parseFloat(item[0]),
 	                yval: parseFloat(item[1]),
-	                name: name
+	                name: store.key
 	            };
-	            if ((rect.x >= 0.0) && (rect.x <= 1.0) && 
+				
+				if ((rect.x >= 0.0) && (rect.x <= 1.0) && 
 	                (rect.y >= 0.0) && (rect.y <= 1.0)) {
 	                this.bars.push(rect);
 	            }
-	        }
-			i++;
-	    }
+			}.bind(this));	        
+		}.bind(this));	    
 	},
 	
 	/**
@@ -137,13 +141,13 @@ Object.extend(Plotr.BarChart.prototype,{
 	 * 
 	 * @alias _evalHorizBarChart
 	 */
-	_evalHorizBarChart: function() {
-		var uniqx = Plotr.Base.uniqueIndices(this.stores);		
+	_evalHorizBarChart: function() {		
+		var uniqx = Plotr.Base.uniqueIndices(this.stores);	
 		var xdelta = 10000000;
 	    for (var i = 1; i < uniqx.length; i++) {
 	        xdelta = Math.min(Math.abs(uniqx[i] - uniqx[i-1]), xdelta);
 	    }
-		
+					
 		var barWidth = 0;
 	    var barWidthForSet = 0;
 	    var barMargin = 0;
@@ -162,30 +166,25 @@ Object.extend(Plotr.BarChart.prototype,{
 		}
 		
 		this.minxdelta = xdelta;
-	    this.bars = new Array();
-	    var i = 0;
-	    for (var name in this.dataStores) {
-	        var store = this.dataStores[name];
-	        if (typeof(store) == 'function') continue;
-	        for (var j = 0; j < store.length; j++) {
-	            var item = store[j];
-	            var rect = {
+		this.bars = [];
+		this.dataSets.each(function(store, i){			
+			store.value.each(function(item){
+				var rect = {
 	                y: ((parseFloat(item[0]) - this.minxval) * this.xscale) + (i * barWidthForSet) + barMargin,
 	                x: 0.0,
 	                h: barWidthForSet,
 	                w: ((parseFloat(item[1]) - this.minyval) * this.yscale),
 	                xval: parseFloat(item[0]),
 	                yval: parseFloat(item[1]),
-	                name: name
+	                name: store.key
 	            };
 				
 				rect.y = (rect.y <= 0.0) ? 0.0 : (rect.y >= 1.0) ? 1.0 : rect.y;	            
 	            if ((rect.x >= 0.0) && (rect.x <= 1.0)) {
 	                this.bars.push(rect);
 	            }
-	        }
-	        i++;
-	    }		
+			}.bind(this));	        
+		}.bind(this));	 
 	},
 	
 	/**
@@ -215,28 +214,53 @@ Object.extend(Plotr.BarChart.prototype,{
 	 */
 	_renderBarChart: function() {
 		var cx = this.canvasNode.getContext('2d');
-		var index = 0;		
+					
+		var drawBar = function(bar, index) {
+			
+			// Setup context.			
+			cx.lineWidth = this.options.strokeWidth;
+			cx.fillStyle = this.options.colorScheme[bar.name];
+			cx.strokeStyle = this.options.strokeColor;
+			
+			// Gather bar proportions.
+			var x = this.area.w * bar.x + this.area.x;
+ 	    	var y = this.area.h * bar.y + this.area.y;
+        	var w = this.area.w * bar.w;
+        	var h = this.area.h * bar.h;
+      
+       		if((w < 1) || (h < 1)){
+				// Dont draw when the bar is too small.
+				return;
+			} 
+	        	
+			if(this.options.shadow){
+				// Draw fake shadow.
+				cx.fillStyle = "rgba(0,0,0,0.15)";
+			
+				if(this.options.barOrientation == 'vertical'){
+					cx.fillRect(x-2, y-2, w+4, h+2);
+				}else{
+					cx.fillRect(x, y-2, w+2, h+4);
+				}
+				
+				cx.fillStyle = this.options.colorScheme[bar.name];
+			}
+				
+			if(this.options.shouldFill){
+				// Fill rectangle.
+				cx.fillRect(x, y, w, h);
+			}		
+			
+			if(this.options.shouldStroke){
+				// Draw stroke.						
+				cx.strokeRect(x, y, w, h);
+			}			
+		}.bind(this);
 		
-		for(var storeName in this.dataStores) {
-			var drawBar = function(bar) {
-				if(bar.name != storeName || typeof(bar) == 'function') return;
-				cx.save();
-				cx.lineWidth = this.options.strokeWidth;
-				cx.fillStyle = this.options.colorScheme[index % this.options.colorScheme.length];
-				cx.strokeStyle = this.options.strokeColor;
-				var x = this.area.w * bar.x + this.area.x;
-	 	    	var y = this.area.h * bar.y + this.area.y;
-	 	        	var w = this.area.w * bar.w;
-	 	        	var h = this.area.h * bar.h;
-			      
-	 	       		if ((w < 1) || (h < 1)) return;
-	 	        	if (this.options.shouldFill) cx.fillRect(x, y, w, h);
-				if (this.options.shouldStroke) cx.strokeRect(x, y, w, h);				
-				cx.restore();
-			}.bind(this);
-			this.bars.each(drawBar);
-			index++;
-		}
+		// Draw the bars.
+		cx.save();
+		this.bars.each(drawBar);
+		cx.restore();		
 	},
 	
 	/**
