@@ -14,7 +14,7 @@ $break = new Object();
 //function that just returns it argument, need in Enumerable functions
 Class.ret = function(arg) {return arg};
 
-Array.extend({
+Enumerable ={
 	//copy 'native' Mootools Array.each to Array._each
 	_each: Array.prototype.each,
 	
@@ -304,4 +304,7 @@ Array.extend({
 	inspect: function() {
 			return '#<Array:' + this.toArray().inspect() + '>';
 	}
-});
+};
+
+
+Array.extend(Enumerable);

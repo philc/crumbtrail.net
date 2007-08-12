@@ -348,7 +348,6 @@ Plotr.Canvas = {
 		if(!this.dataSets){
 			this.dataSets = new Hash();
 		}
-		
 		this.options = Object.extend({
 	        drawBackground: 		true,
 			backgroundLineColor:	'#ffffff',
