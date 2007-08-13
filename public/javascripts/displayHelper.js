@@ -37,8 +37,10 @@ DisplayHelper.Methods={
 		return percent.toFixed( percent < 1 ? 1 : 0) + "%";				
 	},
 	timeAgo: function(date){
-		var diff=(new Date())-date;
-		var mins=Math.floor(diff/1000/60);
+		// the server data is relative to the user's server-side time zone, so the relative date should be
+		// relative to the user's server-side time zone too
+		var diff = Page.date - date;
+		var mins = Math.floor(diff/1000/60);
 		var hrs=Math.floor(mins/60);
 		var days=Math.floor(hrs/24);
 		var weeks=Math.floor(days/7);
