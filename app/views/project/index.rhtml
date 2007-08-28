@@ -9,7 +9,7 @@
 	<![endif]-->
 
 
-  <%= javascript_include_tag "util.dombuilder.js","page","displayHelper","tableDisplay","graphing","plotr/EnumArray.js","plotr/plotrMootoolsSupport.js","plotr/Plotr_uncompressed"
+  <%= javascript_include_tag "util.dombuilder.js","page","displayHelper","tableDisplay","graphing","plotr/EnumArray.js","plotr/plotrMootoolsSupport.js","plotr/Plotr_uncompressed","graphDisplay"
 
 	%> 
 
@@ -51,9 +51,10 @@
 	browserData=[<%= @browser_data %>];
   browserLabels=[<%= @browser_labels %>];
 
-  data.rankings=<%= @rankings %>;
-  data.plots=<%= @plots %>
-  data.labels=<%= @labels %>
+  data.rank={};
+  data.rank.plots=<%= @rank_plots %>;
+  data.rank.oldest_date=<%= @rank_oldest_date %>;
+  data.rank.rankings=<%= @rankings %>
 	</script>
 
 <% end %>

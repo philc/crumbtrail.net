@@ -304,25 +304,44 @@ var Page = {
     /*
     * Rankings
     */
-    RankDataDisplay.showTable({data: data.rankings, tabletype: "ranks"}, "rankings_ranks");
-    RankDataDisplay.showTable({data: data.rankings, tabletype: "deltas"}, "rankings_deltas");
+    RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "ranks"}, "rankings_ranks");
+    RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "deltas"}, "rankings_deltas");
 
+    graph = new RankHistoryGraph(data.rank.plots, data.rank.oldest_date, "rank_graph");
+    graph.showEngineGraph("google");
+/*
+    // Define a dataset.
     var dataset = {
-      'dataset1': [[0, 1], [1,3], [2,8], [3,7], [4,2], [5,5]]
+      'myFirstDataset': 	[[0, -3], [1, 2], [2, 1.414], [3, 2.3]],
     };
 
-      //colorScheme: new Hash ({
-      //  'dataset1': '#00ff00'
-      //}),
+    // Define options.
     var options = {
+      // Define a padding for the canvas node
+      padding: {left: 30, right: 0, top: 10, bottom: 30},
+
+      // Background color to render.
       backgroundColor: '#f2f2f2',
+
+      // Use the predefined blue colorscheme.
       colorScheme: 'blue',
-      shouldFill: false
+
+    	// Set the labels.
+   	  xTicks: [
+		    {v:0, label:'January'},
+      	{v:1, label:'Februari'},
+      	{v:2, label:'March'},
+      	{v:3, label:'April'}
+	    ]
     };
 
-    var line = new Plotr.LineChart("rank_graph",options);
+    // Instantiate a new LineCart.
+    var line = new Plotr.LineChart('rank_graph',options);
+    // Add a dataset to it.
     line.addDataset(dataset);
-    line.render();
+    // Render it.
+    line.render()
+    */
     
 	},
 

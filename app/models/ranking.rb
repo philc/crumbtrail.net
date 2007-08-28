@@ -9,7 +9,7 @@ class Ranking < ActiveRecord::Base
     project.queries.each do |query|
       rank_hash[query] = {}
       [:google, :yahoo, :msn].each do |engine|
-        rank_hash[query][engine] = []
+        rank_hash[query][engine.to_s] = []
 
         # search our database for the query/engine combo
         enginechr = engine.to_s[0].chr
@@ -23,7 +23,7 @@ class Ranking < ActiveRecord::Base
         unless rankings.nil? || rankings[0].nil?
           oldest_date = rankings[0].search_date if rankings[0].search_date < oldest_date
           rankings.each do |ranking|
-            rank_hash[query][engine] << [ranking.search_date, ranking.rank]
+            rank_hash[query][engine.to_s] << [ranking.search_date, ranking.rank]
           end
         end
       end
@@ -31,7 +31,7 @@ class Ranking < ActiveRecord::Base
 
     normalize_dates(rank_hash, oldest_date)
 
-    return rank_hash
+    return [rank_hash, oldest_date]
   end
 
   def self.normalize_dates(rank_hash, oldest_date)

@@ -201,6 +201,10 @@ class Project < ActiveRecord::Base
     self.queries.include?(query)
   end
 
+  def ranking_plot_data()
+    Ranking.get_plot_data(self)
+  end
+
   def rankings_by_engine()
     Ranking.get_rankings_by_engine(self)
   end

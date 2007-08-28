@@ -474,10 +474,10 @@ class ProjectController < ApplicationController
   end
 
   def build_rankings()
+    data = @project.ranking_plot_data() # returns [plots, oldest_date]
+    @rank_plots = data[0].to_json
+    @rank_oldest_date = data[1]
     @rankings = build_rank_array()
-    someplots = Ranking.get_plot_data_for_engine(@project, :google)
-    @plots = someplots[0]["mike quinn blog"].to_json
-    @labels = someplots[1].to_json
   end
 
   private
