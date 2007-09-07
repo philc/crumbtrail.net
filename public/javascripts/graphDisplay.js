@@ -12,15 +12,26 @@ var RankHistoryGraph=new Class({
     this.tag_id = tag_id;
   },
   showEngineGraph: function(engine){
+    var colors = new Array('#1c4a7e', '#bb5b3d', '#3a8133', '#813379', '#770022');
+
     var dataset = {};
     for (var query in this.data){
       dataset[query] = this.data[query][engine];
     }
 
+    var i = 0;
+    var queryColors = new Array();
+    for (query in this.data)
+    {
+      queryColors[query] = colors[i];
+      i++;
+    }
+
     var options = {
       padding: {left: 30, right: 0, top: 10, bottom: 30},
       backgroundColor: '#f2f2f2',
-      colorScheme: 'blue',
+      colorScheme: new Hash(queryColors),
+      reverseYAxis: true,
       shouldFill: false
     };
 

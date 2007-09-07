@@ -22,8 +22,15 @@ class Ranking < ActiveRecord::Base
         # copy mini [date, rank] arrays from the Ranking results into our rank_hash
         unless rankings.nil? || rankings[0].nil?
           oldest_date = rankings[0].search_date if rankings[0].search_date < oldest_date
+          last_rank = nil
           rankings.each do |ranking|
+
+            if !last_rank.nil? && last_rank.search_date != ranking.search_date-1
+              rank_hash[query][engine.to_s] << [ranking.search_date-1, last_rank.rank]
+            end
+            
             rank_hash[query][engine.to_s] << [ranking.search_date, ranking.rank]
+            last_rank = ranking
           end
         end
       end
