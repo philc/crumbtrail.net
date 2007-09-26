@@ -25,9 +25,9 @@ class Ranking < ActiveRecord::Base
           last_rank = nil
           rankings.each do |ranking|
 
-            if !last_rank.nil? && last_rank.search_date != ranking.search_date-1
-              rank_hash[query][engine.to_s] << [ranking.search_date-1, last_rank.rank]
-            end
+            #if !last_rank.nil? && last_rank.search_date != ranking.search_date-1
+            #  rank_hash[query][engine.to_s] << [ranking.search_date-1, last_rank.rank]
+            #end
             
             rank_hash[query][engine.to_s] << [ranking.search_date, ranking.rank]
             last_rank = ranking
