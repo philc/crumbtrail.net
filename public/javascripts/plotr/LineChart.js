@@ -97,64 +97,70 @@ Object.extend(Plotr.LineChart.prototype,{
 		}.bind(this));	    
 	},
 	
-	_renderLineChart: function(){
-	    var cx = this.canvasNode.getContext("2d");
+	_renderLineChart: function()
+  {
+    var cx = this.canvasNode.getContext("2d");
 		
-		var preparePath = function(storeName,index){
-				
-			cx.beginPath();
-            cx.moveTo(this.area.x, this.area.y + this.area.h);
-			this.points.each(function(point){
-				
-				if(point.name == storeName){
-                    cx.lineTo(this.area.w * point.x + this.area.x, this.area.h * point.y + this.area.y);
-				}
-			}.bind(this));
-			
-            cx.lineTo(this.area.w + this.area.x, this.area.h + this.area.y);
-            cx.lineTo(this.area.x, this.area.y + this.area.h);
-			
-			if(this.options.shouldFill){
-				cx.closePath();
-			}else{
-	        	cx.strokeStyle = this.options.colorScheme[storeName];
-			    cx.stroke();
-			}	
-		}.bind(this);
+		var preparePath = function(storeName,index)
+    {
+      cx.beginPath();
+      cx.moveTo(this.area.x, this.area.y + this.area.h);
+      this.points.each(function(point)
+      {
+        if(point.name == storeName)
+        {
+          cx.lineTo(this.area.w * point.x + this.area.x, this.area.h * point.y + this.area.y);
+        }
+      }.bind(this));
+
+      cx.lineTo(this.area.w + this.area.x, this.area.h + this.area.y);
+      cx.lineTo(this.area.x, this.area.y + this.area.h);
+
+      if(this.options.shouldFill){
+        cx.closePath();
+      }else{
+        cx.strokeStyle = this.options.colorScheme[storeName];
+        cx.stroke();
+      }	
+    }.bind(this);
 		
-		if(this.options.shouldFill){
-			
-			var drawLine = function(storeName, index){
-				
-				if(this.options.shadow){
-					// Draw shadow.
-					cx.save();
-					cx.fillStyle = 'rgba(0,0,0,0.15)';				
-					cx.translate(2, -2);
-					preparePath(storeName,index);	
-					cx.fill();				
-					cx.restore();
-				}
-				
-				// Fill line.
-				cx.fillStyle = this.options.colorScheme[storeName];		
-	            preparePath(storeName,index);
-		        cx.fill();			    			
-		        
-				if (this.options.shouldStroke){
-					// Draw stroke.
-		            preparePath(storeName,index);
-		            cx.stroke();
-		        }     
-			}.bind(this);
-			
-			// Draw the lines.
-			cx.save();
-			cx.lineWidth = this.options.strokeWidth;		
-		    cx.strokeStyle = this.options.strokeColor;
-			this.dataSets.keys().each(drawLine);		
-			cx.restore();
-		}else{
+		if(this.options.shouldFill)
+    {
+      var drawLine = function(storeName, index)
+      {
+        if(this.options.shadow)
+        {
+          // Draw shadow.
+          cx.save();
+          cx.fillStyle = 'rgba(0,0,0,0.15)';				
+          cx.translate(2, -2);
+          preparePath(storeName,index);	
+          cx.fill();				
+          cx.restore();
+        }
+
+        // Fill line.
+        cx.fillStyle = this.options.colorScheme[storeName];		
+        preparePath(storeName,index);
+        cx.fill();			    			
+
+        if (this.options.shouldStroke)
+        {
+          // Draw stroke.
+          preparePath(storeName,index);
+          cx.stroke();
+        }     
+      }.bind(this);
+
+      // Draw the lines.
+      cx.save();
+      cx.lineWidth = this.options.strokeWidth;		
+      cx.strokeStyle = this.options.strokeColor;
+      this.dataSets.keys().each(drawLine);		
+      cx.restore();
+    }
+    else
+    {
 			cx.save();
 			cx.lineWidth = this.options.strokeWidth;				
 			this.dataSets.keys().each(preparePath);

@@ -520,42 +520,50 @@ Plotr.Canvas = {
 	/**
 	 * Renders the background of the chart.
 	 */
-	_renderBackground: function(){
-		var cx = this.canvasNode.getContext('2d');
-		cx.save();
-	    cx.fillStyle = this.options.backgroundColor;
+	_renderBackground: function()
+  {
+    var cx = this.canvasNode.getContext('2d');
+    cx.save();
+    cx.fillStyle = this.options.backgroundColor;
 			
-        cx.fillRect(this.area.x, this.area.y, this.area.w, this.area.h);
-        cx.strokeStyle = this.options.backgroundLineColor;
-        cx.lineWidth = 1.5;
+    cx.fillRect(this.area.x, this.area.y, this.area.w, this.area.h);
+    cx.strokeStyle = this.options.backgroundLineColor;
+    cx.lineWidth = 1.5;
         
-        var ticks = this.yticks;
-        var horiz = false;
-        if(this.type == 'bar' && this.options.barOrientation == 'horizontal'){
-			ticks = this.xticks;
-            horiz = true;
-        }
+    var ticks = this.yticks;
+    var horiz = false;
+    if(this.type == 'bar' && this.options.barOrientation == 'horizontal')
+    {
+      ticks = this.xticks;
+      horiz = true;
+    }
         
-		var drawBackgroundLines = function(tick){
-			var x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+		var drawBackgroundLines = function(tick)
+    {
+      var x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 			
-			if(horiz){
-				x1 = x2 = tick[0] * this.area.w + this.area.x;
-                y1 = this.area.y;
-                y2 = y1 + this.area.h;
-			}else{
-				x1 = this.area.x;
-                y1 = tick[0] * this.area.h + this.area.y;
-                x2 = x1 + this.area.w;
-                y2 = y1;
+			if(horiz)
+      {
+        x1 = x2 = tick[0] * this.area.w + this.area.x;
+        y1 = this.area.y;
+        y2 = y1 + this.area.h;
+			}
+      else
+      {
+        x1 = this.area.x;
+        //y1 = tick[0] * this.area.h + this.area.y;
+        y1 = (this.area.h - (tick[0] * this.area.h)) + this.area.y;
+        x2 = x1 + this.area.w;
+        y2 = y1;
 			}
 			
-			cx.beginPath();
-            cx.moveTo(x1, y1);
-            cx.lineTo(x2, y2);
-            cx.closePath();
-        	cx.stroke();
-		}.bind(this);			
+      cx.beginPath();
+      cx.moveTo(x1, y1);
+      cx.lineTo(x2, y2);
+      cx.closePath();
+      cx.stroke();
+    }.bind(this);			
+
 		ticks.each(drawBackgroundLines);
 		
 		cx.restore();
@@ -797,7 +805,7 @@ Plotr.Chart = {
 			'listStyleType': 'none'
 		});
 		
-		this.dataSets.each(function(/*Array*/ set, /*Integer*/ i){
+		this.dataSets.each(function(/*Array*/ set){
 			var li = $(document.createElement('li')).setStyle({
 				'lineHeight': '20px'
 			}).addClassName('legend_li');
@@ -821,7 +829,7 @@ Plotr.Chart = {
 				'color':	this.options.colorScheme[set.key]
 			}).addClassName('legend_li_color');
 			
-			color.appendChild(document.createTextNode(i+1));
+			color.appendChild(document.createTextNode(1));
 			div.appendChild(color);
 			li.appendChild(div);
 			li.appendChild(document.createTextNode(set.key));
@@ -956,37 +964,36 @@ Plotr.Chart = {
 		if(this.options.yTicks){
 		
 			this.yticks = this.options.yTicks.collect(function(tick){
-				
-				var label = tick.label;
-	            if(Plotr.Base.isNil(label)){
+			  var label = tick.label;
+        if(Plotr.Base.isNil(label)){
+		      label = tick.v.toString();
+			  }
 	            
-				    label = tick.v.toString();
-				}
-	            
-				var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
-	            if((pos >= 0.0) && (pos <= 1.0)){
-	            
-				    return [pos, label];
-	            }
-			}.bind(this));
-	    }else if(this.options.yNumberOfTicks){ 
-	        
-			this.yticks = [];
-			var prec = this.options.yTickPrecision;
-			var num = this.yrange/this.options.yNumberOfTicks;
-			var roughSeparation = (num < 1 && this.options.yTickPrecision == 0) ? 1 : num.toFixed(this.options.yTickPrecision);
+			  var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
+	      if((pos >= 0.0) && (pos <= 1.0)){
+		      return [pos, label];
+	      }
+		  }.bind(this));
+    }
+    else if(this.options.yNumberOfTicks){ 
+		  this.yticks = [];
+		  var prec = this.options.yTickPrecision;
+		  var num = this.yrange/this.options.yNumberOfTicks;
+		  var roughSeparation = 
+        (num < 1 && this.options.yTickPrecision == 0) ?
+          1 : num.toFixed(this.options.yTickPrecision);
 			
-	        for (var i = 0; i <= this.options.yNumberOfTicks; i++){
-	            var yval = this.minyval + (i * roughSeparation);
-	            var pos = 1.0 - ((yval - this.minyval) * this.yscale);
+	    for (var i = 0; i <= this.options.yNumberOfTicks; i++){
+	      var yval = this.minyval + (i * roughSeparation);
+	      var pos = 1.0 - ((yval - this.minyval) * this.yscale);
+	              
+		    if((pos > 1.0) || (pos < 0.0)){
+	        continue;
+		    }
 	            
-				if((pos > 1.0) || (pos < 0.0)){
-	                continue;
-				}
-	            
-				this.yticks.push([pos, yval.toFixed(prec)]);
-	        }
-    	}
+		    this.yticks.push([pos, yval.toFixed(prec)]);
+      }
+ 	  }
 	}
 };/*
 	Plotr.BarChart
