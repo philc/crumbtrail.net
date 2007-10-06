@@ -237,7 +237,12 @@
 
   <div id="rankings" class="section" <%=panel_style(:rankings)-%> >
     <h2 class="section_title" id="rankings_title">Search Engine Rankings</h2>
-    <div><canvas id="rank_graph" height=300 width=500 /></div>
+    <h3 id="rank_title"></h3>
+    <div>
+      <canvas id="rank_graph" height=300 width=500 />
+    </div>
+    <div id="rank_legend"></div>
+    <br style="clear: both" />
     <div class="panel_links">
       <span class="navlink_show">Show:</span>
       <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:ranks,:d=>"Current Rank"} %> | 

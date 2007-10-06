@@ -20,6 +20,9 @@ def generate_test_ranks(proj)
     [:google, :yahoo, :msn].each do |engine|
       
       date = Date.today-120
+      if (engine == :yahoo)
+        date = Date.today-80
+      end
       lastRank = nil
       rank = 1 + rand(20)
      

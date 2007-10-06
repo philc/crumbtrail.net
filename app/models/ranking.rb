@@ -32,13 +32,16 @@ class Ranking < ActiveRecord::Base
             rank_hash[query][engine.to_s] << [ranking.search_date, ranking.rank]
             last_rank = ranking
           end
+
+          # add today's date
+          rank_hash[query][engine.to_s] << [Date.today, last_rank.rank]
         end
       end
     end
 
     normalize_dates(rank_hash, oldest_date)
 
-    return [rank_hash, oldest_date]
+    return [rank_hash, (Date.today - oldest_date)]
   end
 
   def self.normalize_dates(rank_hash, oldest_date)

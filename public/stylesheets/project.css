@@ -748,13 +748,13 @@ a.feed{
   height: 16px;
   padding-left: 20px
 }
-#rankings_table .google {
+#rankings_table .google, #rank_legend .google {
   background: transparent url(/images/google.png) no-repeat 0 0 ;
 }
-#rankings_table .yahoo {
+#rankings_table .yahoo, #rank_legend .yahoo {
   background: transparent url(/images/yahoo.png) no-repeat 0 0 ;
 }
-#rankings_table .msn {
+#rankings_table .msn, #rank_legend .msn {
   background: transparent url(/images/msn.png) no-repeat 0 0 ;
 }
 #rankings_table .down span {
@@ -773,6 +773,43 @@ a.feed{
 #ranking_query {
   text-indent: -5000px;
 }
+#rank_legend {
+  margin-bottom: 20px;
+}
+#rank_legend li {
+  list-style: none;
+}
+#rank_legend a {
+  float: left;
+  text-decoration: none;
+  background-color: #999999;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: dotted 1px;
+}
+#rank_legend a.google-legend {
+  border: #1c4a7e solid 2px;
+}
+#rank_legend a.msn-legend {
+  border: #bb5b3d solid 2px;
+}
+#rank_legend a.yahoo-legend {
+  border: #3a8133 solid 2px;
+}
+
+#rank_legend a.showsearch {
+  background-color: white;
+}
+#rank_title {
+  width: 500px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
 /*
 #rankings_body .data {
 }

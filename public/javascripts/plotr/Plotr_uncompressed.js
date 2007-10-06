@@ -637,44 +637,58 @@ Plotr.Canvas = {
 	        cx.stroke();
 	    }
 		
-		if(this.options.drawXAxis){
-	        if(this.xticks){
-				var collectXLabels = function(tick){
-					if(typeof(tick) == 'function'){
-						return;
-					}
+		if(this.options.drawXAxis)
+    {
+      if(this.xticks)
+      {
+        var collectXLabels = function(tick){
+          if(typeof(tick) == 'function'){
+            return;
+          }
 					
-	                var x = this.area.x + tick[0] * this.area.w;
-                	var y = this.area.y + this.area.h;
+          var x = this.area.x + tick[0] * this.area.w;
+          var y = this.area.y + this.area.h;
+
+          cx.beginPath();
+          if (this.options.reverseYAxis)
+          {
+            cx.moveTo(x, this.area.y);
+            cx.lineTo(x, this.area.y - this.options.axisTickSize);
+          }
+          else
+          {
+            cx.moveTo(x, y);
+            cx.lineTo(x, y + this.options.axisTickSize);
+          }
+          cx.closePath();
+          cx.stroke();
+
+          var label = document.createElement('div');
+          label.appendChild(document.createTextNode(tick[1]));
+
+          Element.setStyle(label,
+                           Object.extend(labelStyle,{
+                             top: ((this.options.reverseYAxis ? -10 : y) +
+                                  this.options.axisTickSize) + 'px',	//philc
+                             left: (x - this.options.axisLabelWidth/2) + 'px',
+                             width: this.options.axisLabelWidth + 'px',
+						                 textAlign: 'center'
+                           })
+					);
 					
-	                cx.beginPath();
-	                cx.moveTo(x, y);
-	                cx.lineTo(x, y + this.options.axisTickSize);
-	                cx.closePath();
-	                cx.stroke();
-					
-	                var label = document.createElement('div');
-	                label.appendChild(document.createTextNode(tick[1]));
-					
-	                Element.setStyle(label, Object.extend(labelStyle,{
-						top: ((this.options.reverseYAxis ? -10 : y) + this.options.axisTickSize) + 'px',	//philc
-						left: (x - this.options.axisLabelWidth/2) + 'px',
-						width: this.options.axisLabelWidth + 'px',
-						textAlign: 'center'
-					}));
-					
-	                this.containerNode.appendChild(label);
-	                return label;
-				}.bind(this);
-				this.xlabels = this.xticks.collect(collectXLabels);
-	        }
+          this.containerNode.appendChild(label);
+          return label;
+        }.bind(this);
+
+        this.xlabels = this.xticks.collect(collectXLabels);
+      }
 	
-	        cx.beginPath();
-	        cx.moveTo(this.area.x, this.area.y + (this.options.reverseYAxis ? 0 : this.area.h));	//philc
-	        cx.lineTo(this.area.x + this.area.w, this.area.y + (this.options.reverseYAxis ? 0 : this.area.h));	//philc
-	        cx.closePath();
-	        cx.stroke();
-	    }		
+      cx.beginPath();
+      cx.moveTo(this.area.x, this.area.y + (this.options.reverseYAxis ? 0 : this.area.h));	//philc
+      cx.lineTo(this.area.x + this.area.w, this.area.y + (this.options.reverseYAxis ? 0 : this.area.h));	//philc
+      cx.closePath();
+      cx.stroke();
+    }		
 		cx.restore();
 	}
 };/*
@@ -1046,6 +1060,11 @@ Object.extend(Plotr.BarChart.prototype,{
 			return;
 		}
 		
+    var canvas = this.canvasNode.getContext('2d');
+    canvas.clearRect(0,0,
+                     canvas.getAttribute("width"),
+                     canvas.getAttribute("height"));
+
 		this._evaluate(options);
 		this._render(element);
 		this._renderBarChart();				
@@ -1314,6 +1333,15 @@ Object.extend(Plotr.LineChart.prototype,{
 			return;
 		}
 		
+    var canvas = this.canvasNode.getContext('2d');
+    canvas.clearRect(0,0,
+                     this.canvasNode.getProperty('width'),
+                     this.canvasNode.getProperty('height'));
+
+    var divs = this.containerNode.getElementsByTagName('div');
+    while (divs.length > 0)
+      divs[0].remove();
+
 		this._evaluate(options);
 		this._render(element);
 		this._renderLineChart();

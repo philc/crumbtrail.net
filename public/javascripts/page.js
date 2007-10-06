@@ -301,48 +301,14 @@ var Page = {
 		osLabels);
 		pg.drawChart();  
 
-    /*
-    * Rankings
-    */
-    RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "ranks"}, "rankings_ranks");
-    RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "deltas"}, "rankings_deltas");
+		/*
+		* Rankings
+		*/
+		RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "ranks"}, "rankings_ranks");
+		RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "deltas"}, "rankings_deltas");
 
-    graph = new RankHistoryGraph(data.rank.plots, data.rank.oldest_date, "rank_graph");
-    graph.showEngineGraph("google");
-/*
-    // Define a dataset.
-    var dataset = {
-      'myFirstDataset': 	[[0, -3], [1, 2], [2, 1.414], [3, 2.3]],
-    };
-
-    // Define options.
-    var options = {
-      // Define a padding for the canvas node
-      padding: {left: 30, right: 0, top: 10, bottom: 30},
-
-      // Background color to render.
-      backgroundColor: '#f2f2f2',
-
-      // Use the predefined blue colorscheme.
-      colorScheme: 'blue',
-
-    	// Set the labels.
-   	  xTicks: [
-		    {v:0, label:'January'},
-      	{v:1, label:'Februari'},
-      	{v:2, label:'March'},
-      	{v:3, label:'April'}
-	    ]
-    };
-
-    // Instantiate a new LineCart.
-    var line = new Plotr.LineChart('rank_graph',options);
-    // Add a dataset to it.
-    line.addDataset(dataset);
-    // Render it.
-    line.render()
-    */
-    
+		graph = new RankHistoryGraph(data.rank.plots, data.rank.oldest_date, "rank_graph", "rank_legend", "rankings_table", "rank_title");
+		graph.showQueryGraph("mike quinn blog");
 	},
 
 	// Gets the menu link for the given section, e.g. the <a> link for section "pageviews"

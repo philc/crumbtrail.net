@@ -43,7 +43,12 @@ Object.extend(Plotr.LineChart.prototype,{
 		if(this.isIE && this._ieWaitForVML(element,options)){
 			return;
 		}
-		
+
+		var canvas = this.canvasNode.getContext('2d');
+    canvas.clearRect(0,0,
+                     canvas.getAttribute("width"),
+                     canvas.getAttribute("height"));
+
 		this._evaluate(options);
 		this._render(element);
 		this._renderLineChart();
