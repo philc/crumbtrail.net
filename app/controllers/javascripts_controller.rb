@@ -4,7 +4,7 @@ class JavascriptsController < ApplicationController
   layout nil
 
   def index
-    render :file=>"vendor/plugins/javascripts/lib/"+params[:jsfile].to_s
+    render :file => "vendor/plugins/jsext/lib/" + params[:jsfile].to_s
   end
 
   private
