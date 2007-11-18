@@ -163,7 +163,7 @@ class ApacheLogReader
 
 
   def self.tail_log(logfile, resume=false, project_id=nil)
-    puts "Parsing log file:  #{logfile.to_s}  Logging to #{ENV['RAILS_ENV'] || 'development'} database."
+    puts "Parsing log file:  #{logfile.to_s}\n  Logging to #{ENV['RAILS_ENV'] || 'development'} database."
     file = File.new(logfile, "r")
 
     # Allow our thread to exit under normal TERM and INT signals
