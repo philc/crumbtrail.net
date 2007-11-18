@@ -295,20 +295,19 @@ var Page = {
 		lg.drawGraph();  
 
 		// visitor details graphs
-		pg = new PieGraphDisplay("browser_details","Web browsers", browserData,browserLabels);
-		pg.drawChart();  
-		pg = new PieGraphDisplay("os_details","Operating systems", osData,
-		osLabels);
-		pg.drawChart();  
+    pg = new PieGraph(browserData,browserLabels,"Web browsers","browser_graph", "browser_details");
+    pg.showPieGraph();
+    pg = new PieGraph(osData,osLabels,"Operating systems","os_graph","os_details");
+    pg.showPieGraph();
 
 		/*
 		* Rankings
 		*/
-		RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "ranks"}, "rankings_ranks");
-		RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "deltas"}, "rankings_deltas");
+		//RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "ranks"}, "rankings_ranks");
+		//RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "deltas"}, "rankings_deltas");
 
-		graph = new RankHistoryGraph(data.rank.plots, data.rank.oldest_date, "rank_graph", "rank_legend", "rankings_table", "rank_title");
-		graph.showQueryGraph("mike quinn blog");
+		//graph = new RankHistoryGraph(data.rank.plots, data.rank.oldest_date, "rank_graph", "rank_legend", "rankings_table", "rank_title");
+		//graph.showQueryGraph("mike quinn blog");
 	},
 
 	// Gets the menu link for the given section, e.g. the <a> link for section "pageviews"

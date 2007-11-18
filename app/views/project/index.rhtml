@@ -46,9 +46,9 @@
 	data.searches_recent=<%=@searches_recent%>
 	data.searches_totals=<%=@searches_total%>
 
-	osData=[<%= @os_data %>];
+	osData=<%= @os_data %>;
 	osLabels=[<%= @os_labels %>];
-	browserData=[<%= @browser_data %>];
+	browserData=<%= @browser_data %>;
   browserLabels=[<%= @browser_labels %>];
 
   data.rank={};
@@ -228,11 +228,15 @@
 	<div id="details" class="section" <%=panel_style(:details)-%> >
 		<h2 class="section_title" id="details_title">Details</h2>
 
-		<div class="chart"  id="browser_details">
-			<div class="chart-frame"></div>        
-		</div>
+    <div class="chart" id="browser_details">
+      <div><canvas id="browser_graph" height=160 width=160 /></div>
+    </div>
+
+    <div class="chart" id="os_details">
+      <div><canvas id="os_graph" height=160 width=160 /></div>
+    </div>
+
 		<br/>
-		<div class="chart"  id="os_details"><div class="chart-frame"></div></div>
 	</div>  
 
   <div id="rankings" class="section" <%=panel_style(:rankings)-%> >

@@ -448,29 +448,33 @@ class ProjectController < ApplicationController
     @browser_labels=[]
     @browser_data=[]
     browsers = @project.get_details(:browser)
+    i=0
     HitDetail.browser_display.each do |key|
       v=browsers[key]
       next if v <=0
       @browser_labels << "\"#{key}\""
-      @browser_data << v
+      @browser_data << [i,v]
+      i += 1
     end
     
     @browser_labels=@browser_labels.join(',')
-    @browser_data=@browser_data.join(',')   
+    @browser_data=@browser_data.to_json
     
     # drop entries that are 0
     @os_labels=[]
     @os_data=[]
     os = @project.get_details(:os)
+    i=0
     HitDetail.os_display.each do |key|
       v=os[key]
       next if v <= 0
       @os_labels << "\"#{key}\""
-      @os_data << v
+      @os_data << [i,v]
+      i += 1
     end    
     
     @os_labels=@os_labels.join(',')
-    @os_data=@os_data.join(',')
+    @os_data=@os_data.to_json
   end
 
   def build_rankings()

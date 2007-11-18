@@ -382,7 +382,8 @@ Plotr.Canvas = {
         	yTickPrecision: 		1,
 			pieRadius: 				0.4,
 			reverseYAxis:false,			// philc
-			shadow:					true
+			shadow:					true,
+      divPosition:    'relative' // mikeq
 	    }, options || {});		
 	},
 	
@@ -416,7 +417,15 @@ Plotr.Canvas = {
 		
 		this.canvasNode = $(element);
 		this.containerNode = this.canvasNode.parentNode;
-		Element.setStyle(this.containerNode,{position: 'relative',width: this.canvasNode.width + 'px'});	
+
+		Element.setStyle(
+        this.containerNode,
+        {
+          position: this.options.divPosition,
+          width:    this.canvasNode.width + 'px'
+        }
+    );	 //mikeq
+
 		this.isIE = Plotr.Base.excanvasSupported();
 		
 	    if(this.isIE && !Plotr.Base.isNil(G_vmlCanvasManager)){

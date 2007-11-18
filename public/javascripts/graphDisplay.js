@@ -5,6 +5,89 @@
  * Basically, if you use this code, you agree to leave all your inheritance to Mike Quinn.
  */
 
+var PieGraph=new Class({
+  initialize: function(data, labels, title, canvas_id, chart_id){
+    this.data = data;
+    this.canvas_id = canvas_id;
+    this.chart = $(chart_id);
+    this.title = title;
+    this.labels = labels;
+    this.percents=[];
+  },
+
+  //-------------------------------------------------------------------
+
+  showPieGraph: function(){
+    var dataset = { 'os': this.data };
+
+    colorHash = {};
+    for (var i=0; i<this.data.length; i++){
+      colorHash[i] = Page.colors[i];
+    }
+    this.colorScheme = new Hash(colorHash);
+
+    var options = {
+      padding: {left: 0, right: 0, top: 0, bottom: 0},
+      backgroundColor: '#ffffff',
+      colorScheme: this.colorScheme,
+      pieRadius: '0.45',
+      xTicks: [ ],
+      divPosition: 'absolute'
+    };
+
+    var pie = new Plotr.PieChart(this.canvas_id, options);
+    pie.addDataset(dataset);
+    pie.render();
+
+    this.calculatePercents();
+    this.drawTextLabels();
+  },
+
+  //-------------------------------------------------------------------
+  
+  calculatePercents: function(){
+    var total = 0;
+
+    for (var i=0; i<this.data.length; i++)
+      total += this.data[i][1];
+
+    for (var i=0; i<this.data.length; i++)
+      this.percents[i] = this.data[i][1]/total*100;
+  },
+
+  //-------------------------------------------------------------------
+
+  drawTextLabels: function(){
+    var labelBox=$(document.createElement("div"));
+		labelBox.addClass("label-box");
+		labelBox.style.left=px(160);
+		labelBox.innerHTML=db.span({cls:'title'},this.title);
+
+		var ul = document.createElement("ul");
+		for (var i=0; i<this.labels.length;i++){
+			var div=$(document.createElement("li"));   
+			var boxColor = Page.colors[i];
+			
+			// Draw a 1px border around the color box, using a darker version of the box's color
+			var darkerColor = (new Color(boxColor)).setBrightness(65);
+			var styleString = "background-color:" + boxColor + "; border:1px solid rgb(" + darkerColor + ")";
+			
+			div.innerHTML= 
+			db.div( {cls:'color-box', style:styleString}) + 
+			db.span(
+				{cls:'caption'},
+				this.labels[i],
+				db.span({cls:'percent'}, DisplayHelper.formatPercent(this.percents[i]))
+			);
+
+			div.addClass("label");
+			ul.appendChild(div);      
+		}
+		labelBox.appendChild(ul);
+		this.chart.appendChild(labelBox);
+  }
+});
+
 var RankHistoryGraph=new Class({
   initialize: function(data, oldest_date, canvas_id, legend_id, ranktable_id, title_id){
     this.data = data;
