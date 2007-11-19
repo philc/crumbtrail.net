@@ -291,14 +291,14 @@ var Page = {
 		var nonUniques = [];
 		for (var i=0;i<data['pageviews_week'].length;i+=2) nonUniques[i/2]=data['pageviews_week'][i];
 
-		lg=new LineGraph("pageviewsWeek-linegraph",nonUniques, 200, "week",1);
+		lg = new LineGraph("pageviewsWeek-linegraph", nonUniques, 200, "week", 1);
 		lg.drawGraph();  
 
 		// visitor details graphs
-    pg = new PieGraph(browserData,browserLabels,"Web browsers","browser_graph", "browser_details");
-    pg.showPieGraph();
-    pg = new PieGraph(osData,osLabels,"Operating systems","os_graph","os_details");
-    pg.showPieGraph();
+		pg = new PieGraph(browserData, browserLabels, "Web browsers", "browser_graph", "browser_details");
+		pg.showPieGraph();
+		pg = new PieGraph(osData, osLabels, "Operating systems", "os_graph", "os_details");
+		pg.showPieGraph();
 
 		/*
 		* Rankings

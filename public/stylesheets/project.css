@@ -614,7 +614,10 @@ img{
 .chart .color-box{
 /*	margin-top:.1em;*/
 	width:1em;
-	height:1em;
+	height:.7em;
+	width:.7em;
+	margin-top:.15em;
+/*	height:1em;*/
 	float:left;  
 	margin-right:6px;
 	position:absolute;

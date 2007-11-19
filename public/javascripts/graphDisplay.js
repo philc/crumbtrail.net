@@ -6,34 +6,38 @@
  */
 
 var PieGraph=new Class({
-  initialize: function(data, labels, title, canvas_id, chart_id){
-    this.data = data;
-    this.canvas_id = canvas_id;
-    this.chart = $(chart_id);
-    this.title = title;
-    this.labels = labels;
-    this.percents=[];
-  },
+	initialize: function(data, labels, title, canvas_id, chart_id){
+		this.data = data;
+		this.canvas_id = canvas_id;
+		this.chart = $(chart_id);
+		this.title = title;
+		this.labels = labels;
+		this.percents=[];
+	},
 
-  //-------------------------------------------------------------------
+	//-------------------------------------------------------------------
 
-  showPieGraph: function(){
-    var dataset = { 'os': this.data };
+	showPieGraph: function(){
+		var dataset = { 'os': this.data };
 
-    colorHash = {};
-    for (var i=0; i<this.data.length; i++){
-      colorHash[i] = Page.colors[i];
-    }
-    this.colorScheme = new Hash(colorHash);
+		colorHash = {};
+		for (var i=0; i<this.data.length; i++){
+			colorHash[i] = Page.colors[i];
+		}
+		this.colorScheme = new Hash(colorHash);
 
-    var options = {
-      padding: {left: 0, right: 0, top: 0, bottom: 0},
-      backgroundColor: '#ffffff',
-      colorScheme: this.colorScheme,
-      pieRadius: '0.45',
-      xTicks: [ ],
-      divPosition: 'absolute'
-    };
+		var options = {
+			padding: {left: 0, right: 0, top: 0, bottom: 0},
+			backgroundColor: '#ffffff',
+			colorScheme: this.colorScheme,
+			pieRadius: '0.45',
+			xTicks: [ ],
+			divPosition: 'absolute',
+			// shouldStroke:true
+			strokeWidth:.5,
+			strokeColor: "#999"
+			// shadow:false
+		};
 
     var pie = new Plotr.PieChart(this.canvas_id, options);
     pie.addDataset(dataset);
@@ -295,24 +299,7 @@ var RankHistoryGraph=new Class({
   //-------------------------------------------------------------------
 
   getMonthString: function(month){
-    var monthStr;
-    switch (month)
-    {
-      case 0: monthStr = "Jan"; break;
-      case 1: monthStr = "Feb"; break;
-      case 2: monthStr = "Mar"; break;
-      case 3: monthStr = "Apr"; break;
-      case 4: monthStr = "May"; break;
-      case 5: monthStr = "Jun"; break;
-      case 6: monthStr = "Jul"; break;
-      case 7: monthStr = "Aug"; break;
-      case 8: monthStr = "Sep"; break;
-      case 9: monthStr = "Oct"; break;
-      case 10: monthStr = "Nov"; break;
-      case 11: monthStr = "Dec"; break;
-    }
-
-    return monthStr;
+		return DisplayHelper.months[month].substring(0,3);
   }
 });
    

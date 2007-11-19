@@ -73,8 +73,10 @@ DisplayHelper.Methods={
 		i=i<0 ? 7+i : i;    
 		return i==0? (showToday ? "Today" : this.days[i]) : this.days[i];
 	},
+	
 	months:["January", "February","March","April","May","June",
 	"July","August", "September","October","November","December"],
+	
 	showMonth:function(i){ 
 		i=(i+12)%12;
 		return this.months[i].substring(0,3);
