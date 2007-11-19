@@ -109,6 +109,8 @@ def add
   proj.add_query("ninjawords.com")
   proj.id = 1050
   proj.save
+
+  generate_test_ranks(proj)
   
   demo = Account.create(:username=>"demo",
                     :password => "pass1",
