@@ -1,15 +1,25 @@
+make an iphone user agent, and if possible, a "mobile" user agent
+triage: when you hover over the user agent in the pie chart (or in the pie chart's key), show # of hits from that agent
+allow you to invite other emails to look at the stats. Don't let them change account preferences. This way multiople accounts
+can share a view of one project
+is google image search recorded as a search?
+
+Big "Got a question?" Link somewhere, pointing them to a solid faq that outlines all the features
+collapsing problem, time zone problem
+
 text for about page
 refactor the JS into multiple files, set up a build system for compression
-quick NW today: make those selection arrows unselectable. Do the same for jjot's arrows
-counter
+counter that users can publish on their page
+
 version the tracker JS, do some research on what a unique hit really is
+
 traffic sources in the overview page arenn't sorted by anything. They're arbitrary
 implement password reset (a beta user has already needed it =/)
 implement compressed javascript into the build process.
-progress meter when you click next?
+progress meter when you click next
 Nicer error messages for no route, etc.
 preload the circle image
-show "last logged in" in admin page
+
 
 analyitics -
 see how often each member logs in, which projects he views, how many times he reloads the page
