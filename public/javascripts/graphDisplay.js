@@ -5,6 +5,62 @@
  * Basically, if you use this code, you agree to leave all your inheritance to Mike Quinn.
  */
 
+var LineGraphDisplay=new Class({
+	initialize: function(canvas_id, data, labels){
+		
+		// We need to reverse the data and then
+		// create an array of two value arrays eg: [[0, 24],[1,33],[2,29]....]
+		data.reverse();
+		this.data = new Array();
+		for(var i=0; i<7; i++)
+		{
+			this.data[i] = [i,data[i]];
+		}
+		
+		this.max = data.max();
+		this.min = data.min();
+		
+		this.canvas_id = canvas_id;
+		this.labels = labels;
+	},
+	
+	showLineGraph: function(){
+		var dataset = { 'dataset1': this.data };
+		
+		var options = {
+			padding: {left: 5, right: 5, top: 0, bottom: 0},
+			backgroundColor: '#ffffff',
+			colorScheme: Page.colors[0],
+			axisLabelFontSize: 12,
+			shadow: false
+		};
+		
+		if(this.labels == "week")
+		{
+			var xTicks = [];
+			for(var i=0; i<7; i++)
+			{
+				var day = DisplayHelper.showDay((new Date()).getDay()+i+1);
+				xTicks[i] = {v:i, label:day.slice(0,2)}
+			}
+			
+			options['xTicks'] = xTicks;
+			
+			var yTicks = [];
+			if(this.min > 0)
+				yTicks.push({v:this.min});
+			if(this.max > 0)
+				yTicks.push({v:this.max});
+
+			options['yTicks'] = yTicks;
+		}
+		
+		var line = new Plotr.LineChart(this.canvas_id, options);
+		line.addDataset(dataset);
+		line.render();
+	}
+});
+
 var PieGraph=new Class({
 	initialize: function(data, labels, title, canvas_id, chart_id){
 		this.data = data;
@@ -73,7 +129,7 @@ var PieGraph=new Class({
 			var boxColor = Page.colors[i];
 			
 			// Draw a 1px border around the color box, using a darker version of the box's color
-			var darkerColor = (new Color(boxColor)).setBrightness(65);
+			var darkerColor = (new Color(	boxColor)).setBrightness(65);
 			var styleString = "background-color:" + boxColor + "; border:1px solid rgb(" + darkerColor + ")";
 			
 			div.innerHTML= 

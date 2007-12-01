@@ -291,8 +291,8 @@ var Page = {
 		var nonUniques = [];
 		for (var i=0;i<data['pageviews_week'].length;i+=2) nonUniques[i/2]=data['pageviews_week'][i];
 
-		lg = new LineGraph("pageviewsWeek-linegraph", nonUniques, 200, "week", 1);
-		lg.drawGraph();  
+		lg = new LineGraphDisplay("pageviewsWeek-linegraph-canvas", nonUniques, "week");
+		lg.showLineGraph();
 
 		// visitor details graphs
 		pg = new PieGraph(browserData, browserLabels, "Web browsers", "browser_graph", "browser_details");
