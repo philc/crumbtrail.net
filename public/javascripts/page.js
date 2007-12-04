@@ -303,10 +303,10 @@ var Page = {
 		/*
 		* Rankings
 		*/
-		//RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "ranks"}, "rankings_ranks");
-		//RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "deltas"}, "rankings_deltas");
+		RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "ranks"}, "rankings_ranks");
+		RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "deltas"}, "rankings_deltas");
 
-		//graph = new RankHistoryGraph(data.rank.plots, data.rank.oldest_date, "rank_graph", "rank_legend", "rankings_table", "rank_title");
+		graph = new RankHistoryGraph(data.rank.plots, data.rank.oldest_date, "rank_graph", "rank_legend", "rankings_table", "rank_title");
 		//graph.showQueryGraph("mike quinn blog");
 	},
 
