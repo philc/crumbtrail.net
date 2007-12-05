@@ -17,8 +17,7 @@ end
 
 while($running) do
   
-  ActiveRecord::Base.logger << "This daemon is still running at #{Time.now}.\n"
-  ActiveRecord::Base.logger << "fileame #{@termsfilename}"
+  ActiveRecord::Base.logger << "#{Time.now}: Calculating search ranks\n"
   
   if(! FileTest.exists? @rankdir)
     FileUtils.mkdir(@rankdir, :mode => 0755)
@@ -46,6 +45,12 @@ while($running) do
   resultsfile = File.open(resultsFileName, 'r')
   store_rank_results(resultsfile)
   resultsfile.close()
-    
-  sleep 60
+  
+  # Sleep in one hour increments until we hit the next day
+  date = Date.today
+  while( date == Date.today && $running )
+    sleep( 3600 )
+    ActiveRecord::Base.logger << "#{Time.now}: Rank engine waking up to see if a day has passed"
+  end  
+  
 end
