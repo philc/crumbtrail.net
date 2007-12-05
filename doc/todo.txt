@@ -38,7 +38,7 @@ I think recent_unique_referers isn't prefetching each referer's data
 a nice UI for the search panel would be to show a little search engine logo image, a little square, in the table rows
 wouldn't take up much space and you could quickly see which engine gave you a hit without mousing over the link
 
-
+add ask.com to search results
 
 
 parsing bugs:
