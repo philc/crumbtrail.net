@@ -6,8 +6,6 @@ require 'open-uri'
 require 'cgi'
 require 'fileutils'
 require 'active_record'
-require File.dirname(__FILE__) + "/../app/models/project.rb"
-require File.dirname(__FILE__) + "/../app/models/ranking.rb"
 
 Num = 100
 

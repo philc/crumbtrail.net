@@ -1,4 +1,4 @@
-require 'fetcher.rb'
+require File.dirname(__FILE__) + '/fetcher.rb'
 
 # write_terms_file()
 #
