@@ -6,8 +6,9 @@ require 'open-uri'
 require 'cgi'
 require 'fileutils'
 require 'active_record'
-require 'app/models/project.rb'
-require 'app/models/ranking.rb'
+require File.dirname(__FILE__) + "/../app/models/project.rb"
+require File.dirname(__FILE__) + "/../app/models/ranking.rb"
+
 Num = 100
 
 class RankFinder
@@ -142,9 +143,7 @@ class Yahoo < Engine
 
   def fetch(query)
     begin
-      puts "one"
       doc = Hpricot(get_source(build_query_str(query), query, nil))
-      puts "two"
       searchdiv = (doc/"div#yschweb")
       ems = (searchdiv/"em.yschurl")
 
@@ -296,15 +295,6 @@ class Fetcher
     end
 
     return thread
-  end
-
-  def self.establish_connection()
-    f=YAML::load(File.open('config/database.yml'))
-    args={}
-    env=ENV['RAILS_ENV'] || 'development'
-    f[env].map{ |k,v| args[k.intern]=v}
-
-    ActiveRecord::Base.establish_connection(args)
   end
 
 end
