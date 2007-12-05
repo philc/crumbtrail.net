@@ -11,7 +11,7 @@ Signal.trap("TERM") do
 end
 
 while($running) do
-  
+  puts "hi!"
   # Replace this with your code
   ActiveRecord::Base.logger << "This daemon is still running at #{Time.now}.\n"
   

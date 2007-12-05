@@ -3,7 +3,7 @@
 	<b class="d"><b class="hd"><b class="c"></b></b><b class="bd">
 		<b class="c">
 
-			<% if !@account %>
+			<% if @account.demo? %>
 			<h1>Sign in</h1>
 
 			<div class="left_form">
@@ -11,7 +11,7 @@
 				<form action="" method="post">
 					<div class="text-form">
 
-						<%=show_form_error(@login_error)%>
+						<%= show_form_error(@login_error) %>
 						<label>E-mail						</label>
 						<%= field "text", :id=>"email", :value=>@email %>
 						
@@ -43,7 +43,7 @@
 	</b>     
 </div>
 
-<%if !@account%>
+<%if @account.demo? %>
 <script type="text/javascript">
 $("email").focus();
 </script>

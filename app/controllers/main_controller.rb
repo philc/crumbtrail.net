@@ -84,14 +84,15 @@ class MainController < ApplicationController
   end
 
   def signin
-    @title="Sign in - Breadcrumbs"
+    @title = "Sign in - Breadcrumbs"
     # If they get to this page and are already logged in (like in another frame),
     # continue their redirect. If there's none, send them to their project page
     redirect = params[:r]
     if (redirect.nil? || redirect.empty? || redirect =~ /signin/i)
       redirect="/project/recent"
     end
-    if (@account)
+    
+    unless (@account.demo?)
       redirect_to redirect
       return
     end

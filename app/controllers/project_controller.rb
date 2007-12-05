@@ -151,21 +151,21 @@ class ProjectController < ApplicationController
   def index
     # TODO: show them that they need to log in if they're not logged in.
     # Applies to demo account
-    @id=params[:id]    
+    @id = params[:id]    
     
-    @project=nil
+    @project = nil
     
     # Ensure that they are logged in, unless we're viewing a demo
-    if @id!="livedemo"
+    if @id != "livedemo"
       authorize()
-      return if @account.nil?
+      return if @account.demo?
     end
       
-    if (@id=="recent")
+    if (@id == "recent")
       @project = @account.recent_project
-    elsif (@id=="livedemo")
+    elsif (@id == "livedemo")
       puts "demo account"
-      @account=Account.demo_account
+      @account = Account.demo_account
       @project = Project.demo_project
     else
       @project = Project.find_by_id(@id)      

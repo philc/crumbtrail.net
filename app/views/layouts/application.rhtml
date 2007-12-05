@@ -1,73 +1,74 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
+  "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>
-<%= @title || "Breadcrumbs" %>
-</title>
-<meta name="description" content="A stat tracking analytics service for your web site" >
-<meta name="keywords" content="website analytics, stats, free tracker, tracking, pageviews, uniques, hit counter, page views" >
-	
-<%= stylesheet_link_tag "main", "forms" %>
-<!--[if lt IE 7.]>
-<%= stylesheet_link_tag "main-ie" %>
-<![endif]-->
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>
+    <%= @title || "Breadcrumbs" %>
+  </title>
+  <meta name="description" content="A stat tracking analytics service for your web site" >
+  <meta name="keywords" content="website analytics, stats, free tracker, tracking, pageviews, uniques, hit counter, page views" >
 
-<%= javascript_include_tag "mootools.js","util.mootools.js","util", "util.breadcrumbs.js", "forms.js" %>
+  <%= stylesheet_link_tag "main", "forms" %>
+  <!--[if lt IE 7.]>
+  <%= stylesheet_link_tag "main-ie" %>
+  <![endif]-->
+
+  <%= javascript_include_tag "mootools.js","util.mootools.js","util", "util.breadcrumbs.js", "forms.js" %>
 
 
 
-<%= yield :head %>
+  <%= yield :head %>
 
 </head>
 
 <body>
+  <div id="hi"></div>
 
-<div id="page">
+  <div id="page">
   <div id="header">   
 
-    <div id="logo">
-    <a href="/"><img src="/images/logo.gif" alt="logo" /></a>
-    </div>
+  <div id="logo">
+  <a href="/"><img src="/images/logo.gif" alt="logo" /></a>
+</div>
 
-    <div id="header-menu" class="small-dialog">
+<div id="header-menu" class="small-dialog">
 
-	<table><tr><td>
-      <b class="ds"><b class="hd"><b class="c"></b></b><b class="bd">
-      <b class="c">
-	<table><tr><td>
-	 <% if @account %>
-		<% if !@account.demo?%> 
-	  		<li><a href="/signout">Sign out</a></li>
-		<%end%>
-		<% if @account.role=="a"%>
-			<li><a href="/project/admin">Admin</a></li>
-		<%end%>
-	  <% end %>         
-          <td><a href="/project/all">My projects</a></td>
-          <td><a href="" class="last">About</a></td>
-	</tr></table>
- 
-      </b></b><b class="ft">
-      <b class="c"></b></b></b>
-	</td></tr></table>
+<table><tr><td>
+  <b class="ds"><b class="hd"><b class="c"></b></b><b class="bd">
+  <b class="c">
+  <table><tr>
+    <td>
+      <% if !@account.demo? %> 
+      <li><a href="/signout">Sign out</a></li>
+      <% end %>
+      <% if @account.role == "a" %>
+      <li><a href="/project/admin">Admin</a></li>
+      <% end %>         
+    </td>
+    <td><a href="/project/all">My projects</a></td>
+    <td><a href="" class="last">About</a></td>
+  </tr></table>
 
-  </div>  
-  </div>
-  <div id="content">
-  
-  <%= yield :layout %>
-  
-  </div>
+</b></b><b class="ft">
+<b class="c"></b></b></b>
+</td></tr></table>
 
-  
-  <% #if this is the project page, show the offset footer %>
-  <div id="footer<%=@title.starts_with?("Stats") ? "-project" : ""%>">
-		<br clear="both"/>
-	  <%= yield :footer %>
-      <span id="copyright">&copy; 2007 Breadcrumbs</span>
-  </div>
+</div>  
+</div>
+<div id="content">
+
+<%= yield :layout %>
+
+</div>
+
+
+<% #if this is the project page, show the offset footer %>
+<div id="footer<%=@title.starts_with?("Stats") ? "-project" : ""%>">
+<br clear="both"/>
+<%= yield :footer %>
+<span id="copyright">&copy; 2007 Breadcrumbs</span>
+</div>
 
 </div>
 

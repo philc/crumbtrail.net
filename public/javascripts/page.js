@@ -160,25 +160,28 @@ var Page = {
 			title:'',
 			step:3,
 			rowDisplay:TableDisplay.refererRow,
-			headers:["","Pageviews"]
+			headers:["", "Pageviews"]
 		});
 		var panel2 = TableDisplay.showTableWithoutDialog({
 			htmlID:'glance_referers_week',
 			title:'',
 			step:3,
 			rowDisplay:TableDisplay.refererRow,
-			headers:["","Pageviews"]
+			headers:["", "Pageviews"]
 		});
-
-		$('glance_referers_today').innerHTML=DisplayHelper.dialog(
-			panel1+'<br/>'+'<h2 class="title">Top referers this week</h2>'+panel2,
-			{title:'Top referers today'}
+		
+		console.log("hello");
+		// console.log($('glance_referers_today'));
+		// alert($('glance_referers_today'));
+		$('glance_referers_today').innerHTML = DisplayHelper.dialog(
+			panel1 + '<br/>' + '<h2 class="title">Top referers this week</h2>' + panel2,
+			{ title: 'Top referers today' }
 		);
 
-		var contents="";
-		var alt=0;
+		var contents = "";
+		var alt = 0;
 		for (var key in data.glance_sources){
-			contents+=db.tr(
+			contents += db.tr(
 				db.td({cls:"f"},key.firstUpCase()),
 				db.td({cls:'s ' + (alt++%2 ? '':'a')},DisplayHelper.formatPercent(data.glance_sources[key]))
 			);		

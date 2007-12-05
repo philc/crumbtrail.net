@@ -9,18 +9,21 @@ class ApplicationController < ActionController::Base
     
   # Their login cookie contains both their account # and their session token, like this:
   #   login_cookie=account_id|session_token
-  @@login_cookie=:login_token
+  @@login_cookie = :login_token
   
   protected
   
   def login(username,password, redirect="/project/recent")
     
-    result=Account.authenticate(username,password)
+    result = Account.authenticate(username, password)
     
-    if (result.class==Account)
+    if (result.class == Account)
       # Create a new session & cookie for this client
-      @account=result
-      cookies[@@login_cookie] = create_cookie(Session.create_for(result).token)    
+      @account = result || Account.demo_account
+      
+      unless @account.demo?
+        cookies[@@login_cookie] = create_cookie(Session.create_for(result).token)    
+      end
       #redirect_to :controller=>"project"
       redirect_to redirect
     else
@@ -31,7 +34,7 @@ class ApplicationController < ActionController::Base
   
   def authorize()
     puts "in authorize, :",@account
-    if @account.nil?
+    if @account.demo?
      redirect_to "/signin/?r=" + request.request_uri
       # redirect_to "/signin/"
     end
@@ -49,21 +52,23 @@ class ApplicationController < ActionController::Base
     # TESTING - just log in with a test user
 #     @account=Account.authenticate("demo","pass1")
 #     return
-
+    
     cookie = cookies[@@login_cookie]    
     # see top of file for the cookie format
     token = cookie.split('|')[1] unless cookie.nil?
-    # TODO - re-enable this
-    return nil if token.nil?
+
+    if token.nil?
+      @account = Account.demo_account
+      return
+    end
     
     puts "PROCESSING LOGIN"
     
     # See if this token matches one of our accounts
-    @account = Account.from_token(token)
-
+    @account = Account.from_token(token) || Account.demo_account
     
     # Update their cookie
-    if (@account)
+    unless (@account.demo?)
       puts "setting token to #{@account.id}|#{token}"
       cookies[@@login_cookie] = create_cookie(token)
     else #erase this state cookie

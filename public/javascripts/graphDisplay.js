@@ -5,7 +5,7 @@
  * Basically, if you use this code, you agree to leave all your inheritance to Mike Quinn.
  */
 
-var LineGraphDisplay=new Class({
+var LineGraphDisplay = new Class( {
 	initialize: function(canvas_id, data, labels){
 		
 		// We need to reverse the data and then

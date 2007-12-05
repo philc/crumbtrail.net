@@ -98,13 +98,13 @@
 
 <div id="menu">
 	<ul id="menu-links">
-		<%= render :partial=>"menu_entry", :locals=>{:title=>:glance,:d=>"At a glance"} %>
-		<%= render :partial=>"menu_entry", :locals=>{:title=>:pageviews,:d=>"Pageviews"} %>
-		<%= render :partial=>"menu_entry", :locals=>{:title=>:referers,:d=>"Referers"} %>
-		<%= render :partial=>"menu_entry", :locals=>{:title=>:pages,:d=>"Pages"} %>
-		<%= render :partial=>"menu_entry", :locals=>{:title=>:searches,:d=>"Searches"} %>
-    <%= render :partial=>"menu_entry", :locals=>{:title=>:details,:d=>"Details"} %>
-    <%= render :partial=>"menu_entry", :locals=>{:title=>:rankings,:d=>"Rankings"} %>
+		<%= render :partial => "menu_entry", :locals => { :title => :glance, :d => "At a glance" } %>
+		<%= render :partial => "menu_entry", :locals => { :title => :pageviews, :d => "Pageviews" } %>
+		<%= render :partial => "menu_entry", :locals => { :title => :referers, :d => "Referers" } %>
+		<%= render :partial => "menu_entry", :locals => { :title => :pages, :d => "Pages" } %>
+		<%= render :partial => "menu_entry", :locals => { :title => :searches, :d => "Searches" } %>
+    <%= render :partial => "menu_entry", :locals => { :title => :details, :d => "Details" } %>
+    <%= render :partial => "menu_entry", :locals => { :title => :rankings, :d => "Rankings" } %>
 	</ul>
 </div>
 
@@ -154,26 +154,27 @@
 
 		<br clear="both"/>
 
-		<%= render :partial=>"panel", :locals=>
-		{:p=>:glance,:v=>:referers_today,:options=>{:force_visible=>"true",:c=>"links"}} %>	
+		<%= render :partial => "panel", 
+		:locals =>
+		{ :p => :glance, :v => :referers_today, :options => { :force_visible => "true", :c => "links" }} %>	
 	</div>
 
 	<div id="pageviews" class="section" <%=panel_style(:pageviews)-%> >
 		<h2 class="section_title" id="pageviews_title">Pageviews</h2>  
 		<div class="panel_links">
 			Show: 
-			<%= render :partial=>"navlink", :locals=>{:s=>:pageviews,:v=>:today,:d=>"Today"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:pageviews,:v=>:week,:d=>"Week"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:pageviews,:v=>:month,:d=>"Month"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:pageviews,:v=>:year,:d=>"Year"} %> 
+			<%= render :partial => "navlink", :locals => { :s => :pageviews, :v => :today, :d => "Today" } %> | 
+			<%= render :partial => "navlink", :locals => { :s => :pageviews, :v => :week, :d => "Week" } %> | 
+			<%= render :partial => "navlink", :locals => { :s => :pageviews, :v => :month, :d => "Month" } %> | 
+			<%= render :partial => "navlink", :locals => { :s => :pageviews, :v => :year, :d => "Year" } %> 
 
 
 		</div>
 
-		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:today,:options=>{:c=>"date"}} %>
-		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:week,:options=>{:c=>"date"}} %>
-		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:month,:options=>{:c=>"date"}} %>
-		<%= render :partial=>"panel", :locals=>{:p=>:pageviews,:v=>:year,:options=>{:c=>"date"}} %>
+		<%= render :partial => "panel", :locals => { :p => :pageviews, :v => :today, :options => { :c => "date" }} %>
+		<%= render :partial => "panel", :locals => { :p => :pageviews, :v => :week, :options => { :c => "date" }} %>
+		<%= render :partial => "panel", :locals => { :p => :pageviews, :v => :month, :options => { :c => "date" }} %>
+		<%= render :partial => "panel", :locals => { :p => :pageviews, :v => :year, :options => { :c => "date" }} %>
 
 	</div>
 
@@ -181,17 +182,17 @@
 		<h2 class="section_title" id="referers_title">Referers</h2>
 		<div class="panel_links">
 			<span class="navlink_show">Show:</span>
-			<%= render :partial=>"navlink", :locals=>{:s=>:referers,:v=>:recent,:d=>"Most recent"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:referers,:v=>:unique,:d=>"Latest unique"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:referers,:v=>:total,:d=>"Totals"} %>
+			<%= render :partial => "navlink", :locals => { :s => :referers, :v => :recent, :d => "Most recent" } %> | 
+			<%= render :partial => "navlink", :locals => { :s => :referers, :v => :unique, :d => "Latest unique" } %> | 
+			<%= render :partial => "navlink", :locals => { :s => :referers, :v => :total, :d => "Totals" } %>
 		</div>
 
-		<%= render :partial=>"panel", :locals=>
-		{:p=>:referers,:v=>:recent,:options=>{:c=>"links"}} %>
-		<%= render :partial=>"panel", :locals=>
-		{:p=>:referers,:v=>:unique,:options=>{:c=>"links"}} %>
-		<%= render :partial=>"panel", :locals=>
-		{:p=>:referers,:v=>:total,:options=>{:c=>"links"}} %>
+		<%= render :partial => "panel", :locals => 
+		{ :p => :referers, :v => :recent, :options => { :c => "links" }} %>
+		<%= render :partial => "panel", :locals =>
+		{ :p => :referers, :v => :unique, :options => { :c => "links" }} %>
+		<%= render :partial => "panel", :locals =>
+		{ :p => :referers, :v => :total, :options => { :c => "links" }} %>
 
 		<br clear="both"/>
 
@@ -204,8 +205,8 @@
 		<h2 class="section_title" id="pages_title">Pages</h2>
 		<div class="panel_links">
 			<span class="navlink_show">Show:</span>
-			<%= render :partial=>"navlink", :locals=>{:s=>:pages,:v=>:recent,:d=>"Recent"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:pages,:v=>:popular,:d=>"Popular"} %>
+			<%= render :partial => "navlink", :locals => { :s => :pages, :v => :recent, :d => "Recent" } %> | 
+			<%= render :partial => "navlink", :locals => { :s => :pages, :v => :popular, :d => "Popular" } %>
 		</div>
 		<%= render :partial=>"panel",
 		:locals=>{:p=>:pages,:v=>:recent,:options=>{:c=>"links"}} %>
@@ -217,12 +218,12 @@
 		<h2 class="section_title" id="searches_title">Searches</h2> 
 		<div class="panel_links">
 			<span class="navlink_show">Show:</span>
-			<%= render :partial=>"navlink", :locals=>{:s=>:searches,:v=>:recent,:d=>"Recent"} %> | 
-			<%= render :partial=>"navlink", :locals=>{:s=>:searches,:v=>:totals,:d=>"Popular"} %>
+			<%= render :partial => "navlink", :locals => { :s => :searches, :v => :recent, :d => "Recent" } %> | 
+			<%= render :partial => "navlink", :locals => { :s => :searches, :v => :totals, :d => "Popular" } %>
 		</div>
 
-		<%= render :partial=>"panel", :locals=>{:p=>:searches,:v=>:recent,:options=>{:c=>"links"}} %>
-		<%= render :partial=>"panel", :locals=>{:p=>:searches,:v=>:totals,:options=>{:c=>"links"}} %>
+		<%= render :partial => "panel", :locals => { :p => :searches, :v => :recent, :options => { :c => "links" }} %>
+		<%= render :partial => "panel", :locals => { :p => :searches, :v => :totals, :options => { :c => "links" }} %>
 
 	</div>
 
@@ -250,25 +251,20 @@
     <br style="clear: both" />
     <div class="panel_links">
       <span class="navlink_show">Show:</span>
-      <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:ranks,:d=>"Current Rank"} %> | 
-      <%= render :partial=>"navlink", :locals=>{:s=>:rankings,:v=>:deltas,:d=>"Most Recent Change"} %>
+      <%= render :partial => "navlink", :locals => { :s => :rankings, :v => :ranks, :d => "Current Rank" } %> | 
+      <%= render :partial => "navlink", :locals => { :s => :rankings, :v => :deltas, :d => "Most Recent Change" } %>
     </div>
-    <%= render :partial=>"panel", :locals=>{:p=>:rankings,:v=>:ranks, :options=>{}} %>
-    <%= render :partial=>"panel", :locals=>{:p=>:rankings,:v=>:deltas, :options=>{}} %>
-    <%= render :partial=>"query_options" %>
+    <%= render :partial => "panel", :locals => { :p => :rankings, :v => :ranks, :options => {}} %>
+    <%= render :partial => "panel", :locals => { :p => :rankings, :v => :deltas, :options => {}} %>
+    <%= render :partial => "query_options" %>
   </div>
   
   
 </div>
 
 <% content_for (:footer) do %>
-<div id="shortcuts">Shortcuts: 
-
-
-
-
+<div id="shortcuts">Keyboard shortcuts: 
    <span><strong>w/s</strong> - switch between pages</span>>
-
    <span><strong>a/d</strong> - flip through details</span>
 </div>
 <% end %>

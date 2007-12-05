@@ -8,21 +8,29 @@ html,body{
 }
 
 body{
+	width:800px;
+	margin: 0 auto;
+
   margin-top:15px;
-  font-size:1em;
-  /*font-size:100%;*/
-  font-family: bitstream-vera-sans, Arial, Helvetica, sans-serif;
+
+	font-size:100%;
+  font-family: "bitstream-vera-sans", Arial, Helvetica, sans-serif;
+
   background-color:white;
-  max-width:800px;
-  min-width:690px;
-  margin-left:auto;
-  margin-right:auto;
 }
+
+
+#page{
+	margin:0 20px;
+
+}
+
 /*
  * General CSS shortcuts
  */
 .left{	float:left; }
 .right{	float:right; }
+
 a{
   color:#617ca9;
   color:#4e6387;
@@ -34,10 +42,6 @@ input,select{
   padding:2px;
 }
 table,img{ border:0;}
-#page{
-  margin-left:20px;
-  margin-right:20px;
-}
 
 #header{
   height:80px;
@@ -48,7 +52,9 @@ table,img{ border:0;}
   /*margin-bottom:20px;*/
   }
 #content{
-  width:100%;
+/*  width:100%;*/
+/*	width:800px;*/
+
   /*position:relative;*/
   /*text-align:center;*/
   min-height:320px;

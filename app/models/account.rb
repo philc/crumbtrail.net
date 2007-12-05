@@ -10,12 +10,12 @@ class Account < ActiveRecord::Base
     # secret value to append to the user's feeds, so the URLs are hidden
     self.access_key ||= Digest::SHA1.hexdigest(self.username + self.password + rand(500).to_s)
   end    
-  
+
   def self.authenticate(username,password)
-    account=self.find_by_username(username)
+    account = self.find_by_username(username)
     return "No account registered with that e-mail" if account.nil?
     
-    if account.password!=encrypt(password)
+    if account.password != encrypt(password)
       return "Incorrect login"
     end
     
@@ -26,9 +26,9 @@ class Account < ActiveRecord::Base
   end
   
   def recent_project
-    rp=self.recent_project_id
+    rp = self.recent_project_id
     return nil if (rp.nil?)
-    p=Project.find_by_id(rp)    
+    p = Project.find_by_id(rp)    
     
     # If this link is somehow bad, in the case of
     # the their deleting a project or something, 
@@ -57,10 +57,11 @@ class Account < ActiveRecord::Base
   def self.demo_account()
     return find(:first, :conditions=>{:role =>"d"})
   end
-  def demo?()
-    return self.role=="d"
-  end
   
+  def demo?()
+    return self.role == "d"
+  end
+    
   protected
   
   def self.encrypt(text)

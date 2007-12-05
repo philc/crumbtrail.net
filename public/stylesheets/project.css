@@ -8,6 +8,8 @@ h4{
 html{
 	/* This prevents mozilla from shifting centered contents when a scrollbar appears.
 	It's basically like IE's behvaior, hwich always has a scrollbar present.*/
+	/* However doing this prevents us from having a horizontal scrollbar. You need to do it
+	 * with javascript, like Jjot does it. */
 	overflow: -moz-scrollbars-vertical !important;
 }
 /*
@@ -31,10 +33,15 @@ html{
 }
 #menu a {
 	position:relative; 
-	padding: 2px 0px 3px 10px;
 	display:block;
+	
+	padding: 2px 0px 3px 10px;
+
 	border-top:1px solid white;
 	border-bottom:1px solid white;
+
+	/* Take off click outline */
+	outline:0;
 }
 #menu a:hover{
 	background-color:#fbeac8;
@@ -46,6 +53,7 @@ html{
 	background-color:#e4eaf4;
 	border-top:1px solid #c6c6c6;
 	border-bottom:1px solid #c6c6c6;
+
 }
 #menu .active:hover{
 	background-color:#e4eaf4;

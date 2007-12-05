@@ -83,7 +83,7 @@ label{
 		background-color:#dae1e7;
 	}
 	input{
-		vertical-align:center;
+/*		vertical-align:middle;*/
 	}
 
 	*.disabled{
