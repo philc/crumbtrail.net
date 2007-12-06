@@ -18,8 +18,8 @@ while(true) do
     FileUtils.mkdir(@rankdir, :mode => 0755)
   end
   
-  termsFileName = "@termsfilename.#{Date.today.to_s}"
-  resultsFileName = "@resultsfilename.#{Date.today.to_s}"
+  termsFileName = "#{@termsfilename}.#{Date.today.to_s}"
+  resultsFileName = "#{@resultsfilename}.#{Date.today.to_s}"
   
   # Read the list of queryies we need to make from
   # our database, and store them in a file
