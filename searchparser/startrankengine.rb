@@ -3,19 +3,14 @@
 #You might want to change this
 ENV["RAILS_ENV"] ||= "development"
 
-require File.dirname(__FILE__) + "/../../config/environment"
-require File.dirname(__FILE__) + "/../../searchparser/ranklib.rb"
+require File.dirname(__FILE__) + "/../config/environment"
+require File.dirname(__FILE__) + "/ranklib.rb"
 
-@rankdir = File.dirname(__FILE__) + "/../../tmp/rankengine/"
+@rankdir = File.dirname(__FILE__) + "/../tmp/rankengine/"
 @termsfilename = @rankdir + "querylist"
 @resultsfilename = @rankdir + "resultslist"
 
-$running = true;
-Signal.trap("TERM") do 
-  $running = false
-end
-
-while($running) do
+while(true) do
   
   ActiveRecord::Base.logger << "#{Time.now}: Calculating search ranks\n"
   

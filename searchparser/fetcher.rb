@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 require 'rubygems'
 require 'hpricot'
 require 'open-uri'
@@ -296,46 +294,3 @@ class Fetcher
   end
 
 end
-
-#------------------------------------------------------------------------------
-
-=begin
-  def save_backups(userid, query)
-    uri = open(@@google.gsub("%s", query).gsub("%n", @@num.to_s))
-    save_results(userid, "google", uri)
-
-    uri = open(@@yahoo.gsub("%s", query).gsub("%n", @@num.to_s))
-    save_results(userid, "yahoo", uri)
-
-    uri = open(@@msn.gsub("%s", query), "Cookie" => @@msncookie)
-    save_results(userid, "msn", uri)
-  end
-
-  
-  private
-
- end
-=end
-
-=begin
-parser = Parser.new(@@url)
-results = parser.parse(ARGV[0])
-placement = parser.position()
-
-#puts "Yahoo results:"
-#i = 1
-#results[:google].each do |x|
-#  puts i.to_s + ": " + x
-#  i += 1
-#end
-
-puts "results: "
-results.each_key { |x| puts x }
-puts "placement: "
-placement.each_key { |x| puts x }
-
-puts "Search placement:"
-placement.each_pair do |key, value|
-  puts "#{key.to_s} => #{value.to_s}"
-end
-=end
