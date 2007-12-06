@@ -3,91 +3,28 @@
 # logreader daemon
 #
 # Usage: daemon start|stop|restart [logFile]
-#   logfile defaults ot /var/log/apache2/stats.crumbtrail/access.log
+#   logfile defaults to /var/log/apache2/stats.crumbtrail/access.log
 #
 
-LOGREADER_PATH=File.dirname(__FILE__) + '/'
+#You might want to change this
 
-module LogReader
-  class Daemon
-    def self.start
-      log = ARGV[1] || "/var/log/apache2/stats.crumbtrail/access.log"
-      pids = pid_of_reader()
-      if (pids.length>0)
-        puts "LogReader is already running as process #{pids.flatten}"
-        return
-      end
-      # don't wait for this to finish; run it in its own subprocess
-      exec("nohup #{LOGREADER_PATH}logreader.rb #{log}  -resume > /tmp/nohup &") if fork.nil?
-      
-      # Show the initial output from the logreader
-      # Allow the /tmp/nohup file a second to get created/filled
-      `sleep 1s`
-      puts `cat /tmp/nohup`
-  
-      puts "started"      
-    end
-    
-    def self.stop
-      puts "stopping"
-      pids = pid_of_reader()
-      if pids.length<=0
-        puts "LogReader doesn't appear to be running"
-        return true
-      end
+@APP_PATH=File.dirname(__FILE__)+"/.."
 
-      if pids.length>1
-        puts "There are #{pids.length} logReader processes running. Killing them all"
-      end
-      
-      for pid in pids do
-        `kill #{pid}`
-      end      
-      
-      # If we failed to stop something, return an error condition. Sleep for a second to let these processes exit.
-      `sleep 1s`
-      pids = pid_of_reader()
-      if pids.length>0
-        puts "failed to kill #{pids.length} processes" 
-        return false
-      else
-        puts "stopped"
-      end
-      
-      return true            
-    end
-    
-    def self.restart
-      # If we fail to stop something, don't start another process
-      if (!stop())
-        puts "failed to stop the process; not starting another one"
-        return
-      end
-      start()
-    end
-    
-    
-    def self.pid_of_reader
-      pidof('ruby ./logreader')
-    end
-    
-    #
-    # a version of pidof that matches against the full process name, not just the program.
-    # e.g. it can differentiate between "ruby" and  "ruby ./logreader"
-    def self.pidof(proc)
-      # each match is on its own line. The first col is the proc number.
+require 'rubygems'
+require 'daemons' 
+require 'yaml'
+require 'erb'
+require @APP_PATH+"/logreader/logreader.rb"
 
-      # reject out any procs that contain grep in them, because that's probably the process
-      # we're using to grep for our target proc anyway. Also reject out 'daemon' - that's the process
-      # we're running running. 
-      `ps ax | grep "#{proc}"`.reject{|line|line.include?("grep") || line.include?("daemon")}.map{|line| line.split(' ')[0]}
-    end
-  end
-end
+@startlogfile = @APP_PATH+"/logreader/startlogreader.rb"
+@defaultlog   = '/var/log/apache2/stats.crumbtrail/access.log'
 
-case ARGV[0]
-  when "start" : LogReader::Daemon.start
-  when "restart" : LogReader::Daemon.restart
-  when "stop" : LogReader::Daemon.stop
-  else puts "specify one of the following: start|restart|stop"
-end
+@options = {
+  :app_name   => "logreader",
+  :multiple   => false,
+  :backtrace  => true,
+  :monitor    => false,
+  :log_output => true
+}
+
+Daemons.run(@startlogfile, @options)

@@ -116,7 +116,7 @@ class ApacheLogReader
 #------------------------------------------------------------------------------
 
 
-  def self.tail_log(logfile, resume=false, project_id=nil, notail=nil)
+  def self.tail_log(logfile, noresume=true, project_id=nil, notail=nil)
     puts "Parsing log file:  #{logfile.to_s}\n  Logging to #{ENV['RAILS_ENV'] || 'development'} database."
     file = File.new(logfile, "r")
 
@@ -134,17 +134,17 @@ class ApacheLogReader
     # Try and resume into the log file if we need to
     #    
     count=1
-    if (resume)
+    if (noresume)
+      puts "Starting at the beginning of the log file"
+      # Back up the old progress file in case we wanted to run
+      # with 'resume' enabled but forgot to.
+      `cp #{@@progress_file} #{@@progress_file}.bak 2> /dev/null`
+    else
       count=load_progress
       puts "Resuming #{count} lines into the log file"
       $stdout.flush
       skip_ahead(file,count)
       puts "Done seeking ahead into the log file. Starting to read."
-    else
-      puts "Starting at the beginning of the log file"
-      # Back up the old progress file in case we wanted to run
-      # with 'resume' enabled but forgot to.
-      `cp #{@@progress_file} #{@@progress_file}.bak 2> /dev/null`
     end
 
     $stdout.flush
