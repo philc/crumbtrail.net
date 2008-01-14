@@ -439,3 +439,62 @@ a.linkbox_disabled:hover{
 	background-color:#f2f2f2;
 	color:#888888;
 }
+
+/*
+ * About
+ */
+#ataglance {
+	float: right;
+}
+div.feature-row{
+	width: 800px;
+	margin-top: 15px;
+}
+div.feature{
+	padding: 0px;
+	background: #e4eaf4 url(/images/about/topbar.png) no-repeat scroll;
+	width: 210px;
+	float: left;
+	margin-left: 25px;
+}
+div#about{
+	color: #000;
+}
+div#about h3{
+	margin: 0px 0px 5px 0px;
+	color: #769d6e;
+	font-size: 125%;
+}
+div#about p{
+	margin: 0px 0px 10px 10px;
+}
+div#about div.section{
+	margin-bottom: 25px;
+}
+div h4{
+	color: #7297d5;
+	margin-top: 10px;
+	padding: 0px 10px;
+}
+div#about div.feature p{
+	margin: 0px;
+	font-size: 0.8em;
+	line-height: 150%;
+	min-height: 12em;
+	padding: 0px 10px 10px 10px;
+	background: url(/images/about/bottombar.png) no-repeat bottom left;
+}
+div.feature .bottom{
+	height: 10px;
+}
+div#about div.section ul{
+	margin: 10px;
+}
+div.feature img{
+	border: 1px solid #bcbcbc;
+	padding: 5px;
+}
+div.feature p.clear{
+	clear: both;
+	margin-top: 25px;
+}

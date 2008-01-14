@@ -1,3 +1,3 @@
 ./script/create_test_data.rb
 #mysql achilles_development < ./script/db/achilles_production-accountsprojects 2> /dev/null
-./logreader/logreader.rb $1
+./logreader/startlogreader.rb $1 -notail -noresume

@@ -108,6 +108,10 @@ class MainController < ApplicationController
     redirect_to "/"
   end
   
+  def about
+    @title = "About - Breadcrumbs"
+  end
+  
   private
   
   def create_account(username, password, timezone)

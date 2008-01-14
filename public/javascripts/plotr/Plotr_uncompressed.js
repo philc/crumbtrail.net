@@ -383,7 +383,8 @@ Plotr.Canvas = {
 			pieRadius: 				0.4,
 			reverseYAxis:false,			// philc
 			shadow:					true,
-      divPosition:    'relative' // mikeq
+			backgroundType:         'xTicks', // mikeq
+      		divPosition:    'relative' // mikeq
 	    }, options || {});		
 	},
 	
@@ -530,52 +531,84 @@ Plotr.Canvas = {
 	 * Renders the background of the chart.
 	 */
 	_renderBackground: function()
-  {
-    var cx = this.canvasNode.getContext('2d');
-    cx.save();
-    cx.fillStyle = this.options.backgroundColor;
-			
-    cx.fillRect(this.area.x, this.area.y, this.area.w, this.area.h);
-    cx.strokeStyle = this.options.backgroundLineColor;
-    cx.lineWidth = 1.5;
-        
-    var ticks = this.yticks;
-    var horiz = false;
-    if(this.type == 'bar' && this.options.barOrientation == 'horizontal')
-    {
-      ticks = this.xticks;
-      horiz = true;
-    }
-        
-		var drawBackgroundLines = function(tick)
-    {
-      var x1 = 0, x2 = 0, y1 = 0, y2 = 0;
-			
-			if(horiz)
-      {
-        x1 = x2 = tick[0] * this.area.w + this.area.x;
-        y1 = this.area.y;
-        y2 = y1 + this.area.h;
-			}
-      else
-      {
-        x1 = this.area.x;
-        //y1 = tick[0] * this.area.h + this.area.y;
-        y1 = (this.area.h - (tick[0] * this.area.h)) + this.area.y;
-        x2 = x1 + this.area.w;
-        y2 = y1;
-			}
-			
-      cx.beginPath();
-      cx.moveTo(x1, y1);
-      cx.lineTo(x2, y2);
-      cx.closePath();
-      cx.stroke();
-    }.bind(this);			
+	{
+		if( this.options.backgroundType == 'xTicks' )
+		{
+			var cx = this.canvasNode.getContext('2d');
+			cx.save();
+			cx.fillStyle = this.options.backgroundColor;
 
-		ticks.each(drawBackgroundLines);
-		
-		cx.restore();
+			cx.fillRect(this.area.x, this.area.y, this.area.w, this.area.h);
+			cx.strokeStyle = this.options.backgroundLineColor;
+			cx.lineWidth = 1.5;
+
+			var ticks = this.yticks;
+			var horiz = false;
+			if(this.type == 'bar' && this.options.barOrientation == 'horizontal')
+			{
+				ticks = this.xticks;
+				horiz = true;
+			}
+
+			var drawBackgroundLines = function(tick)
+			{
+				var x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+
+				if(horiz)
+				{
+					x1 = x2 = tick[0] * this.area.w + this.area.x;
+					y1 = this.area.y;
+					y2 = y1 + this.area.h;
+				}
+				else
+				{
+					x1 = this.area.x;
+					//y1 = tick[0] * this.area.h + this.area.y;
+					y1 = (this.area.h - (tick[0] * this.area.h)) + this.area.y;
+					x2 = x1 + this.area.w;
+					y2 = y1;
+				}
+
+				cx.beginPath();
+				cx.moveTo(x1, y1);
+				cx.lineTo(x2, y2);
+				cx.closePath();
+				cx.stroke();
+			}.bind(this);			
+
+			ticks.each(drawBackgroundLines);
+
+			cx.restore();
+		}
+		else if( this.options.backgroundType == 'grid' )
+		{
+			var cx = this.canvasNode.getContext('2d');
+			cx.save();
+			
+			cx.strokeStyle = this.options.backgroundLineColor;
+			cx.lineWidth = 0.1;
+			
+			var drawBackgroundGrid = function(yoffset)
+			{
+				var x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+				
+				x1 = this.area.x;
+				y1 = yoffset;
+				x2 = x1 + this.area.w;
+				y2 = yoffset;
+				
+				cx.beginPath();
+				cx.moveTo(x1, y1);
+				cx.lineTo(x2, y2);
+				cx.closePath();
+				cx.stroke();
+			}.bind(this)
+			
+			for(var i=0; i<this.area.h; i+=10)
+			{
+				drawBackgroundGrid(i);
+			}
+		}
 	},
 	
 	/**

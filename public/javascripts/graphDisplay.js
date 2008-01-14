@@ -28,7 +28,7 @@ var LineGraphDisplay = new Class( {
 		var dataset = { 'dataset1': this.data };
 		
 		var options = {
-			padding: {left: 5, right: 5, top: 0, bottom: 0},
+			padding: {left: 40, right: 5, top: 10, bottom: 0},
 			backgroundColor: '#ffffff',
 			colorScheme: Page.colors[0],
 			axisLabelFontSize: 12,
