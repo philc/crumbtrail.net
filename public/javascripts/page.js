@@ -170,7 +170,6 @@ var Page = {
 			headers:["", "Pageviews"]
 		});
 		
-		console.log("hello");
 		// console.log($('glance_referers_today'));
 		// alert($('glance_referers_today'));
 		$('glance_referers_today').innerHTML = DisplayHelper.dialog(
@@ -294,9 +293,9 @@ var Page = {
 		var nonUniques = [];
 		for (var i=0;i<data['pageviews_week'].length;i+=2) nonUniques[i/2]=data['pageviews_week'][i];
 
-		lg = new LineGraphDisplay("pageviewsWeek-linegraph-canvas", nonUniques, "week");
-		lg.showLineGraph();
-
+		lg=new LineGraph("pageviewsWeek-linegraph",nonUniques, 200, "week",1);
+		lg.drawGraph();
+		
 		// visitor details graphs
 		pg = new PieGraph(browserData, browserLabels, "Web browsers", "browser_graph", "browser_details");
 		pg.showPieGraph();
@@ -306,10 +305,10 @@ var Page = {
 		/*
 		* Rankings
 		*/
-		RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "ranks"}, "rankings_ranks");
-		RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "deltas"}, "rankings_deltas");
+		//RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "ranks"}, "rankings_ranks");
+		//RankDataDisplay.showTable({data: data.rank.rankings, tabletype: "deltas"}, "rankings_deltas");
 
-		graph = new RankHistoryGraph(data.rank.plots, data.rank.oldest_date, "rank_graph", "rank_legend", "rankings_table", "rank_title");
+		//graph = new RankHistoryGraph(data.rank.plots, data.rank.oldest_date, "rank_graph", "rank_legend", "rankings_table", "rank_title");
 		//graph.showQueryGraph("mike quinn blog");
 	},
 

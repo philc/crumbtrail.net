@@ -68,3 +68,10 @@ http://dev.mysql.com/doc/refman/5.0/en/insert-speed.html
 Apache apparently resolves the client's hostname in its logs; how can that hurt or help our performance?
 "- All the usual stuff: don’t follow symlinks, don’t use .htaccess files, don’t resolve client hostnames (move the logs to another machine and batch it later), etc.."
 
+
+To do for release:
+fix collapse bug
+clean up about page, add more content
+revert graph on at a glance page
+sort traffic sources on at a glance page
+implement password reset

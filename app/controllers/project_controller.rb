@@ -207,7 +207,7 @@ class ProjectController < ApplicationController
     # Details; browser and OS
     build_details()
 
-    build_rankings()
+    # build_rankings()
   end
 
   def queries

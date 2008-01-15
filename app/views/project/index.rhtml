@@ -51,10 +51,10 @@
 	browserData=<%= @browser_data %>;
   browserLabels=[<%= @browser_labels %>];
 
-  data.rank={};
-  data.rank.plots=<%= @rank_plots %>;
-  data.rank.oldest_date=<%= @rank_oldest_date %>;
-  data.rank.rankings=<%= @rankings %>
+  //data.rank={};
+  //data.rank.plots=<%= @rank_plots %>;
+  //data.rank.oldest_date=<%= @rank_oldest_date %>;
+  //data.rank.rankings=<%= @rankings %>
 	</script>
 
 <% end %>
@@ -103,8 +103,7 @@
 		<%= render :partial => "menu_entry", :locals => { :title => :referers, :d => "Referers" } %>
 		<%= render :partial => "menu_entry", :locals => { :title => :pages, :d => "Pages" } %>
 		<%= render :partial => "menu_entry", :locals => { :title => :searches, :d => "Searches" } %>
-    <%= render :partial => "menu_entry", :locals => { :title => :details, :d => "Details" } %>
-    <%= render :partial => "menu_entry", :locals => { :title => :rankings, :d => "Rankings" } %>
+    	<%= render :partial => "menu_entry", :locals => { :title => :details, :d => "Details" } %>
 	</ul>
 </div>
 
@@ -115,8 +114,7 @@
 		<h2 class="section_title" id="glance_title">Glance</h2>
 		<!-- <img src="/images/h/glance.gif" class="section_title"/>         -->
 		<div id="glance-right">
-			<div id="pageviewsWeek-linegraph2-container">
-				<canvas id="pageviewsWeek-linegraph-canvas" height=130 width=220 />
+			<div id="pageviewsWeek-linegraph" style="height:130px" class="linegraph_container">
 			</div>
 		</div>
 		<div id="glance-left">    
@@ -240,7 +238,7 @@
 
 		<br/>
 	</div>  
-
+<!--
   <div id="rankings" class="section" <%=panel_style(:rankings)-%> >
     <h2 class="section_title" id="rankings_title">Search Engine Rankings</h2>
     <h3 id="rank_title"></h3>
@@ -258,7 +256,7 @@
     <%= render :partial => "panel", :locals => { :p => :rankings, :v => :deltas, :options => {}} %>
     <%= render :partial => "query_options" %>
   </div>
-  
+ -->
   
 </div>
 
