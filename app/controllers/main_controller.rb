@@ -1,5 +1,6 @@
 class MainController < ApplicationController
   helper MainHelper
+  skip_before_filter :stealth_mode?, :only => :waitlist
   def index
     @title="Breadcrumbs - Follow the trail"
     if (request.post?)
