@@ -6,37 +6,40 @@ class Ranking < ActiveRecord::Base
   def self.get_plot_data(project)
     oldest_date = Date.today
     rank_hash = {}
-    project.queries.each do |query|
-      rank_hash[query] = {}
-      [:google, :yahoo, :msn].each do |engine|
-        rank_hash[query][engine.to_s] = []
+    
+    unless project.queries.nil?
+      project.queries.each do |query|
+        rank_hash[query] = {}
+        [:google, :yahoo, :msn].each do |engine|
+          rank_hash[query][engine.to_s] = []
 
-        # search our database for the query/engine combo
-        enginechr = engine.to_s[0].chr
-        rankings = Ranking.find(
-          :all,
-          :conditions => ['project_id = ? and engine = ? and query = ?',
-                          project.id, enginechr, query],
-          :order      => "search_date")
+          # search our database for the query/engine combo
+          enginechr = engine.to_s[0].chr
+          rankings = Ranking.find(
+            :all,
+            :conditions => ['project_id = ? and engine = ? and query = ?',
+                            project.id, enginechr, query],
+            :order      => "search_date")
 
-        # copy mini [date, rank] arrays from the Ranking results into our rank_hash
-        unless rankings.nil? || rankings[0].nil?
-          oldest_date = rankings[0].search_date if rankings[0].search_date < oldest_date
-          last_rank = nil
-          rankings.each do |ranking|
+            # copy mini [date, rank] arrays from the Ranking results into our rank_hash
+            unless rankings.nil? || rankings[0].nil?
+              oldest_date = rankings[0].search_date if rankings[0].search_date < oldest_date
+              last_rank = nil
+              rankings.each do |ranking|
 
-            #if !last_rank.nil? && last_rank.search_date != ranking.search_date-1
-            #  rank_hash[query][engine.to_s] << [ranking.search_date-1, last_rank.rank]
-            #end
+                #if !last_rank.nil? && last_rank.search_date != ranking.search_date-1
+                #  rank_hash[query][engine.to_s] << [ranking.search_date-1, last_rank.rank]
+                #end
             
-            rank_hash[query][engine.to_s] << [ranking.search_date, ranking.rank]
-            last_rank = ranking
-          end
+                rank_hash[query][engine.to_s] << [ranking.search_date, ranking.rank]
+                last_rank = ranking
+              end
 
-          # add today's date
-          rank_hash[query][engine.to_s] << [Date.today, last_rank.rank]
+              # add today's date
+              rank_hash[query][engine.to_s] << [Date.today, last_rank.rank]
+            end
+          end
         end
-      end
     end
 
     normalize_dates(rank_hash, oldest_date)
