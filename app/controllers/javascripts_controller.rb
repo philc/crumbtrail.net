@@ -1,4 +1,5 @@
 class JavascriptsController < ApplicationController
+  skip_before_filter :stealth_mode?
   before_filter :set_headers
   session :off
   layout nil
