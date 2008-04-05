@@ -59,10 +59,6 @@ def add
                      :title => "Ninja Words",
                      :url => "ninjawords.com/",
                      :zone => philc.zone)
-  proj.add_query("ninja words")
-  proj.add_query("fast dictionary")
-  proj.add_query("incontravertible")
-  proj.add_query("ninjawords.com")
   proj.id = 1050
   proj.save
 

@@ -38,10 +38,6 @@ class ApacheRequest
 #------------------------------------------------------------------------------
 
   def save
-#     puts "[#{@project.id.to_s}] Saving Project:"
-#     puts "  Source url: #{@source_url}"
-#     puts "  Page url: #{@page_url}"
-    
     @target = @project.get_or_new_page(@page_url)
     
     # puts "TARGET IS NIL!" if @target.nil?
