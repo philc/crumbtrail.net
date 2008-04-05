@@ -26,8 +26,8 @@ def add
                       :lastname    => "Quinn",
                       :last_access => Date.today,
                       :country_id => 1,
-                      :zone=>z,
-                      :role=>"a") 
+                      :zone => z,
+                      :role => "a") 
   
   proj = Project.new(:account => mikeq,
                      :title => "Personal Site",
@@ -39,10 +39,10 @@ def add
   test  = Account.create(:username => "a@b.c", 
                          :password => "password",
                          :firstname => "",  
-                         :lastname=>"",
-                         :last_access=>Date.today,
-                         :country_id=>1,
-                         :zone=>z)
+                         :lastname => "",
+                         :last_access => Date.today,
+                         :country_id => 1,
+                         :zone => z)
 
   # This is the "real owner" of the ninjawords account                            
   philc = Account.create(:username   => "philc",
@@ -52,7 +52,7 @@ def add
                          :last_access => Date.today,
                          :country_id => 1,
                          :zone_id   => z.id,
-                         :role=>"a")
+                         :role => "a")
                          
                          
   proj = Project.new(:account => philc,
@@ -64,12 +64,12 @@ def add
 
   demo = Account.create(:username=>"demo",
                     :password => "pass1",
-                    :firstname=>"Demo",
-                    :lastname=>"Account",
-                    :last_access => (Date.today-3),
-                    :country_id=>1,
-                    :zone_id=>z.id,
-                    :role=>"d"
+                    :firstname => "Demo",
+                    :lastname => "Account",
+                    :last_access => (Date.today - 3),
+                    :country_id => 1,
+                    :zone_id => z.id,
+                    :role => "d"
                     )
   
   # puts "Creating Time zone info..."
