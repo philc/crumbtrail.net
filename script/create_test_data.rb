@@ -15,43 +15,6 @@ def establish_connection()
   ActiveRecord::Base.establish_connection(args)
 end
 
-def generate_test_ranks(proj)
-  proj.queries.each do |query|
-    [:google, :yahoo, :msn].each do |engine|
-      
-      date = Date.today-120
-      if (engine == :yahoo)
-        date = Date.today-80
-      end
-      lastRank = nil
-      rank = 1 + rand(20)
-     
-      while (date <= Date.today)
-        delta = lastRank-rank unless lastRank.nil?
-
-        # if there has been a change in rank, record it
-        if delta != 0
-          ranking = Ranking.new(:project     => proj,
-                                :query       => query,
-                                :engine      => engine.to_s[0].chr,
-                                :rank        => rank,
-                                :search_date => date);
-          ranking.delta = delta unless delta.nil?
-          ranking.save
-        end
-        
-        # randomize the next rank
-        lastRank = rank
-        rank = rank + (-5 + rand(9))
-        rank = 1 if rank < 1
-
-        # randomize the next date a change is recorded
-        date = date + 1 + rand(3)
-      end
-    end
-  end
-end
-
 def add
   puts "Creating accounts and projects..."
   
@@ -70,23 +33,16 @@ def add
                      :title => "Personal Site",
                      :url => "mikequinn.org/",
                      :zone => mikeq.zone)
-  proj.add_query("mike quinn")
-  proj.add_query("mike quinn blog")
-  proj.add_query("michael quinn")
-  proj.add_query("google interview")
   proj.id = 1051
   proj.save
 
-  generate_test_ranks(proj)
-
   test  = Account.create(:username => "a@b.c", 
-    :password => "password",
-    :firstname => "",  
-    :lastname=>"",
-    :last_access=>Date.today,
-    :country_id=>1,
-    :zone=>z
-  )
+                         :password => "password",
+                         :firstname => "",  
+                         :lastname=>"",
+                         :last_access=>Date.today,
+                         :country_id=>1,
+                         :zone=>z)
 
   # This is the "real owner" of the ninjawords account                            
   philc = Account.create(:username   => "philc",
@@ -110,8 +66,6 @@ def add
   proj.id = 1050
   proj.save
 
-  generate_test_ranks(proj)
-  
   demo = Account.create(:username=>"demo",
                     :password => "pass1",
                     :firstname=>"Demo",

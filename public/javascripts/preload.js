@@ -26,5 +26,4 @@ for (var i=0;i<7;i++){
     chartImages[4*i+j].src="/images/c/line" + i + j + ".png";
 //     console.log("/images/c/line" + i + j + ".png");
   }
-  
 }

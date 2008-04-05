@@ -5,130 +5,7 @@
  *  
  */
 
-RankDataDisplay=new Class({
-  initialize: function(options){
-    BC.apply(this, options)
-  },
-  createTable: function(){
-    var thead   = db.thead(
-      db.tr(
-        {cls: "header"},
-        db.th({scope:"col", id:"ranking_query"},  "Query"),
-        this.createHeader("google", "Google"),
-        this.createHeader("yahoo", "Yahoo"),
-        this.createHeader("msn", "MSN")
-      )
-    );
-    var rows='';
-    for (var i=0; i<this.data.length; i++)
-      rows += this.createRow(i);
 
-    var tbody   = db.tbody(rows);
-    return db.table({cls: "d", id: "rankings_table"}, thead, tbody);
-  },
-  createHeader: function(cls, engine){
-    return db.th({scope:"col"},
-      db.div(
-        db.span({cls: "engine-icon " + cls}, engine)
-      )
-    );
-  },
-  createRow: function(row){
-    var tds = db.td({cls: "query f"}, this.data[row][0]);
-    for (var i=1; i<7; i+=2)
-    {
-      var rank      = this.data[row][i];
-      var delta     = this.data[row][i+1];
-      
-      var newdiv;
-      if (this.tabletype == "ranks")
-      {
-        newdiv = db.div(
-          {cls: (this.getDataCellClass(delta) + " rank")},
-          (rank == null ? "-" : rank)
-        );
-      }
-      else
-      {
-        newdiv = db.div(
-          {cls: (this.getDataCellClass(delta) + " delta")},
-          db.span(),
-          (delta == null ? "-" : delta)
-        );
-      }
-      
-      tds += db.td(newdiv);
-    }
-
-    return db.tr({cls: (row%2 == 0 ? 'a' : '')}, tds);
-  },
-  getDataCellClass: function(value){
-    var classStr = '';
-    if (value > 0)
-      classStr = "up";
-    else if (value < 0)
-      classStr = "down";
-    else if (value == null)
-      classStr = "empty";
-
-    return "data " + classStr;
-  }
-});
-RankDataDisplay.Methods={
-  switchVisible: function(view){
-    var dataCells = $$("#rankings_table" + " .data");
-    
-    for (var i=0; i<dataCells.length; i++)
-    {
-      var cell = dataCells[i];
-      if (cell.hasClass(view))
-        cell.show();
-      else
-        cell.hide();        
-    }
-  },
-  showTable: function(options, htmlID){
-    var dataDisplay = new RankDataDisplay(options);
-    var titleStr = (options["tabletype"] == "ranks" ? 
-                    "Current Rank" : "Most Recent Change");
-
-    $(htmlID).innerHTML = DisplayHelper.dialog(dataDisplay.createTable(), 
-                                               {title: titleStr});
-  },
-  showQueryManager: function(htmlID){
-    var dataDisplay = new RankDataDisplay();
-    $(htmlID).innerHTML = dataDisplay.createQueryManager();
-  }
-};
-Object.extend(RankDataDisplay, RankDataDisplay.Methods);
-
-QueryManager=new Class({
-  initialize: function(options){
-  }
-});
-QueryManager.Methods={
-  addQuery: function(){
-    var pid = Page.project;
-    var query = document.query_form.query.value;
-    var a=new Ajax('/project/queries/add?project='+pid+'&query='+query,
-    {
-      method:'get',
-      onComplete:function(r){this.handleResponse(r);}.bind(this)
-    });
-    a.request();
-    return false;
-  },
-  handleResponse:function(response){
-    var results = eval(response);
-    if (results[0] == true)
-    {
-      data.rankings = results[2];
-      RankDataDisplay.showTable({data: data.rankings, tabletype: "ranks"}, "rankings_ranks");
-      RankDataDisplay.showTable({data: data.rankings, tabletype: "deltas"}, "rankings_deltas");
-    }
-  }
-};
-Object.extend(QueryManager, QueryManager.Methods);
 /*
 * Table display
 */
@@ -201,7 +78,6 @@ TableDisplay=new Class({
 		);
 	}
 });
-
 
 
 TableDisplay.Methods={

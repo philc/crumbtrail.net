@@ -1,6 +1,6 @@
 class MainController < ApplicationController
   helper MainHelper
-  skip_before_filter :stealth_mode?, :only => :waitlist
+
   def index
     @title="Breadcrumbs - Follow the trail"
     if (request.post?)
@@ -8,16 +8,6 @@ class MainController < ApplicationController
       @login_error=login(@email,params[:password])
     end
   end
-  
-  def waitlist
-    @title="Get notified when we launch - Breadcrumbs"    
-     if request.post?
-       email=params[:email]
-       hearabout=params[:hearabout]
-       WaitlistUser.create(:email=>email,:hearabout=>hearabout)
-     end     
-  end
-  
   
   def signup
     @title="Sign up - Breadcrumbs"

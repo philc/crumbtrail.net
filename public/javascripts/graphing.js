@@ -1,3 +1,92 @@
+/*
+ * Pie Graph drawing
+ */
+
+var PieGraph=new Class({
+	initialize: function(data, labels, title, canvas_id, chart_id){
+		this.data = data;
+		this.canvas_id = canvas_id;
+		this.chart = $(chart_id);
+		this.title = title;
+		this.labels = labels;
+		this.percents=[];
+	},
+
+	//-------------------------------------------------------------------
+
+	showPieGraph: function(){
+		var dataset = { 'os': this.data };
+
+		colorHash = {};
+		for (var i=0; i<this.data.length; i++){
+			colorHash[i] = Page.colors[i];
+		}
+		this.colorScheme = new Hash(colorHash);
+
+		var options = {
+			padding: {left: 0, right: 0, top: 0, bottom: 0},
+			backgroundColor: '#ffffff',
+			colorScheme: this.colorScheme,
+			pieRadius: '0.45',
+			xTicks: [ ],
+			divPosition: 'absolute',
+			strokeWidth:.5,
+			strokeColor: "#999"
+		};
+
+    var pie = new Plotr.PieChart(this.canvas_id, options);
+    pie.addDataset(dataset);
+    pie.render();
+
+    this.calculatePercents();
+    this.drawTextLabels();
+  },
+
+  //-------------------------------------------------------------------
+  
+  calculatePercents: function(){
+    var total = 0;
+
+    for (var i=0; i<this.data.length; i++)
+      total += this.data[i][1];
+
+    for (var i=0; i<this.data.length; i++)
+      this.percents[i] = this.data[i][1]/total*100;
+  },
+
+  //-------------------------------------------------------------------
+
+  drawTextLabels: function(){
+    var labelBox=$(document.createElement("div"));
+		labelBox.addClass("label-box");
+		labelBox.style.left=px(160);
+		labelBox.innerHTML=db.span({cls:'title'},this.title);
+
+		var ul = document.createElement("ul");
+		for (var i=0; i<this.labels.length;i++){
+			var div=$(document.createElement("li"));   
+			var boxColor = Page.colors[i];
+			
+			// Draw a 1px border around the color box, using a darker version of the box's color
+			var darkerColor = (new Color(	boxColor)).setBrightness(65);
+			var styleString = "background-color:" + boxColor + "; border:1px solid rgb(" + darkerColor + ")";
+			
+			div.innerHTML= 
+			db.div( {cls:'color-box', style:styleString}) + 
+			db.span(
+				{cls:'caption'},
+				this.labels[i],
+				db.span({cls:'percent'}, DisplayHelper.formatPercent(this.percents[i]))
+			);
+
+			div.addClass("label");
+			ul.appendChild(div);      
+		}
+		labelBox.appendChild(ul);
+		this.chart.appendChild(labelBox);
+  }
+});
+
 
 /*
 * Line graph drawing
@@ -175,7 +264,7 @@ LineGraph.Methods={
 	// relativize
 	relativize:function(data, height, max, optionalMin){  
 		relativeData=Array(data.length);
-		// Don't use the entire min value. We don't want the lowest poitn to be "0"
+		// Don't use the entire min value. We don't want the lowest point to be "0"
 		var min = optionalMin? Math.round(optionalMin*.8) : 0;
 
 		max-=min;
@@ -190,210 +279,5 @@ LineGraph.Methods={
 		return relativeData;
 	}
 };
+
 Object.extend(LineGraph,LineGraph.Methods);
-
-
-/*
-* Pie chart graphing
-*/
-
-PieGraphDisplay = new Class({
-	initialize: function(id,title,data,labels){
-		this.element=$(id);
-		this.size=150;
-		this.qsize=this.size/2;
-		this.data=[];
-		this.percents=[];
-		this.title=title;
-		this.labels=labels;
-
-		// relativize data
-		var total=data.sum();
-		
-		// Make the data in percents, for the labels
-		for (var i=0;i<data.length;i++)
-			this.percents[i]=data[i]/total*100;
-
-		// Make the data as degrees of a 360 circle, for the graph drawing
-		for (var i=0;i<data.length;i++)
-		this.data[i]=Math.floor((data[i]/total)*360);
-
-	},
-
-	drawChart: function (){   
-		var placeholder=document.createElement("div");
-		placeholder.style.position="absolute";
-		placeholder.style.width=px(this.size);
-		placeholder.style.height=px(this.size);
-
-		for (var i=0;i<this.data.length-1;i++){
-			this.graphQuadrant(i,this.data,placeholder);
-		}
-		placeholder.style.backgroundColor=Page.colors[this.data.length-1];
-
-		this.drawTextLabels(placeholder);
-		this.element.appendChild(placeholder);
-	},
-
-	graphQuadrant: function(i,data, placeholder){
-		var v=data[i]+this.sumPrevious(i,data);
-
-		// quadrant this datum falls in
-		var q=Math.floor(v/90);
-
-		// Multiplier
-		var m=90*(q+1);
-
-		// Find out how many degrees we are into this quadrant, ie.
-		// 300 is 30 degrees into quad three
-		var deg = (m-v)/90;    
-
-		var w,h;
-		var s=this.size;
-		var qs=this.qsize;
-		if (q==0){
-			w=(v <=(45+q*90) ? qs : s*(deg));
-			h=(v >=(45+q*90) ? qs : s*(1-deg));
-		}else if (q==1){
-			h=(v <=(45+q*90) ? qs : s*(deg));
-			w=(v >=(45+q*90) ? qs : s*(1-deg));
-		}else if (q==2){
-			//a=(v <=(45+q*90) ? qsize : size*(1-v/m));
-			w=(v <=(45+q*90) ? qs : s*(deg));
-			h=(v >=(45+q*90) ? qs : s*(1-deg));  
-			h=(v >=(45+q*90) ? qs : s*(1-deg));  
-		}else{
-			h=(v <=(45+q*90) ? qs : s*(deg));      
-			w=(v >=(45+q*90) ? qs : s*(1-deg));
-		} 
-
-		// Add a div here. IE uses the div, while everyone else uses the img.
-		var div=$(document.createElement("div"));
-		var img=$(document.createElement("img"));
-		img.addClass("chart-image ");
-		div.addClass("chart-image chart-image-div");
-		img.style.width=div.style.width=px(w);
-		img.style.height=div.style.height=px(h);
-
-		o1=(q==1||q==2) ? 0 : 1;
-		o2=(q==2||q==3) ? 0 : 1;
-
-		img.style.left=div.style.left=this.qsize-o1*w+"px";
-
-		img.style.top=div.style.top=this.qsize-o2*h + "px";  
-
-
-		img.src=Page.imageForQuadrant(i,q);    
-		// for IE
-		div.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"
-		+ Page.imageForQuadrant(i,q) + "', sizingMethod='scale')";
-
-		img.style.zIndex=div.style.zIndex=data.length*2-i*2+"";    
-
-		this.drawFillerBoxes(placeholder,Page.colors[i],q,this.data.length*2-i*2-1,w,h);
-
-
-
-		placeholder.appendChild(div);
-		placeholder.appendChild(img);
-	},
-
-	drawFillerBoxes: function(element,color,q,level,w,h){  
-		for (var i=0; i<q; i++)
-		{
-			element.appendChild(this.drawFillerBox(color, i, level,0,0,true));
-		}
-		// Make sure we should add the last element..
-
-		if ( ((q==0 || q==2) && h<this.qsize) ||
-		((q==1 || q==3) && w<this.qsize) )
-		return;
-
-
-		d= this.drawFillerBox(color,q,level,w,h);
-		if (d)
-		element.appendChild(d);
-	},
-	// Puts a square in the given quadrant, next to the angle image that has a width & height of w & h
-	drawFillerBox: function(color, q, level,w,h,block){  
-
-		var div=$(document.createElement("div"));
-		div.style.backgroundColor=color;
-		div.addClass("chart-filler");
-		div.style.zIndex=level+"";
-
-		// div dimentions
-		var dw=dh=dt=dl=0;
-		var qs=this.qsize;
-
-		dw = ((q==1 || q==3) ? w : qs-w );
-
-		if (q==0){
-			dl=0; 
-			dh=qs;
-		}
-		if (q==1){
-			dl=qs;
-			dh=qs-h;
-		}
-		if (q==2){
-			dl=qs+w;
-			dt=qs;        
-			// If it's a 0 height, we should fill up the whole box.
-			dh= (h==0 ? qs: h);
-		}
-		if (q==3){
-			dh=qs-h;
-			dt=qs+h;
-		}
-
-		div.style.left=px(dl);
-
-		div.style.top=px(dt);
-		if (block){
-			dw=qs;
-			dh=qs;
-		}
-		div.style.width=px(dw);
-		div.style.height=px(dh);
-
-		return div;
-	},
-
-	drawTextLabels: function(placeholder){
-		var labelBox=$(document.createElement("div"));
-		labelBox.addClass("label-box");
-		labelBox.style.left=px(this.size);
-		labelBox.innerHTML=db.span({cls:'title'},this.title);
-
-		var ul = document.createElement("ul");
-		for (var i=0; i<this.labels.length;i++){
-			var div=$(document.createElement("li"));   
-			var boxColor = Page.colors[i];
-			
-			// Draw a 1px border around the color box, using a darker version of the box's color
-			var darkerColor = (new Color(boxColor)).setBrightness(65);
-			var styleString = "background-color:" + boxColor + "; border:1px solid rgb(" + darkerColor + ")";
-			
-			div.innerHTML= 
-			db.div( {cls:'color-box', style:styleString}) + 
-			db.span(
-				{cls:'caption'},
-				this.labels[i],
-				db.span({cls:'percent'}, DisplayHelper.formatPercent(this.percents[i]))
-			);
-
-			div.addClass("label");
-			ul.appendChild(div);      
-		}
-		labelBox.appendChild(ul);
-		placeholder.appendChild(labelBox);
-	},
-	// Returns the sum of all entries up to i in an array
-	sumPrevious: function(i,array){
-		var s=0;
-		for (var j=0; j<i;j++)
-		s+=array[j];
-		return s;
-	}
-});

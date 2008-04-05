@@ -1,47 +1,41 @@
-make an iphone user agent, and if possible, a "mobile" user agent
-triage: when you hover over the user agent in the pie chart (or in the pie chart's key), show # of hits from that agent
-allow you to invite other emails to look at the stats. Don't let them change account preferences. This way multiople accounts
-can share a view of one project
-is google image search recorded as a search?
 
-Big "Got a question?" Link somewhere, pointing them to a solid faq that outlines all the features
-collapsing problem, time zone problem
+Ideas:
+* Make an iphone user agent, and if possible, a "mobile" user agent
+* Allow you to invite other emails to look at the stats. Don't let them change account preferences. This way multiople accounts can share a view of one project
+* Counter that users can publish on their page.
+* Add ask.com to search results.
 
-text for about page
-refactor the JS into multiple files, set up a build system for compression
-counter that users can publish on their page
+Technical:
+* Refactor the JS into multiple files, set up a build system for compression.
+* Implement compressed javascript into the build process.
+* Version the tracker JS, do some research on what a unique hit really is.
 
-version the tracker JS, do some research on what a unique hit really is
+Admin stuff:
+* User analytics: see how often each member logs in, which projects he views, how many times he reloads the page.
 
-traffic sources in the overview page arenn't sorted by anything. They're arbitrary
-implement password reset (a beta user has already needed it =/)
-implement compressed javascript into the build process.
-progress meter when you click next
-Nicer error messages for no route, etc.
-preload the circle image
+Bugs:
+* Collapsing problem - collapse referers for the current db takes _minutes_
 
 
-analyitics -
-see how often each member logs in, which projects he views, how many times he reloads the page
+Questions to look in to:
+* Is google image search recorded as a search?
+* DO we capture images.google.com? check eightpence
+
+UI Thoughts:
+* A nice UI for the search panel would be to show a little search engine logo image, a little square, in the table rows wouldn't take up much space and you could quickly see which engine gave you a hit without mousing over the link.
+* Big "Got a question?" link somewhere, pointing them to a solid faq that outlines all the features.
+* Progress meter when you click next.
+* Traffic sources in the overview page arenn't sorted by anything. They're arbitrary.
+* Triage: when you hover over the user agent in the pie chart (or in the pie chart's key), show # of hits from that agent.
+* Nicer error messages for no route, etc.
 
 
 verify that index and pagedata own the id they're modifying
-
-search the db of referers for urls "like yahoo" to find out which searches we're missing. DO we capture images.google.com? check eightpence
-
-collapse referers for the current db takes _minutes_
-
-
+search the db of referers for urls "like yahoo" to find out which searches we're missing. 
 I think recent_unique_referers isn't prefetching each referer's data
 
 
-a nice UI for the search panel would be to show a little search engine logo image, a little square, in the table rows
-wouldn't take up much space and you could quickly see which engine gave you a hit without mousing over the link
-
-add ask.com to search results
-
-
-parsing bugs:
+Parsing bugs:
 yahoo regex's
 this search:
 http://google.com/search?q=definition:+vulpes&hl=en&start=10&sa=N
@@ -57,10 +51,6 @@ ctionController::RoutingError (no route found to match "/project/yubnub.org/exam
     /usr/lib/ruby/1.8/sync.rb:229:in `synchronize'
     /usr/lib/ruby/gems/1.8/gems/mongrel-0.3.13.4/lib/mongrel/rails.rb:83:in `
 
-
-
-
-
 Performance notes:
 speed of inserts:
 http://dev.mysql.com/doc/refman/5.0/en/insert-speed.html
@@ -74,4 +64,3 @@ fix collapse bug
 clean up about page, add more content
 revert graph on at a glance page
 sort traffic sources on at a glance page
-implement password reset

@@ -1,6 +1,5 @@
 <% content_for (:head) do %>
 
-
 	<%= stylesheet_link_tag "project" %>
 	
 	<!--[if lt IE 7.]>
@@ -9,8 +8,7 @@
 	<![endif]-->
 
 
-  <%= javascript_include_tag "util.dombuilder.js","page","displayHelper","tableDisplay","graphing","plotr/EnumArray.js","plotr/plotrMootoolsSupport.js","plotr/Plotr_uncompressed","graphDisplay"
-
+  <%= javascript_include_tag "util.dombuilder.js","page","displayHelper","tableDisplay","graphing","plotr/EnumArray.js","plotr/plotrMootoolsSupport.js","plotr/Plotr_uncompressed"
 	%> 
 
 	<script type="text/javascript">
@@ -20,9 +18,9 @@
 
 	Page.project=<%=@project.id%>;
 	Page.key="<%= @account.access_key %>";
-		
-    data.glance_referers_today=<%= @glance_referers_today %>;
-    data.glance_referers_week=<%= @glance_referers_week %>;
+
+	data.glance_referers_today=<%= @glance_referers_today %>;
+	data.glance_referers_week=<%= @glance_referers_week %>;
 
 	data.glance_sources=<%= @glance_sources %>;
 	
@@ -35,7 +33,6 @@
 
 	data.referers_total=[0,<%=@referers_more%>,<%= @referers_total -%>];
 	//referersTotalData=[0,<%=@referers_more%>,<%= @referers_total -%>];
-	
 
 	data.referers_unique=<%= @referers_unique -%>;   
 	data.referers_recent=<%= @referers_recent -%>;
@@ -49,12 +46,8 @@
 	osData=<%= @os_data %>;
 	osLabels=[<%= @os_labels %>];
 	browserData=<%= @browser_data %>;
-  browserLabels=[<%= @browser_labels %>];
+	browserLabels=[<%= @browser_labels %>];
 
-  //data.rank={};
-  //data.rank.plots=<%= @rank_plots %>;
-  //data.rank.oldest_date=<%= @rank_oldest_date %>;
-  //data.rank.rankings=<%= @rankings %>
 	</script>
 
 <% end %>
@@ -65,7 +58,6 @@
 	<span id="projects_popup_wrapper">
 		<div id="projects_popup" style="display:none"/>
 		<ul>
-
 			<%if !@account.demo? %>
 			<% @account.projects.each  do |p| %>    
 			<li><a href="/project/<%=p.id%>"><%=p.title%></a></li>
@@ -80,21 +72,21 @@
 				<%end%>
 			</li>
 		</ul>
-	</div>
-</span>
-<%=demo_link("#","View another project","$('projects_popup').toggle(); return false")%>
+		</div>
+	</span>
+	<%=demo_link("#","View another project","$('projects_popup').toggle(); return false")%>
 </div>
 
 
 <% if flash[:notice] %>
 <div class="notification"><%= flash[:notice] %></div>
 <% end %>
+
 <noscript>
 	<div class="warning">You don't have Javascript enabled. To view
 		your stats, you'll need to re-enable it in your web browser.
 	</div>
 </noscript>
-
 
 <div id="menu">
 	<ul id="menu-links">
@@ -108,8 +100,6 @@
 </div>
 
 <div id="content-right">
-
-
 	<div id="glance" class="section" <%=panel_style(:glance)-%> >
 		<h2 class="section_title" id="glance_title">Glance</h2>
 		<!-- <img src="/images/h/glance.gif" class="section_title"/>         -->
@@ -130,20 +120,6 @@
 					<div class="number"><%=@glance_yesterday[0]%></div>
 					<div class="unique">(<%=@glance_yesterday[1]%> unique)</div>
 				</div>
-				<!-- <table border=0><tr>
-					<td class="today">Hits today:</td>
-					<td><span class="number"><%=@glance_today[0]%></span></td>
-				</tr><tr>
-					<td  class="padding"> </td>
-					<td class="unique padding">(<%=@glance_today[1]%> unique)</td>
-				</tr><tr>
-					<td class="yesterday">Hits yesterday:</td>
-					<td><%=@glance_yesterday[0]%></span></td>
-				</tr><tr>
-					<td> </td><td><span class="unique">(<%=@glance_yesterday[1]%> unique)</td>
-					</tr>
-				</table> -->
-
 			</div>
 			<h4>Traffic sources for today</h4>
 			<div id="source_stats">
@@ -165,15 +141,12 @@
 			<%= render :partial => "navlink", :locals => { :s => :pageviews, :v => :week, :d => "Week" } %> | 
 			<%= render :partial => "navlink", :locals => { :s => :pageviews, :v => :month, :d => "Month" } %> | 
 			<%= render :partial => "navlink", :locals => { :s => :pageviews, :v => :year, :d => "Year" } %> 
-
-
 		</div>
 
 		<%= render :partial => "panel", :locals => { :p => :pageviews, :v => :today, :options => { :c => "date" }} %>
 		<%= render :partial => "panel", :locals => { :p => :pageviews, :v => :week, :options => { :c => "date" }} %>
 		<%= render :partial => "panel", :locals => { :p => :pageviews, :v => :month, :options => { :c => "date" }} %>
 		<%= render :partial => "panel", :locals => { :p => :pageviews, :v => :year, :options => { :c => "date" }} %>
-
 	</div>
 
 	<div id="referers" class="section" <%=panel_style(:referers)-%> >
@@ -222,41 +195,19 @@
 
 		<%= render :partial => "panel", :locals => { :p => :searches, :v => :recent, :options => { :c => "links" }} %>
 		<%= render :partial => "panel", :locals => { :p => :searches, :v => :totals, :options => { :c => "links" }} %>
-
 	</div>
 
 	<div id="details" class="section" <%=panel_style(:details)-%> >
 		<h2 class="section_title" id="details_title">Details</h2>
+    	<div class="chart" id="browser_details">
+			<div><canvas id="browser_graph" height=160 width=160 /></div>
+    	</div>
 
-    <div class="chart" id="browser_details">
-      <div><canvas id="browser_graph" height=160 width=160 /></div>
-    </div>
-
-    <div class="chart" id="os_details">
-      <div><canvas id="os_graph" height=160 width=160 /></div>
-    </div>
-
+		<div class="chart" id="os_details">
+			<div><canvas id="os_graph" height=160 width=160 /></div>
+		</div>
 		<br/>
 	</div>  
-<!--
-  <div id="rankings" class="section" <%=panel_style(:rankings)-%> >
-    <h2 class="section_title" id="rankings_title">Search Engine Rankings</h2>
-    <h3 id="rank_title"></h3>
-    <div>
-      <canvas id="rank_graph" height=300 width=500 />
-    </div>
-    <div id="rank_legend"></div>
-    <br style="clear: both" />
-    <div class="panel_links">
-      <span class="navlink_show">Show:</span>
-      <%= render :partial => "navlink", :locals => { :s => :rankings, :v => :ranks, :d => "Current Rank" } %> | 
-      <%= render :partial => "navlink", :locals => { :s => :rankings, :v => :deltas, :d => "Most Recent Change" } %>
-    </div>
-    <%= render :partial => "panel", :locals => { :p => :rankings, :v => :ranks, :options => {}} %>
-    <%= render :partial => "panel", :locals => { :p => :rankings, :v => :deltas, :options => {}} %>
-    <%= render :partial => "query_options" %>
-  </div>
- -->
   
 </div>
 

@@ -3,7 +3,6 @@
 class ApplicationController < ActionController::Base
   # Don't filter anything to the production logs that matches "password"
   filter_parameter_logging "password"
-  before_filter :stealth_mode?
   before_filter :signed_in?
   session :off
   
@@ -47,12 +46,6 @@ class ApplicationController < ActionController::Base
       :value=>"#{@account.id}|#{token}",
       :expires => Session.expiration_time
     }
-  end
-  
-  def stealth_mode?
-    if cookies[:sekret] != "SuperSekretCode"
-      redirect_to "/main/waitlist/"
-    end
   end
   
   def signed_in?
