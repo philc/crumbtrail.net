@@ -1,5 +1,3 @@
-require 'searchparser/fetcher.rb'
-
 class ProjectController < ApplicationController
   include ActionView::Helpers::NumberHelper
   before_filter :authorize, :except=>[:index,:pagedata,:admin]
@@ -206,8 +204,6 @@ class ProjectController < ApplicationController
     
     # Details; browser and OS
     build_details()
-
-    # build_rankings()
   end
 
   def queries
@@ -477,33 +473,6 @@ class ProjectController < ApplicationController
     @os_data=@os_data.to_json
   end
 
-  def build_rankings()
-    data = @project.ranking_plot_data() # returns [plots, oldest_date]
-    @rank_plots = data[0].to_json
-    @rank_oldest_date = data[1]
-    @rankings = build_rank_array()
-  end
-
-  private
-
-  def build_rank_array()
-    rank_array = []
-    @project.rankings_by_query().each_pair do |query, engines|
-      ranks = [query]
-      ranks = ranks + build_rank_results_pair(engines[:google])
-      ranks = ranks + build_rank_results_pair(engines[:yahoo])
-      ranks = ranks + build_rank_results_pair(engines[:msn])
-      rank_array << ranks
-    end
-    
-    return rank_array.to_json
-  end
-
-  def build_rank_results_pair(ranking)
-    pair = [nil,nil]
-    pair = [ranking.rank, ranking.delta] unless ranking.nil?
-    return pair
-  end
 end
 
 # Utility class for stripping UTC from a date string and building a javascript date from it

@@ -104,7 +104,12 @@ class ApacheLogReader
         end
 
       rescue ActiveRecord::RecordNotFound
-        # puts "Couldn't find project #{id} from: " + line
+        puts "Couldn't find project #{id} from: " + line
+
+      rescue Exception => e
+        puts "Unhandled exception for line: " + line
+        puts e.message
+        puts e.backtrace.inspect
       end
     end
   end
