@@ -1,46 +1,46 @@
 
 <div class="copy-content">
 
-	<div class="copy">
+    <div class="copy">
 
-		<% # confirmation message
-		if request.post? %>
+        <% # confirmation message
+        if request.post? %>
 
-		<p>Ok, got it. Thanks for your interest!</p>
+        <p>Ok, got it. Thanks for your interest!</p>
 
-		<% else %>
+        <% else %>
 
-		<h1>Coming real soon</h1>    
+        <h1>Coming real soon</h1>    
 
-		<p>We'd love for you to use Breadcrumbs, but we're in private beta. If you leave your email, we'll notify you as soon as Breadcrumbs is ready.</p>
+        <p>We'd love for you to use Breadcrumbs, but we're in private beta. If you leave your email, we'll notify you as soon as Breadcrumbs is ready.</p>
 
-		<div class="centered_form">
+        <div class="centered_form">
 
 
-			<div class="left_form">
-				<form action="/waitlist" method="post">
+            <div class="left_form">
+                <form action="/waitlist" method="post">
 
-					<div class="text-form">
-						<label for="email">Email</label>
-						<%= field "text", :id=>"email" %>
-						
-						<label for="hearabout">How'd you hear about us? <span class="example">(optional)</span></label>
-						<%= field "text", :id=>"hearabout" %>
-					</div>
+                    <div class="text-form">
+                        <label for="email">Email</label>
+                        <%= field "text", :id=>"email" %>
 
-					<div class="button_area">
-						<input type="submit"  value="Notify me" class="submit"/>
-					</div>
-				</form>
+                        <label for="hearabout">How'd you hear about us? <span class="example">(optional)</span></label>
+                        <%= field "text", :id=>"hearabout" %>
+                    </div>
 
-				<script type="text/javascript">
-				$("email").focus();
-				</script>
-			</div>
+                    <div class="button_area">
+                        <input type="submit"  value="Notify me" class="submit"/>
+                    </div>
+                </form>
 
-		</div>
+                <script type="text/javascript">
+                $("email").focus();
+                </script>
+            </div>
 
-		<% end %>
+        </div>
 
-	</div>
+        <% end %>
+
+    </div>
 </div>

@@ -1,0 +1,61 @@
+<% content_for (:head) do %>
+<%= javascript_include_tag 'timezone' %>
+<%end%>
+
+<div class="copy">
+
+    <noscript>
+        <div class="warning">You don't have Javascript enabled. To view
+            your stats, you'll need to re-enable it in your web browser.
+        </div>
+    </noscript>
+
+
+    <h1>Choose a plan</h1>
+
+    <div id="signup-cost">
+        <!-- <h2>Does it cost anything?</h2>
+            <p>
+                <strong>No</strong>, not if you get under 2,500 hits a day &#8211; you can use it free, forever.
+                If you get a ton of traffic or need more features, we hope you'll try one of our <strong>Crumbcake</strong> versions
+                (we're still building them).
+            </p> -->
+            <table>
+                <tr class="f">
+                    <td class="f"></td>
+                    <td><br/><span class="free_plan">Free</span>
+                        <a class="linkbox" href="./free">Signup</a>
+                    </td>
+                    <td>
+                        <span class="price">$5</span>/month<br/>
+                        Wholesome
+                        <a class="linkbox linkbox_disabled">Signup</a>
+                    </td>
+                    <td><span class="price">$9</span>/month<br/>
+                        Tasty
+                        <a class="linkbox linkbox_disabled">Signup</a>
+                    </td>
+                    <td><span class="price">$18</span>/month<br/>
+                        Delicious
+                        <a class="linkbox linkbox_disabled">Signup</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="f" style="white-space:nowrap">Pageviews per day</td>
+                    <td>2,500</td><td>8,000</td><td>25,000</td><td>100,000</td>
+                </tr>
+                <tr class="alt">
+                    <td class="f">Live update, geo-stats, spreadsheet export</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td>
+                </tr>
+            </table>
+            <br />
+            Even if you get a lot of traffic, try out the free plan to start with.
+            <div id="letmeknow">
+                <!-- <input type="checkbox" name="interested"/>
+                    <div>Let me know when you finish building the pro version</div> -->
+                </div>
+            </div>
+        </form>
+        <br clear="both"/>
+    </div>
+</div>

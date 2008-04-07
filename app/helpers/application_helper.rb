@@ -2,7 +2,7 @@
 module ApplicationHelper
   def show_form_error(message)
     return nil if (message.nil?)
-    return '<div class="form_error">'+message+'</div>'
+    return '<div class="form-error-message">'+message+'</div>'
   end
 
 

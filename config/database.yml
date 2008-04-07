@@ -20,6 +20,7 @@ development:
   database: achilles_development
   # Make a symlink from tmp/mysql.sock to /var/run/mysqld/mysqld.sock if you're on linux
   socket: /tmp/mysql.sock  
+  #socket: /opt/local/var/run/mysql5/mysqld.sock
   <<: *defaults
 
 # Warning: The database defined as 'test' will be erased and

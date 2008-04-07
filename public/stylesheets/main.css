@@ -296,7 +296,9 @@ a.linkbox:hover{
 }
 .centered_form{
   display:table;
-  margin: 0 auto;
+  margin: 25px auto;
+  border: solid 1px #c6c6c6;
+  padding: 20px;
 }
 .centered_form h1{
 	margin-left:-3px;
@@ -448,21 +450,21 @@ a.linkbox_disabled:hover{
 }
 div.feature-row{
 	width: 800px;
-	margin-top: 15px;
 }
 div.feature{
 	padding: 0px;
-	background: #e4eaf4 url(/images/about/topbar.png) no-repeat scroll;
-	width: 210px;
+	width: 240px;
+	margin-left: 20px;
 	float: left;
-	margin-left: 25px;
+}
+div.feature-row div.first{
+	margin-left:0px;
 }
 div#about{
 	color: #000;
 }
 div#about h3{
 	margin: 0px 0px 5px 0px;
-	color: #769d6e;
 	font-size: 125%;
 }
 div#about p{
@@ -478,17 +480,16 @@ div h4{
 }
 div#about div.feature p{
 	margin: 0px;
-	font-size: 0.8em;
+	font-size: 0.9em;
 	line-height: 150%;
 	min-height: 12em;
 	padding: 0px 10px 10px 10px;
-	background: url(/images/about/bottombar.png) no-repeat bottom left;
 }
 div.feature .bottom{
 	height: 10px;
 }
 div#about div.section ul{
-	margin: 10px;
+	margin: 0px 10px 10px;
 }
 div.feature img{
 	border: 1px solid #bcbcbc;

@@ -1,67 +1,64 @@
 <% content_for (:head) do %>
-	<%= javascript_include_tag 'timezone' %>
+    <%= javascript_include_tag 'timezone' %>
 
-	<%end%>
-	<div class="copy">
+    <script type="text/javascript">
+        window.addEvent("domready",function(){
+            new Forms.EnhancedForm("login-info",{
+                submitOnSuccess:true
+            });
+        });
+    </script>
 
-		<noscript>
-			<div class="warning">You don't have Javascript enabled. To view
-				your stats, you'll need to re-enable it in your web browser.
-			</div>
-		</noscript>
+<% end %>
 
+<div class="copy">
 
-		<h1>Choose a plan</h1>
+    <noscript>
+        <div class="warning">You don't have Javascript enabled. To view
+            your stats, you'll need to re-enable it in your web browser.
+        </div>
+    </noscript>
 
-		<div id="signup-cost">
-			<!-- <h2>Does it cost anything?</h2>
-				<p>
-					<strong>No</strong>, not if you get under 2,500 hits a day &#8211; you can use it free, forever.
-					If you get a ton of traffic or need more features, we hope you'll try one of our <strong>Crumbcake</strong> versions
-					(we're still building them).
-				</p> -->
-				<table>
-					<tr class="f">
-						<td class="f"></td>
-						<td><br/><span class="free_plan">Free</span>
-							<a class="linkbox" href="./free">Signup</a>
-						</td>
-						<td>
-							<span class="price">$5</span>/month<br/>
-							Wholesome
-							<a class="linkbox linkbox_disabled">Signup</a>
-						</td>
-						<td><span class="price">$9</span>/month<br/>
-							Tasty
-							<a class="linkbox linkbox_disabled">Signup</a>
-						</td>
-						<td><span class="price">$18</span>/month<br/>
-							Delicious
-							<a class="linkbox linkbox_disabled">Signup</a>
-						</td>
-					</tr>
-					<tr>
-						<td class="f" style="white-space:nowrap">Pageviews per day</td>
-						<td>2,500</td><td>8,000</td><td>25,000</td><td>100,000</td>
-					</tr>
-					<tr class="alt">
-						<td class="f">Live update, geo-stats, spreadsheet export</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td>
-					</tr>
-				</table>
-				<br/>
-				Even if you get a lot of traffic, try out the free plan to start with.
-				<div id="letmeknow">
-					<!-- <input type="checkbox" name="interested"/>
-						<div>Let me know when you finish building the pro version</div> -->
-					</div>
+    <div class="centered_form">
 
-				</div>
+        <h1>Sign up</h1>
 
-			</form>
+        <div id="signup_form" clas="left_form">
+            <form action="" method="post" id="login-info">
+                <div id="signup-fields">
+                    <div class="text-form">
+                        E-mail
+                        <%= show_form_error(@email_error)%>
+                        <%= field "text", :id=>"email", :value=>params[:email], :required=>true, :message=>"This doesn't look like a valid email address", :validate=>"email" %>
 
+                        <label for="password" style="clear:both">Password</label>
+                        <%= show_form_error(@password_error) if !@duplicate_error %>
 
+                        <%= field "password", :id=>"password", :show_error=>false, :validate=>"minLength(5)"%>
 
-			<br clear="both"/>
+                        <label for="password-confirm">Confirm your password</label>
+                            
+                        <%= field "password", :id=>"password_confirm", :show_error_for=>"password", :validate=>"sameAs(-1)", :message=>"Your passwords do not match" %>
+                        <br clear="both" />
+                        <p>
+                            Select your time zone<br/>
 
+                            <select id="timezone" name="timezone">
+                                <% @zones.each do |t|%>
+                                <option value="<%= t.identifier %>"><%=MainHelper.tz_offset(t.offset)%> <%= t.identifier%></option>
+                                <%end%>
+                            </select>
+                        </p>
 
-		</div>
+                        <input type="submit" class="submit" value="Sign up" class="submit" />
+                    </div>        
+                </div>
+            </form>
+        </div>
+
+        <script type="text/javascript">
+            set_select('timezone',<%= params[:timezone].nil? ? "get_tz_name()" : "\"#{params[:timezone]}\"" %>);
+            $("email").focus();
+        </script>
+    </div>
+</div>

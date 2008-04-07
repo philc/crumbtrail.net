@@ -60,6 +60,8 @@ label{
 	shouldn't inherit this style; they should wrap.
 	*/
 	white-space:normal;
+	display: block;
+	padding-left: 3px;
 }
 /*
 * Set of buttons next to each other, like at the bottom of a dialog.

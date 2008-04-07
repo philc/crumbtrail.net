@@ -239,7 +239,6 @@ class ProjectController < ApplicationController
   # fetches data used for pagination
   #
   def pagedata
-
     id=params[:project]
     project = Project.find_by_id(id)
 
@@ -247,36 +246,36 @@ class ProjectController < ApplicationController
       render :nothing=>true
       return
     end
-    
+
     # TODO: check for wrong account. Display a message with the option of logging out.
     # if project.account!=@account       
-      
+
     page=params[:p].to_i
     page=0 if (page<-1)
-    
-    
+
+
     # a parameter of -1 means find the last page
     if (page==-1)
       rowCount = project.count_top_referers()
       page = (rowCount/@@size).floor()
     end
-    
+
     # request one more than we need; if we get it, then there is more
     # referers to show, and the "next" link should be enabled.
     # if we don't get it, then there are no more items to show
     @data=project.top_referers(@@size+1,page*@@size)
     @more = @data.length>@@size
     @data=@data[0..-2] if @more
-    
+
     # Find out which page we're showing; the view won't know which page
     # it's asking for in the case of when it requests the "last page"
     @page=page    
-    
+
     @data=@data.map{|r| 
       [r.url,r.target.url,r.count]}.flatten.to_json
     render :layout=>false
   end
-  
+
 
   # Saves referer options
   def save_options    
@@ -299,7 +298,7 @@ class ProjectController < ApplicationController
       redirect_to "/signin/?r=" + request.request_uri
       return
     end
-    
+
 
     @accounts=Account.find(:all)
 
@@ -317,16 +316,11 @@ class ProjectController < ApplicationController
         @uniques[:yesterday]+=h[1][1]
       end
     end
-    
+
     @waitlist=WaitlistUser.find(:all)
-    
   end
 
-
-
-  
   private  
-
 
   # Accept "digg.com/" and "digg.com", but not "digg.com/user1"
   @@domain_regex=/^[\w]+[\.][\w\.]+[\w]+\/?$/

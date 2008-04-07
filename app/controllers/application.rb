@@ -52,7 +52,7 @@ class ApplicationController < ActionController::Base
     # TESTING - just log in with a test user
 #     @account=Account.authenticate("demo","pass1")
 #     return
-    
+
     cookie = cookies[@@login_cookie]    
     # see top of file for the cookie format
     token = cookie.split('|')[1] unless cookie.nil?

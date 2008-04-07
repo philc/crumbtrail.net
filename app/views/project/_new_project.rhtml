@@ -1,9 +1,21 @@
+<% content_for (:head) do %>
+
+    <script type="text/javascript">
+        window.addEvent("domready",function(){
+            new Forms.EnhancedForm("login-info",{
+                submitOnSuccess:true
+            });
+        });
+    </script>
+
+<% end %>
+
 <div class="text-form">
-  Website name <span class="example">(e.g. Greg's Blog)</span>
-  <%= show_form_error(@name_error)%>
-  <input type="text" name="site_name" id="site_name" size="30" value="<%=@site_name%>" />
+    <label for="site_name">Website name <span class="example">(e.g. Greg's Blog)</span></label>
+    <input type="text" name="site_name" id="site_name" class="field" size="30" value="<%=@site_name%>" />
+    <%= show_form_error(@name_error)%>
   
-  Website URL <span class="example">(e.g. gregsblog.com)</span>
-  <%= show_form_error(@url_error)%>
-  <input type="text" name="site_url" id="site_url" size="30" value="<%=@site_url%>" />
+    <label for="site_url">Website URL <span class="example">(e.g. gregsblog.com)</span></label>
+    <input type="text" name="site_url" id="site_url" class="field" size="30" value="<%=@site_url%>" />
+    <%= show_form_error(@url_error)%>
 </div>
