@@ -13,7 +13,8 @@ class ProjectController < ApplicationController
   }
   @@valid_sections=[:glance,:pageviews,:referers,:pages,:searches,:details,:rankings]
   
-  # Show all the projects the user has
+  # Show all the projects the user has.  Also update the user's
+  # settings if the user hit the submitted the update settings form.
   def all
     @title="Projects for #{@account.username} - Breadcrumbs"
 
@@ -23,42 +24,7 @@ class ProjectController < ApplicationController
     @style="display:none"
     
     if (request.post?)
-      email = params[:email]
-      
-      if (email != @email)
-        @email = email
-        @email_error = MainHelper::validate_email(email)
-        
-        if (!@email_error)
-          a=Account.find_by_username(email)        
-          @duplicate_error= "An account with that e-mail address already exists" if !a.nil?
-        end
-      end
-            
-      pw1=params[:password]
-      pw2=params[:password_confirm]
-    
-      @password_error=MainHelper::validate_password(pw1)
-    
-      # No need to show that they made a typo in their
-      # password if we're already showing an email or pw error
-      if (pw1!=pw2 && @email_error.nil? && @password_error.nil?)
-          @password_error="Your passwords don't match"
-      end
-      
-      @style="visible"
-      unless (@email_error || @duplicate_error || @password_error)
-        @style = "display:none"
-        
-        @account.username = email
-        @account.password = pw1
-                
-        if @account.save
-          @success_message = "Your account settings were successfully updated."
-        else
-          @success_message = "There was an error writing to the database."
-        end
-      end
+        update_user_settings()
     end
   end
   
@@ -69,14 +35,16 @@ class ProjectController < ApplicationController
     if (request.post?)
       @site_name=params[:site_name]
       @site_url=params[:site_url]
-      
-           validate_project_properties()
-      
+
+      validate_project_properties()
+
       if (@url_error.nil? && @name_error.nil?)
         # create the project, attach it to the current user
         
-        project=Project.new(:account=>@account,
-                :title=>@site_name, :url=>@site_url,:zone_id=>@account.zone_id)
+        project=Project.new(:account => @account,
+                            :title   => @site_name,
+                            :url     => @site_url,
+                            :zone_id => @account.zone_id)
         project.save!
         
         # set this project as their recently viewed one
@@ -113,7 +81,9 @@ class ProjectController < ApplicationController
     @title="Code for project #{@project.title} - Breadcrumbs"
     # @project=nil
   end
-  
+
+  # Allows the user to change the project name and website URL for their
+  # project.
   def setup
     @project=Project.find_by_id(params[:id])
     @title="#{@project.title} setup - Breadcrumbs"
@@ -206,35 +176,6 @@ class ProjectController < ApplicationController
     build_details()
   end
 
-  def queries
-    id=params[:project]
-    query=params[:query]
-    @project = Project.find_by_id(id)
-
-    if (@project.nil? || query.nil? || query == "")
-      render :nothing=>true
-      return
-    end
-
-    if (@project.is_tracking_query(query))
-      @success = false
-      @message = "You are already tracking this query."
-      @data = nil
-      render :layout=>false
-      return
-    end
-
-    @project.add_query(query)
-    @project.save
-
-    Fetcher.one_shot_search(@project.id, query)
-
-    @success = true
-    @message = nil
-    @data = build_rank_array()
-    render :layout=>false
-  end
-
   #
   # fetches data used for pagination
   #
@@ -325,6 +266,53 @@ class ProjectController < ApplicationController
   # Accept "digg.com/" and "digg.com", but not "digg.com/user1"
   @@domain_regex=/^[\w]+[\.][\w\.]+[\w]+\/?$/
   
+  # Attempt to update the user's password and/or e-mail address.  Verify
+  #  1) The username isn't already taken
+  #  2) The user entered a valid password
+  #  3) The user entered matching passwords.
+  #
+  #  If these three things check out, update their account in our database
+  def update_user_settings
+    email = params[:email]
+
+    # If they entered a new email address, make sure its valid
+    if (email != @email)
+      @email = email
+      @email_error = MainHelper::validate_email(email)
+
+      if (!@email_error)
+        a=Account.find_by_username(email)        
+        @duplicate_error= "An account with that e-mail address already exists" if !a.nil?
+      end
+    end
+
+
+    pw1=params[:password]
+    pw2=params[:password_confirm]
+    @password_error=MainHelper::validate_password(pw1)
+
+    # No need to show that they made a typo in their
+    # password if we're already showing an email or pw error
+    if (pw1!=pw2 && @email_error.nil? && @password_error.nil?)
+        @password_error="Your passwords don't match"
+    end
+
+    # If we found no errors, go ahead and try to save their account
+    @style="visible"
+    unless (@email_error || @duplicate_error || @password_error)
+      @style = "display:none"
+
+      @account.username = email
+      @account.password = pw1
+
+      if @account.save
+        @success_message = "Your account settings were successfully updated."
+      else
+        @success_message = "Sorry, there was a problem saving your settings.  Please try again later."
+      end
+    end
+  end
+
   # Process a request to save the referer options. Involves collapsing referers
   def process_options
     project = Project.find_by_id(params[:pid])

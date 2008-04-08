@@ -33,9 +33,8 @@ class ApplicationController < ActionController::Base
   end
   
   def authorize()
-    puts "in authorize, :",@account
     if @account.demo?
-     redirect_to "/signin/?r=" + request.request_uri
+      redirect_to "/signin/?r=" + request.request_uri
       # redirect_to "/signin/"
     end
   end
@@ -49,9 +48,6 @@ class ApplicationController < ActionController::Base
   end
   
   def signed_in?
-    # TESTING - just log in with a test user
-#     @account=Account.authenticate("demo","pass1")
-#     return
 
     cookie = cookies[@@login_cookie]    
     # see top of file for the cookie format

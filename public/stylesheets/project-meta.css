@@ -7,8 +7,24 @@
   margin-left: 10px;
 }
 
-#edit_settings input {
+#edit_settings label {
+  margin-left: 10px;
+  padding-top: 0px;
+}
+#edit_settings div.field-wrap {
+  width: 310px;
+  margin-left: 10px;
+  margin-right: 0px;
   margin-bottom: 10px;
+  border: none;
+}
+
+#edit_settings .text-form input {
+  margin: 0px;
+  width: 300px;
+}
+#edit_settings input.submit {
+  margin: 10px 0px;
 }
 
 .update_status {

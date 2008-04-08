@@ -4,11 +4,13 @@ class MainController < ApplicationController
   def index
     @title="Breadcrumbs - Follow the trail"
     if (request.post?)
-      puts "Post main index"
-      @email=params[:email]      
+      @email=params[:email]
       @login_error=login(@email,params[:password])
     end
-    puts "Main index"
+    
+    if (signed_in?)
+      redirect_to :controller=>"project", :action=>"recent"
+    end
   end
   
   def signup
@@ -57,7 +59,6 @@ class MainController < ApplicationController
       unless (had_error)
         # TODO: for now we're just ignoring what type of account
         # they've chosen, and every account is made to be free.
-        puts "creating account"
         create_account(email,pw1,timezone)
         redirect_to :controller=>"project", :action=>"new"
         return
@@ -106,10 +107,9 @@ class MainController < ApplicationController
      a.zone=timezone
      a.last_access=Date.today
      a.save!
-    # a=Account.setup(username,password,timezone)
-    # a.country_id=1
-    # a.save!
+     
+     @account = Account.find(:first, :conditions=>["username = ?", username])
      cookies[@@login_cookie] = 
-          {:value=>Session.create_for(a).token, :expires=>Session.expiration_time}
+          {:value=>"#{@account.id}|#{Session.create_for(a).token}", :expires=>Session.expiration_time}
   end
 end
