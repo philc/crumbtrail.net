@@ -23,22 +23,20 @@
 
         <h1>Sign up</h1>
 
-        <div id="signup_form" clas="left_form">
+        <div id="signup_form" class="left_form">
             <form action="" method="post" id="login-info">
                 <div id="signup-fields">
                     <div class="text-form">
-                        E-mail
-                        <%= show_form_error(@email_error)%>
+
+                        <label for="email">E-mail</label>
                         <%= field "text", :id=>"email", :value=>params[:email], :required=>true, :message=>"This doesn't look like a valid email address", :validate=>"email" %>
 
                         <label for="password" style="clear:both">Password</label>
-                        <%= show_form_error(@password_error) if !@duplicate_error %>
-
                         <%= field "password", :id=>"password", :show_error=>false, :validate=>"minLength(5)"%>
 
                         <label for="password-confirm">Confirm your password</label>
-                            
                         <%= field "password", :id=>"password_confirm", :show_error_for=>"password", :validate=>"sameAs(-1)", :message=>"Your passwords do not match" %>
+
                         <br clear="both" />
                         <p>
                             Select your time zone<br/>

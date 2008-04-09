@@ -30,7 +30,7 @@ class MainController < ApplicationController
       @errors["email"]=MainHelper::validate_email(email)
 
       # See if we've already got an email registered with that name
-      if (!@email_error)
+      if (!@errors["email"])
         a=Account.find_by_username(email)        
         unless a.nil?
           @errors["email"]="We already have an account using that email"

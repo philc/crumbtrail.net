@@ -275,31 +275,29 @@ class ProjectController < ApplicationController
   def update_user_settings
     email = params[:email]
 
+    @errors={}
     # If they entered a new email address, make sure its valid
     if (email != @email)
       @email = email
-      @email_error = MainHelper::validate_email(email)
+      @errors["email"]=MainHelper::validate_email(email)
 
-      if (!@email_error)
-        a=Account.find_by_username(email)        
-        @duplicate_error= "An account with that e-mail address already exists" if !a.nil?
+      if (!@errors["email"])
+        a=Account.find_by_username(email)
+        @errors["email"]= "An account with that e-mail address already exists" if !a.nil?
       end
     end
 
-
     pw1=params[:password]
     pw2=params[:password_confirm]
-    @password_error=MainHelper::validate_password(pw1)
+    @errors["password"]=MainHelper::validate_password(pw1)
 
-    # No need to show that they made a typo in their
-    # password if we're already showing an email or pw error
-    if (pw1!=pw2 && @email_error.nil? && @password_error.nil?)
-        @password_error="Your passwords don't match"
+    if (!@errors["password"] && pw1!=pw2)
+        @errors["password"]="Your passwords don't match"
     end
 
     # If we found no errors, go ahead and try to save their account
     @style="visible"
-    unless (@email_error || @duplicate_error || @password_error)
+    unless (@errors["password"] || @errors["email"])
       @style = "display:none"
 
       @account.username = email

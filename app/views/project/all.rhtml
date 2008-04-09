@@ -66,66 +66,32 @@ You don't have any projects. <a href="/project/new/">Create one!</a>
 
 
 <div class="options account_settings">
-<a onclick="return toggleAppear('edit_settings');" title="edit_settings" href="#">Edit account settings</a>
-<b class="d2 options_panel" id="edit_settings" style="<%=@style%>">
-  <b class="hd"><b class="c"></b></b>  
-  <b class="bd"><b class="c">
-    <h2>Edit account settings</h2>
+    <a onclick="return toggleAppear('edit_settings');" title="edit_settings" href="#">Edit account settings</a>
+    <b class="d2 options_panel" id="edit_settings" style="<%=@style%>">
+        <b class="hd"><b class="c"></b></b>  
+        <b class="bd"><b class="c">
+            <h2>Edit account settings</h2>
 
-    <form action="" method="post" id="edit-account-settings">
-        <div class="text-form">
-            <label for="email">E-mail</label>
-            <%= field "text", :id=>"email", :value=>@email, :required=>true, :message=>"This doesn't look like a valid email address", :validate=>"email" %>
-            <%=show_form_error(@email_error)%>
-            <%=show_form_error(@duplicate_error)%>
+            <form action="" method="post" id="edit-account-settings">
+                <div class="text-form">
 
-            <label for="password">New Password</label>
-            <%= field "password", :id=>"password", :show_error=>false, :validate=>"minLength(5)"%>
-            <%show_form_error(@password_error)%>
+                    <label for="email">E-mail</label>
+                    <%= field "text", :id=>"email", :value=>@email, :required=>true, :message=>"This doesn't look like a valid email address", :validate=>"email" %>
 
-            <label for="password_confirm">Confirm New Password</label>
-            <%= field "password", :id=>"password_confirm", :show_error_for=>"password", :validate=>"sameAs(-1)", :message=>"Your passwords do not match" %>
+                    <label for="password" style="clear:both">New Password</label>
+                    <%= field "password", :id=>"password", :show_error=>false, :validate=>"minLength(5)"%>
 
-            <br clear="both" />
-        </div>
-        <input type="submit" class="submit" value="Save changes" class="submit" />
+                    <label for="password_confirm">Confirm New Password</label>
+                    <%= field "password", :id=>"password_confirm", :show_error_for=>"password", :validate=>"sameAs(-1)", :message=>"Your passwords do not match" %>
 
-    </form>
+                    <br clear="both" />
 
-<!--
-<form action="" method="post" id="edit-account-settings">
-    <div class="text-form">
-      
-      <span>
-        <%=show_form_error(@email_error)%>
-        <%=show_form_error(@duplicate_error)%>
-        E-mail
-      </span>
-      <input type="text" name="email" id="email" class="field" value="<%=@email%>"/>
-        
-      <span>
-        <%=show_form_error(@password_error)%>
-        New Password
-      </span>
-      <input type="password" name="password" id="password" class="field"/>
-        
-      <span>
-        Confirm New Password
-      </span>
-      <input type="password" name="password_confirm" id="password_confirm" class="field"/>
-        
-    </div>
-    <input type="submit" class="submit" value="Save changes"/>
-</form>
--->
-  </b></b>
-  <b class="ft"><b class="c"></b></b>
-</b>
+                </div>
+                <input type="submit" class="submit" value="Save changes" class="submit" />
+
+            </form>
+
+        </b></b>
+        <b class="ft"><b class="c"></b></b>
+    </b>
 </div>
-
-</div>
-
-<!--
-
-
--->
