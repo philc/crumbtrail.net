@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+
+require "config/environment.rb"
+require "tempfile"
+require "find"
+
+$jsdir='public/javascripts/'
+$jslib="vendor/plugins/jsext/lib"
+
+# paths to jsmin script
+$jsmin = File.dirname(__FILE__)+"/../vendor/plugins/deployment/lib/jsmin.rb"
+
+main_libs = [
+  "#{$jsdir}/mootools.js", 
+  "#{$jslib}/util.mootools.js",
+  "#{$jslib}/util.js",
+  "#{$jsdir}/util.breadcrumbs.js",
+  "#{$jslib}/forms.js"
+]
+
+project_libs = [
+  "#{$jslib}/util.dombuilder.js",
+  "#{$jsdir}/page.js",
+  "#{$jsdir}/displayHelper.js",
+  "#{$jsdir}/tableDisplay.js",
+  "#{$jsdir}/graphing.js",
+  "#{$jsdir}/plotr/EnumArray.js",
+  "#{$jsdir}/plotr/plotrMootoolsSupport.js",
+  "#{$jsdir}/plotr/Plotr_uncompressed.js",
+]
+
+def minify_javascript( libs, file )
+
+    filename = "#{File.dirname(__FILE__)}/../#{$jsdir}#{file}"
+
+    # create single tmp js file
+    tmp = Tempfile.open('all')
+    libs.each {|lib| open(lib) {|f| tmp.write(f.read) } }
+    tmp.rewind
+
+    # minify file
+    %x[ruby #{$jsmin} < #{tmp.path} > #{filename}]
+
+end
+
+minify_javascript( main_libs, "main_min#{CRUMBTRAIL_VERSION}.js" )
+minify_javascript( project_libs, "project_min#{CRUMBTRAIL_VERSION}.js" )
+
