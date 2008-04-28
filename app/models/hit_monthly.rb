@@ -1,12 +1,9 @@
 class HitMonthly < ActiveRecord::Base
   belongs_to :project
 
-  def self.increment_hit(request)
-    proj = request.project
-    time = request.time
-
-    row = find_by_project_id_and_month(proj.id, time.month)
-    row = new(:project_id => proj.id, :month => time.month, :last_update => time) if row.nil?
+  def self.increment_hit( project, time, unique )
+    row = find_by_project_id_and_month(project.id, time.month)
+    row = new(:project => project, :month => time.month, :last_update => time) if row.nil?
 
     row_t = row.last_update
     if row_t.year != time.year
@@ -15,7 +12,7 @@ class HitMonthly < ActiveRecord::Base
     end
 
     row.total += 1
-    row.unique += 1 if request.unique
+    row.unique += 1 if unique
     row.last_update = time
     row.save
   end

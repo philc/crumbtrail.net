@@ -7,29 +7,28 @@ class HitDaily < ActiveRecord::Base
   @@max_rows = 35
   include TimeHelpers
 
-  def self.increment_hit(request)
-    project = request.project
-    date = Date.parse(request.time.to_s)
+  def self.increment_hit( project, time, unique )
+    date = Date.parse(time.to_s)
     past = date - (@@max_rows - 1)
 
     row = find_by_project_id_and_row(project.id, project.hits_row)
     if row.nil?
-      row = new(:project => project, :date => request.time, :total => 1, :row => project.hits_row)
-      row.unique = 1 if request.unique
+      row = new(:project => project, :date => time, :total => 1, :row => project.hits_row)
+      row.unique = 1 if unique
       row.save
     elsif row.date == date
       row.total += 1
-      row.unique += 1 if request.unique
+      row.unique += 1 if unique
       row.save
     elsif row.date < past
       row.total = 1
-      row.unique = request.unique ? 1 : 0
+      row.unique = unique ? 1 : 0
       row.date = date
       row.save
     else
       project.hits_row += 1
       project.hits_row = 0 if project == @@max_rows
-      increment_hit(request)
+      increment_hit( project, time, unique )
     end
   end
 

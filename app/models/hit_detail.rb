@@ -30,11 +30,8 @@ class HitDetail < ActiveRecord::Base
     return @@browser_display
   end
 
-  def self.record_details(request)
-    project = request.project
-    browser = request.browser
-    os      = request.os
-    date = Date.parse(project.time(request.time).to_s)
+  def self.record_details( project, browser, os, time )
+    date = Date.parse(project.time(time).to_s)
 
     row = find_by_project_id_and_day(project.id, date.wday)
     row = new(:project => project, :day => date.wday, :last_update => date) if row.nil?

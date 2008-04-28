@@ -1,12 +1,8 @@
-require File.dirname(__FILE__)+"/source.rb"
+#require File.dirname(__FILE__)+"/source.rb"
 
 class Project < ActiveRecord::Base
   belongs_to :account
   belongs_to :zone
-  has_many   :referers
-  has_many   :pages
-  has_many   :referral_totals
-  has_many   :rankings
   has_one    :recent_project, :class_name => "Project"
 
   # An array of collapsed referers. Contains entries of ["referer string", "row_id"]
@@ -14,7 +10,11 @@ class Project < ActiveRecord::Base
   
   # An array of search terms
   serialize  :queries
-  
+
+  def after_initialize
+    self.collapsing_refs = {} if self.collapsing_refs.nil?
+  end
+
   def self.demo_project()
     # Show the ninjawords account. Can change this to another project at any time.
     return Project.find(demo_project_id)
@@ -22,32 +22,72 @@ class Project < ActiveRecord::Base
   def self.demo_project_id()
     return 1050
   end
-  
+
+  @@domain_regex = '^([A-Za-z0-9\.]+)'
 
 
   def process_request(request)
     locked do
-#     
-#       puts "[#{id.to_s}] Processing request: "
-#       puts "  Type: #{request.type.to_s}"
-#       puts "  Source: #{request.source.url}" unless request.source.nil?
-#       puts "  Target: #{request.target.url}" unless request.target.nil?
-    
-      case request.type
-        when :search
-          SearchRecent.add_new_search(request)
-        when :referer
-          ReferralRecent.add_new_referer(request)
+
+      page = Page.get_or_new_page(self, request.page_url)
+
+      unless page.nil?
+
+        if( request.source_url != nil &&
+            request.source_url != "/" &&
+            request.source_url != "-" )
+
+          source = Search.get_or_create_search( self, request.source_url, page )
+
+          # If the source is not a search page, maybe its an external site
+          if source.nil?
+            collapse_id = self.get_collapsible_referer_id( request.source_url )
+
+            if( collapse_id.nil? )
+              source = Referer.get_or_create_referer( self, request.source_url, page, request.time )
+            else
+              source = Referer.find_by_id( collapse_id )
+            end
+          end
+        end
+
+        # Save the source ID on the target record
+        unless source.nil?
+          if source.class == Referer
+            page.source_id   = source.id
+            page.source_type = "r"
+            ReferralRecent.add_new_referer( self, source.url, page.url, request.time )
+          elsif source.class == Search
+            page.source_id   = source.id
+            page.source_type = "s"
+            SearchRecent.add_new_search( self, source, page, request.time )
+          end
+
+          PagehitRecent.add_new_hit( self, page.url, source.url, request.time )
+        end
+
+        increment_hit_count(request, source)
+        HitDetail.record_details( self, request.browser, request.os, request.time )
+
+        page.save
+
       end
-      
-      increment_page_landing(request) if !request.target.nil?
-      increment_hit_count(request)
-      record_details(request)
-      
-      save
+
+      self.save
     end
   end
 
+  def get_collapsible_referer_id(url)
+    url.match(@@domain_regex)
+    domain = $1
+
+    return nil if domain.nil?
+
+    ref_id = self.collapsing_refs[domain]
+    return ref_id
+  end
+
+=begin
   @@domain_regex = '^([A-Za-z0-9\.]+)'
 
   def get_or_create_referer(url, page, visit_time = nil)
@@ -64,9 +104,11 @@ class Project < ActiveRecord::Base
     else
       return Referer.get_or_create_referer(self, url, page, visit_time)
     end
-
   end
+=end
 
+
+=begin
   def get_or_create_search(url, page)
     return Search.get_or_create_search(self, url, page)
   end
@@ -78,6 +120,7 @@ class Project < ActiveRecord::Base
   def get_or_create_page(url)
     return Page.get_or_create_page(self, url)
   end
+=end
   
   def collapse_referer(url)
     url.match(@@domain_regex)
@@ -201,17 +244,6 @@ class Project < ActiveRecord::Base
     self.queries.include?(query)
   end
 
-  def ranking_plot_data()
-    Ranking.get_plot_data(self)
-  end
-
-  def rankings_by_engine()
-    Ranking.get_rankings_by_engine(self)
-  end
-
-  def rankings_by_query()
-    Ranking.get_rankings_by_query(self)
-  end
 
   # =Hits
   #------------------------------------------------------------------------------
@@ -268,7 +300,7 @@ class Project < ActiveRecord::Base
   end
 
   def recent_landings()
-    return LandingRecent.get_recent_landings(self)
+    return PagehitRecent.get_recent_hits(self)
   end
 
   # =Details
@@ -288,39 +320,34 @@ class Project < ActiveRecord::Base
 
   private
 
-  def increment_referer(request)
-    request.referer.increment(request.page, request.time)
-    ReferralRecent.add_new_referer(request)
-  end
+  def increment_hit_count(request, source)
 
-  def increment_hit_count(request)
-    HitHourly.increment_hit(request)
-    HitDaily.increment_hit(request)
-    HitMonthly.increment_hit(request)
+    type = :direct
+    if source.class == Referer
+      type = :referer
+    elsif source.class == Search
+      type = :search
+    end
+
+    HitHourly.increment_hit( self, request.time, request.unique, type )
+    HitDaily.increment_hit( self, request.time, request.unique )
+    HitMonthly.increment_hit( self, request.time, request.unique )
+
     self.first_hit = request.time if self.first_hit.nil?
     self.total_hits += 1
     self.unique_hits += 1 if request.unique
-    
-    type_count = self.send((request.type.to_s + '_hits').to_sym)
-    self.send((request.type.to_s + '_hits=').to_sym, type_count + 1)
-  end
 
-  def increment_page_landing(request)
-    LandingRecent.add_new_landing(request)
+    type_count = self.send((type.to_s + '_hits').to_sym)
+    self.send((type.to_s + '_hits=').to_sym, type_count + 1)
   end
-
-  def record_details(request)
-    HitDetail.record_details(request)
-  end
-
 
   # =Locking
   #------------------------------------------------------------------------------
 
   @@tables = %w{ 
-    sources
-    landing_recents referral_recents search_recents
-    hit_hourlies hit_dailies hit_monthlies}
+    searches pages referers
+    pagehit_recents referral_recents search_recents
+    hit_hourlies hit_dailies hit_monthlies hit_details }
   @@sql_lock = nil
 
   def locked()

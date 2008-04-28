@@ -4,7 +4,6 @@ require "app/models/account.rb"
 require "app/models/project.rb"
 require "app/models/zone.rb"
 require "app/models/server.rb"
-require "app/models/ranking.rb"
 
 def establish_connection()
   f=YAML::load(File.open('config/database.yml'))

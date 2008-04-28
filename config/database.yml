@@ -34,3 +34,4 @@ production:
   database: achilles_production
   <<: *defaults
   socket: /var/run/mysqld/mysqld.sock
+  #socket: /opt/local/var/run/mysql5/mysqld.sock

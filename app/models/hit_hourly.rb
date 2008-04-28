@@ -3,10 +3,7 @@ require File.dirname(__FILE__)+'/../../lib/time_helpers.rb'
 class HitHourly < ActiveRecord::Base
   belongs_to :project
 
-  def self.increment_hit(request)
-    project = request.project
-    time = request.time
-
+  def self.increment_hit( project, time, unique, type )
     row = find_by_project_id_and_hour(project.id, time.hour)
     row = new(:project => project, :hour => time.hour, :last_update => time) if row.nil?
 
@@ -20,10 +17,10 @@ class HitHourly < ActiveRecord::Base
     end
 
     row.total += 1
-    row.unique += 1 if request.unique
+    row.unique += 1 if unique
     
-    type_count = row.send(request.type)
-    row.send((request.type.to_s + '=').to_sym, type_count + 1)
+    type_count = row.send( type )
+    row.send((type.to_s + '=').to_sym, type_count + 1)
     
     row.last_update = time
     row.save

@@ -3,7 +3,7 @@
 #
 class StylesheetsController < ApplicationController
   before_filter :set_headers
-  skip_before_filter :stealth_mode?
+  skip_before_filter :signed_in?
   # we handle generating the css files in production mode ourselves;
   # this controller won't get hit in production mode. 
   # after_filter  { |c| c.cache_page }

@@ -8,8 +8,13 @@
 	<![endif]-->
 
 
-  <%= javascript_include_tag "util.dombuilder.js","page","displayHelper","tableDisplay","graphing","plotr/EnumArray.js","plotr/plotrMootoolsSupport.js","plotr/Plotr_uncompressed"
-	%> 
+  <%=
+    if ENV["RAILS_ENV"] == 'development'
+        javascript_include_tag "util.dombuilder.js","page","displayHelper","tableDisplay","graphing","plotr/EnumArray","plotr/plotrMootoolsSupport.js","plotr/Plotr_uncompressed"
+    else
+        javascript_include_tag "project_min#{CRUMBTRAIL_VERSION}.js"
+    end
+  %>
 
 	<script type="text/javascript">
 	data={};
@@ -23,7 +28,7 @@
 	data.glance_referers_week=<%= @glance_referers_week %>;
 
 	data.glance_sources=<%= @glance_sources %>;
-	
+
 	data.pageviews={}
 	data.pageviews_today=[<%= @hits_day %>];
 	data.pageviews_week=[<%= @hits_week %>];

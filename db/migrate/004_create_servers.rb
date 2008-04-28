@@ -5,7 +5,6 @@ class CreateServers < ActiveRecord::Migration
       t.column :last_log_time, :time
     end
     
-    
     server = Server.new(:zone_id => 11)
     server.id = 1
     server.save

@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "digest/md5"
 require "config/environment.rb"
 require "tempfile"
 require "find"
@@ -29,20 +30,34 @@ project_libs = [
   "#{$jsdir}/plotr/Plotr_uncompressed.js",
 ]
 
-def minify_javascript( libs, file )
+def minify_javascript( libs, basename )
 
-    filename = "#{File.dirname(__FILE__)}/../#{$jsdir}#{file}"
+    # first delete all other versions of the minified javascript file
+    Find.find("#{File.dirname(__FILE__)}/../#{$jsdir}") do |file|
+      unless FileTest.directory?(file)
+        if File.basename(file) =~ /^#{basename}/
+          File.delete(file)
+          puts "deleted #{File.basename(file)}"
+        end
+      end
+    end
 
     # create single tmp js file
     tmp = Tempfile.open('all')
     libs.each {|lib| open(lib) {|f| tmp.write(f.read) } }
     tmp.rewind
 
+    digest = Digest::MD5.hexdigest(tmp.read)
+
+    filename = "#{File.dirname(__FILE__)}/../#{$jsdir}#{basename}.#{digest}"
+
     # minify file
     %x[ruby #{$jsmin} < #{tmp.path} > #{filename}]
 
+    puts "Compressed javascript into file #{$jsdir}#{filename}"
+
 end
 
-minify_javascript( main_libs, "main_min#{CRUMBTRAIL_VERSION}.js" )
-minify_javascript( project_libs, "project_min#{CRUMBTRAIL_VERSION}.js" )
+minify_javascript( main_libs, "main_min.js" )
+minify_javascript( project_libs, "project_min.js" )
 

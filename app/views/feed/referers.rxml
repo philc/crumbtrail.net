@@ -8,7 +8,7 @@ xml.rss "version" => "2.0", "xmlns:dc" =>"http://purl.org/dc/elements/1.1/" do
 
         @refs.each do |ref|
           xml.item do
-            url = ref.referer.url
+            url = ref.url
             time = ref.first_visit.strftime("%I:%M%p on %a %b %d")
 
             xml.title truncate(url,50)  + " #{time}"
@@ -25,7 +25,7 @@ xml.rss "version" => "2.0", "xmlns:dc" =>"http://purl.org/dc/elements/1.1/" do
 
         @refs.each do |ref|
           xml.item do
-            url = ref.referer.url
+            url = ref.first_url
             time = ref.visit_time.strftime("%I:%M%p on %a %b %d")
 
             xml.title truncate(url,50)  + " #{time}"

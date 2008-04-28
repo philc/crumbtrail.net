@@ -365,10 +365,10 @@ class ProjectController < ApplicationController
   end
   def build_searches()
     @searches_total=@project.top_searches(@@size).map{|s|
-      [s.search_words,s.url,s.target.url,s.count]
+      [s.search_words,s.url,s.page.url,s.count]
     }.flatten.to_json
     @searches_recent=@project.recent_searches().map{|s|
-      [s.search.search_words,s.search.url,s.page.url,JSDate.new(s.visit_time)]
+      [s.search.search_words,s.search.url,s.page_url,JSDate.new(s.visit_time)]
       }.flatten.to_json
   end
   def build_pages()
@@ -376,7 +376,7 @@ class ProjectController < ApplicationController
         [p.url,p.count]
       }.flatten.to_json
       @recent_pages=@project.recent_landings().map{|p|
-        [p.page.url,(p.source.nil? ? nil : p.source.url),JSDate.new(p.visit_time)]
+        [p.first_url,(p.second_url.nil? ? nil : p.second_url),JSDate.new(p.visit_time)]
       }.flatten.to_json
   end  
   
@@ -391,7 +391,7 @@ class ProjectController < ApplicationController
       [r.url,r.target.url,r.today_count]
     }.flatten.to_json
     @glance_referers_week=@glance[:week].map{|r|
-      [r.url,r.target.url,r.seven_days_count]
+      [r.url,r.page.url,r.seven_days_count]
     }.flatten.to_json
     
     @glance_sources=@project.hit_types_percents(:today).to_json()
@@ -408,14 +408,14 @@ class ProjectController < ApplicationController
     @referers_total = @referers_total[0..-2] if @referers_more    
     
     @referers_total=@referers_total.map{|r|
-      [r.url,r.target.url,r.count]}.flatten.to_json
+      [r.url,r.page.url,r.count]}.flatten.to_json
     
     @referers_recent = @project.recent_referers().map{|r|
-      [r.referer.url,r.page.url,JSDate.new(r.visit_time)]
+      [r.first_url,r.second_url,JSDate.new(r.visit_time)]
     }.flatten.to_json
 
     @referers_unique = @project.recent_unique_referers(@@size).map {|r|
-      [r.url,r.target.url,JSDate.new(r.first_visit)]
+      [r.url,r.page.url,JSDate.new(r.first_visit)]
     }.flatten.to_json
   end
     

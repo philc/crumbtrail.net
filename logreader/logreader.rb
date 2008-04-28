@@ -1,18 +1,14 @@
-require 'benchmark'
 require File.dirname(__FILE__) + "/../lib/time_helpers.rb"
 
 class ApacheRequest
-  attr_reader   :project
   attr_reader   :time
-  attr_reader   :source
-  attr_reader   :target
+  attr_reader   :page_url
+  attr_reader   :source_url
   attr_reader   :unique
   attr_reader   :browser
   attr_reader   :os
-  attr_reader   :type
-  
-  def initialize(project, ip, time, page_url, source_url, unique, browser, os)
-    @project = project
+
+  def initialize(ip, time, page_url, source_url, unique, browser, os)
     @ip = ip
     @time = time
     @page_url = page_url
@@ -37,29 +33,10 @@ class ApacheRequest
 
 #------------------------------------------------------------------------------
 
-  def save
-    @target = @project.get_or_new_page(@page_url)
-    
-    # puts "TARGET IS NIL!" if @target.nil?
-    
-    if !@target.nil?
-      if (!@source_url.nil? && @source_url != "/" && @source_url != "-")
-        @source = @project.get_or_create_search(@source_url, @target)
-        @source = @project.get_or_create_referer(@source_url, @target, @time) if @source.nil?
-        @source = @project.get_or_create_page(@source_url) if @source.nil?
-      end
-  
-      @target.origin = @source
-      @target.save
-    end
-    
-    @type = :direct
-    @type = :referer if @source.class == Referer
-    @type = :search  if @source.class == Search
-     
-    @project.process_request(self)
-
+  def save( project )
+    project.process_request( self ) unless project.nil?
   end
+
 end
 
 class ApacheLogReader
@@ -77,13 +54,19 @@ class ApacheLogReader
   
 #------------------------------------------------------------------------------
 
+  @@avg_time = 0.0
+  @@total_count = 0
+  @@avg_insert_time = 0.0
+  @@total_inserts = 0
+
   def self.process_line(line,project_id=nil)
+    t = Time.now
     if @@log_line_regex.match(line)
       id = parse_project_id($3).to_i
       #project_id=nil
       # Only process stats from a single account if that option is in effect
       unless project_id.nil?
-        return if id!=project_id 
+        return if id!=project_id
       end
       
       begin        
@@ -99,12 +82,23 @@ class ApacheLogReader
 
           strip_protocol(referer_url)
           strip_protocol(landing_url)
-          request = ApacheRequest.new(project, ip, time, landing_url, referer_url, unique, browser, os)
-          request.save
+          request = ApacheRequest.new(ip, time, landing_url, referer_url, unique, browser, os)
+          
+          t2 = Time.now
+          @@total_count += 1
+          @@avg_time = (@@avg_time + (t2 - t)) / @@total_count
+          puts "Avg parsing time for #{@@total_count} lines: #{@@avg_time}" if ((@@total_count % 50) == 0)
+
+          time1 = Time.now
+          request.save( project )
+          time2 = Time.now
+          @@total_inserts += 1
+          @@avg_insert_time = (@@avg_insert_time + (time2 - time1)) / @@total_inserts
+          puts "Avg insert time is #{@@avg_insert_time}" if ((@@total_inserts % 50) == 0)
         end
 
       rescue ActiveRecord::RecordNotFound
-        puts "Couldn't find project #{id} from: " + line
+        #puts "Couldn't find project #{id} from: " + line
 
       rescue Exception => e
         puts "Unhandled exception for line: " + line
@@ -176,6 +170,7 @@ class ApacheLogReader
         f.close()
       end
     end
+    
   ensure
     file.close() unless file.nil?
   end

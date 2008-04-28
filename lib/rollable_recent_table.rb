@@ -2,19 +2,19 @@ module RollableRecentTable
 
   @@max_rows = 10
 
-  def self.add_new(table_class, row_col_name, project, primary, secondary, time)
+  def self.add_new(table_class, row_col_name, project, first, second, time)
     row_equals = (row_col_name.to_s + '=').to_sym
 
     # Update the proper row for the project, or create a new row
     row = table_class.find_by_project_id_and_row(project.id, project.send(row_col_name))
     if !row.nil?
-      row.primary    = primary
-      row.secondary  = secondary
+      row.first_url  = first
+      row.second_url = second
       row.visit_time = time
     else
       row = table_class.new(:project    => project,
-                            :primary    => primary,
-                            :secondary  => secondary,
+                            :first_url  => first,
+                            :second_url => second,
                             :visit_time => time,
                             :row        => project.send(row_col_name))
     end

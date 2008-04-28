@@ -39,6 +39,5 @@ class CreateHitTables < ActiveRecord::Migration
     drop_table :hit_hourlies
     drop_table :hit_dailies
     drop_table :hit_monthlies
-#     drop_table :hit_totals
   end
 end
