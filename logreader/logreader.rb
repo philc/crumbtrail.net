@@ -54,11 +54,6 @@ class ApacheLogReader
   
 #------------------------------------------------------------------------------
 
-  @@avg_time = 0.0
-  @@total_count = 0
-  @@avg_insert_time = 0.0
-  @@total_inserts = 0
-
   def self.process_line(line,project_id=nil)
     t = Time.now
     if @@log_line_regex.match(line)
@@ -84,17 +79,7 @@ class ApacheLogReader
           strip_protocol(landing_url)
           request = ApacheRequest.new(ip, time, landing_url, referer_url, unique, browser, os)
           
-          t2 = Time.now
-          @@total_count += 1
-          @@avg_time = (@@avg_time + (t2 - t)) / @@total_count
-          puts "Avg parsing time for #{@@total_count} lines: #{@@avg_time}" if ((@@total_count % 50) == 0)
-
-          time1 = Time.now
           request.save( project )
-          time2 = Time.now
-          @@total_inserts += 1
-          @@avg_insert_time = (@@avg_insert_time + (time2 - time1)) / @@total_inserts
-          puts "Avg insert time is #{@@avg_insert_time}" if ((@@total_inserts % 50) == 0)
         end
 
       rescue ActiveRecord::RecordNotFound
