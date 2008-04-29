@@ -213,7 +213,7 @@ class ProjectController < ApplicationController
     @page=page    
 
     @data=@data.map{|r| 
-      [r.url,r.target.url,r.count]}.flatten.to_json
+      [r.url,r.page.url,r.count]}.flatten.to_json
     render :layout=>false
   end
 
@@ -388,7 +388,7 @@ class ProjectController < ApplicationController
     
     @glance=@project.at_a_glance()
     @glance_referers_today=@glance[:today].map{|r|
-      [r.url,r.target.url,r.today_count]
+      [r.url,r.page.url,r.today_count]
     }.flatten.to_json
     @glance_referers_week=@glance[:week].map{|r|
       [r.url,r.page.url,r.seven_days_count]

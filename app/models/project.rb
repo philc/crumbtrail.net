@@ -25,7 +25,6 @@ class Project < ActiveRecord::Base
 
   @@domain_regex = '^([A-Za-z0-9\.]+)'
 
-
   def process_request(request)
     locked do
 
@@ -86,41 +85,6 @@ class Project < ActiveRecord::Base
     ref_id = self.collapsing_refs[domain]
     return ref_id
   end
-
-=begin
-  @@domain_regex = '^([A-Za-z0-9\.]+)'
-
-  def get_or_create_referer(url, page, visit_time = nil)
-    url.match(@@domain_regex)
-    domain = $1
-
-    return nil if domain.nil?
-
-    self.collapsing_refs = {} if self.collapsing_refs.nil?
-
-    ref_id = self.collapsing_refs[domain]
-    if !ref_id.nil?
-      return Referer.find_by_id(ref_id)
-    else
-      return Referer.get_or_create_referer(self, url, page, visit_time)
-    end
-  end
-=end
-
-
-=begin
-  def get_or_create_search(url, page)
-    return Search.get_or_create_search(self, url, page)
-  end
-  
-  def get_or_new_page(url)
-    return Page.get_or_new_page(self, url)
-  end
-  
-  def get_or_create_page(url)
-    return Page.get_or_create_page(self, url)
-  end
-=end
   
   def collapse_referer(url)
     url.match(@@domain_regex)
@@ -129,7 +93,6 @@ class Project < ActiveRecord::Base
     locked do
 
       # Return if the domain is already collapsed
-      self.collapsing_refs = {} if self.collapsing_refs.nil?
       return nil if domain.nil? || !self.collapsing_refs[domain].nil?
 
       #todo - make sure its not a search domain
@@ -152,7 +115,7 @@ class Project < ActiveRecord::Base
         puts "ID: #{ref.id.to_s}"
         d.count += ref.count
         if d.first_visit < ref.first_visit
-          d.target = ref.target
+          d.page = ref.page
           d.first_visit = ref.first_visit
         end
         
@@ -160,28 +123,14 @@ class Project < ActiveRecord::Base
       end
 
       d.save
-      
+
       Page.find_all_by_project_id(id).each do |page|
-        if !ids[page.path_id].nil?
-          page.path_id = d.id
-          page.save
+        if page.source_type == 'r' && defined?(ids[page.source_id])
+           page.source_id = d.id
+           page.save
         end
       end
-      
-      ReferralRecent.find_all_by_project_id(id).each do |r|
-        if !ids[r.referer_id].nil?
-          r.referer_id = d.id
-          r.save
-        end
-      end
-      
-      LandingRecent.find_all_by_project_id(id).each do |l|
-        if !ids[l.source_id].nil?
-          l.source_id = l.id
-          l.save
-        end
-      end
-      
+
       return d.id
     end
   end
