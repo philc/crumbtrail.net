@@ -64,32 +64,23 @@ class ApacheLogReader
         return if id!=project_id
       end
       
-      begin        
-        project = Project.find(id)
-        if !project.nil?
-          ip          = $1
-          time        = parse_time($2, project)
-          referer_url = parse_referer($3)
-          unique      = parse_unique($3)
-          landing_url = $4
-          browser     = parse_browser($5)
-          os          = parse_os($5)
+      project = Project.find(id)
+      if !project.nil?
+        ip          = $1
+        time        = parse_time($2, project)
+        referer_url = parse_referer($3)
+        unique      = parse_unique($3)
+        landing_url = $4
+        browser     = parse_browser($5)
+        os          = parse_os($5)
 
-          strip_protocol(referer_url)
-          strip_protocol(landing_url)
-          request = ApacheRequest.new(ip, time, landing_url, referer_url, unique, browser, os)
-          
-          request.save( project )
-        end
+        strip_protocol(referer_url)
+        strip_protocol(landing_url)
+        request = ApacheRequest.new(ip, time, landing_url, referer_url, unique, browser, os)
 
-      rescue ActiveRecord::RecordNotFound
-        #puts "Couldn't find project #{id} from: " + line
-
-      rescue Exception => e
-        puts "Unhandled exception for line: " + line
-        puts e.message
-        puts e.backtrace.inspect
+        request.save( project )
       end
+
     end
   end
 
