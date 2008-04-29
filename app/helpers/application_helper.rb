@@ -5,6 +5,19 @@ module ApplicationHelper
     return '<div class="form-error-message">'+message+'</div>'
   end
 
+  def find_javascript_file( basename )
+    require 'find'
+
+    Find.find("public/javascripts") do |file|
+      unless FileTest.directory?(file)
+        if File.basename(file) =~ /^#{basename}/
+          return File.basename(file)
+        end
+      end
+    end
+
+    return nil
+  end
 
   #
   # Generates our custom form HTML for each field;

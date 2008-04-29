@@ -18,7 +18,8 @@
     if ENV['RAILS_ENV'] == 'development'
         javascript_include_tag "mootools","util.mootools.js","util", "util.breadcrumbs.js", "forms"
     else
-        javascript_include_tag "main_min#{CRUMBTRAIL_VERSION}.js"
+        filename = find_javascript_file("main_min")
+        javascript_include_tag filename unless filename.nil?
     end
   %>
     
