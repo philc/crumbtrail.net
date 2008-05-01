@@ -7,7 +7,7 @@
 	<%= stylesheet_link_tag "project-ie" %>
 	<![endif]-->
 
-
+    <%= javascript_include_tag "excanvas-compressed" %>
   <%=
     if ENV["RAILS_ENV"] == 'development'
         javascript_include_tag "util.dombuilder.js","page","displayHelper","tableDisplay","graphing","plotr/EnumArray","plotr/plotrMootoolsSupport.js","plotr/Plotr_uncompressed"
