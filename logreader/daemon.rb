@@ -8,6 +8,8 @@
 
 #You might want to change this
 
+ENV["RAILS_ENV"]='production'
+
 @APP_PATH=File.dirname(__FILE__)+"/.."
 
 require 'rubygems'
