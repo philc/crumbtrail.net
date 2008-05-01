@@ -18,6 +18,12 @@ def reset_project( p )
   p.referer_hits = 0
   p.first_hit = nil
 
+  keys = p.collapsing_refs.keys 
+  p.collapsing_refs = {}
+  keys.each do |ref|
+    p.collapsing_refs[ref] = :no_id
+  end
+
   p.save!
 end
 
