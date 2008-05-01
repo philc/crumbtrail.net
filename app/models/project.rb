@@ -8,9 +8,6 @@ class Project < ActiveRecord::Base
   # An array of collapsed referers. Contains entries of ["referer string", "row_id"]
   serialize  :collapsing_refs
   
-  # An array of search terms
-  serialize  :queries
-
   def after_initialize
     self.collapsing_refs = {} if self.collapsing_refs.nil?
   end
@@ -44,8 +41,16 @@ class Project < ActiveRecord::Base
 
             if( collapse_id.nil? )
               source = Referer.get_or_create_referer( self, request.source_url, page, request.time )
-            else
-              source = Referer.find_by_id( collapse_id )
+
+            elsif collapse_id.is_a?(Fixnum)
+              source = Referer.get_referer_by_id( collapse_id, self, page, request.time )
+
+            elsif collapse_id.is_a?(Symbol)
+              request.source_url.match(@@domain_regex)
+              domain = $1
+              source = Referer.create_referer( self, domain, page, request.time )
+              self.collapsing_refs[domain] = source.id
+
             end
           end
         end
@@ -82,8 +87,7 @@ class Project < ActiveRecord::Base
 
     return nil if domain.nil?
 
-    ref_id = self.collapsing_refs[domain]
-    return ref_id
+    return self.collapsing_refs[domain]
   end
   
   def collapse_referer(url)
@@ -93,37 +97,40 @@ class Project < ActiveRecord::Base
     locked do
 
       # Return if the domain is already collapsed
-      return nil if domain.nil? || !self.collapsing_refs[domain].nil?
+      refid = get_collapsible_referer_id(domain)
+      return nil if refid.is_a?(Fixnum)
 
-      #todo - make sure its not a search domain
-      
       # Find all the referers from the collapsing domain (including subdomains of the domain)
       collapsables = Referer.find(:all, :conditions => ['project_id = ? AND url REGEXP ?', id, "[A-Za-z0-9\.]*#{domain}/"])
 
-      return nil if collapsables.length == 0
+      # If there is nothing to be collapsed yet, return early
+      if collapsables.length == 0
+        self.collapsing_refs[domain] = :no_id
+        self.save
+        return nil
+      end
 
       # Create the record for the collapsed domain
       d = Referer.new(:project_id => id, :url_hash => domain.hash, :url => domain+'/', :first_visit => Time.at(0))
 
-      # Update the project to collapse this domain in the future
-      self.collapsing_refs[domain] = d.id
-      self.save
-
+      # Add up the total of hits coming from this domain
       ids = {}
       collapsables.each do |ref|
         ids[ref.id] = 1
-        puts "ID: #{ref.id.to_s}"
         d.count += ref.count
         if d.first_visit < ref.first_visit
           d.page = ref.page
           d.first_visit = ref.first_visit
         end
-        
-        ref.destroy
       end
+
+      # Delete all referers that have been collapsed
+      Referer.delete(collapsables)
 
       d.save
 
+      # I'm not sure we even use this data anywhere, but update
+      # all pages to say their hit came from the collapsed url 
       Page.find_all_by_project_id(id).each do |page|
         if page.source_type == 'r' && defined?(ids[page.source_id])
            page.source_id = d.id
@@ -131,7 +138,10 @@ class Project < ActiveRecord::Base
         end
       end
 
-      return d.id
+      # Update the project to collapse this domain in the future
+      self.collapsing_refs[domain] = d.id
+      self.save
+
     end
   end
 
@@ -176,21 +186,6 @@ class Project < ActiveRecord::Base
 
   def recent_searches()
     return SearchRecent.get_recent_searches(self)
-  end
-
-  def add_query(query)
-    self.queries = [] if self.queries.nil?
-    self.queries << query 
-  end
-
-  def remove_query(query)
-    self.queries = [] if self.queries.nil?
-    self.queries.delete_if { |x| x == query }
-  end
-
-  def is_tracking_query(query)
-    self.queries = [] if self.queries.nil?
-    self.queries.include?(query)
   end
 
 

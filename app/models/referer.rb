@@ -4,6 +4,10 @@ class Referer < ActiveRecord::Base
   belongs_to :page
   serialize  :daily_hit_counts, Hash
   
+  def after_initialize
+    self.daily_hit_counts = Hash.new(0) if self.daily_hit_counts.nil?
+  end
+
   def self.find_by_url(project, url)
     referers = find(:all,
                     :conditions => ['project_id = ? AND url_hash = ?', project.id, url.hash])
@@ -14,17 +18,40 @@ class Referer < ActiveRecord::Base
     return nil
   end
 
+  def self.get_referer_by_id(id, project, page, time = nil)
+    referer = Referer.find(id)
+
+    unless referer.nil?
+      update_hit_counts(referer, time)
+
+      referer.increment(page)
+      referer.save
+    end
+
+    return referer
+  end
+
   def self.get_or_create_referer(project, url, page, time = nil)
     return nil if is_internal_referer(project, url)
 
     referer = find_by_url(project, url)
+    referer = create_referer(project, url, page, time) if referer.nil?
+
+    update_hit_counts(referer, time)
+    
+    referer.increment(page)
+    referer.save
+
+    return referer
+  end
+
+  def self.create_referer(project, url, page, time = nil)
     referer = new(:project          => project, 
                   :url_hash         => url.hash, 
                   :url              => url, 
-                  :first_visit      => time, 
-                  :daily_hit_counts => Hash.new(0)) if referer.nil?
+                  :first_visit      => time) if referer.nil?
 
-    update_hit_counts(referer, time)                  
+    update_hit_counts(referer, time)
     
     referer.increment(page)
     referer.save
