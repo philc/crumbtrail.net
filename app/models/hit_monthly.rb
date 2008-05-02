@@ -21,7 +21,12 @@ class HitMonthly < ActiveRecord::Base
   # starting with the most recent hour
   def self.get_hits(project)
     now = Date.parse(project.time.to_s)
-    last_year = Date.civil(now.year-1, now.month, 1)
+
+    last_year = nil
+    if( now.month != 12 )
+      last_year = Date.civil(now.year-1, now.month+1, 1)
+    else
+      last_year = Date.civil(now.year, 1, 1)
 
     rows = find(:all, 
                 :conditions => ['project_id = ? AND last_update >= ?', project.id, last_year])
