@@ -27,6 +27,7 @@ class HitMonthly < ActiveRecord::Base
       last_year = Date.civil(now.year-1, now.month+1, 1)
     else
       last_year = Date.civil(now.year, 1, 1)
+    end
 
     rows = find(:all, 
                 :conditions => ['project_id = ? AND last_update >= ?', project.id, last_year])
