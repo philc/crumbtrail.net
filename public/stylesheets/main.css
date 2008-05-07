@@ -92,15 +92,11 @@ b{font-weight:normal; display:block; }
 /*
  * A regular sized dialog box
  */
-.d .hd, .d .ft { position:relative;}
-.d .hd { background:#fbeac8 url(/images/d/tan.gif) no-repeat -10px -10px; 	}
-.d .hd .c {  background:transparent url(/images/d/tan.gif) no-repeat 0px -10px; }
-.d .bd { background:#fbeac8 none repeat-y 0px 0px; }
-.d .ft .c, .d .hd .c, .d .hd, .d .ft { height:10px; font-size:1px; }
-.d .ft .c, .d .hd .c { 	width:10px; position:absolute; right:-1px; }
-.d > .ft .c, .d > .hd .c { right:0px; }	/* correct -1 used for IE */
-.d .ft {  background:#fbeac8 url(/images/d/tan.gif) no-repeat -10px 0px;}
-.d .ft .c { background:transparent url(/images/d/tan.gif) no-repeat 0 0px;  }
+.d { background: #fbeac8; }
+.d .hd { background: url(/images/d/tr.gif) no-repeat top right; }
+.d .hd .c { background: url(/images/d/tan.gif) no-repeat -10px -10px; height: 10px; width: 10px; }
+.d .ft { background: url(/images/d/br.gif) no-repeat bottom right; }
+.d .ft .c { background: url(/images/d/tan.gif) no-repeat -10px 0px; height: 10px; width: 10px; }
 
 /*
  * A regular sized dialog box, gray

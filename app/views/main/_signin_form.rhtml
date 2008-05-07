@@ -1,46 +1,39 @@
 <div id="signin-box">
 
-    <b class="d"><b class="hd"><b class="c"></b></b><b class="bd">
-        <b class="c">
+    <b class="d">
+        <b class="hd"><b class="c"></b></b>
+        <b class="bd">
+            <b class="c">
+<% if @account.demo? %>
+                <h1>Sign in</h1>
 
-            <% if @account.demo? %>
-            <h1>Sign in</h1>
+                <div class="left_form">
+                    <form action="" method="post">
+                        <div class="text-form">
+                            <%= show_form_error(@login_error) %>
+                            <label for="email">E-mail</label>
+                            <%= field "text", :id=>"email", :value=>@email %>
 
-            <div class="left_form">
+                            <label for="password">Password</label>
+                            <%= field "password", :id=>"password" %>
+                        </div>
+                        <div class="button_area">
+                            <input type="submit" class="submit" value="Sign in" />
+                        </div>
+                        <% if (defined? show_signup_link) && show_signup_link %>
+                        <p>Don't have an account?<br/><a href="/signup">Sign up for one in seconds &raquo;</a></p>
+                        <% end %>
+                    </form>
+                </div>
 
-                <form action="" method="post">
-                    <div class="text-form">
-
-                        <%= show_form_error(@login_error) %>
-                        <label>E-mail						</label>
-                        <%= field "text", :id=>"email", :value=>@email %>
-
-                        <label for="password">Password</label>
-                        <%= field "password", :id=>"password" %>
-                        <!-- <br clear="both"/> -->
-                    </div>
-                    <div class="button_area">
-                        <input type="submit" class="submit" value="Sign in"/>
-                    </div>
-                    <% if (defined? show_signup_link) && show_signup_link %>
-                    <p>Don't have an account?<br/><a href="/signup">Sign up for one in seconds &raquo;</a></p>
-                    <% end %>
-
-                </form>
-            </div>
-
-            <% else %>
-            <h1>Welcome back</h1>
-            <a href="/project/recent">Show me my stats</a>
-
-
-            <% end %>
-
-
-        </b></b><b class="ft">
-            <b class="c"></b>
+<% else %>
+                <h1>Welcome back</h1>
+                <a href="/project/recent">Show me my stats</a>
+<% end %>
+            </b>
         </b>
-    </b>     
+        <b class="ft"><b class="c"></b></b>
+    </b>
 </div>
 
 <%if @account.demo? %>

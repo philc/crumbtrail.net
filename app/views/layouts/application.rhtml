@@ -29,8 +29,6 @@
 </head>
 
 <body>
-  <div id="hi"></div>
-
   <div id="page">
   <div id="header">   
 
@@ -40,25 +38,33 @@
 
 <div id="header-menu" class="small-dialog">
 
-<table><tr><td>
-  <b class="ds"><b class="hd"><b class="c"></b></b><b class="bd">
-  <b class="c">
-  <table><tr>
-    <td>
-      <% if !@account.demo? %> 
-      <li><a href="/signout">Sign out</a></li>
-      <% end %>
-      <% if @account.role == "a" %>
-      <li><a href="/project/admin">Admin</a></li>
-      <% end %>         
-    </td>
-    <td><a href="/project/all">My projects</a></td>
-    <td><a href="/main/about" class="last">About</a></td>
-  </tr></table>
+<table>
+    <tr><td>
+         <b class="ds">
+             <b class="hd"><b class="c"></b></b>
+             <b class="bd">
+                 <b class="c">
+                     <table>
+                         <tr>
+                             <td>
+                                 <% if !@account.demo? %> 
+                                 <li><a href="/signout">Sign out</a></li>
+                                 <% end %>
 
-</b></b><b class="ft">
-<b class="c"></b></b></b>
-</td></tr></table>
+                                 <% if @account.role == "a" %>
+                                 <li><a href="/project/admin">Admin</a></li>
+                                 <% end %>         
+                             </td>
+                             <td><a href="/project/all">My projects</a></td>
+                             <td><a href="/main/about" class="last">About</a></td>
+                         </tr>
+                     </table>
+                </b>
+            </b>
+            <b class="ft"><b class="c"></b></b>
+        </b>
+    </td></tr>
+</table>
 
 </div>  
 </div>
