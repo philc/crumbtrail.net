@@ -98,6 +98,8 @@ b{font-weight:normal; display:block; }
 .d .ft { background: url(/images/d/br.gif) no-repeat bottom right; }
 .d .ft .c { background: url(/images/d/tan.gif) no-repeat -10px 0px; height: 10px; width: 10px; }
 
+#your-projects { background: #FFFFFF; }
+
 /*
  * A regular sized dialog box, gray
  */
@@ -383,7 +385,7 @@ a.linkbox:hover{
 }
 #signup-fields{
   /*width:200px;*/
-  float:left;  
+  float:left;
 }
 #signup_form .form_error{
   width:200px;
